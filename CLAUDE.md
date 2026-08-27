@@ -8,9 +8,10 @@ not replace `AGENTS.md`.
 **Authority order.** When this file conflicts with a governed source, defer to
 the order in section 2 below, which `AGENTS.md` repeats normatively.
 
-Read `AGENTS.md` before touching any governed artifact. Read
-`doctrine/SUBJECT_SELECTION.md` and `doctrine/RETENTION.md` before touching
-anything that collects, stores, or exports.
+Read `AGENTS.md` before touching any governed artifact. Read all four rank-1
+doctrine files, `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md`,
+`doctrine/EGRESS.md` and `doctrine/CREDENTIAL_LIFECYCLE.md`, before touching
+anything that collects, stores, authenticates, or exports.
 
 ## 1. North Star
 
@@ -54,7 +55,8 @@ file here grants an authority the operator does not already hold.
 
 When two governed sources conflict, the higher number loses.
 
-1. `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md`
+1. `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md`,
+   `doctrine/EGRESS.md`, `doctrine/CREDENTIAL_LIFECYCLE.md`
 2. `spec/pse-semantics-contract.md`
 3. `schema/*.json`, `ontology/selectors.yaml`, `policy/*.yaml`,
    `spec/layer-model.yaml`, `spec/divergence-register.yaml`
@@ -72,6 +74,12 @@ lineaged, describing a person who was never permitted to be a subject, passes
 every check at ranks 2 through 6 and is still the thing this project must not
 do. No validator catches it, because no validator knows who a selector refers
 to. A rule that no lower rank can evaluate has to sit above them all.
+
+**Rank 1 holds four files as of 2026-08-27**, one per question doctrine owns.
+`SUBJECT_SELECTION.md` answers who may be a subject. `RETENTION.md` answers what
+may be retained. `EGRESS.md` and `CREDENTIAL_LIFECYCLE.md` answer what may leave,
+from two directions: which environment case material may exist in, and which
+identity a third party permanently records as having looked.
 
 The inverse bounds the doctrine. Doctrine is authoritative only on who may be a
 subject, what may be retained, and what may leave. It has no opinion on field

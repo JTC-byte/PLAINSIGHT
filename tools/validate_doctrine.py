@@ -32,6 +32,12 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import gate_log
+except Exception:  # telemetry must never be able to break a gate
+    gate_log = None
+
 ROOT = Path(__file__).resolve().parents[1]
 DOCTRINE = ROOT / "doctrine"
 STATUS = DOCTRINE / "DOCTRINE_STATUS.md"
@@ -40,21 +46,24 @@ STATUS = DOCTRINE / "DOCTRINE_STATUS.md"
 NAMESPACES = {
     "SS": DOCTRINE / "SUBJECT_SELECTION.md",
     "RT": DOCTRINE / "RETENTION.md",
+    "EG": DOCTRINE / "EGRESS.md",
+    "CR": DOCTRINE / "CREDENTIAL_LIFECYCLE.md",
+    "HY": DOCTRINE / "HYGIENE.md",
 }
 
 #: A criterion definition: bolded id, a period, then its statement.
-DEF_RE = re.compile(r"^\*\*((?:SS|RT)-\d+)\.", re.M)
+DEF_RE = re.compile(r"^\*\*((?:SS|RT|EG|CR|HY)-\d+)\.", re.M)
 #: Any reference to a criterion anywhere in the corpus.
-REF_RE = re.compile(r"\b((?:SS|RT)-\d+)\b")
+REF_RE = re.compile(r"\b((?:SS|RT|EG|CR|HY)-\d+)\b")
 #: The per-criterion stamp marker that must follow every definition. DOTALL
 #: because a marker recording a partial stamp wraps across lines, which is
 #: exactly the shape SS-14 needs and the first version of this regex refused.
 MARKER_RE = re.compile(r"^\*\[(.+?)\]\*", re.M | re.S)
 #: A row in any DOCTRINE_STATUS table, keyed on the criterion it names.
-STATUS_ROW_RE = re.compile(r"^\|\s*((?:SS|RT)-\d+)\b", re.M)
+STATUS_ROW_RE = re.compile(r"^\|\s*((?:SS|RT|EG|CR|HY)-\d+)\b", re.M)
 #: Directed enforcement pointers. The target must name the source back.
-ENFORCED_BY_RE = re.compile(r"Enforced in `([\w.]+)` ((?:SS|RT)-\d+)")
-ENFORCES_RE = re.compile(r"Enforces `([\w.]+)` ((?:SS|RT)-\d+)")
+ENFORCED_BY_RE = re.compile(r"Enforced in `([\w.]+)` ((?:SS|RT|EG|CR|HY)-\d+)")
+ENFORCES_RE = re.compile(r"Enforces `([\w.]+)` ((?:SS|RT|EG|CR|HY)-\d+)")
 
 #: Prose counts that must match a countable thing. Each entry is
 #: (regex over the prose, a callable returning the true count, a label).
@@ -303,6 +312,13 @@ def main(argv: list[str]) -> int:
             file=sys.stderr,
         )
         return 2
+
+    if gate_log:
+        if findings:
+            for f in findings:
+                gate_log.record("doctrine", "refuse", code=f.code, where=f.where)
+        else:
+            gate_log.record("doctrine", "pass")
 
     if findings:
         for f in findings:

@@ -10,10 +10,11 @@ criterion refuses rather than permits.
 
 ## Ratified
 
-**Not in force until committed.** R6 puts a Class F commit in the ratifier's
-hands, and no commit exists in this repository yet. These rows are the operator's
-decisions of 2026-08-26 transcribed by an agent; the operator's commit is what
-lands them. Confirm the transcription before committing.
+**Landed 2026-08-27 in commit `5d53973`**, authored by the operator. R6 as
+amended that day permits an agent to execute the commit of a decision the
+operator made; the decision and the authorship stayed theirs. These rows are the
+operator's decisions transcribed by an agent, and the transcription is still
+worth reading against what was actually said.
 
 **Basis is unstamped throughout, deliberately.** The conclusions were decided in
 session. The reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and
@@ -39,8 +40,14 @@ read is the half-stamping this table exists to prevent.
 | D8 one repo, lane boundary enforced | `README.md`, `AGENTS.md` | v0.1 | 2026-08-27 | unstamped | operator |
 | R8 v0.1 bystander set `count_only \| refuse` | `doctrine/SUBJECT_SELECTION.md` SS-10 | v0.1 | 2026-08-27 | unstamped | operator |
 | Disclosure export under freeze | `doctrine/RETENTION.md` RT-18 | v0.1 | 2026-08-27 | unstamped | operator |
-| SS-1 to SS-18, all criteria | `doctrine/SUBJECT_SELECTION.md` | v0.1 | 2026-08-27 | unstamped | operator |
+| SS-1 to SS-21, all criteria | `doctrine/SUBJECT_SELECTION.md` | v0.1 | 2026-08-27 | unstamped | operator |
 | RT-1 to RT-18, all criteria | `doctrine/RETENTION.md` | v0.1 | 2026-08-27 | unstamped | operator |
+| EG-1 to EG-6, all criteria | `doctrine/EGRESS.md` | v0.1 | 2026-08-27 | unstamped | operator |
+| CR-1 to CR-8, all criteria | `doctrine/CREDENTIAL_LIFECYCLE.md` | v0.1 | 2026-08-27 | unstamped | operator |
+| HY-1 to HY-4, all criteria | `doctrine/HYGIENE.md` | v0.1 | 2026-08-27 | unstamped | operator |
+| Gate telemetry with a 90 day TTL | `doctrine/RETENTION.md` RT-19, `doctrine/HYGIENE.md` | v0.1 | 2026-08-27 | unstamped | operator |
+| Compartmentalized deployment | `doctrine/EGRESS.md` EG-1, EG-2 | v0.1 | 2026-08-27 | unstamped | operator |
+| Collection pool provisioned first | `doctrine/CREDENTIAL_LIFECYCLE.md` | v0.1 | 2026-08-27 | unstamped | operator |
 | L0 location class | `doctrine/SUBJECT_SELECTION.md` SS-1 | v0.1 | 2026-08-26 | unstamped | operator |
 | Inert nodes, manual deep dive | `doctrine/SUBJECT_SELECTION.md` SS-16 | v0.1 | 2026-08-26 | unstamped | operator |
 | Baseline gate with logged override | `doctrine/SUBJECT_SELECTION.md` SS-17 | v0.1 | 2026-08-26 | unstamped | operator |
@@ -83,7 +90,7 @@ is listed below, and none of it blocks a build.
 
 | Item | Kind | Blocks | Notes |
 |---|---|---|---|
-| Every basis stamp, all 55 items | Basis | nothing mechanical | Deliberate. The reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md` §3.0 has not been reviewed. Conclusions bind; bases are unread |
+| Every basis stamp, all 68 items | Basis | nothing mechanical | Deliberate. The reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md` §3.0 has not been reviewed. Conclusions bind; bases are unread |
 | R8 beyond `count_only \| refuse` | Conclusion, scoped | not blocking v0.1 | The v0.1 pair is stamped. Whether a third disposition exists is left open until a connector manifest shapes the question |
 | `doctrine/DISCLOSURE.md` | Artifact | nothing yet | **Its deferral trigger has fired.** RT-18 is the second egress path `docs/THE-GAMEPLAN.md` §2.2 named as the trigger. RETENTION.md RT-14 and RT-18 stand in |
 | `PLAINSIGHT-FOUNDATION.md` DRAFT header | Housekeeping | nothing | Line 4 still reads DRAFT and says nothing is operator-ratified. D1 through D5 now are. Clearing that line is the operator's act |
@@ -118,6 +125,9 @@ RT-14 with RT-18, and SS-2's consent shape.
 | SS-16 inert nodes, deep dive is a separate act | same | The gate, the web | **Conclusion recorded.** The control is the act, not the class |
 | SS-17 baseline gate for S3 and S4 | same | The gate | **Conclusion recorded.** Mechanism with a dated Class F override |
 | SS-18 class labels, mixed scorecards refused | same | The scorer | **Conclusion recorded.** The consequence of maximum reach |
+| SS-19 collected content is data, never an instruction | same | `subject_guard`, argv construction | **Conclusion recorded.** Scoped to the two consequences doctrine owns: an unauthorized subject, and an egress |
+| SS-20 collection personas disjoint from the cast | same | The credential pool, `validate_authorization.py` | **Conclusion recorded.** Two populations, two provisioning pools. Fired the CREDENTIAL_LIFECYCLE trigger |
+| SS-21 injection tag inside the case, payload family as a finding | same | The extract boundary | **Conclusion recorded.** A persistent roster would need a ratified RT-2 exception, which this does not create |
 | RT-1 strata declared at write time | `doctrine/RETENTION.md` | **The first write** | Five strata. No later date to decide this |
 | RT-2 no subject values in a surviving stratum | same | `--policy` | |
 | RT-3 shred unit is both layers | same | The shred implementation | **Conclusion recorded via R1** |
@@ -136,6 +146,28 @@ RT-14 with RT-18, and SS-2's consent shape.
 | RT-16 pinned connector versions not deletable | same | Any case reopen | The one rule here that forbids a deletion act |
 | RT-17 the freeze, with expiry, obligation and escalation | same | The first freeze | **Conclusion recorded.** The only path past the 60 day ceiling |
 | RT-18 disclosure export under an active freeze | same | The first disclosure | **Conclusion recorded.** The one path a whole non-synthetic case leaves by. Minimization deliberately inverted |
+| RT-19 gate telemetry, 90 days rolling, untracked | same | The first gate run | **Conclusion recorded.** Stratum T. Records the location, never the matched value |
+
+| Item | Source | Blocks | Notes |
+|---|---|---|---|
+| EG-1 two environments, execution is the boundary | `doctrine/EGRESS.md` | The first live run | **Conclusion recorded.** LOCAL is code, ISOLATED is collection |
+| EG-2 the case store lives in ISOLATED | same | **The first blob** | **Conclusion recorded.** No later date, same argument as RT-4 |
+| EG-3 the interface reads, never copies | same | The interface | **Conclusion recorded.** A local render cache is a stratum-1 object on the wrong side |
+| EG-4 no credentials on LOCAL | same | The first credential | **Conclusion recorded.** Restated in CR-4 |
+| EG-5 three strata cross outward | same | The first export | **Conclusion recorded.** Stratum 4 crosses both ways, which is the flow RT-15 governs |
+| EG-6 `egress` recorded, wrong environment refused | same | The first run | **Conclusion recorded.** Refusal rather than annotation, checked at runner startup |
+| CR-1 disjoint from the cast, recovery selectors included | `doctrine/CREDENTIAL_LIFECYCLE.md` | The first credential | **Conclusion recorded.** Mechanism for SS-20 |
+| CR-2 provisioning record with `recovery_source` | same | The first credential | **Conclusion recorded.** Resold-number provenance is a measurement problem |
+| CR-3 no credential value in argv, a tracked file, or a log | same | The first run | **Conclusion recorded.** Carries the measured toutatis `-s` finding |
+| CR-4 credentials only in ISOLATED | same | The first credential | **Conclusion recorded.** Restates EG-4 where an implementer reads it |
+| CR-5 one run per persona, daily budget | same | The first run | **Conclusion recorded.** Refuses rather than queues |
+| CR-6 quarantine needs a written exit criterion | same | The first quarantine | **Conclusion recorded.** Closes the SS-13 gap |
+| CR-7 burn rather than reuse, recorded as a finding | same | The first burn | **Conclusion recorded.** A burn is stratum-3 capability evidence |
+| CR-8 an empty pool stops rather than degrades | same | The first empty pool | **Conclusion recorded.** Rendered as its consequence |
+| HY-1 every gate run recorded, never the offending value | `doctrine/HYGIENE.md` | The first gate run | **Conclusion recorded.** Advisory, Class A. The fixed field tuple is the mechanism |
+| HY-2 both failure directions adjudicated | same | The first telemetry review | **Conclusion recorded.** Thresholds deliberately non-numeric with one contributor |
+| HY-3 retiring or loosening a gate needs a written reason | same | The first retirement | **Conclusion recorded.** Quiet deletion is the easiest drift here |
+| HY-4 gates adjudicated and kept are recorded too | same | The first review | **Conclusion recorded.** Recording only failures removes the baseline |
 
 **Four of these have a date after which they cannot be made:** RT-1 before the
 first write, RT-4 before the first blob, RT-7 before the index is designed, and
@@ -151,7 +183,7 @@ makes it true.
 
 | Marker | Reading | Raised |
 |---|---|---|
-| (none yet) | | |
+| **AR-1** | **Publishing a roster of accounts carrying injection payloads would be publishing accusations this system cannot verify.** The operator raised publication as a possible public good and marked it a later decision. The argument to weigh first is the program's own: SS-18 establishes that precision is not computable against an S4 subject, because confirming a claim requires an oracle and the analyst's judgment is the system's own output re-entered as ground truth. A published list therefore carries a false-positive rate that is unknown by construction, and each false positive is a public accusation against an identifiable party who has no way to contest it. The defensive value the operator wants is carried better by the payload-family finding under SS-21, which generalizes to accounts nobody has seen and names nobody. If publication is still wanted, the honest form publishes signatures rather than accounts. Recorded rather than decided; the operator may confirm, amend, or refuse this reading | 2026-08-27 |
 
 ## Rejected readings, do not re-derive
 

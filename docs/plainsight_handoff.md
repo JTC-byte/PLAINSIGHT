@@ -8,90 +8,88 @@ session rather than accumulating here. ZMeta's handoff reached 2,080 lines
 carrying eleven superseded state sections, which is the failure mode this cap
 exists to prevent.
 
-**Wave:** 0. Doctrine foundation complete. Nothing committed, nothing built.
-**Date:** 2026-08-26
-**Doctrine items:** 55 total. **All 55 carry a recorded conclusion. 0 have a stamped basis. 0 are committed.**
+**Wave:** 0. Doctrine foundation complete and committed. Nothing built.
+**Date:** 2026-08-27
+**Doctrine items:** 74 total across four rank-1 files plus advisory HYGIENE.md. **All carry a recorded
+conclusion. 0 have a stamped basis.** Wave 0 landed in `5d53973`; the hardening
+pass after it is uncommitted.
 
-**Resume here. The doctrine foundation is done. The next thing is a build.**
+**Resume here. The doctrine is done. The next thing is a build.**
 
-1. **The operator reviews and commits the transcription.** Every doctrine
-   conclusion is recorded in `doctrine/DOCTRINE_STATUS.md` by an agent across
-   2026-08-26 and 2026-08-27. R6 puts a Class F commit in the ratifier's hands,
-   so nothing is in force until that commit exists, and it is also this
-   repository's first commit.
-2. **Step 4 and Step 5 are both unblocked and independent**, so either can go
-   first. Step 4 is `synthetic/CAST.md` plus a sealed, hash-pinned
-   `GROUND_TRUTH.yaml`, and it has lead time that cannot be recovered. Step 5 is
-   `spec/layer-model.yaml`, now writable because D6 settled nine event types and
-   D7 settled `pse-event-0.1`.
+Two steps are unblocked and independent, so order is a preference:
 
-**Nothing is pending a conclusion.** What remains is every basis stamp, the R8
-question of whether a third bystander disposition exists, `doctrine/DISCLOSURE.md`
-whose deferral trigger has now fired, and the DRAFT header on
-`PLAINSIGHT-FOUNDATION.md` line 4 which still says nothing is operator-ratified.
+- **Step 4**, the synthetic cast, reshaped 2026-08-27 to two personas on two
+  platforms across **two email domains**. But provision the **collection pool
+  first**: SS-20 established that the accounts which authenticate are a separate
+  population from the accounts collected on, and most connectors cannot run at
+  all without the former. Numbers are capped by platform acceptance rather than
+  budget, so spend them there first.
+- **Step 5**, `spec/layer-model.yaml`. Nine event types per D6, labelled
+  `pse-event-0.1` per D7. The single source the schema enums and
+  `policy/semantics.yaml` are both generated from.
 
 ---
 
 ## 1. Where the project is
 
-The repository exists and is governed. Nothing is built and nothing is ratified.
-No collection mechanism exists, and none can be built until Step 2 completes,
-because five of the D and R items block the schema and the runner.
+The repository is governed and committed. Nothing is built, no connector exists,
+and nothing has touched a platform.
 
-Step 3's two doctrine documents are drafted and reviewed and neither is
-finished. They bind nothing. `runner/subject_guard.py` and the retention sweep
-will read `DOCTRINE_STATUS.md` rather than these files, and an unstamped
-criterion refuses rather than permits, which is what makes an unfinished
-doctrine document safe to leave on disk.
+**Every doctrine conclusion is recorded and every basis is unstamped.** That
+split is deliberate and it is what a reader needs to know before relying on a
+row: the conclusions were decided in session, and the reasoning in
+`docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md` §3.0 has not been
+reviewed. Conclusions bind. Bases are unread.
 
-The four design documents that preceded the repository are moved in unchanged
-under `docs/`. They are rank 7 in the authority order, which means they are
-records of intent rather than binding sources. `docs/PLAINSIGHT-FOUNDATION.md`
-still carries its DRAFT header.
+Rank 1 holds four files as of 2026-08-27, one per question doctrine owns:
+`SUBJECT_SELECTION.md` for who may be a subject, `RETENTION.md` for what may be
+retained, and `EGRESS.md` with `CREDENTIAL_LIFECYCLE.md` for what may leave.
+
+Three doctrine gates exist and run: `validate_doctrine.py`,
+`validate_hygiene.py`, and `validate_conformance.py --kernel-gate`. Six of the
+nine kernel-gate checks report PENDING because the artifacts they would check do
+not exist, and one reports STUB. A stubbed or pending check is never counted as
+a pass.
 
 ## 2. What exists
 
 | Path | State |
 |---|---|
-| `CLAUDE.md` | Written. Advisory. |
-| `AGENTS.md` | Written. Normative. |
-| `doctrine/DOCTRINE_STATUS.md` | Written. **All 55 conclusions recorded, 0 bases stamped, 0 committed.** Per-criterion rows for every SS and RT item. |
-| `doctrine/SUBJECT_SELECTION.md` | **Drafted, all conclusions recorded, not committed.** SS-1 to SS-18. Reviewed; all confirmed findings applied. |
-| `doctrine/RETENTION.md` | **Drafted, all conclusions recorded, not committed.** RT-1 to RT-18. Reviewed; confirmed findings applied. |
-| `doctrine/RETENTION_LEDGER.md` | **Missing.** Required at v0.1. Shape defined in `RETENTION.md` RT-10. |
-| `doctrine/HYGIENE.md` | **Missing.** Advisory, Class A, blocks nothing immediately. |
-| `doctrine/DISCLOSURE.md` | **Missing, and now owed.** Its deferral trigger fired when RT-18 created a second egress path. |
+| `CLAUDE.md` | Written. Advisory. R6 amended 2026-08-27. |
+| `AGENTS.md` | Written. Normative. Rank 1 extended, section 3 reconciled with R6. |
+| `doctrine/DOCTRINE_STATUS.md` | The pin of record. All conclusions recorded, 0 bases stamped. |
+| `doctrine/SUBJECT_SELECTION.md` | SS-1 to SS-21. Reviewed by 14 agents through SS-18; SS-19 to SS-21 unreviewed. |
+| `doctrine/RETENTION.md` | RT-1 to RT-19. Same review through RT-18; RT-19 unreviewed. |
+| `doctrine/EGRESS.md` | EG-1 to EG-6. **New 2026-08-27.** Unreviewed. |
+| `doctrine/CREDENTIAL_LIFECYCLE.md` | CR-1 to CR-8. **New 2026-08-27.** Unreviewed. |
+| `doctrine/RETENTION_LEDGER.md` | **Missing.** Required at v0.1. Shape in RT-10. |
+| `doctrine/DISCLOSURE.md` | **Missing, owed.** Trigger fired when RT-18 created a second egress path. |
+| `doctrine/HYGIENE.md` | HY-1 to HY-4. **New 2026-08-27.** Gate adjudication. Unreviewed. |
 | `spec/`, `schema/`, `ontology/`, `policy/` | Empty. Steps 5 through 7. |
 | `conformance/` | Empty tree. Step 9. |
-| `tools/validate_doctrine.py` | **Written.** Criteria, stamps, cross-references both ways, pin reconcile, counts. |
-| `tools/validate_hygiene.py` | **Written.** Voice, tables, citations vs the register, caps, inventories. |
-| `tools/validate_conformance.py` | **Written.** Aggregator. `KERNEL_GATE` is the one authoritative list. |
-| `tools/validate_retention.py` | Stub. Exits 0, checks nothing. D-001. Reported as STUB by the aggregator. |
-| `Makefile` | **Written.** `validate-doctrine`, `validate-hygiene`, `validate-kernel`, `preflight`. |
-| `.github/workflows/ci.yml` | **Written.** Kernel gate on push and PR, proves the hook runs, refuses agent trailers. |
-| `.githooks/pre-commit` | **Rewritten.** Runs the full preflight battery, not the stub alone. |
+| `tools/validate_doctrine.py` | **Written.** Knows all four namespaces. Tested by breaking the corpus. |
+| `tools/validate_hygiene.py` | **Written.** Prints the rules it cannot reach on every green run. |
+| `tools/validate_conformance.py` | **Written.** `KERNEL_GATE` is the one authoritative list. |
+| `tools/validate_retention.py` | Stub. Exits 0, checks nothing. D-001. |
+| `tools/gate_log.py` | **Written.** Telemetry, 90d TTL, never records the matched value. |
+| `Makefile`, `.github/workflows/ci.yml`, `.githooks/pre-commit` | **Written.** CI proves the hook runs and refuses agent trailers. |
 | `connectors/`, `runner/`, `app/`, `synthetic/` | Empty. Later steps. |
-| `docs/*.md` | Five documents moved in unchanged. |
 
 ## 3. What blocks
 
-**Nothing blocks a build any more.** Every doctrine conclusion is recorded, and
-D6 was the last item standing between the repository and `spec/layer-model.yaml`.
+**Nothing blocks a build.** D6 was the last decision standing in the way of
+`spec/layer-model.yaml`.
 
-One thing gates *authority* rather than work: per R6 a Class F commit is authored
-by the ratifier, so none of the stamps are in force until the operator commits
-them. An agent transcribed them and an agent may not land them.
+Two constraints on ordering rather than blocks:
 
-Two steps are unblocked and independent, so order is a preference:
-
-- **Step 4**, the synthetic cast. `synthetic/CAST.md` and a sealed, hash-pinned
-  `GROUND_TRUTH.yaml` with at least one designed confuser pair. It has lead time
-  that cannot be recovered, and SS-17 makes the baseline a gate on S3 and S4
-  reach, so it is on the critical path for capability rather than beside it.
-- **Step 5**, `spec/layer-model.yaml`. Nine event types per D6, labelled
-  `pse-event-0.1` per D7. This is the single source the schema enums and
-  `policy/semantics.yaml` are both generated from, and ZMeta's mistake of
-  restating the same enum in four places is the thing not to inherit.
+- **EG-2 and RT-4 both have no later date.** The case store lives in the
+  isolated environment and every blob is encrypted with a per-case key from the
+  first write. Neither can be retrofitted, so the isolated environment has to
+  exist before the first blob does.
+- **Live execution stays an operator act.** `AGENTS.md` §4's first Execution
+  Limit is unchanged by operator decision on 2026-08-27. An agent builds and
+  analyzes; the operator runs anything that reaches a platform. Account creation
+  is impossible for an agent regardless of doctrine.
 
 ## 4. Known gaps
 

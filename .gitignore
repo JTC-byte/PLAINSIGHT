@@ -13,6 +13,10 @@ cases/
 results/
 pulled/
 
+# Gate telemetry. Untracked by design: a permanent record of tool behaviour is
+# an archive, and this is telemetry with a 90 day TTL. doctrine/RETENTION.md RT-19.
+.gate-log/
+
 # Local operator files
 .env
 *.local.*

@@ -1,4 +1,4 @@
-.PHONY: help validate-doctrine validate-hygiene validate-kernel preflight
+.PHONY: help validate-doctrine validate-hygiene validate-kernel preflight gate-telemetry
 
 # The named gates. A gate is a stable token rather than a hand-copied command
 # string, so a new check joins the battery in one place. That place is
@@ -16,6 +16,7 @@ help:
 	@echo "validate-hygiene   voice, tables, citations against the register, caps, inventories"
 	@echo "validate-kernel    the full battery, including what is not built yet"
 	@echo "preflight          what must be green before a commit"
+	@echo "gate-telemetry     what each gate has been doing, for adjudication"
 	@echo ""
 	@python tools/validate_conformance.py --list
 
@@ -36,3 +37,10 @@ preflight:
 	python tools/validate_doctrine.py
 	python tools/validate_hygiene.py
 	python tools/validate_retention.py --repo-scan --staged
+
+# The pattern of life on the gates themselves. A gate nobody measures is a gate
+# nobody can adjudicate, and both failure directions are silent: a check that
+# never fires looks identical to a check that is working, and a check that always
+# fires gets ignored rather than fixed. Thresholds are in doctrine/HYGIENE.md.
+gate-telemetry:
+	python tools/gate_log.py --summary

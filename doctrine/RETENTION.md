@@ -9,8 +9,8 @@ individually because they encode a choice rather than a mechanism: RT-6's
 incidental TTL, RT-11's blast radius, RT-14 with RT-18, and the consent shape in
 `SUBJECT_SELECTION.md`. **Every basis is unstamped**, deliberately.
 
-Per R6, a Class F commit is authored by the ratifier, so **nothing here is in
-force until the operator commits it.**
+**Landed 2026-08-27 in commit `5d53973`.** RT-19 added 2026-08-27 and is uncommitted. Per R6 as amended, an agent
+may execute a commit the operator has instructed; the authorship stays theirs.
 
 Every criterion carries its own marker. One partially stamped item does not
 stamp the file. Conclusion is ratified separately from basis.
@@ -70,9 +70,10 @@ project wants.
 time.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
 
-Five strata. Sensitivity decreases as durability increases, which is the same
-shape the field-capture tiers have and for the same reason: the durable things
-are durable because they carry no subject-derived values.
+Seven strata rows across five numbered levels, plus telemetry. Sensitivity
+decreases as durability increases, which is the same shape the field-capture
+tiers have and for the same reason: the durable things are durable because they
+carry no subject-derived values.
 
 | Stratum | Contents | Subject values | Lifetime | Inside shred boundary |
 |---|---|---|---|---|
@@ -82,6 +83,7 @@ are durable because they carry no subject-derived values.
 | **2 Skeleton** | Run, item, and claim structure: opaque ids, timestamps, connector at version, argv template with values redacted, exit codes, counts, coverage intervals, `egress`, the ledger row, the tombstone | No | Permanent | No |
 | **3 Findings** | Capability findings, scorecards with persona age and truth-file hash, connector health history, the RT-13 finding-check stamp | No, or synthetic only | Permanent | No |
 | **4 Synthetic corpus** | The cast, `GROUND_TRUTH.yaml`, cassettes captured against S2, conformance fixtures | Synthetic only | Permanent, in git | No |
+| **T Gate telemetry** | One record per gate run: timestamp, gate, outcome, violation code, location | **None, by construction** | 90 days rolling | No, and untracked |
 
 **The authorization record is stratum 1, and getting this wrong would have been
 the expensive kind of mistake.** It is the one object in the system that
@@ -421,6 +423,39 @@ was right.
 DRAFT and Return Brief exports are stratum 1. They are written inside the case
 boundary where the sweep reaches them, or they are not written.
 
+**RT-19. Gate telemetry is retained for 90 days rolling, is untracked, and
+carries no subject-derived value by construction.**
+*[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
+
+The operator asked for gate firings and gate failures to be recorded so that
+keeping, improving or retiring a check becomes an adjudicated decision rather
+than a remembered impression. `doctrine/HYGIENE.md` owns the adjudication. This
+criterion owns the lifetime, because a log is an object and every object here has
+one.
+
+Stratum **T**, which sits outside the numbered strata deliberately. It is not
+case material, so it is not inside the shred boundary. It is not a finding, so it
+is not permanent. It is telemetry, and telemetry that is kept forever has become
+an archive of how the tools behaved in 2026, which nobody will read and which
+grows without bound.
+
+**Ninety days rolling**, swept on every write rather than by a scheduled job,
+because the writer is already running and a separate schedule would be a second
+thing that can fail silently. Inaction is deletion here as everywhere else.
+
+**Untracked, and that is a decision rather than an oversight.** A telemetry file
+in git is permanent, which contradicts the TTL in the one direction that cannot
+be undone. `.gitignore` carries `.gate-log/` and RT-15's repo scan would refuse
+it anyway.
+
+**The rule that makes this safe is HY-1 and it is worth restating here.** A
+telemetry record names the file and the line. It never names the string that
+matched. A `--repo-scan` refusal fires because a selector-shaped value was found
+in a tracked file, and a record quoting that value would take the gate's own
+evidence and make it the durable surface the gate exists to prevent. The allowed
+field list in `tools/gate_log.py` is a fixed tuple, so widening the record
+requires editing that tuple rather than passing an extra argument.
+
 **RT-18. A disclosure export is the one path by which a whole non-synthetic case
 leaves the machine. It exists only under an active freeze.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
@@ -711,6 +746,7 @@ is an index into it.
 | RT-16 | Pinned connector versions are not deletable | Any case reopen | none |
 | RT-17 | The freeze, with its own expiry, and the only path past the 60 day ceiling. Conclusion recorded | The first freeze | none |
 | RT-18 | Disclosure export, only under an active freeze, complete rather than minimized | The first disclosure | none |
+| RT-19 | Gate telemetry, 90 days rolling, untracked, no subject values | The first gate run | HY-1 |
 
 **Four of these have a date after which they cannot be made.** RT-4 before the
 first blob, RT-7 before the index is designed, RT-15 before the first commit

@@ -7,8 +7,8 @@ conclusion on every remaining criterion on 2026-08-27. **Every basis is
 unstamped**, which is deliberate: the conclusions were decided in session and the
 reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 has not been reviewed.
 
-Per R6, a Class F commit is authored by the ratifier, so **nothing here is in
-force until the operator commits it.**
+**Landed 2026-08-27 in commit `5d53973`.** SS-19 through SS-21 added 2026-08-27 and are uncommitted. Per R6 as amended, an agent
+may execute a commit the operator has instructed; the authorship stays theirs.
 
 Every criterion carries its own marker. One partially stamped item does not
 stamp the file. Conclusion is ratified separately from basis, because no
@@ -412,6 +412,110 @@ authorized set. The must-fail fixture `scope-drift-three-hops` asserts exactly
 this, with violation code `SCOPE_DRIFT_UNADJUDICATED`. A gate that evaluates
 only the current hop passes all three and lands somewhere nobody authorized.
 
+### 4.2 Collected content is data, never an instruction
+
+**SS-19. No collected value causes a subject to be reached or data to leave the
+machine. Collected content is untrusted input at every boundary that can act on
+it.**
+*[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
+
+Everything this system collects is written by someone else. A bio, a display
+name, a channel title, a message body, a filename in a paste. All of it is
+attacker-controlled text, and this repository is operated by agents, which means
+collected text reaches a context that can act on it.
+
+**This criterion is deliberately narrow, and the boundary matters.** General
+input handling, escaping, and rendering are semantics-contract and design
+questions at ranks 2 and 7, and doctrine has no opinion on them. Doctrine owns
+exactly two of injection's consequences, because they are the two things this
+document is authoritative on:
+
+1. **A collected value must never cause a subject to be reached.** An injected
+   instruction that results in a run against a selector nobody authorized is a
+   subject-selection failure whatever caused it, and the gate in section 4 is
+   the thing that has to hold. `subject_guard.evaluate()` reads the
+   authorization record and the pivot chain, never the content of a collected
+   field, and `conformance/gate/` carries a fixture where a collected bio
+   contains a plausible instruction to collect on a second selector, asserting
+   the gate refuses.
+2. **A collected value must never cause data to leave.** RT-18 is the only
+   disclosure path and it requires an active freeze plus a logged act. An export
+   triggered by collected content is refused because no such path exists, and
+   that is a property of the export boundary rather than of a filter.
+
+**The sharper case is not prompt injection, and it is already in the design.**
+`PLAINSIGHT-design.md` specifies `command_template` with a selector interpolated
+into argv:
+
+```
+command_template: "toutatis -s {credential_ref} -u {username}"
+```
+
+A handle containing shell metacharacters is command injection, which reaches
+further than any prompt and does so before a model is involved. Interpolation
+into argv is therefore a refusal point, and it sits next to the gate for the
+same reason the gate sits there: it is the last place before the act. A selector
+whose value does not match its registered matcher in `ontology/selectors.yaml` is
+refused at argv construction rather than escaped, because escaping is a
+transformation that can be got wrong once and a refusal cannot.
+
+**The cast carries the fixture.** One persona holds an injection payload in its
+bio, and the pipeline is asserted to collect it, store it, render it to the
+analyst, and act on none of it. That is the known-negative canary pattern
+applied to injection, and it is a third reason the cast has to exist before the
+connectors do.
+
+**What this criterion does not claim.** It does not make the system injection
+proof. An analyst reading a bio that says something manipulative is a human
+reading manipulative text, and no mechanism here changes that. What it does is
+ensure that the two outcomes doctrine cares about, an unauthorized subject and an
+unauthorized egress, cannot be reached by content at all, because both are gated
+on records rather than on text.
+
+### 4.3 Tagging what tried to attack the pipeline
+
+**SS-21. An account observed carrying an injection payload is tagged inside the
+case. The tag is subject-derived and dies with the case. The payload family is a
+finding and survives.**
+*[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
+
+The operator asked for accounts carrying command or prompt injection to be
+tagged, so there is a list of actors to avoid. The detection half is
+straightforward and worth having. The list half runs into RT-2, and the conflict
+is stated here rather than resolved quietly.
+
+**What is tagged, and what it does.** When a collected value matches an injection
+signature, the item is tagged at the extract boundary. The tag makes the analyst
+see it, keeps SS-16 from treating the node as an ordinary pivot candidate, and
+records that the pipeline met an attack and did not act on it. That is real
+defensive value and it costs nothing against the posture, because the tag lives
+inside the case with everything else derived from the subject.
+
+**What survives is the pattern, not the roster.** Two different objects:
+
+| Object | Example | Subject values | Survives the shred |
+|---|---|---|---|
+| Payload family finding | A payload family appears in bios on one platform at a measured rate, with the shapes it takes | No | **Yes.** Stratum 3, and this is the transferable knowledge |
+| Account roster | These specific accounts carried it | Yes | **No.** RT-2 forbids it |
+
+The finding is what protects the next case, and it protects it better than a
+roster would, because a signature generalizes to accounts nobody has seen and a
+list only covers the ones already met.
+
+**A persistent roster is a target package wearing a defensive name, and that is
+the thing worth saying plainly.** The operator's posture is that PII and target
+packages are not maintained here. A durable list of accounts, indexed and
+accumulated across cases, is structurally the same object as a target package
+regardless of the intent behind it, and RT-2 refuses it for the same reason it
+refuses every other subject-derived value in a surviving stratum. Keeping one
+would require a deliberate ratified exception to RT-2, not an implicit one, and
+this criterion does not create it.
+
+**On publishing such a list.** The operator raised it and marked it a later
+decision, which is the right call, and one argument belongs on the record before
+that decision is taken. It is recorded as an assistant reading in
+`DOCTRINE_STATUS.md` awaiting confirmation rather than settled here.
+
 ---
 
 ## 5. Incidental collection and bystanders
@@ -557,8 +661,54 @@ Two rules at v0.1:
   it is set. A quarantine with no exit criterion either lasts forever or ends
   when somebody notices, and neither is a decision.
 
+**SS-20. The account that looks and the account that is looked at are never the
+same account, and they are two separately provisioned populations.**
+*[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
+
+This was a category error waiting to happen, and it is worth naming because both
+populations are fake accounts the team creates and the resemblance is the trap.
+
+| | **Collection persona** | **S2 cast persona** |
+|---|---|---|
+| Role | The credential a connector authenticates with | The subject a connector is pointed at |
+| Purpose | Makes the tool able to run at all | Makes the answer scoreable |
+| Governed by | `doctrine/CREDENTIAL_LIFECYCLE.md` | `synthetic/CAST.md`, SS-3 |
+| Appears in | `credential_pool` | `GROUND_TRUTH.yaml` |
+
+**Most of the audited connectors cannot run without a collection persona.**
+toutatis needs an Instagram `sessionid`. informer needs a Telegram account. The
+Discord tooling needs a Discord account. Under R7 that authentication is a read
+and is permitted, which means the credential pool is not optional infrastructure
+and is not the same work as the cast.
+
+Two things break if the populations overlap.
+
+- **The measurement stops being a measurement.** A cast persona observing another
+  cast persona through a credential that is itself in the cast means the system
+  is partly observing its own infrastructure, and any correlation it finds
+  between them is one the team created for operational reasons rather than one
+  the tool discovered. The ground truth would be wrong in a direction nobody
+  would think to check.
+- **The platform-side record links the two.** SS-13 already states that the
+  platform's log of our collection is outside every mechanism here. If the
+  looking account is also a subject, that log ties our collection activity to our
+  measurement population permanently, in a record we cannot reach.
+
+**The mechanism is a disjointness check, not a rule.** No selector appears in
+both `synthetic/CAST.md` and the credential pool, and
+`tools/validate_authorization.py` refuses when the two sets intersect. A
+recovery selector shared between the populations counts as an intersection, which
+is the case a naive set comparison on handles alone would miss.
+
+**The provisioning consequence is the one to plan around.** Both populations need
+per-account email and phone, so the cost is two pools rather than one, and the
+collection pool is the more urgent of the two because without it no connector
+runs at all.
+
 `doctrine/CREDENTIAL_LIFECYCLE.md` is deferred until the cast exists and the
-credential pool has a real shape. The paragraph above stands in until then.
+credential pool has a real shape. **That trigger has now fired**, since the pool
+has a shape as of this criterion. The paragraph above and SS-13 stand in until it
+is written.
 
 ---
 
@@ -761,6 +911,9 @@ table is a convenience index into it. Where the two disagree,
 | SS-16 | Enumeration yields inert nodes; a deep dive is a separate authorized act. **Conclusion recorded** | The gate, the web | none |
 | SS-17 | S3 and S4 behind a baseline scorecard, with a dated Class F override. **Conclusion recorded** | The gate | R4 stamped |
 | SS-18 | Findings carry their subject class; mixed scorecards refused. **Conclusion recorded** | The scorer | none |
+| SS-19 | Collected content cannot reach a subject or cause an egress; argv refuses an unmatched selector. **Conclusion recorded** | `subject_guard`, argv construction | none |
+| SS-20 | Collection personas and cast personas are disjoint populations. **Conclusion recorded** | `validate_authorization.py`, the credential pool | none |
+| SS-21 | Injection tag dies with the case; the payload family survives as a finding | The extract boundary, `conformance/` | Publication is an open reading |
 
 **R7 is stamped and the vocabulary it blocked is now defined.** The line is
 observability by the subject: authenticating with a team-held credential and

@@ -525,3 +525,149 @@ instruction of 2026-08-27, authored as the operator, containing the governance
 skeleton, both rank-1 doctrine documents with all 55 conclusions recorded, the
 three doctrine gates, the Makefile, the CI workflow, and the pre-commit hook.
 Nothing in it was collected and no platform was touched.
+
+---
+
+## 2026-08-27, hardening. Two rank-1 files added, and a count I got wrong.
+
+**Class:** F (two new rank-1 doctrine files, conclusions recorded) plus A.
+
+**Correction to the two entries above.** They state that all 55 doctrine items
+carried a recorded conclusion. The true count at that moment was 52. The number
+was wrong when written, so it is corrected here rather than edited there, because
+a process record showing a correction is worth more than one that reads clean.
+`validate_doctrine.py` now counts criteria mechanically, which is why the error
+surfaced at all.
+
+Four decisions from the operator, and one of them reshaped the plan.
+
+**SS-19, collected content is data and never an instruction.** Raised by the
+operator asking what stops someone using a cast account to attack them through an
+agent. The answer is that the fake accounts are the minor vector and the product
+is the major one, since every bio, display name and message body this system
+collects is attacker-controlled text reaching a context that can act on it. The
+criterion is scoped to the two consequences doctrine owns, an unauthorized
+subject and an unauthorized egress, and leaves general escaping to ranks 2 and 7.
+The sharper case was already in the design: `command_template` interpolates a
+selector into argv, so a handle carrying shell metacharacters is command
+injection reaching further than any prompt. Argv construction refuses a selector
+that does not match its registered matcher rather than escaping it.
+
+**SS-20, the collection pool is not the cast.** This is the finding of the
+session. Two populations of team-created accounts exist and the resemblance is
+the trap: the accounts that authenticate so a connector can read, and the
+accounts that are collected on. Most audited connectors cannot run at all
+without the first, which nobody had scoped. If they overlap the system partly
+observes its own infrastructure, ground truth is wrong in a direction nobody
+would check, and the platform-side log ties collection activity to the
+measurement population permanently. Enforced as a disjointness check that counts
+a shared recovery selector as an intersection.
+
+**`doctrine/EGRESS.md`**, six criteria. The operator chose a compartmentalized
+deployment and, when asked where case material then lives, chose the isolated
+environment. That answer is what makes retention true rather than nearly true: a
+copy on a second machine is a copy the sweep does not reach and the receipt does
+not cover. EG-2 therefore has RT-4's property of having no later date on which it
+can be decided. The file also states plainly what compartmentalization is not: a
+dedicated egress address would make the research population more correlatable
+rather than less, because a static address unique to one account links every
+persona behind it.
+
+**`doctrine/CREDENTIAL_LIFECYCLE.md`**, eight criteria. Carries the measured
+toutatis finding that a session token passed as `-s` on the command line lands in
+shell history and the process list. CR-7 records a burned credential as a
+capability finding rather than as an operational loss, because a burn says this
+connector at this rate against this platform at this account age gets caught, and
+that survives every shred.
+
+**Step 4's done-condition was reshaped** from three personas on two platforms to
+two personas on two platforms across two email domains. One domain would give
+every persona a shared email root, which is a correlation surface the cast exists
+to test and which destroys the confuser pair. Phone numbers cap the cast rather
+than budget or effort, and resold numbers from verification services are ruled
+out on measurement grounds: a recycled number may carry correlations nobody
+designed. The operator chose to provision the collection pool first, since
+without it no connector runs and nothing can be measured.
+
+**Rank 1 now holds four files**, one per question doctrine owns, and both
+governance files moved in the same change per the documentation matrix. Section 3
+of `AGENTS.md` still said an agent may never land a Class F change, which the R6
+amendment had already superseded in section 4; that contradiction is closed.
+
+**The gate learned the two new namespaces.** `validate_doctrine.py` checks EG and
+CR criteria on the same terms as SS and RT, and refused both files on first run
+for having no rows in the pin of record, which is the check working.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched.
+
+**Not done:** the operator's decision that live execution stays an operator act
+means `AGENTS.md` section 4's first Execution Limit is unchanged and correct.
+
+---
+
+## 2026-08-27, gate telemetry, injection tagging, and HYGIENE.md.
+
+**Class:** F (RT-19, SS-21) plus A (HYGIENE.md advisory) plus C (tooling).
+
+Two operator requests, and the second one has a conflict with the operator's own
+posture that is recorded rather than resolved quietly.
+
+**Gate telemetry.** `tools/gate_log.py` appends one record per gate run and
+sweeps past a 90 day TTL on every write. `doctrine/HYGIENE.md` HY-1 to HY-4 owns
+the adjudication, `RETENTION.md` RT-19 owns the lifetime, and stratum **T** was
+added to the RT-1 table for it.
+
+**The rule that makes telemetry safe: a record names the file and the line and
+never the string that matched.** A `--repo-scan` refusal fires because a
+selector-shaped value was found, and a record quoting it would turn the gate's
+own evidence into the durable surface the gate exists to prevent. The allowed
+field list in `gate_log.py` is a fixed tuple, so widening a record requires
+editing that tuple rather than passing an argument.
+
+HY-2 names both failure directions, because both are silent. A check that never
+fires is indistinguishable from a check that works, which is the measured
+`guard.py` defect. A check that always fires gets routed around rather than
+fixed. Thresholds are deliberately non-numeric: with one contributor a rate is
+not a statistic, so the telemetry informs the judgment rather than making it.
+HY-4 records the gates that were reviewed and kept, on §5.9's reasoning that
+recording only failures removes the baseline.
+
+**Injection tagging, SS-21, and the conflict.** The operator asked for accounts
+carrying injection payloads to be tagged so there is a list of actors to avoid.
+The detection half is clean and is now doctrine. The list half runs into RT-2:
+
+- The **payload family** is a finding. No subject values, stratum 3, survives
+  every shred, and it generalizes to accounts nobody has met.
+- The **account roster** is subject-derived. RT-2 forbids it in a surviving
+  stratum, so the tag lives inside the case and dies with it.
+
+**A persistent roster is a target package wearing a defensive name.** That is
+recorded in the criterion in those words, because the operator's stated posture
+is that target packages are not maintained here, and the intent behind a list
+does not change what the object is. Keeping one would need a ratified exception
+to RT-2, and SS-21 does not create it.
+
+**AR-1, the first entry in a section empty since Wave 0.** The operator raised
+publishing such a list as a possible public good and marked it a later decision.
+The argument recorded for that decision is the program's own rather than a moral
+one: SS-18 establishes that precision is not computable against an S4 subject, so
+a published roster carries a false-positive rate that is unknown by construction,
+and each false positive is a public accusation against an identifiable party with
+no way to contest it. The honest publishable form is signatures rather than
+accounts. Recorded as an assistant reading awaiting confirmation, not decided.
+
+**Two count errors the tools caught.** RT-1's prose said "Five strata" while the
+table carried seven rows, stale since the authorization row was added. And
+`gate_log.py` was refused by the hygiene gate on its first run for existing
+without a Makefile target, which is the tools-to-gates inventory reconcile
+working on a file written minutes earlier.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched.
+
+**Not done:** `EGRESS.md`, `CREDENTIAL_LIFECYCLE.md`, `HYGIENE.md`, SS-19 through
+SS-21 and RT-19 are all unreviewed. The other two rank-1 files went through
+fourteen adversarial agents and these have had none. A review pass is owed before
+building against them.
+

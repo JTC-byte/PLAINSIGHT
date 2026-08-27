@@ -21,6 +21,12 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import gate_log
+except Exception:  # telemetry must never be able to break a gate
+    gate_log = None
+
 ROOT = Path(__file__).resolve().parents[1]
 
 #: Governed prose. Everything here is Register 1.
@@ -292,6 +298,13 @@ def main(argv: list[str]) -> int:
     except FileNotFoundError as exc:
         print(f"REFUSED HYGIENE_TREE_UNREADABLE\n  what: {exc}", file=sys.stderr)
         return 2
+
+    if gate_log:
+        if findings:
+            for f in findings:
+                gate_log.record("hygiene", "refuse", code=f.code, where=f.where)
+        else:
+            gate_log.record("hygiene", "pass")
 
     if findings:
         for f in findings:

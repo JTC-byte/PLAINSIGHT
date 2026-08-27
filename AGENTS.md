@@ -14,6 +14,8 @@ Read before touching a governed artifact:
 CLAUDE.md
 doctrine/SUBJECT_SELECTION.md
 doctrine/RETENTION.md
+doctrine/EGRESS.md
+doctrine/CREDENTIAL_LIFECYCLE.md
 doctrine/DOCTRINE_STATUS.md
 ```
 
@@ -37,7 +39,8 @@ As in `CLAUDE.md` section 2, repeated here normatively. Statutory obligations,
 platform terms of service, and commitments made outside this repository sit
 above every document in it.
 
-1. `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md`
+1. `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md`,
+   `doctrine/EGRESS.md`, `doctrine/CREDENTIAL_LIFECYCLE.md`
 2. `spec/pse-semantics-contract.md`
 3. `schema/*.json`, `ontology/selectors.yaml`, `policy/*.yaml`,
    `spec/layer-model.yaml`, `spec/divergence-register.yaml`
@@ -82,7 +85,9 @@ Three rules about the classes themselves.
 
 Class F requires the operator's explicit per-item ratification with a dated
 stamp in `doctrine/DOCTRINE_STATUS.md`. An agent may draft a Class F change and
-may never land one.
+may never decide one. Per R6 as amended 2026-08-27, an agent may execute the
+commit of a decision the operator has made, on a per-act instruction, with the
+operator as author. Section 4 carries the full reading.
 
 ## 4. Execution Limits
 

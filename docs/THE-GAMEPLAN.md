@@ -153,7 +153,9 @@ Rule for every class: **a change carries the highest class it touches.**
 | `doctrine/RETENTION.md` | Object strata, TTL, shred unit, verification, export/disclosure rules | Normative | F | **The first blob and the first row.** Unencrypted blobs cannot be retroactively crypto-shredded (D4) | R1, R2, R3, R5 |
 | `doctrine/DOCTRINE_STATUS.md` | The ratification pin of record: item, date, ratifier | Normative | F | Ratification tracking. Without it a document half-stamps itself | none |
 | `doctrine/RETENTION_LEDGER.md` | Case registry: opaque case id, class, purpose, `retain_until`, state, receipt hash | Normative | F | Reconciliation. A shred with no receipt row did not happen | RETENTION |
-| `doctrine/HYGIENE.md` | Housekeeping obligations, staleness detection, rejected-reasoning discipline, cadence | Advisory | A | Nothing immediately. Its absence shows up at month four as drift in both directions | worklog, handoff |
+| `doctrine/EGRESS.md` | The two environments, where the case store lives, what crosses outward, `egress` recorded per run | Normative | F | **The first blob.** EG-2 cannot be retrofitted, on the same argument as RT-4. Delivered 2026-08-27 | deployment decision |
+| `doctrine/CREDENTIAL_LIFECYCLE.md` | The collection pool: provisioning, handling, concurrency, quarantine exit, burn-as-finding | Normative | F | **The first credential.** Delivered 2026-08-27 | SS-20 |
+| `doctrine/HYGIENE.md` | Housekeeping, and adjudicating the gates themselves via telemetry. HY-1 to HY-4 | Advisory | A | Gate drift in both directions is silent. **Delivered 2026-08-27** | worklog, handoff |
 | `AGENTS.md` | Normative operating model: change classes A–F, execution limits, required local workflow, documentation matrix | Normative | A | Any agent-assisted work. Everything else is advisory without it | doctrine |
 | `CLAUDE.md` | Advisory orientation: North Star, authority order, eight design gates, voice, attribution | Advisory | A | Nothing hard. Its absence produces drift, not violation | AGENTS.md |
 | `CONFORMANCE.md` | The honest negative claim (PSE is not ZMeta), and what a connector conformance claim contains | Advisory | A | Connector onboarding; the honesty of any external statement about ZMeta | AGENTS.md |
@@ -185,6 +187,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `tools/validate_divergence_register.py` | Six checks. Derives the required entry list from the schema diff | Tooling | B | The register goes stale within two releases | register yaml |
 | `tools/validate_conformance.py` | The aggregator. `--kernel-gate` expands in one place | Tooling | B | Nothing regresses silently | all validators |
 | `tools/validate_doctrine.py` | Criterion definitions, per-criterion stamps, cross-references both directions, reconciliation against the pin of record, prose counts | Tooling | C | The doctrine corpus is checked by hand. Added 2026-08-27 | doctrine |
+| `tools/gate_log.py` | Gate telemetry: one record per run, never the offending value. 90 day rolling TTL | Tooling | C | A gate nobody measures cannot be adjudicated. Added 2026-08-27 | HYGIENE, RT-19 |
 | `tools/validate_hygiene.py` | Re-derives every cited count and `file:line`; reconciles five inventories both directions | Tooling | C | HYGIENE.md is a checklist, and checklists rot | HYGIENE |
 | `tools/render_divergence_register.py` | yaml to md | Tooling | C | Nothing | register yaml |
 | `runner/subject_guard.py` | The three-valued gate, on the dispatch path, before argv and before a credential is drawn | Normative | F | **The runner.** Do not build argv construction before this exists | policy/subject-authorization |
@@ -222,9 +225,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `policy/freshness.yaml` | The `3 × poll_interval` watchdog rule stated in contract §12 | Week 9, before informer ships |
 | `policy/export-release.yaml`, contract §14 in full | One invariant paragraph: only ASSESS events cross the export boundary, and projection may thin, never reinterpret | Week 14, before DRAFT export ships |
 | `policy/use-labels.yaml` | The tokens inline in `subject-authorization.yaml` | A third consumer of the token list exists |
-| `doctrine/CREDENTIAL_LIFECYCLE.md` | One paragraph in `SUBJECT_SELECTION.md` §credentials | The synthetic cast exists and the credential pool has a real shape |
 | `doctrine/DISCLOSURE.md` | A section inside `RETENTION.md` | A second egress path exists (handoff packet plus brief, or any programmatic export) |
-| `doctrine/EGRESS.md` | `egress` as a required stratum-2 field on every run from day one | The deployment decision (LOCAL / RUNNER / CLOUD) is made |
 | `doctrine/plainsight_audit_playbook.md` | HYGIENE.md's cadence section | The first real after-action review. ZMeta's was "Adopted 2026-07-22 from the R1-11 after-action review", written after the lesson |
 | `doctrine/plainsight_doctrine_review_log.md` | Nothing | The first genuine pressure on a doctrine point. An empty pressure log trains everyone to skip it |
 | `docs/plainsight_worklog_archive.md` | Nothing | The worklog passes ~1,500 lines |
@@ -299,7 +300,19 @@ FOUNDATION D1–D5 are recorded there and are inputs, not open items, once they 
 **Done when:** both files exist with per-item ratification markers, a `## What is explicitly NOT gated` section, and a `[REJECTED READING — DO NOT RE-DERIVE IT]` section that starts empty.
 
 **Step 4 — Open the synthetic cast.** *Not blocked, and it has lead time, which is why it is this early.* Write `synthetic/CAST.md` with a designed link graph of six to nine personas whose true partition is fixed before any collection. Seal `synthetic/GROUND_TRUTH.yaml` and hash-pin it. Create the accounts.
-**Done when:** the cast design is written, the truth file is committed and hash-pinned, and at least three personas exist on at least two platforms. **Accounts age. A cast created in week 12 measures the system against a thin target, and thin-target performance is not fat-target performance.** Record persona age in every scorecard so a precision figure is never quoted without the conditions that produced it. Creating platform accounts is an operator act with a platform terms-of-service consequence and possible IP-level attribution; that is an operational risk to the credential pool and it belongs in the decision.
+**Done when:** the cast design is written, the truth file is committed and hash-pinned, and at least two personas exist on at least two platforms across at least two email domains.
+
+**Reshaped 2026-08-27 by the operator.** The original condition asked for three personas on two platforms, on the implicit assumption that a large cast was better. Three things changed that.
+
+First, S0 SELF and S1 CONSENTING already satisfy the ground-truth requirement and they are *aged*, which a new cast is not. The cast's unique contribution is narrower than it looked: a **designed** link graph, and specifically a confuser pair, which real colleagues cannot provide because nobody designed their lives. So the cast shrinks to the minimum that delivers that, and the aged-realism half of the baseline comes from S0 and S1.
+
+Second, **two email domains are now required rather than one.** Cloudflare Email Routing makes per-persona addresses trivial on a domain the operator owns, and a single domain would give every persona a shared email root. That is one of the exact correlation surfaces the cast exists to test, so it is legitimate for the linked cluster and it destroys the confuser pair, whose whole job is to look unrelated while being distinct. The confuser sits on its own domain.
+
+Third, **phone numbers cap the cast, not budget or effort.** Per-persona recovery selectors are required by SS-3, platforms reject VoIP and virtual numbers, and resold numbers from verification services may already carry correlations nobody designed, which would make the ground truth wrong in a direction nobody would check. A small cast on real numbers is worth more than a large one on numbers of unknown provenance.
+
+**And SS-20 doubled the provisioning work without changing this number.** The collection personas that connectors authenticate with are a separate population from the cast and are separately provisioned. That pool is the more urgent of the two, because toutatis, informer and the Discord tooling cannot run at all without it, while the cast only gates scoring. Neither pool's accounts may appear in the other.
+
+**One persona carries an injection payload in its bio**, per SS-19, so the pipeline is exercised against collected content that tries to instruct it. **Accounts age. A cast created in week 12 measures the system against a thin target, and thin-target performance is not fat-target performance.** Record persona age in every scorecard so a precision figure is never quoted without the conditions that produced it. Creating platform accounts is an operator act with a platform terms-of-service consequence and possible IP-level attribution; that is an operational risk to the credential pool and it belongs in the decision.
 
 **Step 5 — Write `spec/layer-model.yaml`.** **BLOCKED on D6 and D7.** This is the single source the schema enums and `policy/semantics.yaml` are both generated from. ZMeta restates the same enum in the contract, the schema, the field dictionary, and four policy files; do not inherit that.
 **Done when:** every event type, subtype, discriminator, confidence rule, lineage rule, producer authority, required-field list, and payload denylist is in one file, and the schema generator reads it.
