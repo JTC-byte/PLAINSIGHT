@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The doctrine corpus is the governed artifact at Wave 0. These two gates
+      # are the whole battery that can run today, and the aggregator below
+      # reports every check that is not built yet as PENDING rather than
+      # letting an absent check read as a passing one.
+      - name: Doctrine integrity
+        run: python tools/validate_doctrine.py
+
+      - name: Housekeeping
+        run: python tools/validate_hygiene.py
+
+      - name: Kernel gate
+        run: python tools/validate_conformance.py --kernel-gate
+
+      # The pre-commit hook is the primary enforcement, because git history is
+      # the one store a crypto-shred cannot reach and CI runs after the commit
+      # already exists. This step proves the hook itself still runs, so a hook
+      # that silently stops working is caught here rather than never.
+      - name: Pre-commit hook is executable and runs
+        run: |
+          test -x .githooks/pre-commit || { echo ".githooks/pre-commit is not executable"; exit 1; }
+          git config core.hooksPath .githooks
+          sh .githooks/pre-commit
+
+      # An agent may never land a Class F change, and a Class F commit is
+      # authored by the ratifier (CLAUDE.md section 5, R6 stamped 2026-08-27).
+      # Attribution is checkable, so it is checked.
+      - name: No agent co-authorship trailers
+        run: |
+          if git log --format='%B' | grep -iE '^Co-Authored-By:.*(claude|anthropic|assistant)'; then
+            echo ""
+            echo "REFUSED ATTRIBUTION_TRAILER_PRESENT"
+            echo "  rule:  CLAUDE.md section 5, R6 stamped 2026-08-27"
+            echo "  what:  a commit carries a Co-Authored-By trailer naming an agent"
+            echo "  moves: amend the commit to remove the trailer, or reopen R6"
+            exit 1
+          fi
+          echo "attribution ok: no agent trailers in history"

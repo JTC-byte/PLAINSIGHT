@@ -1,0 +1,35 @@
+#!/bin/sh
+# Class F surface. Git history is the one store a crypto-shred cannot reach.
+# A selector value committed here survives every retention mechanism below it.
+#
+# This runs the same battery as `make preflight`. A gate enforced only in CI is
+# enforced only after the thing it guards is already in the history.
+
+set -e
+
+python tools/validate_doctrine.py --quiet || {
+  echo ""
+  echo "pre-commit refused: the doctrine corpus is inconsistent."
+  echo "  rule:  AGENTS.md > Documentation matrix"
+  echo "  moves: fix the criterion, its pin-of-record row, or the cross-reference"
+  echo "         named above, then commit again."
+  exit 1
+}
+
+python tools/validate_hygiene.py --quiet || {
+  echo ""
+  echo "pre-commit refused: a tracked file breaks the housekeeping standard."
+  echo "  rule:  CLAUDE.md section 4"
+  echo "  moves: fix the line named above, or add the file to VOICE_EXEMPT in"
+  echo "         tools/validate_hygiene.py with the reason it is exempt."
+  exit 1
+}
+
+python tools/validate_retention.py --repo-scan --staged || {
+  echo ""
+  echo "pre-commit refused: a staged file contains a selector-shaped string."
+  echo "  rule:  AGENTS.md > Execution Limits, doctrine/RETENTION.md RT-15"
+  echo "  moves: replace the value with a synthetic one from synthetic/CAST.md,"
+  echo "         or classify the fixture as institutional in its manifest."
+  exit 1
+}

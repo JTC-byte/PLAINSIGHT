@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Case material never reaches git. Git history is the one store a
+# crypto-shred cannot reach, so these are ignored as a second line behind
+# doctrine/RETENTION.md RT-15 rather than as a convenience.
+cases/
+*.case
+results/
+pulled/
+
+# Local operator files
+.env
+*.local.*
