@@ -25,6 +25,31 @@ python tools/validate_hygiene.py --quiet || {
   exit 1
 }
 
+python tools/validate_layer_model.py --quiet || {
+  echo ""
+  echo "pre-commit refused: spec/layer-model.yaml is inconsistent with itself or with D6."
+  echo "  rule:  AGENTS.md > Documentation matrix, CLAUDE.md > design gate 1"
+  echo "  moves: fix the type, subtype, lineage or code named above, then commit again."
+  exit 1
+}
+
+python tools/validate_ontology.py --quiet || {
+  echo ""
+  echo "pre-commit refused: ontology/selectors.yaml is inconsistent."
+  echo "  rule:  PLAINSIGHT-FOUNDATION.md D2, AGENTS.md > Documentation matrix"
+  echo "  moves: fix the selector, its matcher, its prohibition, or the entity"
+  echo "         anchor named above, then commit again."
+  exit 1
+}
+
+python tools/validate_cast.py --placeholder-scan --quiet || {
+  echo ""
+  echo "pre-commit refused: the cast draft is inconsistent, or carries a filled value while unsealed."
+  echo "  rule:  AGENTS.md > Execution Limits, doctrine/SUBJECT_SELECTION.md SS-3"
+  echo "  moves: restore the placeholder, or fill and seal the file as one act per synthetic/CAST.md section 8."
+  exit 1
+}
+
 python tools/validate_retention.py --repo-scan --staged || {
   echo ""
   echo "pre-commit refused: a staged file contains a selector-shaped string."

@@ -8,13 +8,24 @@ jobs:
   gate:
     runs-on: ubuntu-latest
     steps:
+      # Full history, not the default single commit. The attribution check at
+      # the end of this job reads `git log`, and with depth 1 it would read one
+      # commit body and pass a trailer anywhere below the tip.
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      # The layer-model and cast validators parse YAML. Without this step they
+      # exit 2 rather than passing vacuously, and the kernel gate reports a
+      # failure instead of a green run, so the dependency is explicit here.
+      - name: Install validator dependencies
+        run: pip install pyyaml
 
       # The doctrine corpus is the governed artifact at Wave 0. These two gates
       # are the whole battery that can run today, and the aggregator below
@@ -25,6 +36,12 @@ jobs:
 
       - name: Housekeeping
         run: python tools/validate_hygiene.py
+
+      # The mechanisms that exist, exercised against the criteria that claim
+      # them. Design gate 1 counts a constraint as done only when a test fails
+      # if it is removed.
+      - name: Mechanism tests
+        run: python tools/tests/test_gate_log.py
 
       - name: Kernel gate
         run: python tools/validate_conformance.py --kernel-gate

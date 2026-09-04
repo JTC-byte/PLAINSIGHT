@@ -43,6 +43,8 @@ plainsight/
 ├── doctrine/                              rank 1. human-ratified, per item.
 │   ├── SUBJECT_SELECTION.md               who may be a subject
 │   ├── RETENTION.md                       strata, TTL, shred, verification, disclosure
+│   ├── EGRESS.md                          the two environments, what crosses between them
+│   ├── CREDENTIAL_LIFECYCLE.md            the collection pool: provisioning, handling, quarantine, burn
 │   ├── HYGIENE.md                         housekeeping, staleness, rejected reasoning, cadence
 │   ├── DOCTRINE_STATUS.md                 the ratification pin of record
 │   └── RETENTION_LEDGER.md                case registry + shred receipts
@@ -158,7 +160,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `doctrine/HYGIENE.md` | Housekeeping, and adjudicating the gates themselves via telemetry. HY-1 to HY-4 | Advisory | A | Gate drift in both directions is silent. **Delivered 2026-08-27** | worklog, handoff |
 | `AGENTS.md` | Normative operating model: change classes A–F, execution limits, required local workflow, documentation matrix | Normative | A | Any agent-assisted work. Everything else is advisory without it | doctrine |
 | `CLAUDE.md` | Advisory orientation: North Star, authority order, eight design gates, voice, attribution | Advisory | A | Nothing hard. Its absence produces drift, not violation | AGENTS.md |
-| `CONFORMANCE.md` | The honest negative claim (PSE is not ZMeta), and what a connector conformance claim contains | Advisory | A | Connector onboarding; the honesty of any external statement about ZMeta | AGENTS.md |
+| `CONFORMANCE.md` | The honest negative claim (PSE is not ZMeta), and what a connector conformance claim contains. **Delivered 2026-09-03** | Advisory | A | Connector onboarding; the honesty of any external statement about ZMeta | AGENTS.md |
 | `spec/pse-semantics-contract.md` | The authority every other surface preserves. 13 sections against ZMeta's 24 | Normative | B | Everything. Without it the schema is the spec | D1, D6, layer-model |
 | `spec/layer-model.yaml` | Single source for event types, subtypes, discriminators, per-type required/prohibited/denylist | Normative | B | Schema and policy enums drift within two releases | D6 |
 | `spec/divergence-register.yaml` | Every place PSE departs from ZMeta, with disposition, rationale, mechanism preserved, test ref | Normative | B | D1 is undocumented. In eighteen months nobody can map the two models | contract, schema |
@@ -166,7 +168,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `schema/pse-event-0.1.schema.json` | Structural validation of the envelope | Normative | B | No machine check on shape | layer-model |
 | `schema/connector-manifest.schema.json` | Structural validation of a connector manifest | Normative | B | Connector registration | ontology |
 | `schema/subject-authorization.schema.json` | The authorization record. Partial is refused, not half-honoured | Normative | F | `subject_guard` has nothing to read | SUBJECT_SELECTION |
-| `ontology/selectors.yaml` | The closed selector vocabulary: form, datum class, stability, anchor eligibility, matcher, prohibitions | Normative | B | D2 in its entirety. Without it every connector invents field names | D2, contract §9 |
+| `ontology/selectors.yaml` | The closed selector vocabulary: form, datum class, stability, anchor eligibility, matcher, prohibitions. **Delivered 2026-09-03**, 19 selectors of which 5 are proposed and unstamped | Normative | B | D2 in its entirety. Without it every connector invents field names | D2, contract §9 |
 | `policy/semantics.yaml` | Per-event-type **recursive** payload denylists and discriminator matches | Normative | B | Layer separation is prose. A hint rides in an observed-value payload | contract, layer-model |
 | `policy/lineage.yaml` | Typed parents, `based_on` subset rule, unresolved handling, authorization-parent requirement | Normative | B | Authorization is untraceable; pivot chains cannot be walked | contract, ontology |
 | `policy/producer-authority.yaml` | Which producer may emit which type. No wildcard for identity assertions | Normative | B | A connector can mint a cluster. Design §8.2 item 4 becomes unenforceable | contract |
@@ -179,7 +181,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `conformance/connector-harness/fixture.schema.json` | Lints every harness fixture. **`event_count` required whenever `result: events`** | Normative | B | A refusing adapter satisfies every expectation vacuously | none |
 | `conformance/retention/shred-roundtrip.yaml` | The ephemeral-case create/encrypt/shred/verify round trip | Normative | F | The shred mechanism is unexercised | policy/retention |
 | `tools/validate.py` | Schema plus policy over a JSONL corpus. `--strict` | Tooling | C | Rung 2 of the ladder. Everything | schema, policy |
-| `tools/validate_ontology.py` | Registry self-lint and corpus selector coverage | Tooling | C | Rung 3. D2 is unenforced | ontology |
+| `tools/validate_ontology.py` | Registry self-lint and corpus selector coverage. **Delivered 2026-09-03**, `--registry` and `--self-test`; the corpus-coverage mode waits on a corpus | Tooling | C | Rung 3. D2 is unenforced | ontology |
 | `tools/validate_manifest.py` | One manifest: shape gate, registry agreement, canaries, refusal fixtures, targeting, canary subject class | Tooling | C | Connector registration | manifest schema, ontology |
 | `tools/validate_connector_conformance.py` | Calls the adapter with cassettes and fixtures, including `event_count: 0` | Tooling | C | Rung 4. Every manifest claim is unfalsifiable | fixture schema |
 | `tools/validate_authorization.py` | `--fixtures` proves the gate refuses; `--dispatch-paths` proves nothing bypasses it | Tooling | F | **Any collection run.** This is the D5 mechanism | policy, gate fixtures |
@@ -189,6 +191,8 @@ Rule for every class: **a change carries the highest class it touches.**
 | `tools/validate_doctrine.py` | Criterion definitions, per-criterion stamps, cross-references both directions, reconciliation against the pin of record, prose counts | Tooling | C | The doctrine corpus is checked by hand. Added 2026-08-27 | doctrine |
 | `tools/gate_log.py` | Gate telemetry: one record per run, never the offending value. 90 day rolling TTL | Tooling | C | A gate nobody measures cannot be adjudicated. Added 2026-08-27 | HYGIENE, RT-19 |
 | `tools/validate_hygiene.py` | Re-derives every cited count and `file:line`; reconciles five inventories both directions | Tooling | C | HYGIENE.md is a checklist, and checklists rot | HYGIENE |
+| `tools/validate_layer_model.py` | Layer-model self-lint: nine types, discriminators, layers closed both ways, the D5 parent on RUN_START, code vocabulary reconciled, RT-2 strata; `--self-test` breaks the model and asserts each break refuses. Added 2026-09-03 | Tooling | C | The schema and policy are generated from an unchecked source | layer-model |
+| `tools/validate_cast.py` | The checkable half of SS-3, the confuser pair, the truth partition, the seal, and the placeholder scan that refuses a filled value while unsealed. Added 2026-09-03 | Tooling | C | Every precision and recall figure rests on an unchecked oracle | CAST.md |
 | `tools/render_divergence_register.py` | yaml to md | Tooling | C | Nothing | register yaml |
 | `runner/subject_guard.py` | The three-valued gate, on the dispatch path, before argv and before a credential is drawn | Normative | F | **The runner.** Do not build argv construction before this exists | policy/subject-authorization |
 | `runner/dispatch_allowlist.yaml` | The sanctioned dispatch entry points `--dispatch-paths` checks against | Normative | F | The bypass check has nothing to compare | subject_guard |
@@ -317,7 +321,7 @@ Third, **phone numbers cap the cast, not budget or effort.** Per-persona recover
 **Step 5 — Write `spec/layer-model.yaml`.** **BLOCKED on D6 and D7.** This is the single source the schema enums and `policy/semantics.yaml` are both generated from. ZMeta restates the same enum in the contract, the schema, the field dictionary, and four policy files; do not inherit that.
 **Done when:** every event type, subtype, discriminator, confidence rule, lineage rule, producer authority, required-field list, and payload denylist is in one file, and the schema generator reads it.
 
-**Step 6 — Write `ontology/selectors.yaml`.** **BLOCKED on D2 (stamped in Step 2) and R7 for `interaction_class`.** FOUNDATION §4.1 already carries a substantial draft at lines 233–300.
+**Step 6 — Write `ontology/selectors.yaml`.** **Drafted 2026-09-03.** D2 and R7 are both stamped, so this was unblocked when it was written. `interaction_class` turned out not to gate it: that field is a connector-manifest declaration and lives at Step 12, so the registry never had to carry it. FOUNDATION §4.1 carried the draft this was built from.
 **Done when:** `tools/validate_ontology.py --registry` passes, and every constraint selector has `may_anchor_entity: false`, a `matcher`, and a `constraint_semantics`.
 
 **Step 7 — Write the schema, the policy pack, and the contract.** **BLOCKED on Steps 5 and 6.** In this order: `schema/pse-event-0.1.schema.json` generated from the layer model, then `policy/{semantics,lineage,producer-authority,violation-codes}.yaml`, then `spec/pse-semantics-contract.md` written last, because the contract explains rules that already exist rather than inventing rules nothing enforces.

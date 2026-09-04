@@ -14,13 +14,29 @@ mechanism:
         per-case blob encryption. RT-6 is the enforcer, and RT-6 named SS-11
         back correctly, so the pair was broken in exactly one direction. Four
         independent reviewers found it and no tool did.
+  D-02  A criterion can be written with no stamp marker beneath it, which makes
+        it unstampable while reading as governed. Enforced by
+        DOCTRINE_CRITERION_UNMARKED, and DOCTRINE_CRITERION_DUPLICATE guards the
+        adjacent case where two definitions share an id and one stamp is read as
+        covering both.
   D-03  Both doctrine files declared their own tables to be an index into
         DOCTRINE_STATUS.md at a point when DOCTRINE_STATUS.md carried no rows
         for them at all, so no criterion was stampable and nothing said so.
+        Enforced in both directions by DOCTRINE_NO_STATUS_ROW and
+        DOCTRINE_ORPHAN_STATUS_ROW, because one direction finds half the drift.
+  D-04  A reference to a criterion that is defined nowhere reads as a governed
+        cross-reference and resolves to nothing. Enforced by
+        DOCTRINE_REF_DANGLING. DOCTRINE_FILE_EMPTY is the degenerate case: a
+        namespace file that defines no criteria at all proves nothing, on the
+        same reasoning ZMeta's fixture runner refuses an empty must-pass corpus.
   D-06  A criterion's own marker and its row in the pin of record can disagree.
         The pin wins by rule, which means a disagreement is silent by default.
   D-07  Prose counts drift from the tables they count. "Five checks", "six
         items", "nine fields" were each correct when written.
+
+D-02 and D-04 were added to this narrative on 2026-09-03, when the doctrine
+review found that HYGIENE.md HY-3 claims every check here carries its defect in
+the docstring and four of the nine codes did.
 
 Exit codes: 0 clean, 1 violations found, 2 the corpus could not be read.
 """
@@ -314,11 +330,12 @@ def main(argv: list[str]) -> int:
         return 2
 
     if gate_log:
-        if findings:
-            for f in findings:
-                gate_log.record("doctrine", "refuse", code=f.code, where=f.where)
-        else:
-            gate_log.record("doctrine", "pass")
+        # One run record, then one detail record per finding. HY-1 says one line
+        # per gate run, and writing one line per finding inflated both the run
+        # count and the refusal rate HY-2 adjudicates against.
+        gate_log.record_run("doctrine", "refuse" if findings else "pass", count=len(findings))
+        for f in findings:
+            gate_log.record_finding("doctrine", code=f.code, where=f.where)
 
     if findings:
         for f in findings:

@@ -671,3 +671,371 @@ SS-21 and RT-19 are all unreviewed. The other two rank-1 files went through
 fourteen adversarial agents and these have had none. A review pass is owed before
 building against them.
 
+
+---
+
+## 2026-09-03, the review the last entry said was owed, plus Steps 4 and 5.
+
+**Class:** A (review artifacts, worklog, handoff) plus B (`spec/layer-model.yaml`)
+plus C (tooling, the first test, gate wiring) plus **F drafted and not landed**
+(four doctrine patches, and the cast).
+
+The previous entry closed with an obligation: EGRESS.md, CREDENTIAL_LIFECYCLE.md,
+HYGIENE.md, SS-19 through SS-21 and RT-19 had no adversarial review, while the
+two older rank-1 files had fourteen agents each. That review ran. Two build steps
+ran alongside it.
+
+### The review
+
+Five lenses, then five independent verifiers whose instruction was to refute.
+The record is `Z-ISR/_session-artifacts/2026-09-03-plainsight-doctrine-review-2/`:
+five `findings-*.md`, five `verdicts-*.md`, and the four patches.
+
+**92 raised, 21 confirmed, 35 downgraded, 27 refuted**, with the rest carried as
+notes. Deduplicated, that is **2 blockers and 6 majors**.
+
+**The refutation rate is the finding worth recording.** Nine of sixteen
+lane-escape items fell, seven of eighteen threat-model items fell, and six of
+eighteen operator-intent items fell. Two blockers fell on text the finding quoted
+and then argued past. The pattern in the refusals is one thing: a reviewer reads
+a criterion, does not find the answer in it, and does not look in the sibling
+file that has it. SS-16 answered three separate findings that each declared
+doctrine silent, and the grep that missed it searched for "recursion" against a
+corpus that says "spawns" and "fanning out". A single-lens review of this corpus
+is worth less than its finding count suggests, and the verifier pass is what made
+the count mean anything.
+
+**Both blockers are one defect with two consequences, and both are R4 residue.**
+The operator decided R4 as maximum reach on 2026-08-26, S0 through S4 plus N0 and
+L0, overriding the drafted S0-to-S2-only recommendation. The drafts were patched
+where the decision was visible and not where it was buried. SS-4's
+required-field table still gave `subject_class` the domain "S0, S1, or S2", and
+that table is the one `schema/subject-authorization.schema.json` compiles from,
+so a schema author following the corpus faithfully would have refused every
+organization, location, public figure and third-party authorization record the
+operator had decided to allow. SS-1's N0 paragraph still limited promotion of an
+enumerated person to the same three classes, and it is the only place in the
+corpus naming a `conformance/gate/` fixture for that path, so the overridden
+reading was the one heading for a mechanism. SS-16 says the opposite in terms and
+even anticipates the misreading: "a reader could take this criterion for a
+restriction on reach and it is not one."
+
+**The one real gap is third-party egress**, confirmed by two verifiers
+independently. `EGRESS.md` holds rank 1 on the ground that it answers what leaves
+the machine, and every criterion in it governs one boundary, LOCAL against
+ISOLATED. A selector handed to a vendor or to an intermediary a tool routes
+through leaves under no criterion at all, which is the largest flow of subject
+values out of the system by count. The audit measured two undeclared channels in
+the surveyed tools and asked for a declaration allowlist by name. Drafted as
+EG-7 in patch 4, unratified.
+
+**What the operator does not have to decide.** Six findings asked doctrine to
+rule on a category of data, a deployment shape, an environment marker, a
+compartment granularity, or an interface design, and the verifiers refused all
+six against `CLAUDE.md` section 2's inverse bound. The public-records question is
+the one worth naming, because the operator raised the capability on 2026-09-03
+and a lens called doctrine's silence a gap: RT-1 assigns whatever is collected to
+stratum 0 or 1 at the case clock inside the shred boundary regardless of source
+category, so a criminal record has a stratum, a clock, a key and a shred path the
+moment it is written. Whether it should have a shorter clock than a follower
+count is a live question and it is not a defect.
+
+**One finding was refuted on a point that changes what the product can be told.**
+A lens read SS-10's `count_only` as permitting a count and not a roster, and
+concluded the social web the operator described was refused at manifest
+validation. The verifier found `count_only` is defined nowhere in doctrine, that
+the rank-7 draft it was read against pairs `enumerable: false` with both
+dispositions so that field cannot be what distinguishes them, and that SS-16 and
+section 9 permit a listed, searchable, linkable web in terms. The web is
+permitted. The 7-day incidental TTL on its nodes is real, ratified, and its cost
+is written into RT-6 with the trigger that reopens it.
+
+### Step 5, the layer model
+
+`spec/layer-model.yaml`, 1,803 lines, and `tools/validate_layer_model.py`. The
+nine event types D6 stamped are enumerated for the first time, because D6 was
+stamped as "nine" and no governed file said which nine: AUTHORIZE, COLLECT,
+PROBE, EXTRACT, LINK, IDENTITY, ADJUDICATE, ASSESS, SYSTEM, with PROBE split into
+RUN_START, ITEM and RUN_END at the subtype level. The arithmetic is the only one
+that yields nine, and the two alternative readings give eight and eleven, which
+is recorded in the file rather than resolved.
+
+**The D5 line is a named check.** A `PROBE_EVENT` RUN_START requires a
+`COLLECT_EVENT` PERMITTED parent in lineage, and the validator fires if that
+entry is deleted, so the gate that makes the subject guard structural cannot be
+removed quietly. `--self-test` breaks the model in memory nineteen ways and
+asserts each refusal.
+
+**Nine interpretive readings are recorded as `pse.readings` awaiting
+confirmation.** The one that matters is LM-R2: FOUNDATION section 4.2 requires
+`confidence` on LINK_EVENT, the design's CUT LIST A kills all machine confidence
+arithmetic, both are rank 7, and they conflict. Resolved as prohibited on every
+type with the CLUSTER band as the only ordinal, enforced by the validator, so
+reversing it is one edit rather than a hunt.
+
+### Step 4, the cast
+
+`synthetic/CAST.md`, `synthetic/GROUND_TRUTH.yaml` and `tools/validate_cast.py`,
+all three DRAFT, UNRATIFIED and UNSEALED. Three personas: P-A linked across two
+platforms by five designed surfaces, P-B the confuser sharing nothing true with
+P-A and carrying both SS-19 injection payload families, P-C an optional pure
+negative costing one more real SIM. Four confuser pairs, three firing rationale
+code `h` and one firing `t`, so the cast's negatives are not all string
+collisions.
+
+**Every value is a placeholder and no payload string exists in either file.**
+`AGENTS.md` section 4 forbids an agent writing a selector into a tracked file and
+a synthetic value is still a value, so the operator fills them at account
+creation and seals once. `--placeholder-scan` refuses a filled value while the
+file is unsealed, which puts that rule in the pre-commit hook rather than in an
+instruction.
+
+The unsealed state prints as its consequence on every run, including under
+`--quiet`: this cast cannot score anything and SS-14 item 6 refuses collection
+until it is sealed and stamped.
+
+### The first test in this repository
+
+`tools/tests/test_gate_log.py`, twelve tests. Design gate 1 says a constraint is
+not done until a test fails when it is removed, and until today no test of any
+kind was tracked, so every mechanism on disk was an assumption in exactly the
+sense HY-2 warns about.
+
+**Seven constraints were deliberately broken on a scratch copy and all seven were
+refused**, which is HYGIENE.md section 2's instruction carried out rather than
+quoted. Three of the breaks are corrections rather than confirmations, and each
+was a verified finding:
+
+- **`where` was an unconstrained string**, so HY-1's rule that a record never
+  carries the matched value rested on every caller passing a location. It now
+  checks a shape and writes `REDACTED_WHERE` otherwise, with the refusal still
+  counted. The `--repo-scan` implementation at Step 8 is the caller with the
+  strongest temptation to pass the match, and it now cannot.
+- **The `ALLOWED` tuple that HY-1 and RT-19 both credit as the mechanism filtered
+  a dict built from exactly those keys**, so it dropped nothing. `record()` now
+  discards unknown keywords, which makes the doctrine's sentence true.
+- **The TTL swept only on write**, so an idle repository retained records past 90
+  days and rendered them. It sweeps on read as well. RT-19's "inaction is
+  deletion" was the one place in the corpus where inaction preserved.
+
+**One caller behaviour was also wrong and the numbers it produced were the ones
+HY-2 adjudicates against.** HY-1 says one line per gate run; a refusing validator
+wrote one line per finding, so ten clean runs plus one refusing run with three
+findings rendered as 13 runs and 3 refusals, a 23 percent refusal rate against a
+true 9. Split into a run record and per-finding detail records. The older window
+is left over-counted rather than rewritten, because rewriting a telemetry history
+to look consistent is the laundering design gate 6 forbids.
+
+### Gate wiring
+
+`layer-model`, `cast` and `telemetry` joined `KERNEL_GATE`, which now reports
+**five implemented, one stubbed, six pending**, up from two implemented. All five
+run in the pre-commit hook and in CI. Two CI defects were fixed in the same
+change: the checkout fetched one commit, so the attribution check that
+`CLAUDE.md` section 5 calls a mechanism inspected a single commit body and would
+pass a trailer anywhere below the tip, and the new validators need PyYAML, which
+CI installed nowhere and which would have made them exit 2 rather than pass
+vacuously.
+
+### What was drafted and not landed
+
+Four patches in the review directory, applying in order onto a pristine tree with
+every gate green, verified from scratch:
+
+1. **Staleness and citations**, 18 hunks. Every doctrine file said NOT YET
+   COMMITTED and two said their newest criteria were uncommitted, eight days
+   after `a54061b` landed them. SS-20 said CREDENTIAL_LIFECYCLE.md was unwritten
+   in the same commit that wrote it. RT-12 cited `OPERATIONAL_CONTRACT.md`
+   section 4 lines 269 to 273 for a sentence that is at 315 to 317. HYGIENE.md
+   quoted a THE-GAMEPLAN sentence its own commit had deleted. SS-14 item 6 said
+   `make preflight` runs the same four checks it names, and none of the four
+   exists.
+2. **R4 residue**, 6 hunks. Both blockers.
+3. **Precision**, 13 hunks. The guard.py precedent, which its own repository
+   hardened on 2026-09-01 while this corpus still describes it in the present
+   tense as broken; the telemetry corrections above, in the criteria that claim
+   them; RT-8's 90-day media clock, which cannot fire under RT-5's 60-day ceiling
+   except under a freeze; the LOCAL-compromise residual EG-3 creates and does not
+   name.
+4. **Obligation drafts, Class F**, 6 hunks. EG-7 third-party hosts, EG-2 vault
+   key custody, CR-3's process environment, CR-6's clearing act. Each carries an
+   UNRATIFIED marker and a pending row, so an unstamped criterion refuses rather
+   than permits and the corpus stays internally consistent while the operator
+   decides.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no account created, no doctrine landed, no commit made.
+
+**Not done:** the four patches are unapplied and the operator decides all four.
+`doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md` are still owed. The
+D-001 repo-scan is still a stub. Every basis stamp is still unstamped, which is
+now the oldest open item in the program.
+
+### Later the same day: Step 6, and CONFORMANCE.md
+
+Written after the entry above, while the operator was away, and appended here
+rather than folded into it because a process record is added to rather than
+rewritten.
+
+**`ontology/selectors.yaml`, 895 lines, and `tools/validate_ontology.py`.** D2 in
+one file, and the last artifact gating Step 7. Nineteen selectors, of which five
+are proposed rather than inherited from the FOUNDATION draft, and every proposed
+one is marked as such because an addition to a closed vocabulary is the
+operator's to ratify. Two anchor-eligible, two constraint selectors, seven entity
+types, four prohibitions, seventeen matchers, none calibrated. Sixteen
+deliberate breaks in `--self-test`, all refused.
+
+**The five proposed selectors are what the operator's 2026-09-03 description
+needs and the FOUNDATION draft did not cover:** an alias name, a postal address,
+an organization registration number for the shell-entity pivot, a public-record
+identifier, and a platform-unbound username string for sweep inputs.
+
+**`postal_address` carries SS-1's carve-out structurally rather than leaving it
+to a reader.** A required `premises_class` decides whose selector an address is:
+residential means it is that person's own selector at that person's class and is
+never an L0 node, non-residential is eligible for L0 on a written statement, and
+undetermined is handled as residential. The unresolved default is the
+conservative value, and the class is recorded by a person and never inferred from
+the address string, which is SS-1's rule that the gate reads a class rather than
+inferring one. Without that field the location class becomes the route by which a
+home address stops being personal data, which is the one thing SS-1 says a
+location class must not do.
+
+**There is no `criminal_record` selector and that is deliberate.** A criminal
+record is reached through a public-record identifier and read as claims, which
+puts it in stratum 1 on the case clock like everything else derived from a
+subject. Whether that category deserves its own clock is the live question the
+review raised and it is not settled here.
+
+**Relationship selectors are refused, and the reason is doctrinal rather than
+aesthetic.** A selector is a string you pivot on, and "employed by" is not one. A
+relation is an EXTRACT_EVENT claim whose `selector_type` is the other endpoint,
+which is already registered, and a same-person relation is an IDENTITY_EVENT. The
+decisive argument is that a relation selector would let a pivot walk from an
+authorized subject to an S5 INCIDENTAL person, which SS-10 forbids, so adding one
+would be Class F rather than the Class B addition it looks like. The social web
+needs no new type: follower and membership enumeration already yields
+`platform_uid`, `handle` and `channel`. Recorded in the file with
+`change_class_if_added: F` so the next author meets the argument rather than
+rediscovering it.
+
+**Ten readings are recorded as `ontology.readings` awaiting confirmation.** The
+two worth the operator's attention are ONT-R3, that an Org is deliberately not
+anchored on its registration number even though the design's argument would
+permit it, at the cost that two records for one company are structurally
+indistinguishable; and ONT-R10, that every `fp_mode_basis` in the file is
+`reported` or `reasoned` and none is `measured`, including the toutatis finding,
+which is the honest state of what this program has actually observed.
+
+**One thing the registry states rather than hides.** The matchers for
+`person_name`, `org_name` and `postal_address` are weak by construction, because
+those values are free-form. SS-19's argv refusal reads a matcher, so the refusal
+is weakest exactly where the value is most free. That is in the matchers block
+rather than left to be found at Step 12.
+
+**`CONFORMANCE.md`, 155 lines.** The honest negative claim, the four licensing
+conditions with three of the four marked absent, the five-rung ladder with four
+rungs that cannot run, and a section saying in terms that a green kernel gate is
+a regression check rather than a conformance claim. It found two things and
+states both rather than resolving them: the forbidden compatibility claim is
+checked inside one file rather than across the tree, and the whole-tree version
+belongs to a Step 9 validator that does not exist; and FOUNDATION §4.4 names the
+ontology validator `check_ontology` while the register names it
+`validate_ontology.py`. The register is the authority and Step 6 used its name.
+FOUNDATION was left unedited, because it is voice-exempt as a record of intent
+and rewriting it would falsify what was true when it was written.
+
+**The kernel gate now reports six implemented, one stubbed, five pending**, up
+from two implemented this morning. All six run in the pre-commit hook and in CI.
+
+**Refused in this half of the session:** nothing collected, no connector
+executed, no platform touched, no doctrine landed, no commit made.
+
+### Later still: the layer model reviewed, and repaired
+
+The layer model went to an adversarial reviewer before Step 7 generates from it,
+on the same argument that made the doctrine review worth doing. The record is
+`findings-F-layer-model.md` in the review directory.
+
+**31 findings: 3 blockers, 18 majors, 10 minors.** This reviewer proved every
+claim by mutating the model in memory and calling the validator, rather than by
+reading, which is why its measured results are quoted as facts rather than as
+readings. All 31 were applied.
+
+**The first blocker is the one worth remembering, because it is the program's own
+flagship defect reappearing inside the mechanism built to prevent it.** The rule
+that makes D5 structural required a `PROBE_EVENT` RUN_START to have *a*
+`COLLECT_EVENT` PERMITTED parent in its lineage, and nothing bound that decision
+to the run it authorized. Both events carried `connector_id` and
+`target_selector_type` and no rule related them, so one permitted decision
+authorized unlimited runs against selectors the gate never evaluated. That is
+`guard.py`'s `scope`: a field declared, required, printed, and never read by
+`check()`. Fixed as a `run_matches_its_decision` rule. Whether one decision may
+parent several runs is a separate question and is recorded as LM-R10 rather than
+decided, because SS-6's "one dispatch path" reads as one decision per run and
+that is the operator's call.
+
+**The second blocker.** `argv`, `command`, `credential` and `credential_value`
+were prohibited on `PROBE_EVENT` alone while the code they fire declared itself
+to cover any payload, so eight of the nine types would have generated a schema
+branch accepting a filled argv. CR-3 says a credential value never appears in
+argv, and the validator enforced the six session-token names on every type and
+stopped there. The four names now sit in every type's denylist and in every
+layer's `never_carries`, so L-05 holds them the way it already held the six.
+
+**The third blocker.** LM-R4 put the AUTHORIZE payload at stratum 2 on the ground
+that it was structurally forbidden from carrying the record's contents, and
+`reason` was a required, unconstrained free-text field on a payload that is
+permanent, declared to carry no subject values, and crossing to LOCAL. The same
+file had already constrained the identical field on `SYSTEM_EVENT` and not this
+one. Both now carry the constraint and a code rather than a comment, and LM-R4's
+text was corrected: a name denylist is what the mechanism delivers, and ZMeta's
+own `policy/semantics.yaml` documents the re-keying residual that follows, which
+PSE had inherited the mechanism from without inheriting the disclosure.
+
+**The eighteen majors are one pattern: checks that could not refuse.** The D5
+check caught deletion and not widening, so appending a second parent alternative
+passed, including a `COLLECT_EVENT REFUSED` parent, which is a run the gate had
+declined. The rule governing which strata may cross to LOCAL was validated
+against itself, so widening it plus the flags it governs passed clean. The two
+enums the model itself labels Class F by effect, `bystander_disposition` and
+`subject_class`, had no check at all, so the exact one-line diffs `CLAUDE.md`
+gate 2 names as its examples passed. The envelope's required fields, including
+the `case_id` that D4 keys the crypto-shred on, were declared and read by
+nothing. Four of the sixteen fixtures could be remapped to an unrelated code and
+pass, in a tool whose own docstring cites RT-9's rule that a check which can pass
+for a reason other than the one claimed is not a check.
+
+**The self-test grew from 19 deliberate breaks to 60, and it now asserts sole
+cause rather than membership.** Eight of the original nineteen fired codes beyond
+the one they claimed to exercise, which is the fixture-runner defect gameplan
+section 2.4 says PSE fixes on day one, present in the tool that enforces it.
+Forty-eight of the sixty now refuse by the expected code alone and twelve cascade
+with a stated reason. Seventeen of the thirty-five codes the tool could emit were
+exercised by no mutation; forty-three distinct codes are now covered. Checks went
+from L-19 to L-33.
+
+**Two findings were recorded rather than resolved.** ADJUDICATE's
+`allowed_targets` and `required_parents` disagree about four dispositions, and
+which way to reconcile them is LM-R11. The model also read Class D more narrowly
+than `AGENTS.md` defines it, which is a rank-4 question, so the narrowing clause
+became the question.
+
+**The repairs were verified independently rather than accepted.** Seventeen of
+the mutations the review measured as passing were rewritten from scratch in the
+parent session, run against a baseline confirmed clean first, and all seventeen
+refused. The applying agent reported twenty-nine of twenty-nine by its own
+script; the seventeen re-derived here are the subset that could be reconstructed
+without reading that script, which is the point of re-deriving them.
+
+**Two things the review missed, found while applying it.** Making `requires`
+load-bearing produced a check nobody asked for, refusing a rule whose
+unconditional `requires` names a field absent from `payload.required`, and that
+is what catches the dropped-citations mutation the review had filed under
+envelope shape where no envelope check reaches. And two claims written during
+the repair were cut for overstating the mechanism, both about the new
+`allowed_targets` check, which does not reach the subtype dimension and now says
+so.
+
+**Refused in this half of the session:** nothing collected, no connector
+executed, no platform touched, no doctrine landed, no commit made.

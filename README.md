@@ -39,6 +39,8 @@ A session starting cold reads these four files before doing anything:
 
 Then, for background rather than authority:
 
+- `CONFORMANCE.md`: why PSE is not ZMeta, what a connector conformance claim
+  contains, and what the kernel gate does and does not cover today.
 - `docs/THE-GAMEPLAN.md`: the full artifact register and the numbered steps.
 - `docs/PLAINSIGHT-FOUNDATION.md`: the ecosystem read-back, the transfer map,
   and decisions D1 through D5. Still carries its DRAFT header.

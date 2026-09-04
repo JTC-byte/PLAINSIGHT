@@ -136,6 +136,9 @@ Run the narrowest focused check first, then the kernel gate:
 ```bash
 python tools/validate_doctrine.py
 python tools/validate_hygiene.py
+python tools/validate_layer_model.py
+python tools/validate_ontology.py
+python tools/validate_cast.py --placeholder-scan
 python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
@@ -146,15 +149,24 @@ git diff --check
 there rather than in every document that quotes a command.
 
 **What these gates actually cover, stated so a green run is not read as more
-than it is.** At Wave 0 the governed artifact is the doctrine corpus, and that
-is what is checked: criterion definitions, per-criterion stamps, cross-references
-in both directions, reconciliation against the pin of record, prose counts, the
-voice standard, table structure, citations against the artifact register, the
-handoff and worklog caps, and the tools-to-gates inventory. The schema,
-ontology, policy, authorization and connector checks do not exist because the
-artifacts they would check do not exist. `--kernel-gate` prints each of them as
-PENDING with the step that delivers it, and a stubbed or pending check is never
-counted as a pass.
+than it is.** The governed artifacts checked today are the doctrine corpus
+(criterion definitions, per-criterion stamps, cross-references in both
+directions, reconciliation against the pin of record, prose counts), the voice
+standard, table structure, citations against the artifact register, the handoff
+and worklog caps, the tools-to-gates inventory, the layer model in
+`spec/layer-model.yaml` (nine types, discriminators, denylists, lineage,
+producer authority, strata, and the D5 parent on every run), the selector
+registry in `ontology/selectors.yaml` (the closed vocabulary, anchor
+eligibility, the constraint rule, prohibitions, matchers, and its codes
+reconciled against the layer model), the cast draft in `synthetic/` (the
+checkable half of SS-3, the confuser pair, the partition, the seal, and no
+filled value while unsealed), and the telemetry recorder in `tools/gate_log.py`
+(HY-1 and RT-19 exercised by `tools/tests/test_gate_log.py`). The schema,
+policy, authorization and connector checks do not exist because the artifacts
+they would check do not exist. `--kernel-gate` prints each of them as PENDING
+with the step that delivers it, and a stubbed or pending check is never counted
+as a pass. The three YAML validators need PyYAML, which CI installs and a local
+checkout must have.
 
 `tools/validate_retention.py --repo-scan` is a wired stub that checks nothing.
 That is D-001, it is scheduled for Step 8, and the aggregator reports it as

@@ -52,6 +52,28 @@ KERNEL_GATE = (
         "voice, table structure, citations against the artifact register, caps",
     ),
     (
+        "layer-model",
+        [PY, "tools/validate_layer_model.py", "--quiet"],
+        IMPLEMENTED,
+        "the nine types, discriminators, denylists, lineage, producer authority, "
+        "strata, and the D5 parent on RUN_START",
+    ),
+    (
+        "cast",
+        [PY, "tools/validate_cast.py", "--placeholder-scan", "--quiet"],
+        IMPLEMENTED,
+        "the checkable half of SS-3, the confuser pair, the partition, the seal, "
+        "and no filled value while unsealed",
+    ),
+    (
+        "telemetry",
+        [PY, "tools/tests/test_gate_log.py"],
+        IMPLEMENTED,
+        "HY-1 and RT-19 exercised against tools/gate_log.py: never the matched "
+        "value, no widened record, the TTL on write and on read, and a gate a "
+        "crashed recorder cannot block",
+    ),
+    (
         "retention-repo-scan",
         [PY, "tools/validate_retention.py", "--repo-scan"],
         STUB,
@@ -61,13 +83,16 @@ KERNEL_GATE = (
         "schema",
         None,
         PENDING,
-        "Step 7. schema/pse-event-0.1.schema.json does not exist",
+        "Step 7. schema/pse-event-0.1.schema.json does not exist. Generated "
+        "from spec/layer-model.yaml, which does",
     ),
     (
         "ontology",
-        None,
-        PENDING,
-        "Step 6. ontology/selectors.yaml does not exist",
+        [PY, "tools/validate_ontology.py", "--quiet"],
+        IMPLEMENTED,
+        "the closed selector vocabulary: required fields, the constraint rule, "
+        "anchor agreement with the entity types, prohibitions, matchers, and "
+        "the code vocabulary reconciled against the layer model",
     ),
     (
         "authorization",

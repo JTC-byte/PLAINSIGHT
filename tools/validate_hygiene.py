@@ -300,11 +300,11 @@ def main(argv: list[str]) -> int:
         return 2
 
     if gate_log:
-        if findings:
-            for f in findings:
-                gate_log.record("hygiene", "refuse", code=f.code, where=f.where)
-        else:
-            gate_log.record("hygiene", "pass")
+        # One run record, then one detail record per finding. See the note in
+        # tools/validate_doctrine.py and doctrine/HYGIENE.md HY-1.
+        gate_log.record_run("hygiene", "refuse" if findings else "pass", count=len(findings))
+        for f in findings:
+            gate_log.record_finding("hygiene", code=f.code, where=f.where)
 
     if findings:
         for f in findings:

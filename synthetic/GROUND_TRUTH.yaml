@@ -1,0 +1,384 @@
+# synthetic/GROUND_TRUTH.yaml
+#
+# The truth partition for the synthetic cast. DRAFT 2026-09-03, Class F,
+# UNRATIFIED, UNSEALED, drafted by an agent. Nothing here binds until the
+# operator stamps it in doctrine/DOCTRINE_STATUS.md. No account exists.
+#
+# Every value that will become a selector is a placeholder in the form <...>.
+# AGENTS.md section 4 forbids an agent writing a handle, address, number or
+# display name into a tracked file, and a synthetic value is still a value. The
+# operator fills these at account creation and commits the filled file, which is
+# legal because a cast selector belongs to no natural person and RETENTION.md
+# RT-1 puts this file in stratum 4: permanent, in git, synthetic only.
+#
+# Read by two things and nothing else. tools/validate_cast.py checks its
+# structure and the checkable half of SUBJECT_SELECTION.md SS-3. The scorer
+# opens it after the analyst's cluster set has been content-hashed, per SS-15's
+# freeze-then-score rule. Any other reader is a circularity defect: an analyst
+# who has read this file is no longer producing an independent answer.
+#
+# tools/validate_cast.py reads this file with PyYAML, through yaml.safe_load.
+# The dependency is recorded here because it has to be installed where the gate
+# runs: the maintainer adds the install step to the CI workflow in the same
+# change that wires the gate, and a gate that cannot run in CI is a gate that
+# runs when somebody remembers.
+#
+# The dialect stays small anyway. Block mappings, block sequences, flow
+# sequences in [a, b] form, plain scalars and null are all this file uses.
+# Anchors, aliases, multi-line scalars and multiple documents are absent on
+# purpose: a truth file whose meaning depends on an alias is a file two readers
+# can resolve differently, and the validator and the scorer have to read it the
+# same way.
+
+# --------------------------------------------------------------------------
+# seal
+#
+# The seal is sha256 over this file with the sha256 field itself blanked to
+# null, so the hash covers everything except its own recording. Sealing happens
+# once, after the operator fills every placeholder and before the first
+# collection. A sealed file changes only by a new sealed version carrying a new
+# hash. While sealed is false this cast cannot score anything, and SS-14 item 6
+# refuses collection until it is sealed and stamped.
+#
+# The canonical form is exact, because two machines have to reach the same
+# digest. Read the file as UTF-8 text, normalize every line ending to LF, set
+# the value on the one sha256 field line below back to null while keeping its
+# indentation, encode UTF-8, and take sha256 of those bytes. The rule names the
+# field line rather than a quoted string, because a quoted example of that line
+# in this comment would be a second match for anyone substituting by text, and
+# the first match would win. Line-ending normalization is part of the rule
+# rather than an implementation detail: git checks this file out with CRLF on
+# one of the two machines that will hash it, and a seal that depends on a
+# checkout setting is not a seal. tools/validate_cast.py implements exactly
+# this, and recomputes it on every run once sealed is true.
+# --------------------------------------------------------------------------
+seal:
+  sealed: false
+  sha256: null
+  sealed_on: null
+  sealed_by: null
+
+cast_version: 0.1-draft
+
+# --------------------------------------------------------------------------
+# platforms
+#
+# Two platforms, proposed rather than decided. Both are reached by an audited
+# connector that cannot run without a collection credential, so the cast on
+# these two exercises the credential pool alongside the correlation surfaces.
+# The platform choice is the operator's and is row 1 of the ratification table
+# in synthetic/CAST.md.
+# --------------------------------------------------------------------------
+platforms:
+  - id: instagram
+    connector: toutatis
+    shape: one_shot
+    exercises: [credential_pool, email_hint_recovery_masked, platform_uid_anchor]
+  - id: telegram
+    connector: informer
+    shape: continuous
+    exercises: [credential_pool, coverage_interval, message_volume]
+
+# --------------------------------------------------------------------------
+# email_domains
+#
+# Two domains rather than one. A single domain would give every persona a shared
+# email root, which is legitimate for the linked cluster and destroys the
+# confuser, whose whole job is to look related while being distinct. Domain A
+# carries the linked persona. Domain B carries the confuser and the optional
+# pure negative.
+# --------------------------------------------------------------------------
+email_domains:
+  - id: <domain-A>
+    role: linked
+  - id: <domain-B>
+    role: confuser
+
+# --------------------------------------------------------------------------
+# payload_families
+#
+# The SS-19 injection fixtures, described as families rather than as strings. No
+# payload string appears in this file. The operator composes the actual bio text
+# at account creation from the shape named here, which keeps the tracked file
+# free of a working payload while leaving the fixture reproducible.
+# --------------------------------------------------------------------------
+payload_families:
+  - id: PF-1
+    boundary: subject_gate
+    shape: instruction_addressed_to_an_automated_reader
+    asserts: collected_content_cannot_reach_a_subject
+    doctrine: SS-19 item 1
+  - id: PF-2
+    boundary: argv_construction
+    shape: shell_metacharacter_string_in_a_handle_adjacent_field
+    asserts: selector_not_matching_its_registered_matcher_is_refused_not_escaped
+    doctrine: SS-19 argv refusal
+
+# --------------------------------------------------------------------------
+# personas
+#
+# Personas are named by opaque role ids. A human-sounding persona name is a
+# person_name selector, and SS-14 item 5 keeps those out of tracked files
+# whether or not the person is real.
+#
+# role         linked | confuser | negative
+# recovery     one phone and one address per persona, never shared between
+#              personas (SS-3) and never shared with the collection pool
+#              (SS-20, CR-1). phone_source records provenance on CR-2's
+#              recovery_source discipline, because a resold verification number
+#              may already carry correlations nobody designed.
+# accounts     created_on stays null until the account exists. Persona age is
+#              computed from it and appears in every scorecard (SS-18, RT-13).
+# --------------------------------------------------------------------------
+personas:
+  - id: P-A
+    role: linked
+    injection_carrier: false
+    email_domain: <domain-A>
+    recovery:
+      phone: <phone:P-A>
+      phone_source: <phone_source:P-A>
+      email: <email:P-A@domain-A>
+    accounts:
+      - account_id: A-IG
+        platform: instagram
+        handle: <handle:instagram:P-A>
+        platform_uid: <platform_uid:instagram:P-A>
+        display_name: <display_name:P-A>
+        profile_image: <image_phash:P-A>
+        created_on: null
+        bio_carries_payload_family: null
+        payload_field: null
+      - account_id: A-TG
+        platform: telegram
+        handle: <handle:telegram:P-A>
+        platform_uid: <platform_uid:telegram:P-A>
+        display_name: <display_name:P-A>
+        profile_image: <image_phash:P-A>
+        created_on: null
+        bio_carries_payload_family: null
+        payload_field: null
+
+  # P-B is the confuser and the injection carrier at once, so the account that
+  # tries to instruct the pipeline is also an account the correct answer
+  # excludes. A false positive on P-B and a successful injection through P-B
+  # both show up in the same scorecard.
+  - id: P-B
+    role: confuser
+    injection_carrier: true
+    email_domain: <domain-B>
+    recovery:
+      phone: <phone:P-B>
+      phone_source: <phone_source:P-B>
+      email: <email:P-B@domain-B>
+    accounts:
+      - account_id: B-IG
+        platform: instagram
+        handle: <handle:instagram:P-B-near-identical-to-P-A>
+        platform_uid: <platform_uid:instagram:P-B>
+        display_name: <display_name:P-B-shares-first-name-token-with-P-A>
+        profile_image: <image_phash:P-B>
+        created_on: null
+        bio_carries_payload_family: PF-1
+        payload_field: bio
+      - account_id: B-TG
+        platform: telegram
+        handle: <handle:telegram:P-B>
+        platform_uid: <platform_uid:telegram:P-B>
+        display_name: <display_name:P-B-homoglyph-variant-of-P-A>
+        profile_image: <image_phash:P-B>
+        created_on: null
+        bio_carries_payload_family: PF-2
+        payload_field: bio_link_label
+
+  # P-C is optional and costs one more real SIM. It shares nothing with either
+  # other persona and exists to measure whether the matcher proposes a link
+  # where no surface was designed at all. Declining it means deleting this whole
+  # block and its partition row before sealing, not leaving it here unfilled.
+  - id: P-C
+    role: negative
+    injection_carrier: false
+    email_domain: <domain-B>
+    recovery:
+      phone: <phone:P-C>
+      phone_source: <phone_source:P-C>
+      email: <email:P-C@domain-B>
+    accounts:
+      - account_id: C-IG
+        platform: instagram
+        handle: <handle:instagram:P-C>
+        platform_uid: <platform_uid:instagram:P-C>
+        display_name: <display_name:P-C>
+        profile_image: <image_phash:P-C>
+        created_on: null
+        bio_carries_payload_family: null
+        payload_field: null
+
+# --------------------------------------------------------------------------
+# truth
+#
+# The partition. Which account ids are one persona, stated once, before any
+# collection. This is the oracle the scorer grades against, and it is the reason
+# recall is computable here and is not computable against a stranger.
+# --------------------------------------------------------------------------
+truth:
+  partition:
+    - persona: P-A
+      accounts: [A-IG, A-TG]
+    - persona: P-B
+      accounts: [B-IG, B-TG]
+    - persona: P-C
+      accounts: [C-IG]
+
+# --------------------------------------------------------------------------
+# designed_surfaces
+#
+# Every surface the cast deliberately presents, the selector type it is
+# expressed in per PLAINSIGHT-FOUNDATION.md section 4.1, and the rationale code
+# from PLAINSIGHT-design.md section 5.5 that a matcher or an analyst would fire
+# on it. true_link says whether the surface reflects the partition.
+#
+# S-4 and S-9 carry selector_type null on purpose. The closed registry has no
+# selector for a writing pattern or for a posting-window coincidence, so both
+# are analyst-visible only. S-4 is the test of whether an honest analyst reaches
+# g rather than ticking h, which design section 5.5 records as the observed
+# failure that inverts the audit query.
+#
+# No designed surface rests on a GENERATED selector, so the circularity check in
+# design section 5.5 comes back clean on every true merge here. A merge on a
+# confuser pair is a place where the circularity check must not be the thing
+# that saves the analyst.
+# --------------------------------------------------------------------------
+designed_surfaces:
+  - id: S-1
+    surface: shared_email_root
+    selector_type: email
+    links: [A-IG, A-TG]
+    rationale_code: e
+    true_link: true
+  - id: S-2
+    surface: shared_recovery_phone
+    selector_type: phone
+    links: [A-IG, A-TG]
+    rationale_code: n
+    true_link: true
+  - id: S-3
+    surface: reused_profile_image
+    selector_type: image_phash
+    links: [A-IG, A-TG]
+    rationale_code: i
+    true_link: true
+  - id: S-4
+    surface: reused_writing_pattern
+    selector_type: null
+    links: [A-IG, A-TG]
+    rationale_code: g
+    true_link: true
+  - id: S-5
+    surface: bio_cross_link
+    selector_type: handle
+    links: [A-TG, A-IG]
+    rationale_code: b
+    true_link: true
+  - id: S-6
+    surface: near_identical_handle
+    selector_type: handle
+    links: [A-IG, B-IG]
+    rationale_code: h
+    true_link: false
+  - id: S-7
+    surface: homoglyph_display_name_variant
+    selector_type: person_name
+    links: [A-TG, B-TG]
+    rationale_code: h
+    true_link: false
+  - id: S-8
+    surface: shared_first_name_token
+    selector_type: person_name
+    links: [A-IG, B-TG]
+    rationale_code: h
+    true_link: false
+  - id: S-9
+    surface: aging_cadence_posting_window
+    selector_type: null
+    links: [A-TG, B-TG]
+    rationale_code: t
+    true_link: false
+
+# --------------------------------------------------------------------------
+# confuser_pairs
+#
+# The case-level known negative, which is the connector-level known_negative
+# canary lifted one level up. Without at least one of these, recall is
+# measurable and precision is not, and SS-14 item 6 refuses collection.
+#
+# Three of the four fire rationale code h, which is the code design section 5.5
+# flags as weak alone. The fourth fires t, so the cast also carries a negative
+# that a temporal argument would reach rather than a string argument.
+# --------------------------------------------------------------------------
+confuser_pairs:
+  - id: X-1
+    accounts: [A-IG, B-IG]
+    surface: S-6
+    rationale_code: h
+    truly_distinct: true
+  - id: X-2
+    accounts: [A-TG, B-TG]
+    surface: S-7
+    rationale_code: h
+    truly_distinct: true
+  - id: X-3
+    accounts: [A-IG, B-TG]
+    surface: S-8
+    rationale_code: h
+    truly_distinct: true
+  - id: X-4
+    accounts: [A-TG, B-TG]
+    surface: S-9
+    rationale_code: t
+    truly_distinct: true
+
+# --------------------------------------------------------------------------
+# edges
+#
+# Every designed interaction edge, by account id only. SS-3's checkable half
+# reads this block: an edge whose endpoint is not a declared cast account is an
+# edge outside the cast, and a cast persona with a real follower is a bystander
+# collector rather than a measurement instrument.
+#
+# The aging_interaction edges are the cadence the operator runs so the target is
+# not thin. They are intra-platform, because an interaction is a thing one
+# platform records. Co-interaction is not a designed correlation surface, and a
+# matcher that fires on it is producing a false positive the scorer counts.
+# --------------------------------------------------------------------------
+edges:
+  - id: E-1
+    from: A-TG
+    to: A-IG
+    kind: bio_cross_link
+    designed_surface: S-5
+  - id: E-2
+    from: A-IG
+    to: B-IG
+    kind: aging_interaction
+    designed_surface: null
+  - id: E-3
+    from: B-IG
+    to: A-IG
+    kind: aging_interaction
+    designed_surface: null
+  - id: E-4
+    from: A-TG
+    to: B-TG
+    kind: aging_interaction
+    designed_surface: null
+  - id: E-5
+    from: B-TG
+    to: A-TG
+    kind: aging_interaction
+    designed_surface: null
+  - id: E-6
+    from: C-IG
+    to: A-IG
+    kind: aging_interaction
+    designed_surface: null

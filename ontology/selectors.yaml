@@ -1,0 +1,895 @@
+# ontology/selectors.yaml
+#
+# The closed selector registry. A selector is the currency of the whole product
+# (docs/PLAINSIGHT-design.md section 2): a typed string an analyst pivots on.
+# This file is the only place a selector type is defined, and the vocabulary is
+# closed at two boundaries rather than one. A connector emitting a type that is
+# not a key here is refused at manifest validation. An event carrying one is
+# refused at the corpus boundary under SELECTOR_TYPE_UNREGISTERED, which is
+# fixture 10 in docs/THE-GAMEPLAN.md section 2.3.
+#
+# Authority: rank 3, Class B (CLAUDE.md section 2, AGENTS.md section 3). Rank 1
+# doctrine wins every conflict with this file. Where a rank 7 draft
+# (docs/PLAINSIGHT-FOUNDATION.md section 4.1, docs/PLAINSIGHT-design.md) and a
+# rank 1 criterion disagreed, rank 1 is what is written below and the departure
+# is recorded under ontology.departures_from_draft.
+#
+# Self-lint: tools/validate_ontology.py. Every structural claim below is
+# checked there, and `--self-test` breaks the registry in memory to prove each
+# check refuses. A rule no check can make refuse is not a rule (CLAUDE.md
+# design gate 1).
+#
+# WHY THIS FILE IS THE FLAGSHIP HONESTY MECHANISM. D2 in
+# docs/PLAINSIGHT-FOUNDATION.md section 3 names the residue class this registry
+# exists to remove: a datum-unlabeled plausible value. A masked recovery hint is
+# present, well-formed, and plausible, so it passes every guard that keys on
+# absence. The only guard that works is naming the datum at the extract
+# boundary, so a value of unproven semantics structurally cannot reach the
+# canonical field an analyst reads as fact. That is why the key is
+# `email_hint_recovery_masked` and never `email`, and why the registry carries a
+# `datum_class` on every entry rather than a comment on some.
+#
+# ADDITIONS ARE ROUTINE, AND THE OUTER RING IS TRIED FIRST. CLAUDE.md design
+# gate 8 puts policy, config, manifests and adapters ahead of schema and core
+# semantics, and a registry row is an outer ring. docs/PLAINSIGHT-design.md
+# section 6.5 step 4 gives a connector author three legal moves when a tool
+# emits something with no home: map it to an existing selector, propose a
+# registry addition, or park the output in the raw pane. An addition is
+# reviewed once and benefits every connector, so it is expected to be a normal
+# week's work rather than an event.
+#
+# THE ONE TEST THAT DECIDES AN ADDITION'S CHANGE CLASS. CLAUDE.md design gate 2
+# says a subject-widening change rarely looks like one, and names a row added to
+# an allowlist as the shape it usually takes. A registry addition is Class B
+# when it names a new datum about a subject the authorization record already
+# covers. It is Class F when it creates a pivot reach to a person who was not
+# reachable before, which is what a relation selector would do. See
+# ontology.readings ONT-R7.
+#
+# Voice: CLAUDE.md section 4, Register 1. Comments say why a rule exists and
+# cite the file and criterion id that requires it. They do not cite line
+# numbers, which drift.
+#
+# NO VALUE APPEARS IN THIS FILE. AGENTS.md section 4 keeps an agent from writing
+# a selector value, handle, email, phone number or case subject name into a
+# tracked file. A `form` is a shape and a matcher id names a library, so both
+# are legal here. Every variable part of every form is a `<placeholder>`, and
+# tools/validate_ontology.py refuses a form or an example that is anything else.
+
+ontology:
+  version: 0.1
+  authority_rank: 3
+  change_class: B
+  closed: true
+  status: DRAFT 2026-09-03, drafted by an agent, UNRATIFIED
+  # D2's conclusion is stamped 2026-08-26 in doctrine/DOCTRINE_STATUS.md and its
+  # basis is unstamped. The closure decision therefore binds. The contents below
+  # are an agent's reading of that decision and bind nothing until the operator
+  # stamps the additions listed under ontology.proposed.
+  decides: [D2]
+  self_lint: tools/validate_ontology.py
+  code_vocabulary: spec/layer-model.yaml
+  # Every violation code named in this file is read from the layer model rather
+  # than copied, so the two vocabularies cannot drift. The four codes this
+  # registry's rules fire are already declared there:
+  # SELECTOR_TYPE_UNREGISTERED, SELECTOR_ANCHOR_PROHIBITED, HINT_CITED_AS_VALUE
+  # and GENERATED_CITED_AS_OBSERVED.
+
+  read_by:
+    - path: spec/layer-model.yaml
+      how: EXTRACT_EVENT CLAIM carries selector_type, which is a key here.
+    - path: spec/layer-model.yaml
+      how: ADJUDICATE_EVENT PROMOTE carries anchor_selector_type, checked against may_anchor_entity.
+    - path: spec/layer-model.yaml
+      how: ASSESS_EVENT citations read must_not_satisfy_citation_for and provenance_state GENERATED.
+    - path: spec/layer-model.yaml
+      how: COLLECT_EVENT and PROBE_EVENT RUN_START carry target_selector_type from here.
+    - path: schema/connector-manifest.schema.json
+      how: a manifest's emits and consumes entries name keys here. Step 12.
+    - path: runner/subject_guard.py
+      how: argv construction refuses a value that does not match its registered matcher. SS-19.
+    - path: tools/validate_retention.py
+      how: --repo-scan reads the repo_scan block below. RT-15, D-001, Step 8.
+
+  # What this file does not decide, said plainly so a reader does not go looking.
+  not_here:
+    - The connector manifest's `interaction_class`, which is a property of how a
+      connector touches a platform rather than of a selector. R7 is stamped
+      against doctrine/SUBJECT_SELECTION.md SS-14 and lands in the manifest
+      schema at Step 12, so it does not gate this file.
+    - Which subject class a selector belongs to. SS-1 puts the class in the
+      authorization record and rules out inference from a selector value
+      permanently, because that inference would be a guess about a person's
+      identity made by the system whose identity guesses are under test.
+    - Field names inside a payload. Those are spec/layer-model.yaml at rank 3
+      and the schema at Step 7.
+
+  departures_from_draft:
+    - "The draft's `may_be_cited_as` key on email_hint_recovery_masked is
+      dropped. Its value named the email selector and its comment said false,
+      which is a field that reads as its own opposite. The prohibitions block
+      carries the rule, where a validator can act on it."
+    - Every selector now declares form, datum_class, stability,
+      may_anchor_entity and note. The draft left several as one-line maps with
+      only a form and an anchor flag, and a datum with no declared class is the
+      exact defect D2 exists to remove.
+    - Every selector now declares a matcher. The draft put a matcher only on the
+      constraint selectors. SS-19 refuses an argv interpolation whose value does
+      not match its registered matcher, so a selector with no matcher is a
+      selector that cannot be refused at argv. See ONT-R5.
+    - "The time_window form now puts its separator outside the placeholder
+      rather than inside it, so the form scanner can read the shape."
+    - "Every fp_mode gains an fp_mode_basis. CLAUDE.md design gate 3 says a
+      capability claim names how the answer was known. No figure here is
+      measured."
+
+  proposed:
+    # New at 2026-09-03, from the operator's description of the product: a
+    # social web enumerated, and public records scrubbed for addresses,
+    # aliases, shell entities and criminal records. Each of these is an agent
+    # proposal and needs an operator stamp before a connector may emit it.
+    - postal_address
+    - person_name_alias
+    - org_registration_number
+    - public_record_id
+    - username_string
+
+  readings:
+    # Interpretive calls this file had to make. Each names the sources in
+    # tension. Confirming one is a stamp in doctrine/DOCTRINE_STATUS.md rather
+    # than an edit here.
+    - id: ONT-R1
+      question: How the registry carries SS-1's residential carve-out on an address
+      reading: One `postal_address` selector with a required, closed,
+        non-defaulted `premises_class` recorded by a person, and `undetermined`
+        handled as residential.
+      alternatives:
+        - Two selectors, postal_address_residential and postal_address_premises,
+          on the D2 argument that the datum is named at the decode boundary
+      sources: [doctrine/SUBJECT_SELECTION.md SS-1, docs/PLAINSIGHT-FOUNDATION.md D2]
+    - id: ONT-R2
+      question: Which code refuses an alias cited as a person's name
+      reading: HINT_CITED_AS_VALUE, because it is the declared code for a
+        selector satisfying a citation for the value it resolves to.
+      alternatives:
+        - A new code, which would need declaring in spec/layer-model.yaml first
+      sources: [spec/layer-model.yaml violation_codes, docs/THE-GAMEPLAN.md section 2.3 fixture 1]
+      note: The code's declared text names a hint or constraint selector. Step 7
+        either widens that text to any selector declaring resolves_to, or
+        person_name_alias loses its resolves_to and keeps only its distinct name.
+    - id: ONT-R3
+      question: Whether an Org may be anchored on its registration number
+      reading: No. The anchor set stays at platform_uid and channel.
+      alternatives:
+        - Org anchored on org_registration_number, on the same argument
+          docs/PLAINSIGHT-design.md section 2.2 makes for platform_uid, which is
+          that a registry-issued identifier is not reassigned and a name is
+      sources: [docs/PLAINSIGHT-design.md section 2.2, docs/PLAINSIGHT-FOUNDATION.md section 4.1]
+      note: The cost of the conservative reading is that two records for one
+        company cannot be told apart structurally. That is a real cost and it is
+        the operator's call rather than an agent's.
+    - id: ONT-R4
+      question: How a platform-unbound username sweep names its input
+      reading: A new `username_string` selector, distinct from `handle`.
+      alternatives:
+        - handle with a null platform, which makes the platform field optional
+          on the selector that most needs it
+      sources: [docs/PLAINSIGHT-design.md section 5.5, docs/PLAINSIGHT-design.md section 8.1]
+    - id: ONT-R5
+      question: Whether every selector needs a matcher
+      reading: Yes. SS-19 refuses an argv interpolation whose value does not
+        match its registered matcher, and every selector can reach argv.
+      alternatives:
+        - Matchers only on constraint selectors, as the FOUNDATION draft has it
+      sources: [doctrine/SUBJECT_SELECTION.md SS-19, docs/PLAINSIGHT-FOUNDATION.md section 4.1]
+    - id: ONT-R6
+      question: How each entity type is materialized
+      reading: analyst_act for Account, PersonCandidate, Org, Channel and Place;
+        connector_emission for Media and ManualTask.
+      alternatives:
+        - Account materialized by connector emission, since a manifest's emits
+          list already names the Account entity
+      sources: [docs/PLAINSIGHT-FOUNDATION.md section 4.1, docs/PLAINSIGHT-design.md section 6.1, spec/layer-model.yaml ADJUDICATE_EVENT]
+      note: The design states the rule only for PersonCandidate. The rest is an
+        agent reading and the validator enforces whatever this block declares.
+    - id: ONT-R7
+      question: Whether a relation such as family or employment is a selector
+      reading: No. A relation is not a selector, an edge object does not exist in
+        the design, and a relation selector would be Class F rather than Class B.
+      alternatives:
+        - A `relation` selector carrying two endpoints and a relation kind
+      sources: [docs/PLAINSIGHT-design.md section 2, doctrine/SUBJECT_SELECTION.md SS-10, CLAUDE.md design gate 2]
+      note: See ontology.relations below for where a relation lives instead.
+    - id: ONT-R8
+      question: The stability vocabulary
+      reading: Three values, stable, mutable and reassignable, because only
+        reassignable carries a consequence the anchor rule acts on.
+      alternatives:
+        - A volatile value for fields that change without meaning, which the
+          connector manifest already carries per field
+      sources: [docs/PLAINSIGHT-design.md section 2.2, docs/PLAINSIGHT-design.md section 6.1]
+    - id: ONT-R9
+      question: Whether a criminal record is a selector
+      reading: No. A criminal record is a document reached by a
+        `public_record_id` and read as claims about a person.
+      alternatives:
+        - A `criminal_record` selector, which would make a finding about a
+          person into a thing the system pivots on
+      sources: [docs/PLAINSIGHT-design.md section 2, doctrine/RETENTION.md RT-1]
+    - id: ONT-R10
+      question: Whether any false-positive mode here is measured
+      reading: None is. Every fp_mode_basis is `reported` or `reasoned`.
+      alternatives: []
+      sources: [CLAUDE.md design gate 3]
+      note: The toutatis finding is reported by the tool's own behaviour and has
+        not been scored against a subject whose answer was known. Marking it
+        measured would be the laundering design gate 6 forbids.
+
+# ---------------------------------------------------------------------------
+# DATUM CLASSES
+#
+# What kind of thing the value is, at the boundary where it is decoded. This is
+# the field D2 is about. A renderer, an export projection and a citation check
+# all key on it, so a selector with the wrong class is a selector that lies in
+# three places at once.
+# ---------------------------------------------------------------------------
+datum_classes:
+  identifier:
+    note: Issued by an authority, a platform or a public registry, opaque to the
+      holder, and referring to exactly one record in that authority's namespace.
+  attribute:
+    note: An observed property of a person, organization or place. It means what
+      its name says, and it may be shared, stale, or simply wrong.
+  constraint:
+    note: A predicate over a space of values, never a value in that space. The
+      analyst learns which values are excluded rather than which value is true.
+  generated:
+    note: Produced by a rule from other data and never observed on any surface.
+  derivation:
+    note: Computed from bytes the case already holds. It refers to the artifact
+      rather than to a person.
+  scope:
+    note: Bounds a query. It refers to no person and to no organization.
+
+# ---------------------------------------------------------------------------
+# STABILITY
+#
+# Anchor eligibility is derived from this field rather than asserted beside it.
+# docs/PLAINSIGHT-design.md section 2.2 is the source: a handle-owner change
+# under handle-anchoring renders as ordinary drift when it is an identity
+# catastrophe, so an anchor has to be a value the issuer does not hand to
+# somebody else.
+# ---------------------------------------------------------------------------
+stability_classes:
+  stable:
+    note: The issuer does not reassign it and the holder cannot change it. This
+      is the only class an entity may be anchored on.
+    may_anchor: true
+  mutable:
+    note: The holder may change or abandon it, and the old value stops being
+      true of them. No issuer hands it to a different holder.
+    may_anchor: false
+  reassignable:
+    note: An issuer may hand this exact value to a different holder, so the same
+      string can denote two people at two times.
+    may_anchor: false
+
+# ---------------------------------------------------------------------------
+# PROVENANCE STATES
+# ---------------------------------------------------------------------------
+provenance_states:
+  OBSERVED:
+    note: Read off a surface a run touched. The default, and never written on a
+      selector that was not observed.
+  GENERATED:
+    note: Produced by a rule. Permanent until an explicit analyst promotion act,
+      which is an ADJUDICATE_EVENT PROMOTE with promotion_kind
+      generated_to_observed. Rendering carries the state into every view.
+
+# ---------------------------------------------------------------------------
+# HOW A FALSE-POSITIVE MODE IS KNOWN
+# ---------------------------------------------------------------------------
+fp_mode_bases:
+  measured:
+    note: Scored against a subject whose true answer was known, with the cast
+      version and persona age recorded. Nothing in this file is measured yet.
+  reported:
+    note: Observed in the tool's own behaviour or its documentation, and not
+      scored here.
+  reasoned:
+    note: Derived from how the source works. It is an argument rather than a
+      result, and it is labelled as one.
+
+# ---------------------------------------------------------------------------
+# SELECTORS
+# ---------------------------------------------------------------------------
+selectors:
+
+  # ── ANCHORS ───────────────────────────────────────────────────────────────
+  # Two selectors anchor, and both are stable identifiers issued by a platform.
+  # Anchor eligibility is not a flag an author sets: tools/validate_ontology.py
+  # requires that the set of may_anchor_entity selectors equals the set of
+  # anchors declared under `entities`, and that each of them is stable.
+
+  platform_uid:
+    form: "platform_uid:<platform>/<opaque_id>"
+    datum_class: identifier
+    stability: stable
+    may_anchor_entity: true
+    matcher: shape.platform_uid.v1
+    note: The platform's own account id. The only selector an Account entity may be anchored on.
+    fp_mode: "a uid identifies an account and never a person; one person holds many"
+    fp_mode_basis: reasoned
+
+  channel:
+    form: "channel:<platform>/<channel_id>"
+    datum_class: identifier
+    stability: stable
+    may_anchor_entity: true
+    matcher: shape.channel.v1
+    note: A platform channel, group or feed. Anchors a Channel entity.
+    fp_mode: "a channel id survives a rename, so a channel's title is not its identity"
+    fp_mode_basis: reasoned
+
+  # ── HANDLES AND USERNAMES ─────────────────────────────────────────────────
+
+  handle:
+    form: "handle:<platform>/<string>"
+    datum_class: attribute
+    stability: reassignable
+    may_anchor_entity: false
+    matcher: shape.handle.v1
+    requires: [valid_from, valid_to]
+    note: A platform display handle. A handle claim is an interval rather than a value.
+    fp_mode: "a released handle is reassigned, so the same string denotes two accounts at two times"
+    fp_mode_basis: reasoned
+    # docs/PLAINSIGHT-design.md section 2.2. The interval is the whole point: a
+    # handle-owner change then renders as a new account object with a lineage
+    # note, which is what it is. Fixture 3, account-anchored-on-handle, is the
+    # must-fail case that proves may_anchor_entity here is structural.
+
+  username_string:
+    form: "username_string:<string>"
+    datum_class: attribute
+    stability: reassignable
+    may_anchor_entity: false
+    matcher: shape.username.v1
+    note: PROPOSED. A username with no platform bound to it, used as a sweep input.
+    fp_mode: "a sweep's hits are same-string, not same-person"
+    fp_mode_basis: reasoned
+    # PROPOSED 2026-09-03. A cross-platform username sweep takes a bare string
+    # and `handle` cannot carry it, because a handle's form binds a platform. It
+    # becomes a handle only when a platform returns it. The false-positive mode
+    # is why docs/PLAINSIGHT-design.md section 5.5 marks the Merge Sheet's `h`
+    # rationale as weak alone, and it is the reason this is a separate key
+    # rather than a handle with an empty platform. See ONT-R4.
+
+  # ── CONSTRAINTS OVER A SPACE, NOT VALUES IN IT ────────────────────────────
+  # The heart of D2. These carry a mask rather than an address or a number. They
+  # tell the analyst which values are excluded and never which value is true,
+  # and the prohibitions block keeps them out of the field a reader would take
+  # as fact.
+
+  email_hint_recovery_masked:
+    form: "email_hint_recovery_masked:<mask>"
+    datum_class: constraint
+    stability: mutable
+    may_anchor_entity: false
+    matcher: hints.email.v1
+    constraint_semantics: prefix_suffix_mask
+    resolves_to: email
+    note: A platform's masked account-recovery hint for an email address.
+    fp_mode: "the platform returns the recovery hint for a LINKED account, not necessarily the owner"
+    fp_mode_basis: reported
+    # `resolves_to` is a relation and never an assignment. A candidate email
+    # either satisfies the mask or does not, and satisfying it is not the same
+    # as being the address. The fp_mode above is the toutatis finding named in
+    # docs/PLAINSIGHT-FOUNDATION.md D2, and it belongs on the selector rather
+    # than in a manifest comment, because a comment does not hold.
+
+  phone_hint_recovery_masked:
+    form: "phone_hint_recovery_masked:<mask>"
+    datum_class: constraint
+    stability: reassignable
+    may_anchor_entity: false
+    matcher: hints.phone.v1
+    constraint_semantics: suffix_mask
+    resolves_to: phone
+    note: A platform's masked account-recovery hint for a phone number.
+    fp_mode: "the platform returns the recovery hint for a LINKED account, not necessarily the owner; a suffix mask over a national numbering plan excludes far less than it appears to"
+    fp_mode_basis: reported
+
+  # ── GENERATED: NEVER OBSERVED, AND THE STATE IS PERMANENT ─────────────────
+
+  email_generated_permutation:
+    form: "email_generated_permutation:<addr>"
+    datum_class: generated
+    stability: mutable
+    may_anchor_entity: false
+    matcher: shape.email.v1
+    provenance_state: GENERATED
+    generation_method: format_permutation
+    requires_validation_by: [smtp_probe, breach_corpus_match]
+    circularity_class: derived_from_name
+    resolves_to: email
+    note: An address built from a name and an organization's address format, observed nowhere.
+    fp_mode: "the permutation is a guess about a format, so a hit rate is a property of the format and not of the person"
+    fp_mode_basis: reasoned
+    # docs/PLAINSIGHT-design.md section 4.6: CrossLinked returns an organization
+    # roster where most addresses are permutation guesses, and they render with
+    # a permanent marker until some other surface observes the same string.
+    # `circularity_class` is the field the Merge Sheet's circularity check in
+    # design section 5.5 reads: a merge whose email rationale rests on a
+    # never-observed permutation is self-confirming and is hard-blocked.
+
+  # ── OBSERVED VALUES ───────────────────────────────────────────────────────
+
+  email:
+    form: "email:<addr>"
+    datum_class: attribute
+    stability: mutable
+    may_anchor_entity: false
+    matcher: shape.email.v1
+    note: An address observed on a surface, meaning what its name says.
+    fp_mode: "a shared or role address belongs to an organization rather than to a person"
+    fp_mode_basis: reasoned
+
+  phone:
+    form: "phone:<e164>"
+    datum_class: attribute
+    stability: reassignable
+    may_anchor_entity: false
+    matcher: shape.phone_e164.v1
+    note: A phone number observed on a surface, in international form.
+    fp_mode: "carriers recycle numbers, so a number links a subject to a predecessor's residue"
+    fp_mode_basis: reasoned
+
+  person_name:
+    form: "person_name:<string>"
+    datum_class: attribute
+    stability: mutable
+    may_anchor_entity: false
+    matcher: shape.person_name.v1
+    note: A natural person's name as observed on a surface.
+    fp_mode: "namesakes are common and a name is not a key"
+    fp_mode_basis: reasoned
+
+  person_name_alias:
+    form: "person_name_alias:<string>"
+    datum_class: attribute
+    stability: mutable
+    may_anchor_entity: false
+    matcher: shape.person_name.v1
+    resolves_to: person_name
+    note: PROPOSED. A name a record source associates with a person, which is not the person's name.
+    fp_mode: "public-record aggregators merge namesakes on a shared or former address, so an alias list routinely carries a different person's name"
+    fp_mode_basis: reasoned
+    # PROPOSED 2026-09-03. The datum here is "a name this source ties to this
+    # person", and reading it under a heading that says Name is exactly the
+    # datum-unlabeled plausible value D2 removes. The prohibition below keeps it
+    # out of a citation for person_name. See ONT-R2 for the code question.
+
+  org_name:
+    form: "org_name:<string>"
+    datum_class: attribute
+    stability: mutable
+    may_anchor_entity: false
+    matcher: shape.org_name.v1
+    note: An organization's name as observed on a surface.
+    fp_mode: "trading names, legal names and former names collide across unrelated registrations"
+    fp_mode_basis: reasoned
+
+  org_registration_number:
+    form: "org_registration_number:<registry>/<registration_id>"
+    datum_class: identifier
+    stability: stable
+    may_anchor_entity: false
+    matcher: shape.org_registration_number.v1
+    note: PROPOSED. A company or entity number issued by a named public registry. Institutional, never a person's.
+    fp_mode: "a registration identifies a legal entity and not the people behind it; a shell's officers are a separate claim"
+    fp_mode_basis: reasoned
+    # PROPOSED 2026-09-03. This is the shell-entity pivot. It is N0
+    # NON-PERSON under doctrine/SUBJECT_SELECTION.md SS-1, which authorizes the
+    # organization and never its members: everyone an enumeration returns is S5
+    # INCIDENTAL on arrival and cannot become a pivot origin. Anchor eligibility
+    # is the open question, recorded as ONT-R3.
+
+  public_record_id:
+    form: "public_record_id:<record_system>/<record_id>"
+    datum_class: identifier
+    stability: stable
+    may_anchor_entity: false
+    matcher: shape.public_record_id.v1
+    note: PROPOSED. A docket, filing or case identifier inside a named public-records system.
+    fp_mode: "the identifier is stable and the binding to a subject is usually a name match, so the weak seam is the link rather than the record"
+    fp_mode_basis: reasoned
+    # PROPOSED 2026-09-03. A criminal record, a property record and a corporate
+    # filing are all reached through this one selector, and none of them is a
+    # selector itself: the contents are claims about a person, stratum 1 case
+    # material under doctrine/RETENTION.md RT-1. See ONT-R9. The record system
+    # sits inside the form because a docket number is unique only within its
+    # system, which is the same reason platform_uid carries its platform.
+
+  postal_address:
+    form: "postal_address:<structured_address>"
+    datum_class: attribute
+    stability: mutable
+    may_anchor_entity: false
+    matcher: shape.postal_address.v1
+    requires: [premises_class]
+    note: PROPOSED. A street or postal address. The premises class decides whose selector it is.
+    fp_mode: "an address is shared by everyone at it, present and former, so an address links a subject to co-residents nobody authorized"
+    fp_mode_basis: reasoned
+    premises_class:
+      values: [residential, non_residential, undetermined]
+      recorded_by: a person, in the authorization record
+      unresolved_default: residential
+      residential: A person's own selector, inheriting that person's subject class. Never an L0 node.
+      non_residential: Eligible for L0 LOCATION on a written statement that the location is not a residence.
+      undetermined: Handled as residential until a person records otherwise.
+    # PROPOSED 2026-09-03. doctrine/SUBJECT_SELECTION.md SS-1 carries the
+    # carve-out this field exists for: a residential address tied to an
+    # individual is that person's selector and is not an L0 node, because
+    # without that line the location class becomes the route by which a home
+    # address stops being personal data. The registry carries the distinction
+    # rather than leaving it to a reader, and the conservative value is the
+    # default so an unclassified address fails safe. The class is recorded by a
+    # person and never inferred from the address string, on SS-1's rule that the
+    # gate reads a class rather than inferring one. See ONT-R1.
+
+  domain:
+    form: "domain:<fqdn>"
+    datum_class: attribute
+    stability: reassignable
+    may_anchor_entity: false
+    matcher: shape.domain.v1
+    note: A fully qualified domain name.
+    fp_mode: "a lapsed domain is re-registered by an unrelated party, so historical residue attaches to a new holder"
+    fp_mode_basis: reasoned
+
+  image_phash:
+    form: "image_phash:<hex64>"
+    datum_class: derivation
+    stability: stable
+    may_anchor_entity: false
+    matcher: shape.image_phash.v1
+    note: A perceptual hash of an image the case holds. It refers to the artifact.
+    fp_mode: "a perceptual hash matches a stock image, an avatar generator's output, and a re-share, none of which is a shared person"
+    fp_mode_basis: reasoned
+
+  geo_area:
+    form: "geo_area:<bbox|polygon>"
+    datum_class: scope
+    stability: stable
+    may_anchor_entity: false
+    matcher: shape.geo_area.v1
+    note: A bounding box or polygon that bounds a query. It refers to no person.
+    fp_mode: "an area returns everyone inside it, which is incidental collection by construction"
+    fp_mode_basis: reasoned
+    # doctrine/SUBJECT_SELECTION.md SS-1 makes a coordinate box L0 LOCATION and
+    # a house inside it not. A connector that takes a geo_area reaches beyond
+    # its named selector, so SS-10 requires it to declare what it reaches.
+
+  time_window:
+    form: "time_window:<iso8601>/<iso8601>"
+    datum_class: scope
+    stability: stable
+    may_anchor_entity: false
+    matcher: shape.time_window.v1
+    note: A closed interval that bounds a query. It refers to no person.
+    fp_mode: "a window over platform-declared timestamps and a window over collection timestamps are different windows"
+    fp_mode_basis: reasoned
+    # docs/PLAINSIGHT-design.md section 2.2: a correlation run where one lane is
+    # real event times and the other is scrape times produces a number the
+    # analyst believes. `time_provenance` on the claim is what keeps them apart.
+
+# ---------------------------------------------------------------------------
+# RELATIONS: WHY THERE IS NO EDGE SELECTOR
+#
+# The operator's product enumerates a social web, so the question has to be
+# answered here rather than left open. A relation such as family, employment or
+# co-residence is not a selector and does not become one.
+#
+# A selector is a typed string an analyst pivots on
+# (docs/PLAINSIGHT-design.md section 2). "Employed by" is not a string anyone
+# can pivot on. What a pivot actually consumes is the other endpoint, which is
+# already a registered selector: an org_name, an org_registration_number, a
+# platform_uid, a channel. A relation is therefore carried as an EXTRACT_EVENT
+# CLAIM whose selector_type is the other endpoint's type, and the relation
+# itself is the claim's predicate.
+#
+# Same-person relations have a home already, one layer up. An assertion that two
+# accounts are one person is an IDENTITY_EVENT CLUSTER, and an assertion that a
+# candidate is affirmatively not the subject is an EXCLUDE. Both reference
+# account ids and absorb nothing (docs/PLAINSIGHT-design.md section 5.6).
+#
+# The reason this is not merely tidy. A relation selector would let a pivot walk
+# an edge from an authorized subject to a person nobody authorized, and
+# doctrine/SUBJECT_SELECTION.md SS-10 says an S5 INCIDENTAL person is never a
+# pivot origin. Adding one would therefore widen who can be collected on, which
+# makes it Class F under CLAUDE.md design gate 2 rather than the Class B a new
+# registry row normally is. Recorded as ONT-R7.
+# ---------------------------------------------------------------------------
+relations:
+  is_a_selector: false
+  carried_as: an EXTRACT_EVENT CLAIM whose selector_type is the other endpoint
+  same_person_home: IDENTITY_EVENT CLUSTER and EXCLUDE
+  change_class_if_added: F
+
+# ---------------------------------------------------------------------------
+# ENTITY TYPES, CLOSED
+#
+# Every entity declares how it comes into being. An entity type that declares
+# neither an anchor nor a materialization act is refused, because an entity
+# nothing can create is a table with no writer and an entity anything can create
+# is the identity-minting failure AUTHORING.md names: inventing a per-detection
+# identity mints tracks nothing observed.
+# ---------------------------------------------------------------------------
+entities:
+  Account:
+    anchored_on: platform_uid
+    materialized_by: analyst_act
+    note: One account on one platform. Anchored on the platform's own id and never on a handle.
+  PersonCandidate:
+    anchored_on: null
+    materialized_by: analyst_act
+    note: A person the analyst has proposed. Never materialized by a connector and never by a hit with no uid.
+  Org:
+    anchored_on: null
+    materialized_by: analyst_act
+    note: An organization. N0 NON-PERSON under SS-1, and its members are not authorized by it.
+  Channel:
+    anchored_on: channel
+    materialized_by: analyst_act
+    note: A channel, group or feed. Anchored on the platform's channel id.
+  Place:
+    anchored_on: null
+    materialized_by: analyst_act
+    note: A location. L0 under SS-1 only on a written statement that it is not a residence.
+  Media:
+    anchored_on: null
+    materialized_by: connector_emission
+    note: An image or file the case holds. It carries no identity claim of its own.
+  ManualTask:
+    anchored_on: null
+    materialized_by: connector_emission
+    note: A method a human performs, emitted by a reference connector that executes nothing.
+
+# ---------------------------------------------------------------------------
+# PROHIBITIONS
+#
+# Every selector that declares `resolves_to` appears here, because resolves_to
+# is what invites a renderer or a citation to follow the relation and print the
+# thing on the far end. Enforcement is at the render slot, the export boundary
+# and the corpus validator, and never by convention. Each code below is declared
+# in spec/layer-model.yaml and is checked against that file rather than against
+# a copy.
+# ---------------------------------------------------------------------------
+prohibitions:
+  - selector: email_hint_recovery_masked
+    must_not_render_as: email
+    must_not_satisfy_citation_for: email
+    code: HINT_CITED_AS_VALUE
+    enforced_at: [render_slot, export_boundary, corpus]
+    fixture: hint-cited-as-email
+    why: A mask constrains the address space and does not name an address. A hint
+      under a heading that says Email produces a dossier line an analyst reads as
+      established fact, and every other guard in the system keys on absence while
+      this value is present.
+
+  - selector: phone_hint_recovery_masked
+    must_not_render_as: phone
+    must_not_satisfy_citation_for: phone
+    code: HINT_CITED_AS_VALUE
+    enforced_at: [render_slot, export_boundary, corpus]
+    why: The email case, on the phone path. A suffix mask over a national
+      numbering plan excludes fewer candidates than its appearance suggests.
+
+  - selector: person_name_alias
+    must_not_render_as: person_name
+    must_not_satisfy_citation_for: person_name
+    code: HINT_CITED_AS_VALUE
+    enforced_at: [render_slot, export_boundary, corpus]
+    why: An alias is a source's association rather than the person's name, and
+      aggregators build alias lists by merging namesakes on a shared address.
+      See ONT-R2 on the code's declared text.
+
+  - selector: email_generated_permutation
+    must_not_render_as: email
+    must_not_satisfy_citation_for: email
+    unless: promoted_by_analyst_act
+    code: GENERATED_CITED_AS_OBSERVED
+    enforced_at: [render_slot, export_boundary, corpus]
+    fixture: generated-permutation-cited-as-observed
+    why: The address was never observed on any surface. Promotion is an
+      ADJUDICATE_EVENT PROMOTE with promotion_kind generated_to_observed, it is
+      logged, and it is visible in every view afterwards.
+
+# ---------------------------------------------------------------------------
+# MATCHERS
+#
+# A matcher is a named library at a pinned version. It is never an inline regex
+# in a connector manifest, because a regex in a manifest is a rule each
+# connector author rewrites and nobody scores.
+#
+# THE HONEST STATE, WRITTEN HERE RATHER THAN DISCOVERED LATER. No matcher below
+# is calibrated. `policy/matcher-calibration.yaml` and
+# `conformance/ontology/matcher-truth/` are deferred in docs/THE-GAMEPLAN.md
+# section 2.2 with a hard trigger: before the first matcher merges. Until then
+# an unscored matcher may not be an identity basis, which is the rule the
+# semantics contract carries and the reason `tools/validate_ontology.py
+# --matchers` is deferred until the first matcher exists. Calibration needs
+# labelled ground truth, which needs the cast, which is unsealed.
+#
+# ONE DISTINCTION THAT MATTERS, BECAUSE IT DECIDES WHAT AN UNCALIBRATED MATCHER
+# MAY STILL DO. A matcher used as an argv shape gate refuses a value whose shape
+# is wrong, and refusing is not an identity claim. SS-19 requires that gate now,
+# and it is legal now. A matcher used to decide that a candidate satisfies a
+# hint is an identity basis, and that use waits for calibration.
+#
+# WHERE THE SHAPE GATE IS WEAKEST. `shape.person_name.v1`,
+# `shape.org_name.v1` and `shape.postal_address.v1` accept nearly any string,
+# because a name and a street address have no checkable grammar the registry can
+# fix at v0.1. SS-19's argv refusal is therefore weakest exactly where the value
+# is most free-form. That is a known gap rather than an oversight, and the
+# mitigation is that these three are never interpolated into a shell command
+# template without quoting handled by the runner's argv list form.
+# ---------------------------------------------------------------------------
+matchers:
+  calibrated: false
+  calibration_ref: policy/matcher-calibration.yaml
+  calibration_status: deferred until before the first matcher merges
+  identity_basis_permitted: false
+  library:
+    shape.platform_uid.v1:
+      purpose: argv_shape_gate
+      note: Platform token plus an opaque id, per platform.
+    shape.channel.v1:
+      purpose: argv_shape_gate
+      note: Platform token plus a channel id, per platform.
+    shape.handle.v1:
+      purpose: argv_shape_gate
+      note: Platform token plus a handle string, per platform's own character set.
+    shape.username.v1:
+      purpose: argv_shape_gate
+      note: A platform-unbound username, the union of the sweep targets' character sets.
+    shape.email.v1:
+      purpose: argv_shape_gate
+      note: An addr-spec. Shape only, with no deliverability claim of any kind.
+    shape.phone_e164.v1:
+      purpose: argv_shape_gate
+      note: International form, with the country code required.
+    shape.person_name.v1:
+      purpose: argv_shape_gate
+      note: Weak by construction. A name has no checkable grammar.
+    shape.org_name.v1:
+      purpose: argv_shape_gate
+      note: Weak by construction, for the same reason as a person's name.
+    shape.org_registration_number.v1:
+      purpose: argv_shape_gate
+      note: Registry token plus that registry's own identifier grammar.
+    shape.public_record_id.v1:
+      purpose: argv_shape_gate
+      note: Record-system token plus that system's own identifier grammar.
+    shape.postal_address.v1:
+      purpose: argv_shape_gate
+      note: Weak by construction. National address grammars are not fixed at v0.1.
+    shape.domain.v1:
+      purpose: argv_shape_gate
+      note: A fully qualified name, with the label rules and the length limit applied.
+    shape.image_phash.v1:
+      purpose: argv_shape_gate
+      note: Fixed-width hexadecimal, so this one is strong.
+    shape.geo_area.v1:
+      purpose: argv_shape_gate
+      note: A bounding box or a closed polygon, with ordinate ranges checked.
+    shape.time_window.v1:
+      purpose: argv_shape_gate
+      note: Two timestamps, with the start at or before the end.
+    hints.email.v1:
+      purpose: constraint_satisfaction
+      note: Decides whether a candidate address satisfies a prefix and suffix mask.
+    hints.phone.v1:
+      purpose: constraint_satisfaction
+      note: Decides whether a candidate number satisfies a suffix mask.
+
+# ---------------------------------------------------------------------------
+# REPO SCAN
+#
+# doctrine/RETENTION.md RT-15: no object containing a live selector is
+# committed, and the check runs before the commit rather than after. Git history
+# is append-only, distributed to every clone, and survives `git rm`, so the
+# repository is the one store per-case crypto-shred cannot reach.
+#
+# This block is what makes that check implementable. It is read by
+# `tools/validate_retention.py --repo-scan`, which is wired into
+# `.githooks/pre-commit` and currently checks nothing. That gap is D-001 and
+# Step 8 closes it.
+#
+# THE RULE THAT KEEPS THE SCAN FROM BECOMING THE SURFACE IT GUARDS. A finding
+# records the file, the line and the violation code, and never the string that
+# matched. doctrine/RETENTION.md RT-19 states it, and `tools/gate_log.py`
+# enforces it by refusing anything in `where` that is not a path or an
+# identifier.
+#
+# THE SECOND RULE, WHICH IS EASY TO GET BACKWARDS. There is never an allowlist
+# of live values. An allowlist of live selectors would be a permanent, tracked
+# file listing exactly the strings this doctrine exists to keep out of git. The
+# only allowlist is the synthetic one, and it is read from a sealed cast.
+# ---------------------------------------------------------------------------
+repo_scan:
+  criterion: doctrine/RETENTION.md RT-15
+  implemented_by: tools/validate_retention.py --repo-scan
+  status: D-001, a wired stub that checks nothing. Step 8 delivers it.
+  records_the_match: false
+  live_value_allowlist_permitted: false
+
+  # Which selector types a text scan can actually find. Splitting this three
+  # ways rather than claiming one list is the honest shape: a scan that says it
+  # covers `person_name` is claiming a capability no regex has.
+  shape_detectable:
+    - platform_uid
+    - channel
+    - handle
+    - username_string
+    - email
+    - phone
+    - domain
+    - image_phash
+    - org_registration_number
+    - public_record_id
+    - email_hint_recovery_masked
+    - phone_hint_recovery_masked
+    - email_generated_permutation
+  partially_detectable:
+    - postal_address
+    - geo_area
+    - time_window
+  not_shape_detectable:
+    - person_name
+    - person_name_alias
+    - org_name
+  detection_gap: A person's name, an alias and an organization's name are
+    ordinary words. The scan cannot find them, review is the only control, and
+    AGENTS.md section 4 is the rule that keeps them out in the first place.
+
+  synthetic_discrimination:
+    # RT-15 says the real implementation must tell a synthetic cast selector
+    # from a live one, or it refuses every commit that touches the design
+    # documents, which already carry the fictional cast.
+    source: synthetic/GROUND_TRUTH.yaml
+    before_seal:
+      cast_state: unsealed, every value a `<...>` placeholder
+      behaviour: The scan builds no synthetic allowlist, because there are no
+        filled values to build one from. It runs on shape alone, and any
+        shape-detectable match outside a declared document exemption is a
+        finding.
+      why: A cast that is not sealed has not fixed its truth partition, so a
+        value matching it proves nothing. tools/validate_cast.py already refuses
+        a filled value in the tracked draft while the cast is unsealed, which
+        means the two checks meet rather than overlap.
+    after_seal:
+      cast_state: sealed, with a recorded sha256 over the canonical form
+      behaviour: The filled values in the sealed truth file become the synthetic
+        allowlist. A match against one of them is permitted. Anything else is a
+        finding.
+      seal_binding: The allowlist is built only when seal.sealed is true and the
+        recomputed digest equals the recorded one. A cast whose hash does not
+        verify authorizes nothing, and the scan says so as its consequence
+        rather than as a token.
+
+  document_exemptions:
+    # RT-15 names both of these. An exemption is a named, reviewable gap and
+    # never a licence to add more, so each one lists the selector types it
+    # covers and requires review when the file changes.
+    - path: docs/PLAINSIGHT-design.md
+      selector_types: [platform_uid, handle, email_hint_recovery_masked, email_generated_permutation, postal_address]
+      reason: A rank 7 record of intent, moved in unchanged, whose worked examples
+        render an obfuscated address and a platform uid. Restyling it would
+        falsify a record of what was true when it was written.
+      review_required_on_change: true
+    - path: docs/THE-GAMEPLAN.md
+      selector_types: [platform_uid, handle, email_hint_recovery_masked]
+      reason: A rank 7 record of intent, moved in unchanged, quoting a case
+        narrative in the same shape.
+      review_required_on_change: true

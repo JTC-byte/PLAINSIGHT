@@ -1,0 +1,2280 @@
+# spec/layer-model.yaml
+#
+# The PSE layer model. This is the single source from which the event schema
+# enums, the semantics policy, the lineage policy, the producer-authority
+# policy, and the event-type half of the violation-code vocabulary are
+# generated at Step 7. ZMeta restates its event enum in the contract, the
+# schema, the field dictionary, and four policy files; docs/THE-GAMEPLAN.md
+# Step 5 exists so this repository does not inherit that. A rule that is stated
+# here is stated nowhere else by hand.
+#
+# Authority: rank 3, Class B (CLAUDE.md section 2, AGENTS.md section 3). The
+# doctrine at rank 1 wins every conflict with this file, and where a rank 7
+# draft (docs/PLAINSIGHT-FOUNDATION.md, docs/PLAINSIGHT-design.md) disagreed
+# with rank 1, rank 1 is what is written below and the divergence is recorded.
+#
+# Self-lint: tools/validate_layer_model.py. Every structural claim in this file
+# is checked there, and `--self-test` breaks the model in memory once per
+# direction a check guards, then asserts that the expected code fires and, for
+# a mutation whose damage does not cascade, that it is the only code that
+# fires. The tool prints the count, so no number is restated here. A rule that
+# no check can make refuse is not a rule (CLAUDE.md design gate 1).
+#
+# THE NINE, AND WHY NINE. DOCTRINE_STATUS.md stamps D6 as "event-type set,
+# nine" on 2026-08-27 and no governed file enumerates the nine. THE-GAMEPLAN.md
+# section 3.0 describes D6 as FOUNDATION section 4.2's seven (PROBE, EXTRACT,
+# LINK, CLUSTER, EXCLUDE, ASSESS, SYSTEM) with three added (AUTHORIZE, COLLECT,
+# ADJUDICATE), CLUSTER and EXCLUDE merged into IDENTITY, and PROBE split into
+# RUN_START, ITEM, RUN_END. The only arithmetic that yields nine is
+# 7 + 3 - 1 = 9, with the PROBE split happening at the subtype level. The two
+# alternative readings produce other counts: RUN_START, ITEM and RUN_END as
+# three separate types yields eleven; COLLECT as PROBE renamed rather than
+# added yields eight. The enumeration below is therefore an agent reading of a
+# stamped decision, recorded under pse.readings as LM-R1 and awaiting the
+# operator's confirmation. It binds nothing until confirmed.
+#
+# Voice: CLAUDE.md section 4, Register 1, applies to every comment here.
+# Comments say why a rule exists and cite the file and criterion id that
+# requires it. They do not cite line numbers, which drift.
+
+pse:
+  version: pse-event-0.1
+  status: Unlocked
+  derived_from: zmeta-event-1.0
+  authority_rank: 3
+  change_class: B
+  # D7: 0.1 rather than 1.0, and Unlocked in the header, because ZMeta's 1.0 is
+  # Locked and a matching number would be read as a matching commitment.
+  #
+  # OPEN QUESTION, for the operator. change_class B above describes this file's
+  # default. AGENTS.md section 3 defines Class D as a change to the event
+  # vocabulary, the layer model, or envelope semantics, and its rule 1 says a
+  # change carries the highest class it touches. Read together, most of this
+  # file is the layer model, which would make most changes to it Class D. Class
+  # assignment is AGENTS.md's lane and this file does not narrow it, so the
+  # question is recorded here rather than answered: does change_class B hold
+  # for any part of this file, and if so which part. Until it is settled, treat
+  # a change to event_types, layers or the envelope as Class D, needing a
+  # version bump and a divergence-register entry.
+  generates:
+    - path: schema/pse-event-0.1.schema.json
+      from: [envelope, event_types, confidence]
+    - path: policy/semantics.yaml
+      from: [layers, event_types.*.payload.prohibited, event_types.*.payload.rules]
+    - path: policy/lineage.yaml
+      from: [lineage, event_types.*.lineage]
+    - path: policy/producer-authority.yaml
+      from: [producer_authority, event_types.*.producer_authority]
+    - path: policy/violation-codes.yaml
+      from: [violation_codes]
+      scope: every code a rule in this file emits, which is the scope the section
+        header states and the only scope L-14 can hold. L-14 refuses a declared code
+        no rule here fires, so a code declared for closure alone cannot exist. Gate,
+        retention and hygiene codes appear because rules here fire them; their
+        fixtures and their runtime checks belong to their own validators.
+
+  # Interpretive readings this file had to make and the operator has not
+  # confirmed. Each names the sources in tension. Confirming one is a stamp in
+  # doctrine/DOCTRINE_STATUS.md, not an edit here.
+  readings:
+    - id: LM-R1
+      question: Which nine event types D6 stamped
+      reading: The nine under event_types, with PROBE split at subtype level.
+      alternatives:
+        - RUN_START, ITEM, RUN_END as three event types, giving eleven
+        - COLLECT_EVENT as PROBE_EVENT renamed rather than added, giving eight
+      sources: [doctrine/DOCTRINE_STATUS.md D6, docs/THE-GAMEPLAN.md section 3.0]
+      note: Section 3.0's D6 row excludes both alternatives in one clause. "Add
+        COLLECT_EVENT" excludes the rename, and the count nine stated alongside
+        "split PROBE into RUN_START/ITEM/RUN_END" excludes the eleven reading. The
+        reading stays open because no governed file enumerates the nine by name,
+        not because the alternatives are live.
+    - id: LM-R2
+      question: Whether numeric confidence exists anywhere at pse-event-0.1
+      reading: Prohibited on every type. The envelope field is reserved and refused.
+        The IDENTITY_EVENT CLUSTER band is the only ordinal in the model.
+      alternatives:
+        - Required on LINK_EVENT, as docs/PLAINSIGHT-FOUNDATION.md section 4.2 drafts
+      sources:
+        - docs/PLAINSIGHT-FOUNDATION.md section 4.2 requires confidence on LINK_EVENT
+        - docs/PLAINSIGHT-design.md section 8.4 CUT LIST A kills all machine confidence arithmetic
+        - CLAUDE.md design gate 6 forbids unlabelled numbers
+      note: Both design sources are rank 7 and conflict. The `confidence` section
+        below records the decision and the validator enforces whatever it declares.
+        Reversing it is five edits, not one; the procedure in that section names
+        them in order and the validator refuses a model with any subset applied.
+    - id: LM-R3
+      question: What source.environment carries
+      reading: EGRESS.md EG-1's two environments, LOCAL and ISOLATED.
+      alternatives:
+        - FOUNDATION section 4.2's node_role LOCAL, RUNNER, CLOUD
+      sources: [doctrine/EGRESS.md EG-1, docs/PLAINSIGHT-FOUNDATION.md section 4.2]
+      note: Rank 1 outranks a rank 7 draft. Recorded under divergences_from_zmeta.
+    - id: LM-R4
+      question: Which stratum the AUTHORIZE_EVENT payload sits in
+      reading: Stratum 2, because the payload carries the authorization act by
+        reference (an opaque authorization_ref, a class, an expiry, a depth) and a
+        name denylist refuses the selectors, the evidence reference, and the
+        purpose sentence. RETENTION.md RT-1 places the record itself and what it
+        points at in stratum 1; this event points at the record and carries none of
+        it under those names.
+      alternatives:
+        - Stratum 1, on a conservative reading that anything in the authorization chain dies with the case
+      sources: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-2, doctrine/SUBJECT_SELECTION.md SS-4]
+      note: What the mechanism delivers is narrower than "structurally forbidden",
+        which is what an earlier draft of this reading claimed. Two limits bound it.
+        First, the denylist matches names, so the residual recorded at
+        envelope.payload_denylist_recursion applies here too. Second, `reason` is a
+        free sentence a person writes, and the only thing standing between it and a
+        described subject is the reason_names_no_subject rule and the review it
+        names. The reading is that stratum 2 is right given those two, and the
+        operator confirms that judgment rather than a structural impossibility.
+    - id: LM-R5
+      question: Where retention acts live
+      reading: SYSTEM_EVENT subtypes, with the analyst-authored acts (extension,
+        freeze, renewal) restricted to named human identities by subtype and the
+        machine acts (heartbeats, receipts) open to runner-*.
+      alternatives:
+        - Extension, freeze and renewal as ADJUDICATE_EVENT subtypes, since RT-5 calls extension an analyst act
+      sources: [doctrine/RETENTION.md RT-5, doctrine/RETENTION.md RT-17, docs/PLAINSIGHT-design.md section 8.3]
+    - id: LM-R6
+      question: Which producers may emit each PROBE_EVENT subtype
+      reading: runner-* for RUN_START and RUN_END, because those carry
+        credential_id, egress, and the exit code, which the runner knows and the
+        connector adapter has no business asserting; connector-* for ITEM;
+        manual for all three so pasted evidence gets identical lineage treatment.
+      alternatives:
+        - connector-* on all three subtypes, as FOUNDATION section 4.2 sketches at type level
+      sources: [docs/PLAINSIGHT-FOUNDATION.md section 4.2, docs/PLAINSIGHT-design.md section 4.7, doctrine/CREDENTIAL_LIFECYCLE.md CR-3]
+    - id: LM-R7
+      question: Whether connectors may produce LINK_EVENT
+      reading: No. matcher-* only. docs/PLAINSIGHT-design.md section 6.1 says a
+        connector declares an inference_hint and the platform materializes the
+        proposal, so the producer of the LINK is the platform's matcher.
+      alternatives:
+        - matcher-* and connector-*, as FOUNDATION section 4.2 sketches
+      sources: [docs/PLAINSIGHT-design.md section 6.1, docs/PLAINSIGHT-FOUNDATION.md section 4.2]
+    - id: LM-R8
+      question: The evidence-class grouping behind the almost_certain band rule
+      reading: string [h, e, n], content [b], image [i], temporal [t], judgment
+        [g, k]. Design section 5.5 gives one example (a string match plus a
+        temporal match, not two string matches) and no table.
+      alternatives:
+        - Any grouping the operator prefers; the rule reads the map under event_types.IDENTITY_EVENT.payload.evidence_classes
+      sources: [docs/PLAINSIGHT-design.md section 5.5]
+      note: The consequence, which is what the operator is confirming rather than
+        the taxonomy. Putting h, e and n in one class makes the two commonest pairs
+        an analyst reaches for, a handle match plus an email match and an email
+        match plus a phone match, insufficient for band almost_certain. The design's
+        worked example is narrower than the class it is generalized into, ruling out
+        two string matches and saying nothing about which strings.
+    - id: LM-R9
+      question: Whether a credential has a fourth state, retired, beyond CR-2's three
+      reading: Exactly CR-2's three, active, quarantined and burned. An earlier draft
+        of this file wrote a fourth value, retired, and said in the same paragraph
+        that rank 1 wins. Writing the value rank 1 does not carry, while declaring
+        that rank 1 decides it, inverts the rank order this file states as its
+        method, so the enum now matches CR-2 and the question stays open here.
+      alternatives:
+        - A fourth value, retired. CR section 4 permits "rotating, retiring or adding
+          personas at any time" and CR-2 carries no state for a persona retired
+          without a burn, so the gap is real. Closing it is a stamp amending CR-2,
+          which is the operator's, and this file follows CR-2 until it moves.
+      sources: [doctrine/CREDENTIAL_LIFECYCLE.md CR-2, doctrine/CREDENTIAL_LIFECYCLE.md section 4, docs/PLAINSIGHT-design.md section 6.3]
+      note: Until the stamp exists, a persona retired without a burn is recorded as
+        a burn whose finding_ref names the retirement decision. That is lossy and it
+        is visible, which is the point of leaving it here rather than adding a value.
+    - id: LM-R10
+      question: Whether one COLLECT_EVENT PERMITTED may be the parent of more than
+        one PROBE_EVENT RUN_START
+      reading: None taken. The field-correspondence half of the D5 binding is a
+        defect and is fixed under event_types.PROBE_EVENT.payload.rules as
+        run_matches_its_decision. The cardinality half is a decision this file
+        cannot make, so no rule constrains it today and a PERMITTED may parent any
+        number of runs whose fields match it.
+      alternatives:
+        - One decision per run. SS-6 places the gate on "the one dispatch path",
+          which reads as one evaluation per dispatch, so a second RUN_START on the
+          same PERMITTED is a second dispatch the gate did not evaluate. Costs a
+          uniqueness constraint on the parent and refuses a retried run that reuses
+          its decision.
+        - Many runs per decision, with the retry as the motivating case. Keeps the
+          field-correspondence rule as the whole binding and accepts that a decision
+          evaluated once authorizes every dispatch whose fields it matches.
+      sources: [doctrine/SUBJECT_SELECTION.md SS-6, doctrine/SUBJECT_SELECTION.md SS-8, docs/PLAINSIGHT-FOUNDATION.md D5]
+    - id: LM-R11
+      question: Which of ADJUDICATE_EVENT's two target blocks governs when they
+        disagree
+      reading: None taken. lineage.allowed_targets grants REVOKE, ACKNOWLEDGE, NOTE
+        and QUESTION a LINK_EVENT target at type granularity, and
+        lineage.required_parents names only SAME_ENTITY for those four. A REVOKE
+        whose only parent is a CO_LOCATED link is legal under allowed_parents and
+        allowed_targets and illegal under required_parents. What the validator holds
+        is narrower than the question. It reconciles the two blocks in both
+        directions at type granularity, and it refuses an absent allowed_targets on
+        a type whose rules cite it, so neither block can drift from the other and
+        the rule cannot end up pointing at nothing. It cannot see this
+        disagreement, because allowed_targets carries no subtype dimension, and
+        giving it one is one of the two alternatives below.
+      alternatives:
+        - required_parents governs, and allowed_targets narrows to the subtypes
+          required_parents names. Revoking a CO_LOCATED link becomes impossible,
+          which is a capability the design has not asked for and may want.
+        - allowed_targets governs, and required_parents widens to every LINK subtype
+          for those four dispositions. Every proposal becomes revocable and
+          acknowledgeable, and the narrowing that made SAME_ENTITY special is gone.
+      sources: [docs/PLAINSIGHT-FOUNDATION.md D3, docs/PLAINSIGHT-design.md section 5.6]
+
+# ---------------------------------------------------------------------------
+# ENVELOPE
+# ---------------------------------------------------------------------------
+# Top-level shape of every event. additionalProperties is false at every
+# level, as in zmeta-event-1.0, so an unknown key is a refusal rather than a
+# silent extension.
+envelope:
+  required: [pse_version, derived_from, case_id, event, source, payload]
+  optional: [lineage]
+  # `confidence` is a top-level key in zmeta-event-1.0. It is reserved here and
+  # refused everywhere (see `confidence` below). It is listed so the generator
+  # emits `"confidence": false` rather than leaving the key undefined, which
+  # would let it in as an unknown property on a permissive validator.
+  reserved_refused: [confidence]
+  additional_properties: false
+  violation_codes:
+    - SCHEMA_INVALID
+    - VERSION_MISMATCH
+    - CASE_ID_MISSING
+    - EVENT_TYPE_UNKNOWN
+    - EVENT_SUBTYPE_MISMATCH
+    - ENUM_VALUE_INVALID
+    - PAYLOAD_FIELD_MISSING
+    - LAYER_COLLAPSE_NESTED
+    - CREDENTIAL_VALUE_IN_PAYLOAD
+  fields:
+    pse_version:
+      type: string
+      const: pse-event-0.1
+    derived_from:
+      type: string
+      const: zmeta-event-1.0
+      # D1. The fork is declared on every event so the two models can be told
+      # apart eighteen months from now without reading a design document.
+    case_id:
+      type: string
+      format: uuid
+      # Required on every event without exception. Nothing exists outside a
+      # case (docs/PLAINSIGHT-design.md section 2), and D4 keys the crypto-shred
+      # on it: an event without a case_id is an event the sweep cannot reach.
+    event:
+      type: object
+      required: [event_id, event_type, event_subtype, ts]
+      additional_properties: false
+      fields:
+        event_id: { type: string, format: uuid }
+        event_type: { type: string, enum_from: event_types }
+        event_subtype:
+          type: string
+          # Bound per type under event_types.*.subtypes and to the payload
+          # discriminator, which is zmeta-event-1.0's eventSubtypeConsistency
+          # and subtypePayloadMatch mechanism carried over unchanged.
+        ts:
+          type: string
+          format: date-time
+          # The time the producer emitted the event. For observation-layer
+          # events this is collection time and never the platform's asserted
+          # time, which lives in payload.temporal (docs/PLAINSIGHT-design.md
+          # section 2.2).
+    source:
+      type: object
+      required: [platform_id, environment, producer]
+      optional: [sw_version]
+      additional_properties: false
+      fields:
+        platform_id: { type: string, min_length: 1 }
+        environment:
+          type: string
+          enum: [LOCAL, ISOLATED]
+          # doctrine/EGRESS.md EG-1. The boundary between the two environments
+          # is which one may execute a connector. This replaces the FOUNDATION
+          # draft's node_role (LM-R3) and zmeta-event-1.0's five-role enum.
+        producer:
+          type: string
+          min_length: 1
+          # Checked against producer_authority before any semantic check runs.
+        sw_version: { type: [string, "null"] }
+    lineage:
+      type: object
+      required: [based_on]
+      optional: [transform]
+      additional_properties: false
+      fields:
+        based_on:
+          type: array
+          min_items: 1
+          items: { type: string, format: uuid }
+        transform:
+          type: [string, "null"]
+          # "translate:<schema_id>@<adapter_version>". Retroactive invalidation
+          # of an adapter's output becomes an index scan on this field
+          # (docs/PLAINSIGHT-design.md section 7.5).
+    payload:
+      type: object
+      # Shape bound per type and subtype under event_types.
+
+  # The denylist is recursive. Every name under a type's payload.prohibited is
+  # refused at any depth, so nesting cannot launder a layer violation
+  # (zmeta-spec policy/semantics.yaml carries the same mechanism). A hit at
+  # depth zero fires the group's own code; a hit at any greater depth fires
+  # LAYER_COLLAPSE_NESTED as well, so the corpus can prove recursion.
+  #
+  # Residual, carried from the precedent along with the mechanism. This is a
+  # name denylist, so a prohibited value re-keyed under a name the list does not
+  # carry still passes. zmeta-spec's policy/semantics.yaml records the same
+  # limitation for altitude re-keyed as `z_m` and calls it an accepted one. PSE
+  # inherits both the mechanism and the limitation, and every claim in this file
+  # about what a payload cannot carry is bounded by it. Two things narrow the
+  # residual: additional_properties is false at every level, so a re-keyed name
+  # has to be a declared field before it can arrive at all, and every declared
+  # field is in this file where a reviewer can see it.
+  payload_denylist_recursion:
+    mode: recursive
+    nested_hit_code: LAYER_COLLAPSE_NESTED
+
+# ---------------------------------------------------------------------------
+# LAYERS
+# ---------------------------------------------------------------------------
+# Closed both ways: every type names a layer here, and every layer here is
+# used by at least one type. `never_carries` is enforced, not descriptive:
+# the validator requires every type in a layer to prohibit every name listed,
+# so a layer rule cannot be true in this section and false in a type.
+#
+# `may_carry` is field names and is closed both ways against the types in the
+# layer: every name here is a top-level payload field some type in the layer
+# declares, and every top-level payload field those types declare is named
+# here. An earlier draft wrote English phrases here ("pivot depth", "gate
+# decision", "heartbeat fields") and policy/semantics.yaml is generated from
+# this section, so the generator was being handed six tokens that are not
+# fields. Nested fields belong to the field that carries them and are not
+# listed; source_ref.source_path is part of source_ref.
+layers:
+  authorization:
+    purpose: Who may be a subject, and the gate's decision at dispatch.
+    may_carry: [act, authorization_ref, subject_class, expires_on, pivot_depth_max,
+      authorized_by, purpose_hash, reason, decision, connector_id, target_selector_type,
+      motivated_by, subject_relation, pivot_depth, decided_at_step, incidental_estimate,
+      incidental_estimate_reason, bystander_disposition, extension_basis, refusal_basis,
+      never_item]
+    never_carries: [selectors, value, content, raw, cluster_id, members, confidence,
+      purpose, evidence_ref, sessionid, session_id, cookie, token, password, secret,
+      argv, command, credential, credential_value]
+    # SS-19: collected content is data, never an instruction, and it never
+    # reaches the layer that decides who is reached. `purpose` and `evidence_ref`
+    # are here rather than on one type because SS-4's record carries the seed
+    # selectors and, for S1, a named person: any event that references the record
+    # inlines stratum-1 material by naming them (RT-2).
+  observation:
+    purpose: What a tool saw, when, where in its output, and whether it saw nothing.
+    may_carry: [phase, run_id, connector_id, connector_version, connector_kind,
+      credential_id, egress, argv_template, motivated_by, target_selector_type,
+      target_ref, manifest_hash, method_id, item_id, locator, outcome, negative_class,
+      raw_ref, exit_code, error_class, retry_after_s, item_count, duration_ms,
+      http_status_chain, raw_blob_sha256, extract_kind, selector_type, value,
+      subject_ref, source_ref, extractor, temporal, negative_state, injection_tagged,
+      injection_family]
+    never_carries: [cluster_id, members, proposes, accepted, band, rationale_codes,
+      confidence, review_state, sessionid, session_id, cookie, token, password, secret,
+      argv, command, credential, credential_value]
+    # Observation never carries identity or confidence. An observation that
+    # says who it is about has collapsed two layers into one row.
+  inference:
+    purpose: A proposed relation, always unaccepted.
+    may_carry: [link_type, claim, model, based_on, accepted]
+    never_carries: [cluster_id, members, accepted_at, asserted_by, band, rationale_codes,
+      confidence, review_state, sessionid, session_id, cookie, token, password, secret,
+      argv, command, credential, credential_value]
+    # Inference never carries acceptance. Acceptance is an IDENTITY_EVENT by a
+    # named human (docs/PLAINSIGHT-design.md section 8.2 item 4).
+  fusion:
+    purpose: An analyst's identity assertion, or an affirmative exclusion.
+    may_carry: [assertion, cluster_id, members, asserted_by, rationale_codes, band,
+      last_supporting_ts, member_seams, basis_claims, note, hypothesis_set,
+      circularity_override, candidate_ref, basis, subject_ref]
+    never_carries: [confidence, rollup, weakest_seam, score, raw, value, source_path,
+      raw_span, model, accepted, link_type, review_state, sessionid, session_id, cookie,
+      token, password, secret, argv, command, credential, credential_value]
+    # Fusion never carries a rollup. Per-member seams always, aggregated never
+    # (docs/PLAINSIGHT-design.md section 5.5).
+  adjudication:
+    purpose: A human act on an object already in the case; D3's events rather than columns.
+    may_carry: [disposition, target_ref, analyst, in_course_of, reason, note, text,
+      promotion_kind, entity_type, entity_id, anchor_selector_type, anchor_claim_ref,
+      override_kind]
+    never_carries: [value, raw, source_path, raw_span, members, cluster_id, confidence,
+      sessionid, session_id, cookie, token, password, secret, argv, command, credential,
+      credential_value]
+    # An adjudication references the object it adjudicates and never
+    # re-carries its content. Re-carrying is how a mutable copy appears.
+  state:
+    purpose: Assessment sentences with citations. The DRAFT export boundary's only
+      input. RT-18's disclosure export is a separate path and exports the complete
+      case rather than a projection, so it reads more than this layer.
+    may_carry: [assessment_kind, subject_ref, subject_class, text, author, citations,
+      geo, paragraph_ref]
+    never_carries: [raw, features, measurement, source_path, raw_span, credential_ref,
+      value, members, confidence, sessionid, session_id, cookie, token, password, secret,
+      argv, command, credential, credential_value]
+    # State never carries raw. zmeta-spec's contract 7.7 raw-artifact denylist,
+    # kept, with source_path and raw_span added because in this model those
+    # are the raw pointers.
+  system:
+    purpose: Diagnostics, health, coverage, retention acts, credential state, heartbeats.
+    may_carry: [system_type, reason_code, original_event_id, connector_id, probe_unit,
+      state, canary_id, target_ref, t_start, t_end, verified, method, author, reason,
+      previous_retain_until, new_retain_until, freeze_expires_on, obligation,
+      expected_resolution_on, renewal_ordinal, receipt_hash, blob_count, checks_passed,
+      failed_check, halt_system_wide, credential_id, exit_criterion, finding_ref,
+      swept_count, next_due, ledger_only_count, storage_only_count]
+    never_carries: [value, offending_value, raw, content, selectors, members, cluster_id,
+      confidence, purpose, evidence_ref, sessionid, session_id, cookie, token, password,
+      secret, argv, command, credential, credential_value]
+    # RT-19: a diagnostic never carries the offending value. Otherwise the
+    # telemetry becomes the PII surface the gate exists to prevent.
+
+# ---------------------------------------------------------------------------
+# EVENT TYPES
+# ---------------------------------------------------------------------------
+# Per type: layer, subtypes with discriminator, required envelope fields,
+# payload (required per subtype, field shapes, prohibited groups with codes,
+# cross-event rules), confidence rule, lineage, producer authority, retention
+# strata, egress, and the codes the type's rules emit. The discriminator const
+# equals the subtype name, which is the zmeta-event-1.0 mechanism: the
+# subtype in the envelope and the discriminator in the payload must agree.
+#
+# Notation. `required` lists top-level payload field names per subtype.
+# `fields` gives shapes for the generator. `prohibited` is a list of groups,
+# each with names, the code a depth-zero hit fires, and why. A name appears in
+# at most one group per type, because the group's code is what the generated
+# policy emits and what a must-fail fixture asserts.
+#
+# `rules` are named checks the generator turns into policy entries. Each has a
+# `statement` for the reader, a `code`, a `cites` list, and two machine-readable
+# keys the generator reads instead of the statement:
+#
+#   `when`      the condition under which the rule applies. One of:
+#               `always`; `{ subtype: NAME }` or `{ subtype: [NAME, NAME] }`;
+#               `{ field: NAME, equals: VALUE }`; `{ field: NAME, contains: VALUE }`;
+#               `{ field: NAME, present: true }`; `{ all_of: [<condition>, ...] }`;
+#               or `runtime`, which means the condition is a fact about the case
+#               rather than a field on this event, so the wire schema cannot carry
+#               it. A `runtime` rule states `runtime_reason`.
+#   `requires`  the field names the rule makes required when `when` holds. An
+#               empty list means the rule constrains a value rather than requiring
+#               a field. Where `when` is `always` or names subtypes, the validator
+#               checks these names against payload.required for those subtypes, so
+#               a required field cannot be dropped while its rule still claims it.
+#
+# Without those two keys a value-conditional requirement exists only as English
+# and the schema generator has to invent the condition, which is the gap Step 5's
+# done-condition on the required-field list closes.
+#
+# `enum_when_string` on a field whose `type` is a union names the closed set the
+# value is drawn from when it arrives as a string. `incidental_estimate` is an
+# integer, or the string `unestimable`, and nothing else.
+
+event_types:
+
+  # ------------------------------------------------------------------ AUTHORIZE
+  AUTHORIZE_EVENT:
+    layer: authorization
+    description: The recorded authorization act, by reference to the SS-4 record,
+      plus its extension and its revocation. The record itself is stratum 1 and
+      never appears on the wire; the event carries its id, class, expiry, and depth.
+    subtypes:
+      GRANT: { discriminator: { path: payload.act, const: GRANT } }
+      EXTEND: { discriminator: { path: payload.act, const: EXTEND } }
+      REVOKE: { discriminator: { path: payload.act, const: REVOKE } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload]
+    payload:
+      required:
+        GRANT: [act, authorization_ref, subject_class, expires_on, pivot_depth_max, authorized_by, purpose_hash]
+        EXTEND: [act, authorization_ref, subject_class, expires_on, pivot_depth_max, authorized_by, purpose_hash, reason]
+        REVOKE: [act, authorization_ref, authorized_by, reason]
+      fields:
+        act: { type: string, enum: [GRANT, EXTEND, REVOKE] }
+        authorization_ref:
+          type: string
+          format: uuid
+          # Opaque id of the SS-4 record inside the case boundary.
+        subject_class:
+          type: string
+          enum: [S0, S1, S2, S3, S4, N0, L0]
+          # SUBJECT_SELECTION.md SS-1's set, minus S5, which SS-1 marks not
+          # authorizable. This file mirrors the doctrine's enum and does not
+          # decide it; policy/subject-authorization.yaml is the compiled source.
+        expires_on: { type: string, format: date }
+        pivot_depth_max: { type: integer, minimum: 0 }
+        authorized_by:
+          type: string
+          # The ratifier's identity from the session. Never free text.
+        purpose_hash:
+          type: string
+          # SS-4: the purpose sentence stays inside the case boundary and the
+          # surviving record carries its hash. The sentence itself is prohibited
+          # below so the event cannot describe the subject.
+        reason:
+          type: string
+          # Constrained as SS-4 constrains purpose: stated without naming or
+          # describing the subject, because this payload survives the shred (RT-2).
+          # The constraint has a rule and a code below rather than living in this
+          # comment, because a comment is not a mechanism (CLAUDE.md gate 1).
+      prohibited:
+        - names: [selectors, selector, evidence_ref, purpose, value, content, raw]
+          code: AUTHORIZATION_RECORD_INLINED
+          why: SS-4's record carries the exact seed selectors and, for S1, a named
+            person. Inlining any of it moves stratum-1 material into a stratum-2
+            event that survives the shred (RT-2).
+        - names: [cluster_id, members]
+          code: LAYER_FIELD_ABOVE_LAYER
+          why: The authorization layer has no identity.
+        - names: [confidence]
+          code: CONFIDENCE_PROHIBITED
+          why: LAYER_FIELD_ABOVE_LAYER fires only where no narrower code names the
+            field, and CONFIDENCE_PROHIBITED is the narrower code this type declares.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The argv family is here on every type
+            because the code's own declaration covers every payload and an earlier
+            draft prohibited these four on PROBE_EVENT alone, which left eight of
+            the nine types generating a schema branch that accepts a filled argv.
+      rules:
+        purpose_bound:
+          statement: A GRANT carries purpose_hash. A case with no purpose has no authorization.
+          code: CASE_PURPOSE_UNBOUND
+          when: { subtype: GRANT }
+          requires: [purpose_hash]
+          cites: [doctrine/SUBJECT_SELECTION.md SS-4]
+        reason_names_no_subject:
+          statement: reason states why the act was taken without naming or describing the
+            subject. This payload is stratum 2 and survives the shred, so a sentence that
+            describes a person puts subject-derived material in a surviving object, which
+            RT-2 calls a defect rather than a judgment call.
+          code: REASON_NAMES_SUBJECT
+          when: { field: reason, present: true }
+          requires: []
+          cites: [doctrine/RETENTION.md RT-2, doctrine/SUBJECT_SELECTION.md SS-4]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype: { GRANT: false, EXTEND: true, REVOKE: true }
+      allowed_parents:
+        AUTHORIZE_EVENT: [GRANT, EXTEND]
+      required_parents:
+        EXTEND: { any_of: [{ type: AUTHORIZE_EVENT, subtype: GRANT }, { type: AUTHORIZE_EVENT, subtype: EXTEND }] }
+        REVOKE: { any_of: [{ type: AUTHORIZE_EVENT, subtype: GRANT }, { type: AUTHORIZE_EVENT, subtype: EXTEND }] }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: true
+      wildcards: []
+      named: []
+      # No wildcard. An authorization nobody named is the injection path.
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 2
+      carries_subject_values: false
+      # LM-R4. Structurally safe because the prohibited group above refuses
+      # every field that could carry a subject value.
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: true
+    violation_codes: [AUTHORIZATION_RECORD_INLINED, LAYER_FIELD_ABOVE_LAYER, CREDENTIAL_VALUE_IN_PAYLOAD,
+      CASE_PURPOSE_UNBOUND, REASON_NAMES_SUBJECT, CONFIDENCE_PROHIBITED]
+
+  # -------------------------------------------------------------------- COLLECT
+  COLLECT_EVENT:
+    layer: authorization
+    description: The subject gate's decision at dispatch (SS-6, SS-7, SS-8). A
+      PROBE_EVENT RUN_START must have a COLLECT_EVENT PERMITTED parent, which is
+      what makes D5's gate a structural boundary rather than a function call.
+    subtypes:
+      PERMITTED: { discriminator: { path: payload.decision, const: PERMITTED } }
+      REQUIRES_EXTENSION: { discriminator: { path: payload.decision, const: REQUIRES_EXTENSION } }
+      REFUSED: { discriminator: { path: payload.decision, const: REFUSED } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload]
+    payload:
+      required:
+        PERMITTED: [decision, authorization_ref, connector_id, target_selector_type, subject_relation, pivot_depth, decided_at_step, incidental_estimate, bystander_disposition]
+        REQUIRES_EXTENSION: [decision, authorization_ref, connector_id, target_selector_type, subject_relation, pivot_depth, decided_at_step, extension_basis]
+        REFUSED: [decision, connector_id, target_selector_type, decided_at_step, refusal_basis]
+      fields:
+        decision: { type: string, enum: [PERMITTED, REQUIRES_EXTENSION, REFUSED] }
+        authorization_ref: { type: string, format: uuid }
+        connector_id: { type: string }
+        target_selector_type:
+          type: string
+          registry: ontology/selectors.yaml
+          # The registered type of the selector evaluated. Never its value.
+        motivated_by:
+          type: [string, "null"]
+          format: uuid
+          # The EXTRACT_EVENT that motivated this pivot, or null for a seed.
+          # SS-9: the pivot chain is lineage, and drift is evaluated over it.
+        subject_relation:
+          type: string
+          enum: [seed, pivot, incidental]
+          # SS-10: a computed column, never asserted by a connector. The gate
+          # computes it from the chain, which is why it lives on this event.
+        pivot_depth: { type: integer, minimum: 0 }
+        decided_at_step:
+          type: integer
+          enum: [1, 2, 3, 4, 5, 6]
+          # SS-8's evaluation order. 1 NEVER list, 2 record present and
+          # unexpired, 3 class available and baseline met, 4 selector in set or
+          # depth, 5 composed chain, 6 bystander declaration.
+        incidental_estimate:
+          type: [integer, string]
+          enum_when_string: [unestimable]
+          # SS-12. An integer, or the string unestimable with a reason. A blank
+          # field is a refusal.
+        incidental_estimate_reason: { type: string }
+        bystander_disposition:
+          type: string
+          enum: [count_only, refuse]
+          # SS-10, R8. Closed at v0.1. `retain` is defined in doctrine and
+          # refused; adding it here is Class F by effect (CLAUDE.md gate 2).
+        extension_basis:
+          type: string
+          enum: [selector_outside_set, pivot_depth_exceeded, chain_scope_drift]
+        refusal_basis:
+          type: string
+          enum: [never_item, authorization_missing, authorization_incomplete, authorization_expired, class_unavailable, baseline_missing, bystander_undeclared, disposition_out_of_set, incidental_estimate_missing, purpose_unbound]
+        never_item: { type: integer, enum: [1, 2, 3, 4, 5, 6] }
+      prohibited:
+        - names: [value, selector_value, content, raw, items, claims, body, text]
+          code: COLLECT_HAS_CONTENT
+          why: SS-19. The gate reads the authorization record and the chain,
+            never collected content, and its record carries none either.
+        - names: [purpose, evidence_ref]
+          code: AUTHORIZATION_RECORD_INLINED
+          why: This event references the SS-4 record through authorization_ref, and the
+            record carries the exact seed selectors and, for S1, a named person. The
+            reasoning that put these two on AUTHORIZE_EVENT applies unchanged to every
+            stratum-2 event that references the same record (RT-2).
+        - names: [selectors, cluster_id, members]
+          code: LAYER_FIELD_ABOVE_LAYER
+          why: The gate decides on a selector type and a chain, not on identity.
+        - names: [confidence]
+          code: CONFIDENCE_PROHIBITED
+          why: LAYER_FIELD_ABOVE_LAYER fires only where no narrower code names the
+            field, and CONFIDENCE_PROHIBITED is the narrower code this type declares.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The gate runs before a credential is drawn
+            (SS-6), and it constructs no argv, so neither family has a legitimate place here.
+      rules:
+        incidental_estimate_present:
+          statement: A PERMITTED decision for a connector that reaches beyond its named
+            selector carries incidental_estimate as an integer, or unestimable with
+            incidental_estimate_reason. Absent or blank is a refusal.
+          code: INCIDENTAL_ESTIMATE_MISSING
+          when: runtime
+          runtime_reason: Whether a connector reaches beyond its named selector is a fact
+            about its manifest, not a field on this event, so the wire schema cannot carry
+            the condition. The gate evaluates it against the manifest at dispatch.
+          requires: [incidental_estimate]
+          cites: [doctrine/SUBJECT_SELECTION.md SS-12]
+        disposition_in_set:
+          statement: bystander_disposition is count_only or refuse. Any other value refuses.
+          code: BYSTANDER_DISPOSITION_OUT_OF_SET
+          when: { subtype: PERMITTED }
+          requires: [bystander_disposition]
+          cites: [doctrine/SUBJECT_SELECTION.md SS-10]
+        purpose_bound:
+          statement: A PERMITTED decision resolves authorization_ref to a GRANT carrying purpose_hash.
+          code: CASE_PURPOSE_UNBOUND
+          when: { subtype: PERMITTED }
+          requires: [authorization_ref]
+          cites: [doctrine/SUBJECT_SELECTION.md SS-4, docs/THE-GAMEPLAN.md section 2.3 fixture 14]
+        refusal_rendered_as_consequence:
+          statement: REQUIRES_EXTENSION and REFUSED render as their consequence, never
+            as the token (SS-7 table). This is a rendering rule the generator
+            carries into the UI slot declarations, not a wire check.
+          code: null
+          when: { subtype: [REQUIRES_EXTENSION, REFUSED] }
+          requires: []
+          cites: [doctrine/SUBJECT_SELECTION.md SS-7, CLAUDE.md section 4]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype: { PERMITTED: true, REQUIRES_EXTENSION: true, REFUSED: false }
+      # A REFUSED at SS-8 step 2 has no authorization record to point at, so
+      # lineage is optional there. When present, the parents are still typed.
+      allowed_parents:
+        AUTHORIZE_EVENT: [GRANT, EXTEND]
+        EXTRACT_EVENT: [CLAIM]
+      required_parents:
+        PERMITTED: { any_of: [{ type: AUTHORIZE_EVENT, subtype: GRANT }, { type: AUTHORIZE_EVENT, subtype: EXTEND }] }
+        REQUIRES_EXTENSION: { any_of: [{ type: AUTHORIZE_EVENT, subtype: GRANT }, { type: AUTHORIZE_EVENT, subtype: EXTEND }] }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: false
+      wildcards: []
+      named: [runner-subject-guard]
+      # Exactly one named producer and no wildcard. SS-6 puts the gate inside
+      # the runner on the one dispatch path; a second producer for this type
+      # would be a second gate.
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 2
+      carries_subject_values: false
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: true
+    violation_codes: [AUTHORIZATION_RECORD_INLINED, COLLECT_HAS_CONTENT, LAYER_FIELD_ABOVE_LAYER,
+      CREDENTIAL_VALUE_IN_PAYLOAD, INCIDENTAL_ESTIMATE_MISSING, BYSTANDER_DISPOSITION_OUT_OF_SET,
+      CASE_PURPOSE_UNBOUND, CONFIDENCE_PROHIBITED]
+
+  # ---------------------------------------------------------------------- PROBE
+  PROBE_EVENT:
+    layer: observation
+    description: One tool invocation as three append-only events. D3 forbids
+      filling in `ended` later, so a run is RUN_START, zero or more ITEMs, and
+      RUN_END.
+    subtypes:
+      RUN_START: { discriminator: { path: payload.phase, const: RUN_START } }
+      ITEM: { discriminator: { path: payload.phase, const: ITEM } }
+      RUN_END: { discriminator: { path: payload.phase, const: RUN_END } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload, lineage]
+    payload:
+      required:
+        RUN_START: [phase, run_id, connector_id, connector_version, connector_kind, credential_id, egress, argv_template, motivated_by, target_selector_type, manifest_hash]
+        ITEM: [phase, run_id, item_id, locator, outcome, raw_ref]
+        RUN_END: [phase, run_id, exit_code, error_class, item_count, duration_ms]
+      fields:
+        phase: { type: string, enum: [RUN_START, ITEM, RUN_END] }
+        run_id: { type: string, format: uuid }
+        connector_id: { type: string }
+        connector_version: { type: string }
+        connector_kind:
+          type: string
+          enum: [one_shot, expansion, continuous, reference, geo]
+          # docs/PLAINSIGHT-design.md section 6: the five shapes. A new kind is a
+          # platform release (CLAUDE.md gate 8).
+        credential_id:
+          type: [string, "null"]
+          # CR-3: the id, never the value. Null for unauthenticated connectors
+          # and for manual evidence.
+        egress:
+          type: object
+          required: [environment, egress_identity]
+          fields:
+            environment: { type: string, enum: [ISOLATED] }
+            egress_identity: { type: string }
+          # EG-6: a required stratum-2 field on every run, naming the
+          # environment and its egress identity. Only ISOLATED is legal here;
+          # a run from LOCAL is refused, not annotated.
+        argv_template:
+          type: string
+          # Values redacted. RT-1 stratum 2 lists "argv template with values
+          # redacted" as skeleton; the filled argv is prohibited below.
+        motivated_by:
+          type: [string, "null"]
+          format: uuid
+          # The claim that motivated this run, or null for a seed run. SS-9.
+        target_selector_type: { type: string, registry: ontology/selectors.yaml }
+        target_ref:
+          type: string
+          format: uuid
+          # Opaque id of the selector record inside the case. Not the value.
+        manifest_hash: { type: string }
+        method_id:
+          type: string
+          # For producer manual: the reference-method id that stands in for
+          # argv (docs/PLAINSIGHT-design.md section 4.7).
+        item_id: { type: string, format: uuid }
+        locator:
+          type: string
+          # site_id, channel plus message id, row ordinal, or snap id. Subject
+          # derived, so ITEM is stratum 1.
+        outcome:
+          type: string
+          enum: [hit, miss, error, throttled, ambiguous]
+        negative_class:
+          type: [string, "null"]
+          # From the manifest's distinguishable_negatives when outcome is miss.
+        raw_ref:
+          type: object
+          required: [blob_sha256]
+          fields:
+            blob_sha256: { type: string }
+            raw_span: { type: [array, "null"] }
+          # The bytes live in the blob store by sha256 (design section 8.3).
+        exit_code: { type: integer }
+        error_class:
+          type: string
+          enum: [ok, empty, throttled, auth_failed, blocked, malformed, error]
+          # Adapter code, never a YAML regex (docs/PLAINSIGHT-FOUNDATION.md
+          # section 4.4).
+        retry_after_s: { type: [integer, "null"] }
+        item_count: { type: integer, minimum: 0 }
+        duration_ms: { type: integer, minimum: 0 }
+        http_status_chain: { type: array, items: { type: integer } }
+        raw_blob_sha256: { type: [string, "null"] }
+      prohibited:
+        - names: [argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: The filled argv carries the credential when a tool takes it as a flag
+            (the measured toutatis defect, CR-3), and carries the selector value,
+            which would put stratum-1 material in a stratum-2 RUN_START (RT-2). Every
+            type prohibits these four; this group keeps its own entry because PROBE_EVENT
+            is the type where the defect was measured and the reason is worth reading here.
+        - names: [sessionid, session_id, cookie, token, password, secret]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3.
+        - names: [raw, raw_bytes, stdout, stderr, body, response]
+          code: OBSERVATION_HAS_INLINE_RAW
+          why: Raw capture is stratum 0, addressed by sha256 through raw_ref.
+            Inline bytes make the raw blob unenumerable and the shred unverifiable (RT-9).
+        - names: [selector_type, value, claims, proposes]
+          code: OBSERVATION_HAS_CLAIM
+          why: An ITEM is a locator plus an outcome. A field asserted by an item is
+            an EXTRACT_EVENT, and folding it in collapses Run, Item, Claim to Run,
+            Claim (docs/PLAINSIGHT-design.md section 2.1).
+        - names: [cluster_id, members, accepted, band, rationale_codes]
+          code: OBSERVATION_HAS_IDENTITY
+          why: Observation never carries identity.
+        - names: [confidence]
+          code: CONFIDENCE_PROHIBITED
+          why: See `confidence`.
+        - names: [review_state]
+          code: EXTRACT_HAS_REVIEW_STATE
+          why: D3. Adjudication is an appended event.
+      rules:
+        environment_is_isolated:
+          statement: RUN_START carries egress.environment ISOLATED and source.environment ISOLATED. A run from LOCAL is refused.
+          code: EGRESS_ENVIRONMENT_REFUSED
+          when: { subtype: RUN_START }
+          requires: [egress]
+          cites: [doctrine/EGRESS.md EG-6, doctrine/EGRESS.md EG-1]
+        run_permitted:
+          statement: RUN_START resolves a COLLECT_EVENT PERMITTED parent in lineage. Without it the run was never gated.
+          code: SUBJECT_NOT_AUTHORIZED
+          when: { subtype: RUN_START }
+          requires: []
+          cites: [doctrine/SUBJECT_SELECTION.md SS-6, docs/PLAINSIGHT-FOUNDATION.md D5]
+        run_matches_its_decision:
+          statement: RUN_START's connector_id, target_selector_type and motivated_by equal
+            those of the COLLECT_EVENT PERMITTED it names in lineage.based_on. A run whose
+            fields differ from its decision's is a dispatch the gate never evaluated, even
+            though a PERMITTED resolves in lineage. Without this rule, one PERMITTED
+            authorizes any number of runs against selectors and connectors it never saw,
+            which is the shape SS-5 records as a field declared, listed, printed, and never
+            read by check().
+          code: SUBJECT_NOT_AUTHORIZED
+          when: { subtype: RUN_START }
+          requires: [connector_id, target_selector_type, motivated_by]
+          open_reading: LM-R10
+          cites: [doctrine/SUBJECT_SELECTION.md SS-5, doctrine/SUBJECT_SELECTION.md SS-6,
+            doctrine/SUBJECT_SELECTION.md SS-8, docs/PLAINSIGHT-FOUNDATION.md D5]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype: { RUN_START: true, ITEM: true, RUN_END: true }
+      allowed_parents:
+        COLLECT_EVENT: [PERMITTED]
+        PROBE_EVENT: [RUN_START]
+      required_parents:
+        # THE D5 LINE. tools/validate_layer_model.py checks this entry by name
+        # so deleting it fails the gate rather than silently widening dispatch.
+        RUN_START: { any_of: [{ type: COLLECT_EVENT, subtype: PERMITTED }] }
+        ITEM: { any_of: [{ type: PROBE_EVENT, subtype: RUN_START }] }
+        RUN_END: { any_of: [{ type: PROBE_EVENT, subtype: RUN_START }] }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: false
+      wildcards: [runner-*]
+      named: [manual]
+      by_subtype:
+        RUN_START: { wildcards: [runner-*], named: [manual] }
+        ITEM: { wildcards: [connector-*], named: [manual] }
+        RUN_END: { wildcards: [runner-*], named: [manual] }
+      # LM-R6. `manual` is the analyst-pasted evidence producer from design
+      # section 4.7, given identical lineage treatment and distinguished by
+      # producer. Every subtype has a by_subtype entry, so the type-level lists
+      # above grant nothing here; connector-* was in that list until 2026-09-03
+      # and was dead under the replace rule the section header states, and a
+      # producer of RUN_START under any other reading, which LM-R6 rejects by name.
+    retention:
+      envelope_stratum: 2
+      payload_stratum: { RUN_START: 2, ITEM: 1, RUN_END: 2 }
+      carries_subject_values: { RUN_START: false, ITEM: true, RUN_END: false }
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: { RUN_START: true, ITEM: false, RUN_END: true }
+    violation_codes: [CREDENTIAL_VALUE_IN_PAYLOAD, OBSERVATION_HAS_INLINE_RAW, OBSERVATION_HAS_CLAIM, OBSERVATION_HAS_IDENTITY, CONFIDENCE_PROHIBITED, EXTRACT_HAS_REVIEW_STATE, EGRESS_ENVIRONMENT_REFUSED, SUBJECT_NOT_AUTHORIZED]
+
+  # -------------------------------------------------------------------- EXTRACT
+  EXTRACT_EVENT:
+    layer: observation
+    description: One claim. One field asserted by one item, named by its datum at
+      the decode boundary (D2), with two timestamps and a provenance enum.
+    subtypes:
+      CLAIM: { discriminator: { path: payload.extract_kind, const: CLAIM } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload, lineage]
+    payload:
+      required:
+        CLAIM: [extract_kind, selector_type, value, source_ref, extractor, temporal, negative_state]
+      fields:
+        extract_kind: { type: string, enum: [CLAIM] }
+        selector_type:
+          type: string
+          registry: ontology/selectors.yaml
+          # D2. Must be registered. The cross-file check lands with
+          # tools/validate_ontology.py at Step 6; the rule is stated here.
+        value: { type: [string, number, boolean, "null"] }
+        subject_ref:
+          type: [string, "null"]
+          format: uuid
+          # The entity this claim is about, once an analyst has promoted one.
+          # Null until then: a connector never materializes a PersonCandidate.
+        source_ref:
+          type: object
+          required: [item_id, source_path]
+          fields:
+            item_id: { type: string, format: uuid }
+            source_path: { type: string }
+            raw_span: { type: [array, "null"] }
+        extractor:
+          type: object
+          required: [name, version]
+          fields:
+            name: { type: string }
+            version: { type: string }
+        temporal:
+          type: object
+          required: [observed_at, time_provenance]
+          fields:
+            observed_at: { type: string, format: date-time }
+            asserted_at: { type: [string, "null"], format: date-time }
+            time_provenance:
+              type: string
+              enum: [collection_time, platform_declared, inferred_relative, absent]
+          # docs/PLAINSIGHT-design.md section 2.2. Replaces zmeta-event-1.0's
+          # timing_quality wholesale; the discipline (mandatory, degraded by
+          # default, never repaired) is kept.
+        negative_state:
+          type: string
+          enum: [present, attempted_and_absent, not_attempted, attempt_failed]
+          # Stored from v1, rendered as evidence only once always_present is
+          # canary-proven (design section 8.5).
+        injection_tagged:
+          type: boolean
+          # SS-21: the item is tagged at the extract boundary when a collected
+          # value matches an injection signature. The tag dies with the case.
+        injection_family:
+          type: [string, "null"]
+          # The payload family, which is a stratum-3 finding when aggregated.
+      prohibited:
+        - names: [confidence]
+          code: EXTRACT_HAS_CONFIDENCE
+          why: An observation with a confidence is a guess wearing a number
+            (CLAUDE.md gate 6, design section 5.1).
+        - names: [review_state, verified, disputed, verified_by]
+          code: EXTRACT_HAS_REVIEW_STATE
+          why: D3. Adjudication is an appended ADJUDICATE_EVENT, never a column.
+        - names: [cluster_id, members, proposes, accepted, band, rationale_codes]
+          code: OBSERVATION_HAS_IDENTITY
+          why: Observation never carries identity.
+        - names: [link_type, model]
+          code: OBSERVATION_HAS_INFERENCE
+          why: A claim is not a proposal. A matcher's output is a LINK_EVENT.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The argv family is here on every type
+            because the code's own declaration covers every payload and an earlier
+            draft prohibited these four on PROBE_EVENT alone, which left eight of
+            the nine types generating a schema branch that accepts a filled argv.
+      rules:
+        selector_type_registered:
+          statement: selector_type is a key in ontology/selectors.yaml. The vocabulary is closed at the corpus boundary, not only at the manifest.
+          code: SELECTOR_TYPE_UNREGISTERED
+          when: { subtype: CLAIM }
+          requires: [selector_type]
+          cites: [docs/PLAINSIGHT-FOUNDATION.md D2, docs/THE-GAMEPLAN.md section 2.3 fixture 10]
+        absence_requires_canary:
+          statement: negative_state attempted_and_absent is refused for a field whose
+            always_present is not proven by the connector's known_positive canary.
+            Otherwise an over-optimistic emits list manufactures negative evidence
+            from a YAML typo.
+          code: ABSENCE_CLAIMED_WITHOUT_CANARY
+          when: { field: negative_state, equals: attempted_and_absent }
+          requires: []
+          cites: [docs/PLAINSIGHT-design.md section 5.2, docs/PLAINSIGHT-design.md section 8.4]
+        temporal_never_repaired:
+          statement: time_provenance absent is legal and asserted_at null is legal.
+            A producer that fills asserted_at from observed_at has repaired a
+            corrupt datum, and the corpus carries a fixture for it.
+          code: ENUM_VALUE_INVALID
+          when: { subtype: CLAIM }
+          requires: [temporal]
+          cites: [docs/PLAINSIGHT-design.md section 2.2]
+    confidence: { rule: prohibited, violation_code: EXTRACT_HAS_CONFIDENCE }
+    lineage:
+      required_by_subtype: { CLAIM: true }
+      allowed_parents:
+        PROBE_EVENT: [ITEM]
+      required_parents:
+        CLAIM: { any_of: [{ type: PROBE_EVENT, subtype: ITEM }] }
+        # A claim with no item is uncitable by construction (fixture 13).
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: false
+      wildcards: [connector-*, extractor-*]
+      named: [manual]
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 1
+      carries_subject_values: true
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: false
+    violation_codes: [EXTRACT_HAS_CONFIDENCE, EXTRACT_HAS_REVIEW_STATE, OBSERVATION_HAS_IDENTITY,
+      OBSERVATION_HAS_INFERENCE, CREDENTIAL_VALUE_IN_PAYLOAD, SELECTOR_TYPE_UNREGISTERED,
+      ABSENCE_CLAIMED_WITHOUT_CANARY, ENUM_VALUE_INVALID]
+
+  # ----------------------------------------------------------------------- LINK
+  LINK_EVENT:
+    layer: inference
+    description: A proposed relation from a matcher. Always unaccepted. Acceptance
+      is an IDENTITY_EVENT by a named human.
+    subtypes:
+      SAME_ENTITY: { discriminator: { path: payload.link_type, const: SAME_ENTITY } }
+      ASSOCIATED_WITH: { discriminator: { path: payload.link_type, const: ASSOCIATED_WITH } }
+      CO_LOCATED: { discriminator: { path: payload.link_type, const: CO_LOCATED } }
+      CONTROLS: { discriminator: { path: payload.link_type, const: CONTROLS } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload, lineage]
+    payload:
+      required:
+        SAME_ENTITY: [link_type, claim, model, based_on, accepted]
+        ASSOCIATED_WITH: [link_type, claim, model, based_on, accepted]
+        CO_LOCATED: [link_type, claim, model, based_on, accepted]
+        CONTROLS: [link_type, claim, model, based_on, accepted]
+      fields:
+        link_type:
+          type: string
+          enum: [SAME_ENTITY, ASSOCIATED_WITH, CO_LOCATED, CONTROLS]
+          # Upper case so the discriminator const equals the subtype name, the
+          # zmeta-event-1.0 mechanism. FOUNDATION section 4.2 drafted lower case.
+        claim:
+          type: object
+          required: [subject_refs, predicate]
+          fields:
+            subject_refs: { type: array, min_items: 2, items: { type: string, format: uuid } }
+            predicate: { type: string }
+            rationale_template: { type: [string, "null"] }
+        model:
+          type: object
+          required: [name, version]
+          fields:
+            name: { type: string }
+            version: { type: string }
+            calibration_ref: { type: [string, "null"] }
+            # THE-GAMEPLAN section 2.2: an unscored matcher may not be an
+            # identity basis. policy/matcher-calibration.yaml un-defers before
+            # the first matcher merges, and this is where it will be cited.
+        based_on: { type: array, min_items: 1, items: { type: string, format: uuid } }
+        accepted:
+          type: boolean
+          const: false
+          # Structural. A LINK is always proposed. Required and const false so
+          # a proposal cannot be read as accepted by omission.
+      prohibited:
+        - names: [cluster_id, members, asserted_by, band, rationale_codes, member_seams]
+          code: INFERENCE_HAS_FUSION_STATE
+          why: A proposal that names a cluster has skipped the human act that creates one.
+        - names: [accepted_at, accepted_by, review_state]
+          code: LINK_HAS_ACCEPTANCE
+          why: Acceptance is a separate human act.
+        - names: [confidence, score, probability]
+          code: CONFIDENCE_PROHIBITED
+          why: LM-R2. See `confidence`.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The argv family is here on every type
+            because the code's own declaration covers every payload and an earlier
+            draft prohibited these four on PROBE_EVENT alone, which left eight of
+            the nine types generating a schema branch that accepts a filled argv.
+      rules:
+        accepted_const_false:
+          statement: accepted is present and false. A LINK arriving with accepted true is refused (fixture 12).
+          code: LINK_HAS_ACCEPTANCE
+          when: always
+          requires: [accepted]
+          cites: [docs/PLAINSIGHT-design.md section 8.2, docs/PLAINSIGHT-FOUNDATION.md section 4.2]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype: { SAME_ENTITY: true, ASSOCIATED_WITH: true, CO_LOCATED: true, CONTROLS: true }
+      allowed_parents:
+        EXTRACT_EVENT: [CLAIM]
+      required_parents:
+        SAME_ENTITY: { any_of: [{ type: EXTRACT_EVENT, subtype: CLAIM }] }
+        ASSOCIATED_WITH: { any_of: [{ type: EXTRACT_EVENT, subtype: CLAIM }] }
+        CO_LOCATED: { any_of: [{ type: EXTRACT_EVENT, subtype: CLAIM }] }
+        CONTROLS: { any_of: [{ type: EXTRACT_EVENT, subtype: CLAIM }] }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: false
+      wildcards: [matcher-*]
+      named: []
+      # LM-R7. Proposals only, and only from the platform's matchers.
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 1
+      carries_subject_values: true
+      # Every field is an opaque reference and the proposal is still a derived
+      # statement about a person. RT-1 lists inferences in stratum 1.
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: false
+    violation_codes: [INFERENCE_HAS_FUSION_STATE, LINK_HAS_ACCEPTANCE, CONFIDENCE_PROHIBITED, CREDENTIAL_VALUE_IN_PAYLOAD]
+
+  # ------------------------------------------------------------------- IDENTITY
+  IDENTITY_EVENT:
+    layer: fusion
+    description: An analyst's identity assertion (CLUSTER) or affirmative exclusion
+      (EXCLUDE). The cluster references accounts and never absorbs them, so split
+      is a revocation and costs nothing (design section 5.6).
+    subtypes:
+      CLUSTER: { discriminator: { path: payload.assertion, const: CLUSTER } }
+      EXCLUDE: { discriminator: { path: payload.assertion, const: EXCLUDE } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload, lineage]
+    payload:
+      required:
+        CLUSTER: [assertion, cluster_id, members, asserted_by, rationale_codes, band, last_supporting_ts, member_seams, basis_claims]
+        EXCLUDE: [assertion, candidate_ref, asserted_by, basis]
+      fields:
+        assertion: { type: string, enum: [CLUSTER, EXCLUDE] }
+        cluster_id: { type: string, format: uuid }
+        members: { type: array, min_items: 2, items: { type: string, format: uuid } }
+        asserted_by:
+          type: string
+          # From the session. Never free text.
+        rationale_codes:
+          type: array
+          min_items: 1
+          items: { type: string, enum: [h, e, n, b, i, t, g, k] }
+          # docs/PLAINSIGHT-design.md section 5.5. Closed. g is analyst gestalt
+          # and needs no note at merge time; k is external knowledge and does.
+        band:
+          type: string
+          enum: [possible, likely, almost_certain]
+          # The only ordinal in the model, kept because it is mechanically
+          # consequential: possible needs a caveat to cite, almost_certain needs
+          # two rationale codes from different evidence classes.
+        last_supporting_ts: { type: string, format: date-time }
+        member_seams:
+          type: object
+          # member id to the rationale codes that hold for that member. Shown
+          # always, aggregated never.
+        basis_claims:
+          type: array
+          min_items: 1
+          items: { type: string, format: uuid }
+          # The claims selected as basis. A subset of lineage.based_on.
+        note: { type: [string, "null"] }
+        hypothesis_set: { type: [string, "null"] }
+        circularity_override:
+          type: [object, "null"]
+          required: [note]
+          fields: { note: { type: string } }
+          # Design section 5.5: override is possible, requires a note, and the
+          # inference carries a permanent circular badge.
+        candidate_ref: { type: string, format: uuid }
+        basis: { type: string }
+        subject_ref: { type: [string, "null"], format: uuid }
+      evidence_classes:
+        # LM-R8. Read by the band rule.
+        string: [h, e, n]
+        content: [b]
+        image: [i]
+        temporal: [t]
+        judgment: [g, k]
+      prohibited:
+        - names: [confidence, rollup, weakest_seam, score, probability]
+          code: CLUSTER_HAS_ROLLUP_CONFIDENCE
+          why: A strong pair plus a doubtful third is not a weak cluster, and a
+            rollup hides which member is the problem (design section 8.4).
+        - names: [raw, value, source_path, raw_span, features]
+          code: RAW_ABOVE_OBSERVATION
+          why: Fusion references claims by id and never re-carries their content.
+        - names: [model, accepted, link_type, review_state]
+          code: FUSION_HAS_INFERENCE_FIELDS
+          why: A human assertion wearing a matcher's fields is a matcher output
+            laundered into fusion.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The argv family is here on every type
+            because the code's own declaration covers every payload and an earlier
+            draft prohibited these four on PROBE_EVENT alone, which left eight of
+            the nine types generating a schema branch that accepts a filled argv.
+      rules:
+        members_min_two:
+          statement: A CLUSTER has at least two members. One account is not an identity assertion.
+          code: CLUSTER_MEMBERS_INSUFFICIENT
+          when: { subtype: CLUSTER }
+          requires: [members]
+          cites: [docs/PLAINSIGHT-FOUNDATION.md section 4.2]
+        rationale_present:
+          statement: rationale_codes has at least one code, and member_seams names at least one code per member.
+          code: RATIONALE_MISSING
+          when: { subtype: CLUSTER }
+          requires: [rationale_codes, member_seams]
+          cites: [docs/PLAINSIGHT-design.md section 5.5, docs/PLAINSIGHT-design.md section 8.2]
+        external_knowledge_needs_note:
+          statement: rationale_codes containing k requires note. g does not, at merge time; the note is required at the export boundary instead.
+          code: RATIONALE_NOTE_MISSING
+          when: { field: rationale_codes, contains: k }
+          requires: [note]
+          cites: [docs/PLAINSIGHT-design.md section 5.5]
+        almost_certain_needs_two_classes:
+          statement: band almost_certain requires rationale_codes drawn from at least two
+            distinct evidence_classes. Two string matches do not qualify.
+          code: BAND_UNSUPPORTED
+          when: { field: band, equals: almost_certain }
+          requires: []
+          cites: [docs/PLAINSIGHT-design.md section 5.5]
+        circularity:
+          statement: Refused when any basis claim's selector traces to a GENERATED origin,
+            or to an observation produced by pivoting on a value emitted by one of
+            the members, unless circularity_override carries a note. The walk is
+            over lineage, which is why lineage is required here.
+          code: MERGE_CIRCULAR
+          when: { subtype: CLUSTER }
+          requires: []
+          cites: [docs/PLAINSIGHT-design.md section 5.5, docs/PLAINSIGHT-design.md section 4.6]
+    confidence: { rule: prohibited, violation_code: CLUSTER_HAS_ROLLUP_CONFIDENCE }
+    lineage:
+      required_by_subtype: { CLUSTER: true, EXCLUDE: true }
+      allowed_parents:
+        EXTRACT_EVENT: [CLAIM]
+        LINK_EVENT: [SAME_ENTITY, ASSOCIATED_WITH, CO_LOCATED, CONTROLS]
+        IDENTITY_EVENT: [CLUSTER]
+      required_parents:
+        CLUSTER:
+          any_of:
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+            - { type: LINK_EVENT, subtype: SAME_ENTITY }
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+        EXCLUDE:
+          any_of:
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+            - { type: LINK_EVENT, subtype: SAME_ENTITY }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: true
+      wildcards: []
+      named: []
+      # NO WILDCARD. "There is no state-projector wildcard because an unnamed
+      # authoritative track is an injection path" (zmeta-spec). Same reasoning:
+      # an unnamed identity assertion is the injection path here. A connector
+      # cannot create a cluster because this check fires before any semantic
+      # check runs (fixture 11).
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 1
+      carries_subject_values: true
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: false
+    violation_codes: [CLUSTER_HAS_ROLLUP_CONFIDENCE, RAW_ABOVE_OBSERVATION, FUSION_HAS_INFERENCE_FIELDS,
+      CREDENTIAL_VALUE_IN_PAYLOAD, CLUSTER_MEMBERS_INSUFFICIENT, RATIONALE_MISSING,
+      RATIONALE_NOTE_MISSING, BAND_UNSUPPORTED, MERGE_CIRCULAR]
+
+  # ----------------------------------------------------------------- ADJUDICATE
+  ADJUDICATE_EVENT:
+    layer: adjudication
+    description: The analyst acts D3 made events rather than columns. review_state
+      is a projection over the latest VERIFY or DISPUTE, never a stored field.
+    subtypes:
+      VERIFY: { discriminator: { path: payload.disposition, const: VERIFY } }
+      DISPUTE: { discriminator: { path: payload.disposition, const: DISPUTE } }
+      PROMOTE: { discriminator: { path: payload.disposition, const: PROMOTE } }
+      IGNORE: { discriminator: { path: payload.disposition, const: IGNORE } }
+      REVOKE: { discriminator: { path: payload.disposition, const: REVOKE } }
+      ACKNOWLEDGE: { discriminator: { path: payload.disposition, const: ACKNOWLEDGE } }
+      OVERRIDE: { discriminator: { path: payload.disposition, const: OVERRIDE } }
+      NOTE: { discriminator: { path: payload.disposition, const: NOTE } }
+      QUESTION: { discriminator: { path: payload.disposition, const: QUESTION } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload, lineage]
+    payload:
+      required:
+        VERIFY: [disposition, target_ref, analyst, in_course_of]
+        DISPUTE: [disposition, target_ref, analyst, reason]
+        PROMOTE: [disposition, target_ref, analyst, promotion_kind]
+        IGNORE: [disposition, target_ref, analyst]
+        REVOKE: [disposition, target_ref, analyst, reason]
+        ACKNOWLEDGE: [disposition, target_ref, analyst, note]
+        OVERRIDE: [disposition, target_ref, analyst, override_kind, note]
+        NOTE: [disposition, target_ref, analyst, text]
+        QUESTION: [disposition, target_ref, analyst, text]
+      fields:
+        disposition:
+          type: string
+          enum: [VERIFY, DISPUTE, PROMOTE, IGNORE, REVOKE, ACKNOWLEDGE, OVERRIDE, NOTE, QUESTION]
+        target_ref: { type: string, format: uuid }
+        analyst:
+          type: string
+          # From the session. Never free text.
+        in_course_of:
+          type: string
+          enum: [citation, merge_basis, pivot_motivation]
+          # Design section 4.5: review happens when a claim is used for
+          # something load-bearing, and the record says which. Roughly fifteen
+          # real reviews per case instead of four hundred fake ones.
+        reason: { type: string }
+        note: { type: string }
+        text: { type: string }
+        promotion_kind:
+          type: string
+          enum: [item_to_entity, generated_to_observed]
+        entity_type:
+          type: string
+          enum: [Account, PersonCandidate, Org, Channel, Place, Media, ManualTask]
+          # FOUNDATION section 4.1's closed entity set. A PersonCandidate is
+          # materialized only here, by an analyst act, never by a connector.
+        entity_id: { type: string, format: uuid }
+        anchor_selector_type:
+          type: string
+          registry: ontology/selectors.yaml
+          # The registry's may_anchor_entity decides whether this is legal.
+        anchor_claim_ref: { type: string, format: uuid }
+        override_kind:
+          type: string
+          enum: [circular_evidence, unvouched_citation, ignore_supporting_live_cluster]
+      prohibited:
+        - names: [value, raw, source_path, raw_span, features]
+          code: RAW_ABOVE_OBSERVATION
+          why: An adjudication references the object and never re-carries its content.
+        - names: [members, cluster_id, band, rationale_codes]
+          code: LAYER_FIELD_ABOVE_LAYER
+          why: An adjudication is not an identity assertion. Asserting identity is IDENTITY_EVENT.
+        - names: [confidence]
+          code: CONFIDENCE_PROHIBITED
+          why: An adjudication is a human act, and a number attached to it is a guess
+            wearing a costume (CLAUDE.md gate 6).
+        - names: [review_state]
+          code: EXTRACT_HAS_REVIEW_STATE
+          why: review_state here would be the column D3 removed, reintroduced one layer
+            up. That is the review-state defect and not a confidence defect, so it fires
+            the code whose declaration names it. The two shared a group until 2026-09-03,
+            which meant one name fired a code that excludes it and no must-fail fixture
+            for either could set expect_only.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The argv family is here on every type
+            because the code's own declaration covers every payload and an earlier
+            draft prohibited these four on PROBE_EVENT alone, which left eight of
+            the nine types generating a schema branch that accepts a filled argv.
+      rules:
+        anchor_selector_may_anchor:
+          statement: PROMOTE with promotion_kind item_to_entity and entity_type Account
+            carries anchor_selector_type whose registry entry has may_anchor_entity
+            true. An Account anchored on a handle renders a handle-owner change as
+            ordinary drift when it is an identity catastrophe.
+          code: SELECTOR_ANCHOR_PROHIBITED
+          when:
+            all_of:
+              - { subtype: PROMOTE }
+              - { field: promotion_kind, equals: item_to_entity }
+              - { field: entity_type, equals: Account }
+          requires: [anchor_selector_type]
+          cites: [docs/PLAINSIGHT-design.md section 2.2, docs/THE-GAMEPLAN.md section 2.3 fixture 3]
+        reason_when_load_bearing:
+          statement: IGNORE requires reason when the target supports a live cluster or
+            was promoted by another analyst. DISPUTE and REVOKE always require it.
+            The conditional half is a runtime check against the case, stated here
+            so the generator emits it.
+          code: ADJUDICATION_REASON_MISSING
+          when: runtime
+          runtime_reason: Whether the target supports a live cluster, or was promoted by
+            another analyst, is a fact about the case rather than a field on this event.
+            DISPUTE and REVOKE carry reason in payload.required, so only the IGNORE half
+            is conditional.
+          requires: [reason]
+          cites: [docs/PLAINSIGHT-design.md section 4.4, docs/PLAINSIGHT-design.md section 5.6]
+        target_matches_disposition:
+          statement: The lineage parent's type is in the disposition's allowed target
+            set under lineage.allowed_targets. Verifying a cluster or revoking a
+            claim is a category error.
+          code: LINEAGE_PARENT_TYPE_INVALID
+          when: always
+          requires: []
+          cites: [docs/PLAINSIGHT-FOUNDATION.md D3]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype:
+        VERIFY: true
+        DISPUTE: true
+        PROMOTE: true
+        IGNORE: true
+        REVOKE: true
+        ACKNOWLEDGE: true
+        OVERRIDE: true
+        NOTE: true
+        QUESTION: true
+      allowed_parents:
+        PROBE_EVENT: [ITEM]
+        EXTRACT_EVENT: [CLAIM]
+        LINK_EVENT: [SAME_ENTITY, ASSOCIATED_WITH, CO_LOCATED, CONTROLS]
+        IDENTITY_EVENT: [CLUSTER, EXCLUDE]
+        ADJUDICATE_EVENT: [PROMOTE]
+        ASSESS_EVENT: [SENTENCE]
+      # The object each disposition may act on. The first parent in based_on is
+      # the target and must be one of these. This block is at type granularity and
+      # required_parents below is at subtype granularity, and for REVOKE,
+      # ACKNOWLEDGE, NOTE and QUESTION the two disagree about which LINK_EVENT
+      # subtypes are targets. LM-R11 records the disagreement and both ways of
+      # settling it. The validator refuses a type whose two blocks name different
+      # parent types in either direction, and refuses an absent allowed_targets on
+      # any type whose rules cite it. Neither check reaches the subtype dimension,
+      # which this block does not have, so the disagreement itself is recorded
+      # rather than caught.
+      allowed_targets:
+        VERIFY: [EXTRACT_EVENT]
+        DISPUTE: [EXTRACT_EVENT]
+        PROMOTE: [PROBE_EVENT, EXTRACT_EVENT]
+        IGNORE: [PROBE_EVENT, EXTRACT_EVENT]
+        REVOKE: [IDENTITY_EVENT, LINK_EVENT, ADJUDICATE_EVENT]
+        ACKNOWLEDGE: [IDENTITY_EVENT, LINK_EVENT, EXTRACT_EVENT]
+        OVERRIDE: [IDENTITY_EVENT, EXTRACT_EVENT, PROBE_EVENT]
+        NOTE: [PROBE_EVENT, EXTRACT_EVENT, LINK_EVENT, IDENTITY_EVENT, ADJUDICATE_EVENT, ASSESS_EVENT]
+        QUESTION: [PROBE_EVENT, EXTRACT_EVENT, LINK_EVENT, IDENTITY_EVENT, ADJUDICATE_EVENT, ASSESS_EVENT]
+      required_parents:
+        VERIFY: { any_of: [{ type: EXTRACT_EVENT, subtype: CLAIM }] }
+        DISPUTE: { any_of: [{ type: EXTRACT_EVENT, subtype: CLAIM }] }
+        PROMOTE: { any_of: [{ type: PROBE_EVENT, subtype: ITEM }, { type: EXTRACT_EVENT, subtype: CLAIM }] }
+        IGNORE: { any_of: [{ type: PROBE_EVENT, subtype: ITEM }, { type: EXTRACT_EVENT, subtype: CLAIM }] }
+        REVOKE:
+          any_of:
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+            - { type: IDENTITY_EVENT, subtype: EXCLUDE }
+            - { type: LINK_EVENT, subtype: SAME_ENTITY }
+            - { type: ADJUDICATE_EVENT, subtype: PROMOTE }
+        ACKNOWLEDGE:
+          any_of:
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+            - { type: LINK_EVENT, subtype: SAME_ENTITY }
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+        OVERRIDE:
+          any_of:
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+            - { type: PROBE_EVENT, subtype: ITEM }
+        NOTE:
+          any_of:
+            - { type: PROBE_EVENT, subtype: ITEM }
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+            - { type: LINK_EVENT, subtype: SAME_ENTITY }
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+            - { type: ADJUDICATE_EVENT, subtype: PROMOTE }
+            - { type: ASSESS_EVENT, subtype: SENTENCE }
+        QUESTION:
+          any_of:
+            - { type: PROBE_EVENT, subtype: ITEM }
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+            - { type: LINK_EVENT, subtype: SAME_ENTITY }
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+            - { type: ADJUDICATE_EVENT, subtype: PROMOTE }
+            - { type: ASSESS_EVENT, subtype: SENTENCE }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: true
+      wildcards: []
+      named: []
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 1
+      carries_subject_values: true
+      # reason, note and text are analyst prose about a person.
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: false
+    violation_codes: [RAW_ABOVE_OBSERVATION, LAYER_FIELD_ABOVE_LAYER, CONFIDENCE_PROHIBITED,
+      EXTRACT_HAS_REVIEW_STATE, CREDENTIAL_VALUE_IN_PAYLOAD, SELECTOR_ANCHOR_PROHIBITED,
+      ADJUDICATION_REASON_MISSING, LINEAGE_PARENT_TYPE_INVALID]
+
+  # --------------------------------------------------------------------- ASSESS
+  ASSESS_EVENT:
+    layer: state
+    description: One assessment sentence with live citations. The DRAFT export
+      boundary's only input; RT-18's disclosure export is a separate path and exports
+      the complete case rather than a projection. geo is optional, unlike
+      zmeta-event-1.0's TrackStatePayload.
+    subtypes:
+      SENTENCE: { discriminator: { path: payload.assessment_kind, const: SENTENCE } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload, lineage]
+    payload:
+      required:
+        SENTENCE: [assessment_kind, subject_ref, subject_class, text, citations, author]
+      fields:
+        assessment_kind: { type: string, enum: [SENTENCE] }
+        subject_ref: { type: string, format: uuid }
+        subject_class:
+          type: string
+          enum: [S0, S1, S2, S3, S4, N0, L0]
+          # SS-18: every finding carries the class it came from, on the finding
+          # itself and not two clicks away, because the mixed figure is the one
+          # that reaches a summary. SS-1's set minus S5, which SS-1 marks not
+          # authorizable, so no finding can have come from it.
+        text: { type: string, min_length: 1 }
+        author: { type: string }
+        citations:
+          type: array
+          min_items: 1
+          items:
+            type: object
+            required: [ref]
+            fields:
+              ref: { type: string, format: uuid }
+              cited_as: { type: [string, "null"], registry: ontology/selectors.yaml }
+              caveat: { type: [string, "null"] }
+              note: { type: [string, "null"] }
+              # The bond between a sentence and the claims that support it.
+              # Live, not copy-paste (design section 2). `caveat` carries the band
+              # qualification a possible-band cluster needs; `note` carries the
+              # export-boundary obligation the g rationale code defers to here.
+        geo:
+          type: [object, "null"]
+          # Optional. A place-name inference with no coordinate is a list entry
+          # structurally incapable of getting pin geometry (design section 8.5).
+        paragraph_ref: { type: [string, "null"] }
+      prohibited:
+        - names: [raw, features, measurement, source_path, raw_span, credential_ref, value]
+          code: RAW_ABOVE_OBSERVATION
+          why: zmeta-spec contract 7.7's raw-artifact denylist, kept. A projection is
+            complete in citations and minimized in content or it has passed half a
+            gate (CLAUDE.md gate 7).
+        - names: [members, cluster_id]
+          code: LAYER_FIELD_ABOVE_LAYER
+          why: An assessment cites a cluster by ref. Carrying its membership inline is
+            a fusion object copied into state.
+        - names: [confidence, score, probability]
+          code: CONFIDENCE_PROHIBITED
+          why: See `confidence`.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. The argv family is here on every type
+            because the code's own declaration covers every payload and an earlier
+            draft prohibited these four on PROBE_EVENT alone, which left eight of
+            the nine types generating a schema branch that accepts a filled argv.
+      rules:
+        subject_class_present:
+          statement: subject_class is present and in SS-1's authorizable set, which is
+            SS-1's classes minus S5. The scorer refuses a scorecard whose inputs span classes.
+          code: SUBJECT_CLASS_MISSING
+          when: always
+          requires: [subject_class]
+          cites: [doctrine/SUBJECT_SELECTION.md SS-1, doctrine/SUBJECT_SELECTION.md SS-18]
+        citation_present:
+          statement: citations has at least one entry and every ref resolves in lineage.based_on.
+          code: CITATION_MISSING
+          when: always
+          requires: [citations]
+          cites: [docs/PLAINSIGHT-design.md section 5.7]
+        cited_as_matches_selector_type:
+          statement: A citation's cited_as equals the cited claim's selector_type, or
+            is null. An email_hint_recovery_masked claim cannot satisfy a citation
+            for email. The registry's must_not_satisfy_citation_for is the source.
+          code: HINT_CITED_AS_VALUE
+          when: always
+          requires: []
+          cites: [docs/PLAINSIGHT-FOUNDATION.md D2, docs/THE-GAMEPLAN.md section 2.3 fixture 1]
+        generated_requires_promotion:
+          statement: A citation of a claim whose selector_type carries provenance_state
+            GENERATED is refused unless an ADJUDICATE_EVENT PROMOTE with
+            promotion_kind generated_to_observed exists for that claim.
+          code: GENERATED_CITED_AS_OBSERVED
+          when: always
+          requires: []
+          cites: [docs/PLAINSIGHT-design.md section 4.6, docs/THE-GAMEPLAN.md section 2.3 fixture 2]
+        cited_claim_adjudicated:
+          statement: A cited EXTRACT_EVENT has an ADJUDICATE_EVENT VERIFY. Adjudication
+            on citation is the mechanism the design turns on.
+          code: CITATION_UNADJUDICATED
+          when: always
+          requires: []
+          cites: [docs/PLAINSIGHT-design.md section 4.5]
+        possible_band_needs_caveat:
+          statement: A citation of an IDENTITY_EVENT CLUSTER with band possible carries a caveat.
+          code: CITATION_CAVEAT_MISSING
+          when: runtime
+          runtime_reason: The cited cluster's band is a field on another event, so this
+            event cannot carry the condition and the check resolves the citation first.
+          requires: [caveat]
+          cites: [docs/PLAINSIGHT-design.md section 5.5]
+        gestalt_cited_needs_note:
+          statement: A citation of an IDENTITY_EVENT CLUSTER whose rationale_codes contain
+            g carries a note. IDENTITY_EVENT's external_knowledge_needs_note defers the g
+            obligation to the export boundary rather than dropping it, and this is the
+            export boundary, so without this rule the obligation is stated in one place
+            and carried in none.
+          code: RATIONALE_NOTE_MISSING
+          when: runtime
+          runtime_reason: The cited cluster's rationale_codes are fields on another event.
+          requires: [note]
+          cites: [docs/PLAINSIGHT-design.md section 5.5]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype: { SENTENCE: true }
+      allowed_parents:
+        IDENTITY_EVENT: [CLUSTER, EXCLUDE]
+        EXTRACT_EVENT: [CLAIM]
+        ASSESS_EVENT: [SENTENCE]
+      required_parents:
+        SENTENCE:
+          any_of:
+            - { type: IDENTITY_EVENT, subtype: CLUSTER }
+            - { type: IDENTITY_EVENT, subtype: EXCLUDE }
+            - { type: EXTRACT_EVENT, subtype: CLAIM }
+            - { type: ASSESS_EVENT, subtype: SENTENCE }
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: true
+      wildcards: []
+      named: []
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 1
+      carries_subject_values: true
+      # RT-18's disclosure export is the one path by which this payload leaves
+      # the case store, and it goes to an agency, never to LOCAL (EG-5).
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: false
+    violation_codes: [RAW_ABOVE_OBSERVATION, LAYER_FIELD_ABOVE_LAYER, CONFIDENCE_PROHIBITED,
+      CREDENTIAL_VALUE_IN_PAYLOAD, SUBJECT_CLASS_MISSING, CITATION_MISSING, HINT_CITED_AS_VALUE,
+      GENERATED_CITED_AS_OBSERVED, CITATION_UNADJUDICATED, CITATION_CAVEAT_MISSING,
+      RATIONALE_NOTE_MISSING]
+
+  # --------------------------------------------------------------------- SYSTEM
+  SYSTEM_EVENT:
+    layer: system
+    description: Diagnostics, connector health, coverage intervals, retention acts,
+      credential state changes, and the two heartbeats whose absence is a rendered
+      degraded state rather than a silence.
+    subtypes:
+      SCHEMA_VIOLATION: { discriminator: { path: payload.system_type, const: SCHEMA_VIOLATION } }
+      CONNECTOR_HEALTH: { discriminator: { path: payload.system_type, const: CONNECTOR_HEALTH } }
+      COVERAGE_INTERVAL: { discriminator: { path: payload.system_type, const: COVERAGE_INTERVAL } }
+      RETENTION_EXTENSION: { discriminator: { path: payload.system_type, const: RETENTION_EXTENSION } }
+      RETENTION_FREEZE: { discriminator: { path: payload.system_type, const: RETENTION_FREEZE } }
+      RETENTION_RENEWAL: { discriminator: { path: payload.system_type, const: RETENTION_RENEWAL } }
+      SHRED_RECEIPT: { discriminator: { path: payload.system_type, const: SHRED_RECEIPT } }
+      SHRED_FAILED: { discriminator: { path: payload.system_type, const: SHRED_FAILED } }
+      CREDENTIAL_STATE: { discriminator: { path: payload.system_type, const: CREDENTIAL_STATE } }
+      SWEEP_HEARTBEAT: { discriminator: { path: payload.system_type, const: SWEEP_HEARTBEAT } }
+      RECONCILE_HEARTBEAT: { discriminator: { path: payload.system_type, const: RECONCILE_HEARTBEAT } }
+    required_envelope_fields: [pse_version, derived_from, case_id, event, source, payload]
+    payload:
+      required:
+        SCHEMA_VIOLATION: [system_type, reason_code, original_event_id]
+        CONNECTOR_HEALTH: [system_type, connector_id, probe_unit, state, canary_id]
+        COVERAGE_INTERVAL: [system_type, target_ref, t_start, t_end, verified, method]
+        RETENTION_EXTENSION: [system_type, author, reason, previous_retain_until, new_retain_until]
+        RETENTION_FREEZE: [system_type, author, reason, freeze_expires_on]
+        RETENTION_RENEWAL: [system_type, author, obligation, expected_resolution_on, renewal_ordinal, freeze_expires_on]
+        SHRED_RECEIPT: [system_type, receipt_hash, blob_count, checks_passed]
+        SHRED_FAILED: [system_type, failed_check, halt_system_wide]
+        CREDENTIAL_STATE: [system_type, credential_id, state]
+        SWEEP_HEARTBEAT: [system_type, swept_count, next_due]
+        RECONCILE_HEARTBEAT: [system_type, ledger_only_count, storage_only_count, next_due]
+      fields:
+        system_type:
+          type: string
+          enum: [SCHEMA_VIOLATION, CONNECTOR_HEALTH, COVERAGE_INTERVAL, RETENTION_EXTENSION, RETENTION_FREEZE, RETENTION_RENEWAL, SHRED_RECEIPT, SHRED_FAILED, CREDENTIAL_STATE, SWEEP_HEARTBEAT, RECONCILE_HEARTBEAT]
+        reason_code:
+          type: string
+          enum_from: violation_codes
+          # The closed diagnostic vocabulary. Free text here is the failure
+          # policy/violation-codes.yaml exists to prevent.
+        original_event_id: { type: string, format: uuid }
+        connector_id: { type: string }
+        probe_unit: { type: string, enum: [connector, endpoint, subscription] }
+        state:
+          type: string
+          # CONNECTOR_HEALTH carries HEALTHY, DEGRADED, SUSPECT, DOWN and
+          # UNVERIFIED (design section 7.1). CREDENTIAL_STATE carries CR-2's three
+          # and no more. The generator splits the enum by subtype. LM-R9 records
+          # the fourth value an earlier draft wrote here and why it is gone.
+          enum_by_subtype:
+            CONNECTOR_HEALTH: [HEALTHY, DEGRADED, SUSPECT, DOWN, UNVERIFIED]
+            CREDENTIAL_STATE: [active, quarantined, burned]
+        canary_id: { type: [string, "null"] }
+        target_ref:
+          type: string
+          format: uuid
+          # Opaque. RT-1 lists coverage intervals in stratum 2, so the target
+          # is a reference and never the channel or handle it covers.
+        t_start: { type: string, format: date-time }
+        t_end: { type: string, format: date-time }
+        verified:
+          type: boolean
+          # A positive read of the target, not a heartbeat (design section 6.1).
+        method: { type: string }
+        author: { type: string }
+        reason:
+          type: string
+          # Constrained as SS-4 constrains purpose: stated without naming or
+          # describing the subject, because this payload survives the shred.
+        previous_retain_until: { type: string, format: date }
+        new_retain_until: { type: string, format: date }
+        freeze_expires_on: { type: string, format: date }
+        obligation: { type: string, min_length: 1 }
+        expected_resolution_on: { type: string, format: date }
+        renewal_ordinal: { type: integer, minimum: 1 }
+        receipt_hash: { type: string }
+        blob_count: { type: integer, minimum: 0 }
+        checks_passed:
+          type: array
+          const: [1, 2, 3, 4, 5]
+          # RT-9's five checks, all five, each once. min_items 5 over an enum of 1
+          # to 5 was the earlier shape and it accepts [1, 1, 1, 1, 1], which is one
+          # check counted five times. RT-9: a check that can pass for a reason other
+          # than the one claimed is not a check, and RT-10 makes this receipt the
+          # proof the shred happened.
+        failed_check: { type: integer, enum: [1, 2, 3, 4, 5] }
+        halt_system_wide:
+          type: boolean
+          const: true
+          # RT-11. A shred failure blocks all new runs system-wide.
+        credential_id: { type: string }
+        exit_criterion: { type: [string, "null"] }
+        finding_ref: { type: [string, "null"] }
+        swept_count: { type: integer, minimum: 0 }
+        next_due: { type: string, format: date-time }
+        ledger_only_count: { type: integer, minimum: 0 }
+        storage_only_count: { type: integer, minimum: 0 }
+      prohibited:
+        - names: [value, offending_value, raw, content, body, text, selectors, selector_value]
+          code: DIAGNOSTIC_CARRIES_VALUE
+          why: RT-19. A diagnostic records the code and the location, never the value
+            it matched, or the telemetry becomes the PII surface the gate prevents.
+        - names: [purpose, evidence_ref]
+          code: AUTHORIZATION_RECORD_INLINED
+          why: A retention or diagnostic event that references the SS-4 record inlines
+            stratum-1 material by naming its selectors or its purpose sentence. The
+            reasoning that put these two on AUTHORIZE_EVENT applies to every stratum-2
+            event that references the same record (RT-2).
+        - names: [members, cluster_id]
+          code: LAYER_FIELD_ABOVE_LAYER
+          why: The system layer has no identity.
+        - names: [confidence]
+          code: CONFIDENCE_PROHIBITED
+          why: LAYER_FIELD_ABOVE_LAYER fires only where no narrower code names the
+            field, and CONFIDENCE_PROHIBITED is the narrower code this type declares.
+        - names: [sessionid, session_id, cookie, token, password, secret,
+                  argv, command, credential, credential_value]
+          code: CREDENTIAL_VALUE_IN_PAYLOAD
+          why: CREDENTIAL_LIFECYCLE.md CR-3. CREDENTIAL_STATE carries the id and the state,
+            never the value, and a diagnostic about a run names the run rather than its argv.
+      rules:
+        renewal_names_obligation:
+          statement: RETENTION_RENEWAL carries obligation and expected_resolution_on. A
+            renewal carrying neither is refused. This is what separates a freeze
+            from a habit.
+          code: FREEZE_RENEWAL_UNJUSTIFIED
+          when: { subtype: RETENTION_RENEWAL }
+          requires: [obligation, expected_resolution_on]
+          cites: [doctrine/RETENTION.md RT-17]
+        quarantine_has_exit:
+          statement: CREDENTIAL_STATE with state quarantined carries exit_criterion.
+          code: CREDENTIAL_QUARANTINE_NO_EXIT
+          when: { field: state, equals: quarantined }
+          requires: [exit_criterion]
+          cites: [doctrine/CREDENTIAL_LIFECYCLE.md CR-6]
+        burn_is_finding:
+          statement: CREDENTIAL_STATE with state burned carries finding_ref, pointing at the
+            stratum-3 capability finding. A pool that loses credentials without
+            recording why rediscovers the same rate limit.
+          code: CREDENTIAL_BURN_NO_FINDING
+          when: { field: state, equals: burned }
+          requires: [finding_ref]
+          cites: [doctrine/CREDENTIAL_LIFECYCLE.md CR-7]
+          # CR-6's sibling rule above has its own code and this one fired the
+          # catch-all until 2026-09-03, so a diagnostic could not say which
+          # criterion refused. CR-7 makes the recording the load-bearing half.
+        reason_code_declared:
+          statement: SCHEMA_VIOLATION reason_code is a declared code in violation_codes.
+          code: ENUM_VALUE_INVALID
+          when: { subtype: SCHEMA_VIOLATION }
+          requires: [reason_code]
+          cites: [docs/THE-GAMEPLAN.md section 2.1 policy/violation-codes.yaml row]
+        reason_names_no_subject:
+          statement: reason states why the act was taken without naming or describing the
+            subject. RETENTION_EXTENSION and RETENTION_FREEZE are stratum 2 and survive
+            the shred, so a sentence that describes a person outlives the case material
+            it describes, which RT-2 calls a defect rather than a judgment call.
+          code: REASON_NAMES_SUBJECT
+          when: { field: reason, present: true }
+          requires: []
+          cites: [doctrine/RETENTION.md RT-2, doctrine/SUBJECT_SELECTION.md SS-4]
+    confidence: { rule: prohibited, violation_code: CONFIDENCE_PROHIBITED }
+    lineage:
+      required_by_subtype:
+        SCHEMA_VIOLATION: false
+        CONNECTOR_HEALTH: false
+        COVERAGE_INTERVAL: false
+        RETENTION_EXTENSION: false
+        RETENTION_FREEZE: false
+        RETENTION_RENEWAL: true
+        SHRED_RECEIPT: false
+        SHRED_FAILED: false
+        CREDENTIAL_STATE: false
+        SWEEP_HEARTBEAT: false
+        RECONCILE_HEARTBEAT: false
+      # A SCHEMA_VIOLATION names the offending event in original_event_id rather
+      # than in lineage, because the offending event may itself be unresolvable.
+      allowed_parents:
+        AUTHORIZE_EVENT: [GRANT, EXTEND, REVOKE]
+        COLLECT_EVENT: [PERMITTED, REQUIRES_EXTENSION, REFUSED]
+        PROBE_EVENT: [RUN_START, ITEM, RUN_END]
+        EXTRACT_EVENT: [CLAIM]
+        LINK_EVENT: [SAME_ENTITY, ASSOCIATED_WITH, CO_LOCATED, CONTROLS]
+        IDENTITY_EVENT: [CLUSTER, EXCLUDE]
+        ADJUDICATE_EVENT: [VERIFY, DISPUTE, PROMOTE, IGNORE, REVOKE, ACKNOWLEDGE, OVERRIDE, NOTE, QUESTION]
+        ASSESS_EVENT: [SENTENCE]
+        SYSTEM_EVENT: [RETENTION_FREEZE, RETENTION_RENEWAL]
+      required_parents:
+        RETENTION_RENEWAL:
+          any_of:
+            - { type: SYSTEM_EVENT, subtype: RETENTION_FREEZE }
+            - { type: SYSTEM_EVENT, subtype: RETENTION_RENEWAL }
+          # RT-17 point 7: the second renewal renders a distinct escalated
+          # state, which needs the chain to count.
+      based_on: { min_items: 1, payload_based_on_subset: true }
+    producer_authority:
+      human_identity_only: false
+      wildcards: [runner-*]
+      named: []
+      by_subtype:
+        # LM-R5. RT-5 and RT-17 make extension, freeze and renewal explicit
+        # logged acts with an author. A wildcard cannot be an author.
+        RETENTION_EXTENSION: { wildcards: [], named: [], human_identity_only: true }
+        RETENTION_FREEZE: { wildcards: [], named: [], human_identity_only: true }
+        RETENTION_RENEWAL: { wildcards: [], named: [], human_identity_only: true }
+    retention:
+      envelope_stratum: 2
+      payload_stratum: 2
+      carries_subject_values: false
+    egress:
+      envelope_crosses_to_local: true
+      payload_crosses_to_local: true
+    violation_codes: [AUTHORIZATION_RECORD_INLINED, DIAGNOSTIC_CARRIES_VALUE, LAYER_FIELD_ABOVE_LAYER,
+      CREDENTIAL_VALUE_IN_PAYLOAD, FREEZE_RENEWAL_UNJUSTIFIED, CREDENTIAL_QUARANTINE_NO_EXIT,
+      CREDENTIAL_BURN_NO_FINDING, REASON_NAMES_SUBJECT, ENUM_VALUE_INVALID, CONFIDENCE_PROHIBITED]
+
+# ---------------------------------------------------------------------------
+# CONFIDENCE
+# ---------------------------------------------------------------------------
+# LM-R2. Two rank 7 sources conflict: docs/PLAINSIGHT-FOUNDATION.md section
+# 4.2 requires confidence on LINK_EVENT, and docs/PLAINSIGHT-design.md section
+# 8.4 CUT LIST A kills all machine confidence arithmetic because there is no
+# calibration ground truth anywhere in the system. CLAUDE.md design gate 6
+# forbids an unlabelled number. Resolution at pse-event-0.1: numeric confidence
+# is prohibited on every type, the envelope key is reserved and refused, and
+# the IDENTITY_EVENT CLUSTER band is the only ordinal in the model.
+#
+# The validator enforces whatever this section declares. Reversing the decision
+# touches five sites, not the two an earlier draft of this paragraph named.
+# Following that draft exactly produces a model the validator refuses, so the
+# one-edit reversibility it claimed was not true. The order, for permitting
+# confidence on one type:
+#
+#   1. This section. Set `mode` to permitted_by_type and add the type to
+#      `permitted_types`. Leaving `mode` at prohibited_everywhere with a
+#      non-empty list fires LM_CONFIDENCE_INCONSISTENT on its own.
+#   2. `envelope.reserved_refused`. Remove `confidence` if the number is to ride
+#      in the envelope rather than the payload. The validator pins that list to
+#      [confidence] while `mode` is prohibited_everywhere, so it moves with step
+#      1 and never before it.
+#   3. `layers.<layer>.never_carries` for the type's layer. Remove `confidence`,
+#      or L-05 goes on requiring every type in that layer to prohibit it.
+#   4. `event_types.<TYPE>.payload.prohibited`. Remove `confidence` from its
+#      group, and remove the group when it names nothing else.
+#   5. `event_types.<TYPE>.confidence.rule`. Set it to required or optional and
+#      keep `violation_code`, so a value outside the range still has a code.
+#
+# The validator refuses a model with any proper subset of the five applied, so a
+# half-made reversal cannot ship. numeric_range_if_ever_permitted is the range
+# step 5 would bind.
+confidence:
+  mode: prohibited_everywhere
+  permitted_types: []
+  envelope_field: reserved_refused
+  numeric_range_if_ever_permitted: { minimum: 0, maximum: 1, finite: true }
+  only_ordinal: event_types.IDENTITY_EVENT.payload.fields.band
+  violation_code: CONFIDENCE_PROHIBITED
+  open_reading: LM-R2
+
+# ---------------------------------------------------------------------------
+# LINEAGE
+# ---------------------------------------------------------------------------
+# Global modes are strict and have no profiles. zmeta-event-1.0's Profile L
+# tolerates unresolved parents because a link may not have carried them; here
+# there is one Postgres and one consumer, so an unresolved parent is an error.
+lineage:
+  modes:
+    parent_type_mismatch_mode: reject
+    payload_based_on_subset_mode: reject
+    unresolved_parent_mode: reject
+    profiles: none
+  based_on:
+    items: event_id
+    min_items: 1
+    # Every id in based_on resolves to an event in the same case. Cross-case
+    # lineage does not exist, because the shred is per case.
+    same_case_required: true
+  violation_codes:
+    - LINEAGE_MISSING
+    - LINEAGE_PARENT_TYPE_INVALID
+    - LINEAGE_PARENT_UNRESOLVED
+    - LINEAGE_PAYLOAD_BASED_ON_NOT_SUBSET
+    - LINEAGE_CROSS_CASE
+  # The shape policy/lineage.yaml is emitted in. zmeta-spec's lineage policy has
+  # one parent structure and it is type-granular, with no subtype key anywhere. A
+  # generator that follows the precedent's shape emits the matrix below and drops
+  # required_parents, and the D5 line is then in this file and in no policy. The
+  # subtype dimension is what carries D5, so it is named as mandatory rather than
+  # left for the generator to infer. Recorded as DV-11.
+  policy_shape:
+    target: policy/lineage.yaml
+    keys: [modes, based_on, allowed_parents, required_parents, chain_rules]
+    subtype_granularity_required_for: [allowed_parents, required_parents]
+    source_of_truth: event_types.*.lineage
+    matrix_is: a type-granular rendering of allowed_parents, reconciled by the
+      validator and never the generator's input
+    divergence: DV-11
+  # The allowed-parents matrix at type granularity. Reconciled by the
+  # validator against event_types.*.lineage.allowed_parents in both directions,
+  # so this rendering cannot drift from the per-type source. Subtype
+  # granularity lives on the types.
+  matrix:
+    AUTHORIZE_EVENT: [AUTHORIZE_EVENT]
+    COLLECT_EVENT: [AUTHORIZE_EVENT, EXTRACT_EVENT]
+    PROBE_EVENT: [COLLECT_EVENT, PROBE_EVENT]
+    EXTRACT_EVENT: [PROBE_EVENT]
+    LINK_EVENT: [EXTRACT_EVENT]
+    IDENTITY_EVENT: [EXTRACT_EVENT, LINK_EVENT, IDENTITY_EVENT]
+    ADJUDICATE_EVENT: [PROBE_EVENT, EXTRACT_EVENT, LINK_EVENT, IDENTITY_EVENT, ADJUDICATE_EVENT, ASSESS_EVENT]
+    ASSESS_EVENT: [IDENTITY_EVENT, EXTRACT_EVENT, ASSESS_EVENT]
+    SYSTEM_EVENT: [AUTHORIZE_EVENT, COLLECT_EVENT, PROBE_EVENT, EXTRACT_EVENT, LINK_EVENT, IDENTITY_EVENT, ADJUDICATE_EVENT, ASSESS_EVENT, SYSTEM_EVENT]
+  # Required parents, summarized. The per-type entries are the source; this
+  # list is the sentence the operator reads.
+  required_summary:
+    - PROBE_EVENT RUN_START needs COLLECT_EVENT PERMITTED
+    - PROBE_EVENT ITEM and RUN_END need PROBE_EVENT RUN_START
+    - EXTRACT_EVENT CLAIM needs PROBE_EVENT ITEM
+    - LINK_EVENT needs EXTRACT_EVENT CLAIM
+    - IDENTITY_EVENT needs EXTRACT_EVENT, LINK_EVENT, or IDENTITY_EVENT
+    - ADJUDICATE_EVENT needs the object it adjudicates
+    - ASSESS_EVENT needs IDENTITY_EVENT, EXTRACT_EVENT, or ASSESS_EVENT
+    - COLLECT_EVENT PERMITTED and REQUIRES_EXTENSION need AUTHORIZE_EVENT GRANT or EXTEND
+  # Rules evaluated over the composed chain rather than the single hop.
+  chain_rules:
+    scope_drift:
+      statement: The gate evaluates the composed pivot chain, walked through
+        motivated_by and lineage from the seed, and refuses when the chain leaves
+        the authorized set even though every hop was individually legal. Three
+        individually legal hops that compose into a selector nobody authorized
+        is the fixture.
+      code: SCOPE_DRIFT_UNADJUDICATED
+      fixture: scope-drift-three-hops
+      corpus: conformance/gate/
+      cites: [doctrine/SUBJECT_SELECTION.md SS-9, docs/PLAINSIGHT-FOUNDATION.md D5]
+    incidental_never_seeds:
+      statement: A chain whose origin resolves to a COLLECT_EVENT with subject_relation
+        incidental is refused. An S5 selector is not a seed for anything.
+      code: SUBJECT_NOT_AUTHORIZED
+      corpus: conformance/gate/
+      cites: [doctrine/SUBJECT_SELECTION.md SS-10, doctrine/SUBJECT_SELECTION.md SS-16]
+
+# ---------------------------------------------------------------------------
+# PRODUCER AUTHORITY
+# ---------------------------------------------------------------------------
+# Checked before any semantic check runs, as in zmeta-spec. The index below is
+# reconciled by the validator against event_types.*.producer_authority in both
+# directions. An entry TYPE means every subtype of that type; TYPE.SUBTYPE
+# means that subtype only.
+#
+# COMPOSITION, on a type and on this index. A type's `wildcards`, `named` and
+# `human_identity_only` apply to every subtype of that type, UNLESS `by_subtype`
+# names that subtype, in which case the by_subtype entry replaces them and is the
+# whole authority for it. by_subtype replaces, it does not augment. The rule
+# lived only in the validator's docstring until 2026-09-03, and a generator
+# reading the model alone got the other answer, under which connector-* became a
+# legal producer of PROBE_EVENT RUN_START, which LM-R6 rejects by name, and
+# runner-* became a producer of SYSTEM_EVENT RETENTION_FREEZE, against RT-17
+# point 3 and this section's own rule that a wildcard cannot be an author.
+# `human_identity_only` inside a by_subtype entry defaults to the type-level
+# value when the entry does not state it.
+producer_authority:
+  require_match_for_event_types: [AUTHORIZE_EVENT, COLLECT_EVENT, PROBE_EVENT, EXTRACT_EVENT, LINK_EVENT, IDENTITY_EVENT, ADJUDICATE_EVENT, ASSESS_EVENT, SYSTEM_EVENT]
+  violation_code: PRODUCER_NOT_ALLOWED
+  wildcards:
+    connector-*: [PROBE_EVENT.ITEM, EXTRACT_EVENT]
+    extractor-*: [EXTRACT_EVENT]
+    matcher-*: [LINK_EVENT]
+    runner-*: [PROBE_EVENT.RUN_START, PROBE_EVENT.RUN_END, SYSTEM_EVENT.SCHEMA_VIOLATION, SYSTEM_EVENT.CONNECTOR_HEALTH, SYSTEM_EVENT.COVERAGE_INTERVAL, SYSTEM_EVENT.SHRED_RECEIPT, SYSTEM_EVENT.SHRED_FAILED, SYSTEM_EVENT.CREDENTIAL_STATE, SYSTEM_EVENT.SWEEP_HEARTBEAT, SYSTEM_EVENT.RECONCILE_HEARTBEAT]
+  named:
+    runner-subject-guard: [COLLECT_EVENT]
+    manual: [PROBE_EVENT, EXTRACT_EVENT]
+  # Types and subtypes that accept only a named human identity from the
+  # session. The identity list is deployment configuration read by the Step 7
+  # validator; it is never a wildcard and never lives in this file.
+  human_identity_only: [AUTHORIZE_EVENT, IDENTITY_EVENT, ADJUDICATE_EVENT, ASSESS_EVENT, SYSTEM_EVENT.RETENTION_EXTENSION, SYSTEM_EVENT.RETENTION_FREEZE, SYSTEM_EVENT.RETENTION_RENEWAL]
+
+# ---------------------------------------------------------------------------
+# EGRESS
+# ---------------------------------------------------------------------------
+# EG-5 as a rule the per-type egress blocks are checked against: a payload
+# crosses to LOCAL if and only if its stratum is 2, 3, or 4. The envelope
+# skeleton is stratum 2 everywhere and always crosses. RT-18's disclosure
+# export is the named exception and goes to an agency, not to LOCAL.
+egress:
+  environments: [LOCAL, ISOLATED]
+  strata_crossing_to_local: [2, 3, 4]
+  violation_codes: [EGRESS_STRATUM_REFUSED, EGRESS_ENVIRONMENT_REFUSED]
+  cites: [doctrine/EGRESS.md EG-1, doctrine/EGRESS.md EG-2, doctrine/EGRESS.md EG-5, doctrine/EGRESS.md EG-6]
+
+# ---------------------------------------------------------------------------
+# VIOLATION CODES
+# ---------------------------------------------------------------------------
+# Every code any rule in this file emits. Append-only once pse-event-0.1
+# ships. Severity is fail for every code at this version because every rule
+# here is a refusal; warn exists in the vocabulary for later use and is
+# unused. Gate codes (SUBJECT_NOT_AUTHORIZED, SCOPE_DRIFT_UNADJUDICATED,
+# CASE_PURPOSE_UNBOUND) are declared here so the vocabulary is closed in one
+# place, while their fixtures live in conformance/gate/ and their check is
+# tools/validate_authorization.py at Step 8.
+violation_codes:
+  severities: [fail, warn]
+  codes:
+    # Envelope and shape
+    - { code: SCHEMA_INVALID, severity: fail, since: pse-event-0.1, fires_when: the envelope violates the generated schema in a way no narrower code names }
+    - { code: VERSION_MISMATCH, severity: fail, since: pse-event-0.1, fires_when: pse_version or derived_from differs from the declared const }
+    - { code: CASE_ID_MISSING, severity: fail, since: pse-event-0.1, fires_when: case_id is absent or not a uuid. D4 keys the shred on it }
+    - { code: EVENT_TYPE_UNKNOWN, severity: fail, since: pse-event-0.1, fires_when: event_type is outside the nine }
+    - { code: EVENT_SUBTYPE_MISMATCH, severity: fail, since: pse-event-0.1, fires_when: event_subtype is outside the type's set, or the payload discriminator const differs from it }
+    - { code: ENUM_VALUE_INVALID, severity: fail, since: pse-event-0.1, fires_when: a closed-set field carries a value outside its set }
+    - { code: PAYLOAD_FIELD_MISSING, severity: fail, since: pse-event-0.1, fires_when: a field the subtype requires is absent }
+    - { code: LAYER_COLLAPSE_NESTED, severity: fail, since: pse-event-0.1, fires_when: a prohibited name appears below depth zero of the payload. Proves the denylist is recursive }
+    - { code: LAYER_FIELD_ABOVE_LAYER, severity: fail, since: pse-event-0.1, fires_when: a payload carries a field that belongs to a layer above or beside its own and no narrower code names it }
+    - { code: CREDENTIAL_VALUE_IN_PAYLOAD, severity: fail, since: pse-event-0.1, fires_when: a credential-value name or a filled argv appears in any payload. CR-3 }
+    - { code: PRODUCER_NOT_ALLOWED, severity: fail, since: pse-event-0.1, fires_when: source.producer has no authority for the type and subtype. Fires before any semantic check }
+    # Confidence
+    - { code: CONFIDENCE_PROHIBITED, severity: fail, since: pse-event-0.1, fires_when: a numeric confidence appears on a type where the confidence section prohibits it }
+    - { code: EXTRACT_HAS_CONFIDENCE, severity: fail, since: pse-event-0.1, fires_when: an EXTRACT_EVENT carries confidence in the envelope or the payload }
+    - { code: CLUSTER_HAS_ROLLUP_CONFIDENCE, severity: fail, since: pse-event-0.1, fires_when: an IDENTITY_EVENT carries confidence, rollup, weakest_seam, or score }
+    # Authorization layer
+    - { code: AUTHORIZATION_RECORD_INLINED, severity: fail, since: pse-event-0.1, fires_when: an event that references the SS-4 authorization record carries its selectors, its evidence_ref, or the purpose sentence rather than a reference. AUTHORIZE_EVENT, COLLECT_EVENT and SYSTEM_EVENT }
+    - { code: CASE_PURPOSE_UNBOUND, severity: fail, since: pse-event-0.1, fires_when: a GRANT lacks purpose_hash, or a PERMITTED decision resolves to a GRANT without one. Gate fixture 14 }
+    - { code: COLLECT_HAS_CONTENT, severity: fail, since: pse-event-0.1, fires_when: a COLLECT_EVENT carries any collected content. SS-19 }
+    - { code: INCIDENTAL_ESTIMATE_MISSING, severity: fail, since: pse-event-0.1, fires_when: a PERMITTED decision for a reaching connector lacks incidental_estimate or its reason. SS-12 }
+    - { code: BYSTANDER_DISPOSITION_OUT_OF_SET, severity: fail, since: pse-event-0.1, fires_when: bystander_disposition is outside count_only and refuse. SS-10 }
+    - { code: SUBJECT_NOT_AUTHORIZED, severity: fail, since: pse-event-0.1, fires_when: a RUN_START has no COLLECT_EVENT PERMITTED parent, or the gate refuses a selector outside the case authorization. Gate fixture 4 }
+    - { code: SCOPE_DRIFT_UNADJUDICATED, severity: fail, since: pse-event-0.1, fires_when: the composed pivot chain leaves the authorized set. SS-9, gate fixture 5 }
+    # Observation layer
+    - { code: OBSERVATION_HAS_IDENTITY, severity: fail, since: pse-event-0.1, fires_when: a PROBE_EVENT or EXTRACT_EVENT carries cluster_id, members, accepted, band, or rationale_codes }
+    - { code: OBSERVATION_HAS_INFERENCE, severity: fail, since: pse-event-0.1, fires_when: an EXTRACT_EVENT carries link_type or model }
+    - { code: OBSERVATION_HAS_CLAIM, severity: fail, since: pse-event-0.1, fires_when: a PROBE_EVENT carries selector_type, value, or claims. Run, Item, Claim stays three levels }
+    - { code: OBSERVATION_HAS_INLINE_RAW, severity: fail, since: pse-event-0.1, fires_when: a PROBE_EVENT carries raw bytes inline rather than by sha256 reference }
+    - { code: EXTRACT_HAS_REVIEW_STATE, severity: fail, since: pse-event-0.1, fires_when: an observation-layer or adjudication-layer payload carries review_state or its variants. D3 made review_state a projection over appended events, so a stored column is the same defect wherever it appears }
+    - { code: SELECTOR_TYPE_UNREGISTERED, severity: fail, since: pse-event-0.1, fires_when: selector_type is not a key in ontology/selectors.yaml. Fixture 10 }
+    - { code: ABSENCE_CLAIMED_WITHOUT_CANARY, severity: fail, since: pse-event-0.1, fires_when: attempted_and_absent is asserted for a field whose always_present is not canary-proven. Fixture 6 }
+    - { code: EGRESS_ENVIRONMENT_REFUSED, severity: fail, since: pse-event-0.1, fires_when: a RUN_START names LOCAL as its environment. EG-6 }
+    # Inference layer
+    - { code: INFERENCE_HAS_FUSION_STATE, severity: fail, since: pse-event-0.1, fires_when: a LINK_EVENT carries cluster_id, members, asserted_by, band, or rationale_codes }
+    - { code: LINK_HAS_ACCEPTANCE, severity: fail, since: pse-event-0.1, fires_when: a LINK_EVENT arrives with accepted true, accepted absent, or accepted_at present. Fixture 12 }
+    # Fusion layer
+    - { code: RAW_ABOVE_OBSERVATION, severity: fail, since: pse-event-0.1, fires_when: a fusion, adjudication, or state payload re-carries raw, value, source_path, raw_span, or features }
+    - { code: FUSION_HAS_INFERENCE_FIELDS, severity: fail, since: pse-event-0.1, fires_when: an IDENTITY_EVENT carries model, accepted, link_type, or review_state }
+    - { code: CLUSTER_MEMBERS_INSUFFICIENT, severity: fail, since: pse-event-0.1, fires_when: a CLUSTER has fewer than two members }
+    - { code: RATIONALE_MISSING, severity: fail, since: pse-event-0.1, fires_when: rationale_codes is empty or member_seams omits a member }
+    - { code: RATIONALE_NOTE_MISSING, severity: fail, since: pse-event-0.1, fires_when: rationale code k is present without a note }
+    - { code: BAND_UNSUPPORTED, severity: fail, since: pse-event-0.1, fires_when: band almost_certain rests on codes from a single evidence class }
+    - { code: MERGE_CIRCULAR, severity: fail, since: pse-event-0.1, fires_when: a basis claim traces to a GENERATED origin or to a member's own emitted value, without circularity_override }
+    # Adjudication layer
+    - { code: SELECTOR_ANCHOR_PROHIBITED, severity: fail, since: pse-event-0.1, fires_when: an Account is promoted with an anchor_selector_type whose registry entry has may_anchor_entity false. Fixture 3 }
+    - { code: ADJUDICATION_REASON_MISSING, severity: fail, since: pse-event-0.1, fires_when: DISPUTE or REVOKE lacks reason, or IGNORE lacks it while the target is load-bearing }
+    # State layer
+    - { code: SUBJECT_CLASS_MISSING, severity: fail, since: pse-event-0.1, fires_when: an ASSESS_EVENT lacks subject_class. SS-18 }
+    - { code: CITATION_MISSING, severity: fail, since: pse-event-0.1, fires_when: an ASSESS_EVENT has no citations or a citation does not resolve in lineage }
+    - { code: HINT_CITED_AS_VALUE, severity: fail, since: pse-event-0.1, fires_when: a hint or constraint selector satisfies a citation for the value it constrains. Fixture 1 }
+    - { code: GENERATED_CITED_AS_OBSERVED, severity: fail, since: pse-event-0.1, fires_when: a GENERATED selector is cited with no PROMOTE generated_to_observed. Fixture 2 }
+    - { code: CITATION_UNADJUDICATED, severity: fail, since: pse-event-0.1, fires_when: a cited claim has no ADJUDICATE_EVENT VERIFY }
+    - { code: CITATION_CAVEAT_MISSING, severity: fail, since: pse-event-0.1, fires_when: a possible-band cluster is cited without a caveat }
+    # System layer
+    - { code: DIAGNOSTIC_CARRIES_VALUE, severity: fail, since: pse-event-0.1, fires_when: a SYSTEM_EVENT carries the value it is reporting on. RT-19 }
+    - { code: FREEZE_RENEWAL_UNJUSTIFIED, severity: fail, since: pse-event-0.1, fires_when: a RETENTION_RENEWAL names no obligation or no expected resolution date. RT-17 }
+    - { code: CREDENTIAL_QUARANTINE_NO_EXIT, severity: fail, since: pse-event-0.1, fires_when: a credential enters quarantine with no written exit criterion. CR-6 }
+    - { code: CREDENTIAL_BURN_NO_FINDING, severity: fail, since: pse-event-0.1, fires_when: a credential is burned with no finding_ref naming the stratum-3 capability finding. CR-7 makes the recording the load-bearing half }
+    - { code: REASON_NAMES_SUBJECT, severity: fail, since: pse-event-0.1, fires_when: a stratum-2 payload's reason sentence names or describes the subject. The payload survives the shred, so the sentence would outlive the case material it describes. RT-2, SS-4 }
+    # Lineage and egress
+    - { code: LINEAGE_MISSING, severity: fail, since: pse-event-0.1, fires_when: a subtype that requires lineage has none, or none of its required parents. Fixture 13 }
+    - { code: LINEAGE_PARENT_TYPE_INVALID, severity: fail, since: pse-event-0.1, fires_when: a parent's type or subtype is outside the allowed set for the child }
+    - { code: LINEAGE_PARENT_UNRESOLVED, severity: fail, since: pse-event-0.1, fires_when: a based_on id resolves to no event in the case }
+    - { code: LINEAGE_PAYLOAD_BASED_ON_NOT_SUBSET, severity: fail, since: pse-event-0.1, fires_when: payload.based_on or basis_claims names an id absent from lineage.based_on }
+    - { code: LINEAGE_CROSS_CASE, severity: fail, since: pse-event-0.1, fires_when: a parent belongs to a different case_id. The shred is per case }
+    - { code: EGRESS_STRATUM_REFUSED, severity: fail, since: pse-event-0.1, fires_when: a stratum-0 or stratum-1 payload is presented for crossing to LOCAL. EG-5 }
+
+  # The sixteen fixtures named in docs/THE-GAMEPLAN.md section 2.3, each mapped
+  # to the rule in this file that fires it. `rule` is a dotted path the
+  # validator resolves, so a renamed rule breaks this map loudly.
+  #
+  # `expect_only: true` requires the expected code to be the sole failing code
+  # when the fixture runs. THE-GAMEPLAN section 2.4 makes it mandatory on every
+  # D2 and D5 fixture, and the validator refuses those six without it.
+  #
+  # The validator compares the fixture's code against the codes the resolved node
+  # carries, under the keys `code`, `violation_code` and `nested_hit_code`. Where
+  # the node legitimately carries none, `code_source` names the path that does,
+  # and an entry that resolves to no code at all is refused rather than passed.
+  # Four entries reached no code before 2026-09-03, including the D5 one, so any
+  # code at all satisfied them. `prohibited_name` narrows a denylist node to the
+  # one group that names that field, which is the difference between asserting a
+  # code and asserting that the type fires it somewhere.
+  fixtures:
+    hint-cited-as-email:
+      code: HINT_CITED_AS_VALUE
+      rule: event_types.ASSESS_EVENT.payload.rules.cited_as_matches_selector_type
+      corpus: conformance/must-fail.jsonl
+      expect_only: true
+    generated-permutation-cited-as-observed:
+      code: GENERATED_CITED_AS_OBSERVED
+      rule: event_types.ASSESS_EVENT.payload.rules.generated_requires_promotion
+      corpus: conformance/must-fail.jsonl
+      expect_only: true
+    account-anchored-on-handle:
+      code: SELECTOR_ANCHOR_PROHIBITED
+      rule: event_types.ADJUDICATE_EVENT.payload.rules.anchor_selector_may_anchor
+      corpus: conformance/must-fail.jsonl
+      expect_only: true
+    run-against-unauthorized-subject:
+      code: SUBJECT_NOT_AUTHORIZED
+      rule: event_types.PROBE_EVENT.lineage.required_parents.RUN_START
+      corpus: conformance/gate/
+      code_source: event_types.PROBE_EVENT.payload.rules.run_permitted
+      expect_only: true
+    scope-drift-three-hops:
+      code: SCOPE_DRIFT_UNADJUDICATED
+      rule: lineage.chain_rules.scope_drift
+      corpus: conformance/gate/
+      expect_only: true
+    absence-claimed-without-canary:
+      code: ABSENCE_CLAIMED_WITHOUT_CANARY
+      rule: event_types.EXTRACT_EVENT.payload.rules.absence_requires_canary
+      corpus: conformance/must-fail.jsonl
+    extract-carries-confidence:
+      code: EXTRACT_HAS_CONFIDENCE
+      rule: event_types.EXTRACT_EVENT.confidence
+      corpus: conformance/must-fail.jsonl
+    extract-carries-review-state:
+      code: EXTRACT_HAS_REVIEW_STATE
+      rule: event_types.EXTRACT_EVENT.payload.prohibited
+      corpus: conformance/must-fail.jsonl
+      prohibited_name: review_state
+    nested-layer-collapse:
+      code: LAYER_COLLAPSE_NESTED
+      rule: envelope.payload_denylist_recursion
+      corpus: conformance/must-fail.jsonl
+    unregistered-selector-type:
+      code: SELECTOR_TYPE_UNREGISTERED
+      rule: event_types.EXTRACT_EVENT.payload.rules.selector_type_registered
+      corpus: conformance/must-fail.jsonl
+    cluster-minted-by-connector:
+      code: PRODUCER_NOT_ALLOWED
+      rule: event_types.IDENTITY_EVENT.producer_authority
+      corpus: conformance/must-fail.jsonl
+      code_source: producer_authority.violation_code
+    link-arrives-accepted:
+      code: LINK_HAS_ACCEPTANCE
+      rule: event_types.LINK_EVENT.payload.rules.accepted_const_false
+      corpus: conformance/must-fail.jsonl
+    extract-no-lineage:
+      code: LINEAGE_MISSING
+      rule: event_types.EXTRACT_EVENT.lineage.required_parents.CLAIM
+      corpus: conformance/must-fail.jsonl
+      code_source: lineage.violation_codes
+    run-without-purpose-binding:
+      code: CASE_PURPOSE_UNBOUND
+      rule: event_types.COLLECT_EVENT.payload.rules.purpose_bound
+      corpus: conformance/gate/
+      expect_only: true
+    cluster-carries-rollup-confidence:
+      code: CLUSTER_HAS_ROLLUP_CONFIDENCE
+      rule: event_types.IDENTITY_EVENT.confidence
+      corpus: conformance/must-fail.jsonl
+    merge-circularity:
+      code: MERGE_CIRCULAR
+      rule: event_types.IDENTITY_EVENT.payload.rules.circularity
+      corpus: conformance/must-fail.jsonl
+
+# ---------------------------------------------------------------------------
+# DIVERGENCES FROM zmeta-event-1.0
+# ---------------------------------------------------------------------------
+# Input to spec/divergence-register.yaml at Step 9, whose validator derives
+# the required entry list from a JSON-pointer diff of the two schemas. This
+# list is the layer model's own account of what it changed and why; the
+# register is the governed record. PSE is a private dialect and claims no
+# upstream compatibility (AGENTS.md section 1).
+divergences_from_zmeta:
+  - id: DV-01
+    path: /zmeta_version
+    disposition: REPLACE
+    replaced_by: /pse_version and /derived_from
+    rationale: The fork is declared on every event so the two models are distinguishable on the wire (D1).
+  - id: DV-02
+    path: /case_id
+    disposition: NEW
+    rationale: ZMeta has no container. Nothing exists outside a case, and D4 keys the crypto-shred on case_id, so an event without one is unreachable by the sweep.
+  - id: DV-03
+    path: /event/event_type
+    disposition: REPLACE
+    rationale: Six sensor-layer types retokenized to nine person-centric types (D6). The mechanism, a locked enum plus a payload discriminator that must match, is unchanged.
+  - id: DV-04
+    path: /source/node_role
+    disposition: REPLACE
+    replaced_by: /source/environment
+    rationale: EGRESS.md EG-1 defines two environments and the boundary is which may execute a connector. ZMeta's five roles describe a mesh this deployment does not have.
+  - id: DV-05
+    path: /payload/timing_quality
+    disposition: REPLACE
+    replaced_by: /payload/temporal on EXTRACT_EVENT
+    rationale: Two timestamps and a provenance enum (design section 2.2). The discipline is kept, mandatory and never repaired, while the fields describe platform-asserted time rather than clock sync.
+  - id: DV-06
+    path: /confidence
+    disposition: INVERT
+    rationale: Required on INFERENCE, FUSION and STATE in ZMeta; prohibited on every type here (LM-R2). There is no calibration ground truth anywhere in this system, so a number would be a guess wearing a costume.
+  - id: DV-07
+    path: /profile
+    disposition: DROP
+    rationale: One Postgres, one consumer, no wire budget. Profiles L, M, H and profile thinning never un-defer (THE-GAMEPLAN section 2.2).
+  - id: DV-08
+    path: /payload/geo on the state layer
+    disposition: REPLACE
+    rationale: TrackStatePayload requires geo. ASSESS_EVENT makes it optional, because a person-centric assessment usually has no position and a place-name inference with no coordinate is a list entry, never a pin.
+  - id: DV-09
+    path: /event/t_publish and /event/t_receive
+    disposition: DROP
+    rationale: ZMeta carries publish and receive timestamps because a mesh has hops that can reorder. One store and one consumer have neither, so the two fields would be written and read by nothing. Producer emission time is `ts` and platform-asserted time is payload.temporal on EXTRACT_EVENT.
+  - id: DV-10
+    path: /source/sensor_id
+    disposition: DROP
+    rationale: There is no sensor. The equivalent identity is the connector and its run, which live in the PROBE_EVENT payload as connector_id, connector_version and run_id, where they are per-run rather than per-node.
+  - id: DV-11
+    path: policy/lineage.yaml parent structure
+    disposition: REPLACE
+    rationale: ZMeta's generated lineage policy has one type-granular parent structure and no subtype key anywhere. PSE needs subtype granularity because D5's requirement is a subtype pair, COLLECT_EVENT PERMITTED, and a type-granular policy cannot express it. lineage.policy_shape names the target keys so the generator does not follow the precedent's shape and drop the D5 line.
