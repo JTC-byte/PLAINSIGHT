@@ -10,7 +10,8 @@ criterion refuses rather than permits.
 
 ## Ratified
 
-**Landed 2026-08-27 in commit `5d53973`**, authored by the operator. R6 as
+**Landed 2026-08-27 in commits `5d53973` (the Wave 0 rows) and `a54061b` (the
+EG, CR, HY, SS-19 to SS-21 and RT-19 rows)**, authored by the operator. R6 as
 amended that day permits an agent to execute the commit of a decision the
 operator made; the decision and the authorship stayed theirs. These rows are the
 operator's decisions transcribed by an agent, and the transcription is still
@@ -35,7 +36,7 @@ read is the half-stamping this table exists to prevent.
 | R5 `text: forever` scoped by case | `doctrine/RETENTION.md` RT-8 | v0.1 | 2026-08-26 | unstamped | operator |
 | R6 human-only attribution, **amended** | `CLAUDE.md` §5 | v0.2 | 2026-08-26, amended 2026-08-27 | unstamped | operator |
 | R7 interaction line | `doctrine/SUBJECT_SELECTION.md` SS-14 | v0.1 | 2026-08-26 | unstamped | operator |
-| D6 event-type set, **nine** | `spec/layer-model.yaml` (to be written) | v0.1 | 2026-08-27 | unstamped | operator |
+| D6 event-type set, **nine** | `spec/layer-model.yaml` | v0.1 | 2026-08-27 | unstamped | operator |
 | D7 version label `pse-event-0.1`, Unlocked | `spec/pse-semantics-contract.md` (to be written) | v0.1 | 2026-08-27 | unstamped | operator |
 | D8 one repo, lane boundary enforced | `README.md`, `AGENTS.md` | v0.1 | 2026-08-27 | unstamped | operator |
 | R8 v0.1 bystander set `count_only \| refuse` | `doctrine/SUBJECT_SELECTION.md` SS-10 | v0.1 | 2026-08-27 | unstamped | operator |
@@ -90,7 +91,7 @@ is listed below, and none of it blocks a build.
 
 | Item | Kind | Blocks | Notes |
 |---|---|---|---|
-| Every basis stamp, all 68 items | Basis | nothing mechanical | Deliberate. The reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md` §3.0 has not been reviewed. Conclusions bind; bases are unread |
+| Every basis stamp, all 58 criteria and the 16 D and R decision rows | Basis | nothing mechanical | Deliberate. The reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md` §3.0 has not been reviewed. Conclusions bind; bases are unread |
 | R8 beyond `count_only \| refuse` | Conclusion, scoped | not blocking v0.1 | The v0.1 pair is stamped. Whether a third disposition exists is left open until a connector manifest shapes the question |
 | `doctrine/DISCLOSURE.md` | Artifact | nothing yet | **Its deferral trigger has fired.** RT-18 is the second egress path `docs/THE-GAMEPLAN.md` §2.2 named as the trigger. RETENTION.md RT-14 and RT-18 stand in |
 | `PLAINSIGHT-FOUNDATION.md` DRAFT header | Housekeeping | nothing | Line 4 still reads DRAFT and says nothing is operator-ratified. D1 through D5 now are. Clearing that line is the operator's act |

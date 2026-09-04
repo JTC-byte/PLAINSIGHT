@@ -1,6 +1,6 @@
 # Credential lifecycle: the accounts that do the looking
 
-**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. NOT YET COMMITTED.**
+**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `a54061b` on 2026-08-27.**
 
 `docs/THE-GAMEPLAN.md` §2.2 deferred this file until the credential pool had a
 real shape. SS-20 gave it one on 2026-08-27 by separating the accounts that
@@ -11,7 +11,8 @@ justification is narrow: whose account performs a collection determines which
 identity a third party permanently records as having looked at a person, and that
 is a subject-selection consequence rather than an operations detail.
 
-Per R6 as amended, nothing here is in force until the operator commits it.
+Landed 2026-08-27 in commit `a54061b`, authored by the operator. Per R6 as
+amended the conclusions are in force, and every basis is unstamped.
 
 ---
 
@@ -64,7 +65,8 @@ log.**
 This carries a measured finding from the tool audit forward. toutatis takes its
 session as a command-line parameter, `-s <sessionid>`, which places a live
 session token into shell history and into the process list of every user on the
-machine. The reimplementation reads it from a mounted file instead.
+machine. The reimplementation reads it out of band, from a file the process is
+given rather than from its command line.
 
 `lineage.command_template` records `{credential_ref}` and the run records the
 `credential_id`. The value is supplied out of band and renders redacted in every
@@ -126,7 +128,8 @@ render as their consequence rather than returning empty:
 ▨ NO ACTIVE CREDENTIAL for Instagram · this connector did not run · absence here is not evidence
 ```
 
-This is `OPERATIONAL_CONTRACT` §4's rule applied to the credential pool. A
+This is `../ZISR COP/docs/OPERATIONAL_CONTRACT.md` §4's rule applied to the
+credential pool, the same rule RT-12 applies to the sweep heartbeat. A
 connector that cannot authenticate and returns zero results looks exactly like a
 connector that ran and found nothing, and the second reading is the one that
 produces a false negative in an assessment.
@@ -155,4 +158,4 @@ produces a false negative in an assessment.
 | CR-5 | One run per persona, daily budget | The first run | none |
 | CR-6 | Quarantine needs a written exit criterion | The first quarantine | SS-13 |
 | CR-7 | Burn rather than reuse, and record it as a finding | The first burn | none |
-| CR-8 | An empty pool stops rather than degrades | The first empty pool | SS-19 |
+| CR-8 | An empty pool stops rather than degrades | The first empty pool | RT-12 |

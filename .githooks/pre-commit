@@ -2,8 +2,9 @@
 # Class F surface. Git history is the one store a crypto-shred cannot reach.
 # A selector value committed here survives every retention mechanism below it.
 #
-# This runs the same battery as `make preflight`. A gate enforced only in CI is
-# enforced only after the thing it guards is already in the history.
+# This runs the `make preflight` battery less the telemetry test, which CI runs
+# as a step of its own. A gate enforced only in CI is enforced only after the
+# thing it guards is already in the history.
 
 set -e
 

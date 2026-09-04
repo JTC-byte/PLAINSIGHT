@@ -7,11 +7,11 @@
 # What exists here is what there is to check. The governed artifacts are the
 # doctrine corpus (58 criteria across four rank-1 files and one advisory file,
 # with a pin of record they reconcile against), the layer model in spec/ that the
-# schema and policy will be generated from, the unsealed cast draft in
-# synthetic/, and the voice standard every tracked file is held to. The schema,
-# ontology, policy and connector gates are named as PENDING inside the
-# aggregator with the step that delivers each, so `validate-kernel` reports the
-# gap rather than passing over it.
+# schema and policy will be generated from, the selector registry in ontology/,
+# the unsealed cast draft in synthetic/, and the voice standard every tracked
+# file is held to. The schema, policy, divergence-register and connector gates
+# are named as PENDING inside the aggregator with the step that delivers each,
+# so `validate-kernel` reports the gap rather than passing over it.
 
 help:
 	@echo "validate-doctrine     criterion definitions, stamps, cross-references, pin of record"
@@ -64,10 +64,11 @@ test:
 validate-kernel:
 	python tools/validate_conformance.py --kernel-gate
 
-# preflight is the pre-commit battery. It is deliberately the same set the hook
-# runs, because a gate that is only enforced in CI is enforced only after the
-# thing it guards has already been committed, and git history is the one store a
-# crypto-shred cannot reach.
+# preflight is the pre-commit battery plus the telemetry test. The hook runs the
+# same six commands and not the test, which CI runs as a step of its own. A gate
+# that is only enforced in CI is enforced only after the thing it guards has
+# already been committed, and git history is the one store a crypto-shred cannot
+# reach.
 preflight:
 	python tools/validate_doctrine.py
 	python tools/validate_hygiene.py

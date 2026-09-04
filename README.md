@@ -3,9 +3,11 @@
 An OSINT common operating plane, and PSE, the ZMeta-derived semantic dialect it
 runs on.
 
-**Status: Wave 0. The doctrine foundation is complete and nothing is built.**
-Every doctrine item carries a recorded conclusion as of 2026-08-27. Every basis
-is deliberately unstamped, and nothing is committed yet. No collection mechanism
+**Status: Wave 0 committed, and the first build artifacts are committed with
+the gates that check them.** Every doctrine conclusion has been recorded since
+2026-08-27 and every basis is deliberately unstamped. The layer model, the
+selector registry, the unsealed cast draft, and the validators that read them
+landed in `d99f213`. No schema, no policy pack, and no collection mechanism
 exists. No connector exists. Nothing here has touched a platform.
 
 ## What this is
@@ -39,6 +41,8 @@ A session starting cold reads these four files before doing anything:
 
 Then, for background rather than authority:
 
+- `CHANGELOG.md`: one entry per commit that changed a governed artifact, each
+  naming what did not change.
 - `CONFORMANCE.md`: why PSE is not ZMeta, what a connector conformance claim
   contains, and what the kernel gate does and does not cover today.
 - `docs/THE-GAMEPLAN.md`: the full artifact register and the numbered steps.
@@ -85,20 +89,17 @@ One lane rule is enforced: nothing under `spec/`, `schema/`, `ontology/`,
 
 ## Next action
 
-**The operator reviews and commits the transcription.** Every doctrine
-conclusion is recorded in `doctrine/DOCTRINE_STATUS.md` by an agent. Per R6 a
-Class F commit is authored by the ratifier, so nothing is in force until that
-commit exists, and it is also this repository's first commit.
+**The operator decides four Class F items.** They are drafted as patch 4 in
+`Z-ISR/_session-artifacts/2026-09-03-plainsight-doctrine-review-2/`, with
+`DECISIONS.md` beside them, and each lands unratified and refuses until
+stamped. Patch 2 in the same directory restores to SS-4's required-field table
+the reach R4 decided on 2026-08-26, and the authorization schema Step 8 compiles
+from that table, so patch 2 lands before Step 8. Step 7 does not wait on it.
 
-Then the build starts, and two steps are unblocked in parallel:
-
-- **Step 4**, `synthetic/CAST.md` and a sealed, hash-pinned `GROUND_TRUTH.yaml`.
-  It has lead time that cannot be recovered, because accounts created in week 12
-  measure the system against a thin target, and SS-17 puts the baseline on the
-  critical path for S3 and S4 reach.
-- **Step 5**, `spec/layer-model.yaml`. D6 settled the event-type set at nine and
-  D7 settled the label at `pse-event-0.1`, so the single source the schema and
-  policy enums are both generated from can be written now.
+Then Step 7: `schema/pse-event-0.1.schema.json` generated from
+`spec/layer-model.yaml`, the four policy files, and
+`spec/pse-semantics-contract.md` written last, because the contract explains
+rules that already exist rather than inventing rules nothing enforces.
 
 ## Relationship to the rest of Z-ISR
 

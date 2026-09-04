@@ -40,9 +40,9 @@ artifact does not yet exist.
 
 | Condition | Artifact | Rank, class | Current state |
 |---|---|---|---|
-| Versioning | `spec/pse-semantics-contract.md` | rank 2, Class B | Does not exist. `docs/THE-GAMEPLAN.md` Step 7, blocked on Steps 5 and 6, and written last of the three so it explains rules that already exist rather than inventing rules nothing enforces. |
+| Versioning | `spec/pse-semantics-contract.md` | rank 2, Class B | Does not exist. `docs/THE-GAMEPLAN.md` Step 7, unblocked since `d99f213` delivered Steps 5 and 6, and written last of the three so it explains rules that already exist rather than inventing rules nothing enforces. |
 | Documentation of the delta | `spec/divergence-register.yaml` | rank 3, Class B | Does not exist. Step 9. `spec/layer-model.yaml`'s `divergences_from_zmeta` block, eight entries, DV-01 through DV-08, is the current input a Step 9 generator will read. It is prose in a Class B file, not yet a governed register with its own validator. |
-| Conformance evidence | `conformance/` | rank 3 for the corpora, Class B and F | Three subdirectories exist on disk, `connector-harness/`, `gate/`, and `retention/`, and all three are empty. Steps 7, 8, and 9 fill them. |
+| Conformance evidence | `conformance/` | rank 3 for the corpora, Class B and F | Nothing under `conformance/` is tracked. The three planned subdirectories, `connector-harness/`, `gate/`, and `retention/`, are empty on the machine that cut the repository and absent from any clone, because git does not record an empty directory. Steps 7, 8, and 9 fill them. |
 | Release governance | `AGENTS.md` | rank 4, Class A | Exists, committed. Change classes A through F, the required local workflow, and the documentation matrix are in force today. |
 
 Three of the four conditions do not exist yet. The license is conditional on
@@ -60,31 +60,34 @@ passing, never any one of them read alone.
 |---|---|---|---|---|
 | 1 | `pytest connectors/<id>` | No. `connectors/` is empty. | The adapter's own `translate_<subject>` functions behave as the author intended, against inputs the author chose. | Anything this repository checks independently. The author wrote the code and the test. |
 | 2 | `tools/validate.py --file <events>.jsonl --strict` | No. Depends on `schema/pse-event-0.1.schema.json` and `policy/*.yaml`, both empty, Step 7. | The adapter's sample output is schema-valid and passes every layer denylist, lineage rule, and producer-authority check. | That the selectors used are registered, which is rung 3, or that the sample represents the connector's full output range. |
-| 3 | `tools/validate_ontology.py` | No. Depends on `ontology/selectors.yaml`, empty, Step 6. | Every `selector_type` the sample emits is a member of the closed vocabulary. | Schema or policy conformance. That is rung 2. |
+| 3 | `tools/validate_ontology.py --corpus` | The tool and `ontology/selectors.yaml` both exist since `d99f213`. The `--corpus` mode this rung needs is deferred and says so rather than passing, because no corpus exists for it to read. The default `--registry` mode lints the registry itself and is what the kernel gate runs. | Every `selector_type` the sample emits is a member of the closed vocabulary. | Schema or policy conformance, which is rung 2. Registry self-consistency, which is not a claim about any connector. |
 | 4 | `tools/validate_connector_conformance.py --fixtures ...` | No. Depends on `conformance/connector-harness/fixture.schema.json`, empty, Step 12, and on a connector to write fixtures against, which does not exist. | The adapter, called against a pinned cassette set including `event_count: 0`, returns output matching each fixture's pinned expectation for math, presence, absence, and lineage. | Behavior against a live target on the day it actually runs. A cassette is frozen at capture time and a platform can change under it. |
 | 5 | `tools/validate_conformance.py --kernel-gate` | Yes. | Nothing an implemented gate would refuse regressed anywhere in the repository. | Anything about this connector specifically. It is a whole-repository regression gate, not a connector claim. |
 
-Rungs 1 through 4 name a directory or a tool that does not exist. No connector
-can honestly claim conformance today, because four of the five rungs cannot
-run. Rung 5 is the only rung that runs today, and it says nothing about a
-connector because none exists for it to say anything about.
+Rungs 1, 2 and 4 name a directory or a tool that does not exist, and rung 3's
+tool exists with the mode this rung needs deferred until a corpus does. No
+connector can honestly claim conformance today, because rungs 1, 2 and 4
+cannot run and rung 3 checks nothing until the corpus exists. Rung 5 is the
+only rung that checks anything today, and it says nothing about a connector
+because none exists for it to say anything about.
 
 One naming gap between two rank-7 drafts: `docs/PLAINSIGHT-FOUNDATION.md`
 section 4.4 names rung 3 with a `check_ontology` script name, while
 `docs/THE-GAMEPLAN.md` section 2.1 registers the same artifact as
-`tools/validate_ontology.py`. This file uses the registered name. Neither
-exists yet, so nothing runs under either name today, and the discrepancy is
-reported here rather than resolved.
+`tools/validate_ontology.py`. This file uses the registered name, which is the
+one that exists since `d99f213`. Nothing exists under the FOUNDATION name, and
+FOUNDATION is voice-exempt as a record of intent, so the discrepancy is
+reported here rather than edited there.
 
 ## 4. What the kernel gate covers today, and what it does not
 
 `tools/validate_conformance.py --kernel-gate` is the one rung that exists.
-Its `KERNEL_GATE` list carries twelve entries. Five are implemented: doctrine,
-hygiene, layer-model, cast, and telemetry. One is a wired stub:
+Its `KERNEL_GATE` list carries twelve entries. Six are implemented: doctrine,
+hygiene, layer-model, ontology, cast, and telemetry. One is a wired stub:
 retention-repo-scan, which is D-001, exits 0, and checks nothing, scheduled
-for Step 8. Six are pending, and each names the artifact that does not exist:
-schema (Step 7), ontology (Step 6), authorization (Step 8), retention-policy
-(Step 8), divergence-register (Step 9), and connector-conformance (Step 12).
+for Step 8. Five are pending, and each names the artifact that does not
+exist: schema (Step 7), authorization (Step 8), retention-policy (Step 8),
+divergence-register (Step 9), and connector-conformance (Step 12).
 
 `validate_conformance.py`'s own docstring states the rule this file repeats: a
 check that is not implemented is reported as PENDING and never as a pass,
@@ -94,10 +97,10 @@ while checking nothing, and it stays honest only because it says so on every
 run. Counting a stub or a pending entry as green would turn a known gap into a
 silent one.
 
-A green kernel-gate run today means five implemented checks passed, one stub
-exited 0 while checking nothing, and six checks did not run at all because the
-schema, the ontology, the authorization and retention policy, the divergence
-register, and every connector do not exist. That is a regression gate on the
+A green kernel-gate run today means six implemented checks passed, one stub
+exited 0 while checking nothing, and five checks did not run at all because
+the schema, the authorization and retention policy, the divergence register,
+and every connector do not exist. That is a regression gate on the
 checks that exist. It is not a conformance claim about PSE's semantics, and it
 is not a conformance claim about any connector, because none exists.
 

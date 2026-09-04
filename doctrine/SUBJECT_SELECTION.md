@@ -1,14 +1,15 @@
 # Subject selection: who may be a subject, and what the gate returns
 
-**Status: DRAFTED 2026-08-26. ALL CONCLUSIONS RECORDED. NOT YET COMMITTED.**
+**Status: DRAFTED 2026-08-26. ALL CONCLUSIONS RECORDED. Landed in commits `5d53973` and `a54061b` on 2026-08-27.**
 
 The operator decided R2, R3, R4, R6 and R7 on 2026-08-26 and recorded a
 conclusion on every remaining criterion on 2026-08-27. **Every basis is
 unstamped**, which is deliberate: the conclusions were decided in session and the
 reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 has not been reviewed.
 
-**Landed 2026-08-27 in commit `5d53973`.** SS-19 through SS-21 added 2026-08-27 and are uncommitted. Per R6 as amended, an agent
-may execute a commit the operator has instructed; the authorship stays theirs.
+**Landed 2026-08-27 in commit `5d53973`; SS-19 through SS-21 landed the same day
+in `a54061b`.** Per R6 as amended, an agent may execute a commit the operator has
+instructed; the authorship stays theirs.
 
 Every criterion carries its own marker. One partially stamped item does not
 stamp the file. Conclusion is ratified separately from basis, because no
@@ -705,10 +706,10 @@ per-account email and phone, so the cost is two pools rather than one, and the
 collection pool is the more urgent of the two because without it no connector
 runs at all.
 
-`doctrine/CREDENTIAL_LIFECYCLE.md` is deferred until the cast exists and the
-credential pool has a real shape. **That trigger has now fired**, since the pool
-has a shape as of this criterion. The paragraph above and SS-13 stand in until it
-is written.
+`doctrine/CREDENTIAL_LIFECYCLE.md` was deferred until the credential pool had a
+real shape. This criterion gave it one, and that file now carries CR-1 through
+CR-8. CR-1 holds the disjointness mechanism named above, and CR-2 the
+provisioning record each credential carries.
 
 ---
 
@@ -793,6 +794,13 @@ unlock is not a hard refusal.
    because a mechanism whose only enforcement is a build target is enforced only
    against people who run build targets, and collection runs are started by
    people in a hurry.
+
+   **Enforcement state, stated in place.** None of the four checks exists yet.
+   `validate_authorization.py` is not written, and `validate_retention.py` is
+   the D-001 stub whatever flags it is passed. The `make preflight` target that
+   exists today runs a different battery: the doctrine, hygiene, layer-model,
+   ontology and cast validators, the telemetry test, and the stub. The
+   four-check runner gate is Step 8 and Step 10 work.
 
    The list above is enumerated here rather than incorporated by reference.
    `docs/THE-GAMEPLAN.md` §4 is its provenance and holds the argument for each

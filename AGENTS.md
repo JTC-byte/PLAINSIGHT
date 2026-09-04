@@ -143,8 +143,9 @@ python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
 
-`make preflight` runs the same battery the pre-commit hook runs, and
-`make validate-kernel` runs the aggregator. The gate battery is defined once, in
+`make preflight` runs the pre-commit hook's six commands plus the telemetry
+test, which the hook leaves to CI, and `make validate-kernel` runs the
+aggregator. The gate battery is defined once, in
 `KERNEL_GATE` inside `tools/validate_conformance.py`, so a new check joins it
 there rather than in every document that quotes a command.
 
@@ -183,6 +184,9 @@ Every row also updates `CHANGELOG.md` and both process records, which is
 here because the Schema row below used to be the only place this repository named
 the changelog.
 
+The two process records do not take the same tense. Write each in the tense
+section 8 sets for it.
+
 | Changed | Also update |
 |---|---|
 | Doctrine | `DOCTRINE_STATUS.md`, the compiled policy YAML, the enforcing mechanism, its test |
@@ -209,9 +213,10 @@ One partially stamped item does not stamp its file.
 
 ## 8. Handoff standard, and the closeout
 
-Inherited from `ZMeta/zmeta-spec/AGENTS.md` with one addition this repository
-needs. A completed change leaves the next maintainer able to answer five
-questions:
+Inherited from `ZMeta/zmeta-spec/AGENTS.md`, which contributes the five
+questions and nothing else. Everything after them is local to this
+repository. A completed change leaves the next maintainer able to answer
+five questions:
 
 - what changed and why;
 - whether it changed doctrine, semantics, schema, policy, ontology, runtime,
@@ -237,10 +242,33 @@ The surfaces a closeout moves, in addition to whatever the change touched:
 | `docs/plainsight_worklog.md` | The chronological record, added to and never restyled |
 | `docs/plainsight_handoff.md` | Current state only, rewritten, answering the five questions above |
 
-**The addition this repository needs, and it is the one rule here that is not
-ZMeta's.** A closeout commit carries no Class F change the operator has not
-decided. An agent may draft one, and per R6 as amended may execute the commit of
-a decision the operator has made, so the drafts wait outside the commit as a
-patch with its argument beside it rather than landing inside it. A closeout that
-quietly includes a doctrine amendment has made the ratification a formality, which
-is the failure the whole pin-of-record apparatus exists to prevent.
+**Write the handoff in the tense of the tree the commit will create.** The
+order above means nothing in the change is committed at the moment the
+records are written, and the two records take that differently. Write the
+worklog in the tense of the moment: it is a process record, it is added to
+rather than restyled, and its own entry dates it. The handoff is read next
+session against a tree in which the commit exists, so name a staged artifact
+as committed in this commit rather than as written, untracked, or
+uncommitted. Stage the change before the records are written, so that
+`git diff --cached --name-only` lists what the commit will contain, and
+reconcile every state claim in the handoff against that list rather than
+against what `git status` calls untracked.
+
+Three commits have failed this, which is what makes it a rule rather than a
+preference. `5d53973` committed a handoff reading "Nothing committed,
+nothing built" in the commit that added twenty-one files. `a54061b`
+committed one whose state header called the hardening pass uncommitted.
+`d99f213` committed one that marked nine artifacts untracked in the commit
+that tracked all nine. No gate reads the handoff for tense, so this is
+caught at the closeout or not at all. The mechanism that would catch it is
+a lexical check on the two words in this one file, which reaches thirteen of
+the fourteen lines that were wrong at `533da17`; it is Class C, it is owed,
+and it is not in the change that first stated this rule.
+
+**The local rule that binds the commit rather than the records.** A closeout
+commit carries no Class F change the operator has not decided. An agent may
+draft one, and per R6 as amended may execute the commit of a decision the
+operator has made, so the drafts wait outside the commit as a patch with its
+argument beside it rather than landing inside it. A closeout that quietly
+includes a doctrine amendment has made the ratification a formality, which is
+the failure the whole pin-of-record apparatus exists to prevent.

@@ -22,6 +22,119 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-04. The two process records are separated by tense, and the
+  pre-commit tense is cleared from every file that carried it.**
+
+  `docs/plainsight_handoff.md` described the tree as it stood before `d99f213`.
+  Its state header read "the first build artifacts exist uncommitted", nine rows
+  of its section 2 table marked artifacts written and untracked, and two more
+  described already-committed files as carrying uncommitted edits. `d99f213`
+  tracked the nine and committed the four edits, so a reader arriving at that
+  table would have taken nine files git already held for work still to be
+  committed.
+
+  The cause is the closeout order rather than carelessness. Section 8 of
+  `AGENTS.md` puts the battery first, then the records, then the commit, for a
+  stated reason, and a handoff written in that order necessarily describes a
+  tree the commit is about to change. Nothing is wrong with the order. What was
+  missing is the instruction about tense, which section 8 now carries: the
+  worklog describes the moment it was written, and the handoff describes the
+  tree the commit will create. Two records written in one act at one moment
+  differ by which tree each is true of, and each now says which. The rule also
+  names the staging step that makes `git diff --cached --name-only` answer the
+  question at the moment a maintainer is told to ask it, and it states in place
+  that no gate enforces it, with the mechanism that would, its measured reach,
+  and why that mechanism is a later change rather than this one.
+
+  Section 8's opener claimed one local addition, and ZMeta's Handoff Standard is
+  the five questions and nothing else, so the count was wrong before this change
+  added to it. The opener now says what ZMeta contributes, which never needs
+  recounting. Section 6's preamble gained a pointer, because it named both
+  process records in one sentence, which is the conflation the new rule breaks.
+
+  The same class of stale statement stood in four other places, and on the
+  operator's instruction all four are corrected here. Patch 1 of the
+  2026-09-03 review is applied whole: eighteen hunks across six doctrine
+  files, each read and classed by effect before it landed. Fourteen are
+  status-header, citation, or count corrections, and the five doctrine status
+  headers no longer say NOT YET COMMITTED eight days after `5d53973` and
+  `a54061b` landed them. Two reword a mechanism description without moving
+  its obligation. One adds an enforcement-state paragraph to SS-14 item 6, the
+  NEVER list, and that hunk was already stale when drafted: it named five
+  preflight commands where the target ran seven, omitting the ontology
+  validator and the telemetry test, and it is corrected in place. One hunk is named here
+  rather than folded into the count. `doctrine/EGRESS.md`'s environment table
+  changes what LOCAL reaches from "Nothing outside itself", which git, pip
+  and CI already falsified, to "No third-party platform through a
+  connector". No refusal moves, because EG-6 and the Execution Limits are
+  what refuse and the row is descriptive, and it is named because a change to
+  a rank-1 sentence about reach is the kind `CLAUDE.md` gate 2 says rarely
+  looks like one. Patches 2 through 4 were re-verified to apply in order on
+  top of the corrected tree.
+
+  `README.md` no longer says nothing is built and nothing is committed, and
+  its next action is the operator's four decisions and then Step 7 rather
+  than a first commit that landed on 2026-08-27. `CONFORMANCE.md` counts six
+  implemented and five pending as the aggregator does, and its rung 3 row
+  says the ontology tool exists with its corpus mode deferred rather than
+  that the tool does not exist. The `Makefile` and pre-commit comments each
+  claimed the other ran the same battery; both now state that the hook runs
+  six commands and preflight runs those six plus the telemetry test, which
+  CI runs as a step of its own.
+
+  A verification pass over the whole change before commit, seven lenses and
+  six refuters, found the same tense in six more places, all corrected here:
+  `AGENTS.md` section 5 said preflight and the hook run the same battery; the
+  `Makefile` header named the ontology gate as pending;
+  `.github/workflows/ci.yml` said two gates were the whole battery;
+  `CONFORMANCE.md` section 2 said Step 7 was blocked on Steps 5 and 6 and
+  described subdirectories a clone does not have; `doctrine/DOCTRINE_STATUS.md`
+  marked `spec/layer-model.yaml` as to be written; and `docs/THE-GAMEPLAN.md`
+  marked Step 7 BLOCKED, corrected there as the previous session corrected
+  Step 6. The same pass corrected this entry's own arithmetic, its naming of
+  the criterion patch 1 added a paragraph to, which is SS-14 item 6 and not
+  SS-17, and the step the authorization schema belongs to, which is Step 8 and
+  not Step 7, an error carried in from the review's `DECISIONS.md`.
+
+  `docs/plainsight_worklog.md` gains the entry that `8a856b3` and `533da17`
+  owed. `8a856b3` moved `AGENTS.md`, this file, `docs/THE-GAMEPLAN.md` and the
+  handoff, and `533da17` corrected two honesty defects in this file. Neither got
+  a worklog entry, which is the same section 8 obligation missed from the other
+  side. `533da17` has no entry in this file either, and by the rule its own
+  commit added it cannot be given one. The 2026-09-03 worklog entry is
+  untouched, closing line included. It was true when it was written, and a
+  process record is added to rather than restyled. The worklog now holds ten
+  live entries against its ten-entry cap, so the next closeout archives the
+  oldest before it adds one.
+
+  Validation: the full battery at `533da17` and again after these edits. The
+  five validators in the preflight battery are green. The three self-test suites
+  are green, with 60 deliberate layer-model breaks all refused, 48 of them by
+  the expected code alone, 16 ontology breaks refused, and 6 cast breaks
+  refused. The twelve-case telemetry suite is green, and the kernel gate reports
+  6 implemented, 0 failed, 1 stubbed, 5 pending.
+
+  One measurement this commit records that no file in the tree carried before
+  it: the four review patches in
+  `Z-ISR/_session-artifacts/2026-09-03-plainsight-doctrine-review-2/` were
+  applied in sequence onto a scratch clone, all four went in clean, and the
+  patched tree returned the same kernel-gate line. One figure differs, which is
+  the doctrine criterion count at 59 against 58 here, because patch 4 defines
+  EG-7. Knowing that a patch applies is not a reason to apply it. Patch 1
+  landed because the operator instructed it, and patch 4 remains the
+  operator's decision.
+
+  **What did not change.** No criterion's obligation, and no stamp.
+  `doctrine/DOCTRINE_STATUS.md` changed in three lines of fact: which commits
+  its rows landed in, how the unstamped items are counted, and that the D6
+  file now exists. Its stamps are as they were on 2026-08-27. Rank 1 changed in wording only. Patches 2
+  through 4 are still unapplied, and patch 4 is still the operator's Class F
+  decision. The hook still does not run the telemetry test, because adding it
+  is a mechanism change the operator has not made. The tense rule is a
+  sentence and its check is owed. The D-001 repo scan in
+  `tools/validate_retention.py` is still a stub. No schema, no policy, no
+  connector. Nothing collected, no connector executed, no platform touched.
+
 - **2026-09-04, `8a856b3`. The changelog this repository owed, and the handoff
   standard.** *(Written in the commit after, which is the last entry to do so.)*
 

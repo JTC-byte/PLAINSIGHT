@@ -21,16 +21,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      # The layer-model and cast validators parse YAML. Without this step they
+      # The layer-model, ontology and cast validators parse YAML. Without this step they
       # exit 2 rather than passing vacuously, and the kernel gate reports a
       # failure instead of a green run, so the dependency is explicit here.
       - name: Install validator dependencies
         run: pip install pyyaml
 
-      # The doctrine corpus is the governed artifact at Wave 0. These two gates
-      # are the whole battery that can run today, and the aggregator below
-      # reports every check that is not built yet as PENDING rather than
-      # letting an absent check read as a passing one.
+      # Doctrine and hygiene run first as named steps: the first reads the
+      # doctrine corpus and the second reads every tracked file. The kernel
+      # gate below runs the whole implemented battery and reports every check
+      # that is not built yet as PENDING rather than letting an absent check
+      # read as a passing one.
       - name: Doctrine integrity
         run: python tools/validate_doctrine.py
 

@@ -1,6 +1,6 @@
 # Egress doctrine: the two environments, and what crosses between them
 
-**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. NOT YET COMMITTED.**
+**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `a54061b` on 2026-08-27.**
 
 `docs/THE-GAMEPLAN.md` §2.2 deferred this file until the deployment decision was
 made. The operator made it on 2026-08-27: code work stays local, anything live
@@ -12,7 +12,8 @@ Rank 1 alongside `SUBJECT_SELECTION.md` and `RETENTION.md`, because this documen
 answers the third of doctrine's three questions: what leaves the machine. It has
 no opinion on which hypervisor, which provider, or how the link is built.
 
-Per R6 as amended, nothing here is in force until the operator commits it.
+Landed 2026-08-27 in commit `a54061b`, authored by the operator. Per R6 as
+amended the conclusions are in force, and every basis is unstamped.
 
 ---
 
@@ -50,7 +51,7 @@ may execute a connector.**
 |---|---|---|
 | Holds | Code, spec, schema, policy, doctrine, fixtures, the synthetic corpus | The case store, the credential pool, the runner, the sweep |
 | Executes | Validators, tests, the harness against cassettes | Connectors against live platforms |
-| Reaches | Nothing outside itself | Third-party platforms |
+| Reaches | No third-party platform through a connector | Third-party platforms |
 | Case material | **Never** | Always |
 
 LOCAL is a development machine. ISOLATED is whatever the operator stands up for

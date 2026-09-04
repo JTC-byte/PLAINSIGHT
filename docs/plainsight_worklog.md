@@ -1039,3 +1039,276 @@ so.
 
 **Refused in this half of the session:** nothing collected, no connector
 executed, no platform touched, no doctrine landed, no commit made.
+
+---
+
+## 2026-09-04, the two closeout commits, and the record neither of them moved.
+
+**Class:** A (`AGENTS.md` sections 6 and 8, `CHANGELOG.md`, both process
+records, `README.md`, `CONFORMANCE.md`, patch 1's fact corrections across six
+doctrine files, and two mechanism comments).
+
+Two commits landed after `d99f213` on 2026-09-04 and neither of them moved this
+file. The account of those two below is written after the fact from the commits,
+the changelog and the diffs, in the same way the first three changelog entries
+are marked.
+
+### `8a856b3`, the changelog this repository owed, and the handoff standard
+
+`CHANGELOG.md` was written and backfilled across the first three commits rather
+than started from that day forward, in the shape the parent repository uses:
+what changed, which surfaces moved, what validation ran, and what did not
+change. The last of those is the half a reader needs most.
+
+**Why it went missing for three commits is worth recording, because the cause
+was this repository's own documentation matrix.** The register at
+`docs/THE-GAMEPLAN.md` section 2.1 has listed the file at v0.1 since Wave 0, and
+the matrix named it in exactly one row, the Schema row, for an artifact nobody
+has built. An obligation attached to an artifact that does not exist is an
+obligation nothing reaches. The matrix now carries it on every row.
+
+`AGENTS.md` gained section 8. It sets the five questions a completed change
+leaves the next maintainer able to answer, and it states that a closeout is one
+act rather than three: the battery, then the records, then the commit, in that
+order, because a record written after the commit describes a tree that is
+already in the history. A table there names the three surfaces every closeout
+moves, which are the changelog, this worklog, and the handoff.
+
+**One clause in section 8 binds the commit rather than the records, and it is
+why the four review patches were still unapplied at `8a856b3`.** A closeout commit carries no Class F change the operator has
+not decided. An agent may draft one, and per R6 as amended may execute the
+commit of a decision the operator has made, so a draft waits outside the commit
+as a patch with its argument beside it. A closeout that quietly includes a
+doctrine amendment has made the ratification a formality.
+
+`docs/plainsight_handoff.md` gained section 0, answering those five questions
+for `d99f213`.
+
+**The hygiene gate refused that change three times before it passed**, each time
+on em dash connectors copied out of the parent repository's changelog, whose
+voice standard permits them and whose child's forbids them. That is the gate
+working on a file it had never seen.
+
+### `533da17`, the entry regress ended by rule
+
+`8a856b3` introduced two honesty defects into the file it had just created. The
+changelog carried no entry for the commit that wrote it, and it labelled the
+`d99f213` entry as written with its commit when it was written in the one after.
+
+Both are corrected, and the header now carries the convention that stops the
+defect repeating: from the next change onward an entry rides in the same commit
+as the work it describes and cites no hash, because it cannot know its own. That
+is what `ZMeta/zmeta-spec/CHANGELOG.md` does, where a hash appears only when an
+entry refers to some other commit. The convention also terminates the regress
+the first four entries walked into, where an entry written after the fact needs
+a commit, which needs an entry, which needs a commit. `533da17` therefore has no
+changelog entry of its own and cannot be given one.
+
+### Why neither commit moved this file
+
+The rule both commits failed was written in the first of them. `8a856b3` added
+the section 8 table naming the changelog, this worklog and the handoff, then
+moved the changelog and the handoff and left this file untouched. `533da17`
+moved the changelog alone.
+
+**No mechanism refused either commit, because no mechanism reads either process
+record for an entry.** `tools/validate_hygiene.py` is the only gate that opens
+this file, and four of its checks reach it: em dashes, the three cadence
+openers, unterminated table rows, and backtick path citations. One of its two
+caps counts the ten live entries here. Nothing counts entries against commits,
+so the section 8 obligation to move all three surfaces is enforced by a person,
+which is the state design gate 1 describes as a rule living in a README.
+
+The honest reading of the sequence is that both commits were treated as being
+about the changelog rather than as closeouts of their own. `8a856b3` was the
+commit that made the changelog exist, so the new artifact got the attention and
+the two records already in place got none.
+
+### What this session verified rather than assumed
+
+**The whole battery is green at `533da17`, measured rather than carried
+forward.** All five implemented validators pass. The three self-test suites
+pass: 60 deliberate layer-model breaks all refused, 48 of them by the expected
+code alone; 16 ontology breaks; 6 cast defects. `tools/tests/test_gate_log.py`
+passes with 12 tests. The kernel gate reports six implemented, zero failed, one
+stubbed and five pending, where the stub is the retention repo scan, which is
+D-001 and checks nothing.
+
+**The four review patches were applied in sequence onto a scratch clone and all
+four went in clean.** The kernel gate on the patched tree reports the identical
+six implemented, zero failed, one stubbed and five pending. One line does
+differ, and it is the line that should differ: `tools/validate_doctrine.py`
+reports 59 criteria on the patched tree against 58 here, because patch 4 defines
+EG-7 and adds its unstamped row to `doctrine/DOCTRINE_STATUS.md`. Calling the
+result identical is true of the kernel-gate aggregate and false of the criterion
+count, so both figures are recorded.
+
+**One ordering trap is worth recording, because the failure it produces reads as
+a stale patch set.** Running `git apply --check` on patch 2, 3 or 4 alone
+against the tree at `533da17`, before patch 1 landed, reports "patch does not
+apply", naming `RETENTION.md` for patch 2, `CREDENTIAL_LIFECYCLE.md` and
+`HYGIENE.md` for patch 3, and `EGRESS.md` for patch 4. Patches 2 and 3 each
+anchor on hunks patch 1 lands, and patch 4 anchors on a hunk an earlier patch
+lands, which is the apply order the last entry recorded. Three isolated
+failures are that documented ordering rather than a stale patch set. On the
+tree this commit creates, with patch 1 in it, patches 2 and 3 each apply alone
+and only patch 4 still fails alone, on `EGRESS.md`.
+
+### The two defects repaired
+
+**Defect 1, the handoff described the tree as it stood before `d99f213`.** Its
+state header said the first build artifacts exist uncommitted, its section 1
+paragraph said two build steps landed as untracked files, nine rows of its
+section 2 table marked artifacts "Written, untracked", and two more described
+already-committed files as carrying uncommitted edits. `git ls-files` lists all
+nine of those artifacts, and `git show --name-status d99f213` shows that commit
+adding every one of them and committing the pending edits to `AGENTS.md`, the
+`Makefile`, the CI workflow and the pre-commit hook.
+
+**The cause is structural rather than careless, which is why the repair changes
+a rule rather than only the prose.** Section 8 orders a closeout as the battery,
+then the records, then the commit, and the reason it gives holds: a record
+written after the commit describes a tree already in the history. A handoff
+written in that order therefore describes the tree as it stands while the
+writing happens, which is the pre-commit tree. The order stays. What section 8
+lacked is the instruction to write that record in the tense of the tree the
+commit will create, and it now carries it, along with the staging step that
+makes `git diff --cached --name-only` answer the question at the moment the rule
+applies. Section 6's preamble gained the pointer, because it named "both process
+records" in one sentence, which is the conflation the new rule breaks.
+
+**The rule is a sentence and not yet a mechanism, which design gate 1 makes the
+live question.** The mechanism that would catch this is narrow and cheap: a
+lexical check on the words "untracked" and "uncommitted" scoped to the handoff
+alone, in the shape of the existing em dash check, roughly six lines and a
+constant with no new dependency. Its measured reach is thirteen of the fourteen
+lines that were wrong at `533da17`, which means it would have refused both
+`a54061b` and `d99f213`; it misses only "Neither has been committed", which no
+lexical rule of reasonable size catches. The alternative of reconciling backtick
+path citations against `git ls-files` was measured and rejected: it reaches
+eight of the fourteen, misses the state header, which is the most misleading
+line in the file, and puts a subprocess git dependency into a tool that is
+currently pure filesystem. The check is not in this change for one reason worth
+recording, which is ordering. Landing it before the handoff rewrite refuses the
+very file being repaired, so the sentence and the rewrite go first and the check
+follows as its own Class C change with a test that fails when the constraint is
+removed.
+
+**Defect 2 is this entry.** Nothing else repairs it, because a process record is
+added to and never restyled, so the 2026-09-03 entry keeps its closing line
+saying no commit was made. That line was true when it was written.
+
+### A sweep for the same staleness elsewhere, repaired on instruction
+
+The sweep returned 52 candidates across 25 tracked files. Every candidate acted
+on was re-derived against the tree first. What it found outside the two
+records was first recorded and left alone, and the operator then instructed
+the repair, so this section records both what was found and what was done.
+
+**All five doctrine files still say NOT YET COMMITTED in their status headers**,
+eight days after `5d53973` and `a54061b` landed them, and `doctrine/EGRESS.md`
+and `doctrine/CREDENTIAL_LIFECYCLE.md` each state that nothing in them is in
+force until the operator commits it, which a reader takes to mean rank 1 does
+not bind. That half was drafted as patch 1, which the review classes A on the
+ground that every change in it is a fact correction. It is applied in this
+change, whole, after each of its eighteen hunks was read and classed by effect
+rather than by the review's label. Fourteen are header, citation or count
+corrections. Two reword a mechanism description without moving its
+obligation. One adds an enforcement-state paragraph to SS-14 item 6, the
+NEVER list, and was itself stale when drafted, naming five preflight commands
+where the target ran seven and omitting the ontology validator and the
+telemetry test; it is corrected in place. The one hunk to name is the EGRESS
+environment table, where LOCAL's reach changes from "Nothing outside
+itself", which git, pip and CI already falsified, to "No third-party
+platform through a connector". Nothing that refused now permits, because
+EG-6 and the Execution Limits are the refusals and the row is descriptive,
+and it is named because gate 2 says a rank-1 change about reach rarely looks
+like one. Patches 2 through 4 were re-verified to apply in order on top of
+the corrected tree.
+
+**`README.md` said nothing is built and nothing is committed yet**, and its
+next-action section still described this repository's first commit as
+pending. It now states what `d99f213` landed, names the operator's four
+decisions and then Step 7 as the next action, and lists the changelog among
+the background reading. **`CONFORMANCE.md` reported five implemented checks
+and six pending** where the gate reports six and five, listed the ontology
+check among the pending, and said in its rung 3 row and its naming-gap
+paragraph that `tools/validate_ontology.py` did not exist. It was written
+inside `d99f213`, before the ontology entry flipped in that same commit. All
+of it is corrected; the rung 3 row now says the tool exists with its
+`--corpus` mode deferred until a corpus does, which keeps "four of the five
+rungs cannot run" true for a different reason.
+
+**Two mechanism comments are false, one in each direction.** The `Makefile` says
+preflight is deliberately the same set the hook runs, and the hook says it runs
+the same battery as preflight. Preflight runs seven commands and the hook runs
+six. The telemetry test suite is the difference, and CI runs it as a step of its
+own. Both comments are corrected to state the difference. Adding the test to
+the hook changes a mechanism, so that choice is left with the operator and
+recorded in the handoff's known gaps.
+
+### Agent involvement, stated precisely
+
+`CLAUDE.md` section 5 puts the honesty about how the work was done here rather
+than in a commit trailer. Twenty-seven subagents ran, in two passes. The first
+pass was fourteen: one recon pass that read the validator source and returned
+the gate constraints every draft had to satisfy, one staleness sweep, one
+drafting pass for each of the four drafted texts, which were the `AGENTS.md`
+section 8 rule, the changelog entry, this entry and the handoff repair, and
+two verifiers per draft whose standing instruction was to refute and to
+default to refused when uncertain. The verifier pass earned its cost. It caught three blockers, and two
+of them were factual errors the parent session had itself stated: the count of
+prior failures was three commits rather than two, and the number of artifacts
+marked untracked was nine rather than eight. It also caught a reconciliation
+command that returns nothing at the moment the rule tells a maintainer to run
+it, which is how the staging step got into the rule.
+
+No subagent wrote to the tree. Each returned text and the parent session applied
+it, which kept one reviewer in front of every edit. The battery figures above
+were run by the parent session against the working tree. The second half of
+the session, patch 1 and the four files after it, was applied by the parent
+session directly, each hunk read before it landed.
+
+**The second pass ran over the whole staged change before the commit**: seven
+lenses, class by effect, facts in the records, facts in the worklog, facts in
+the tree, voice and lane, cross-file consistency, and completeness, with one
+refuter behind each lens that raised anything above minor. Six refuters ran,
+for thirteen agents. Forty-two findings were raised, twenty-two of them above
+minor; the refuters confirmed sixteen, downgraded six, and refuted none. That
+rate is the opposite of the two doctrine reviews, and the reason is method:
+every lens here re-ran a command or re-read a file rather than reading one
+criterion and arguing, so what it raised was measured.
+
+What the second pass caught is recorded because most of it was the parent
+session's own error. The corrected paragraph in patch 1 sits in SS-14 item 6,
+the NEVER list, and every record in this change had called it SS-17,
+following the drafting agent's rationale rather than the file. The hunk
+classification summed to twenty against eighteen hunks. The records said the
+stale paragraph named four preflight commands, and it named five. The
+authorization schema that patch 2 unblocks is Step 8, not Step 7, an error
+carried from `DECISIONS.md` into `README.md` and the handoff. `AGENTS.md`
+section 5 still said preflight and the hook run the same battery, the
+`Makefile` header still named the ontology gate as pending,
+`.github/workflows/ci.yml` still said two gates were the whole battery,
+`CONFORMANCE.md` section 2 still said Step 7 was blocked on Steps 5 and 6 and
+described subdirectories a clone does not have, `doctrine/DOCTRINE_STATUS.md`
+still marked `spec/layer-model.yaml` as to be written, and
+`docs/THE-GAMEPLAN.md` still marked Step 7 BLOCKED. Two handoff sentences and
+this entry's heading were in the wrong tense, two records used "in one
+breath" where "in one sentence" is the checkable statement, one answer was a
+one-word fragment, and HYGIENE.md's rewording of the docstring claim
+overstated what the validator does. All of it is corrected in this change.
+
+The review directory's `DECISIONS.md` was amended this session, dated
+2026-09-04, to record that patch 1 landed and that its apply sequence now
+starts at patch 2. That file is outside the tree, so this line is the tracked
+record of the edit.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine criterion amended or stamped, no Class F change proposed.
+
+**Not done:** patches 2 through 4 are still unapplied and the operator decides
+patch 4. The hook still does not run the telemetry test, and the handoff tense
+check is still a sentence. `doctrine/RETENTION_LEDGER.md` and
+`doctrine/DISCLOSURE.md` are still owed, the D-001 repo scan is still a stub,
+and every basis stamp is still unstamped.

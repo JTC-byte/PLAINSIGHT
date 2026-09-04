@@ -1,15 +1,16 @@
 # Hygiene doctrine: housekeeping, and adjudicating the gates themselves
 
-**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. NOT YET COMMITTED.**
+**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `a54061b` on 2026-08-27.**
 
 Advisory, Class A, and the only doctrine file that is not rank 1. It governs how
 this repository keeps itself honest over time rather than what may be collected.
 
-`docs/THE-GAMEPLAN.md` §2.1 says the absence of this file shows up at month four
-as drift in both directions. The operator asked on 2026-08-27 for gate firings
-and gate failures to be recorded so that keeping, improving or retiring a check
-becomes an adjudicated decision. That request is the reason this file exists now
-rather than at month four.
+The 2026-08-26 draft of the `docs/THE-GAMEPLAN.md` §2.1 register said the
+absence of this file would show up at month four as drift in both directions;
+the row now reads that gate drift in both directions is silent. The operator
+asked on 2026-08-27 for gate firings and gate failures to be recorded so that
+keeping, improving or retiring a check becomes an adjudicated decision. That
+request is the reason this file exists now rather than at month four.
 
 ---
 
@@ -74,9 +75,12 @@ Recorded in the worklog, naming the gate, the pattern that justified the change,
 and what is no longer checked. Deleting a check quietly is the drift this file
 exists to prevent, and it is the easiest thing in the repository to do.
 
-**The reason a gate was added survives with it.** Every check in
-`tools/validate_doctrine.py` carries in its docstring the defect that caused it,
-because a check whose origin is forgotten looks arbitrary and gets removed.
+**The reason a gate was added survives with it.** The module docstring of
+`tools/validate_doctrine.py` lists the defects its checks were written against,
+and most check blocks name their defect id in place; the two corpus-shape
+checks, `DOCTRINE_FILE_EMPTY` and `DOCTRINE_CRITERION_DUPLICATE`, are attached
+to D-04 and D-02 in the docstring only. A check whose origin is forgotten looks
+arbitrary and gets removed.
 
 **HY-4. A gate that was adjudicated and kept is recorded too, not only the ones
 that changed.**
