@@ -7,17 +7,52 @@ those is the half a reader needs most, because an entry that only lists addition
 leaves them guessing about the rest.
 
 **Backfilled 2026-09-04.** `docs/THE-GAMEPLAN.md` section 2.1 registers this file
-at v0.1 and it did not exist until the third commit, so the first two entries
-were written from the commits and the worklog rather than at the time. They are
-marked as such. Every later entry is written in the same change as its commit.
+at v0.1 and it did not exist until the fourth commit, so the first three entries
+were written after their commits rather than at the time. Each says so.
+
+**From the next change onward an entry rides in the same commit as the work it
+describes, and cites no hash**, because it cannot know its own. That is the
+convention `ZMeta/zmeta-spec/CHANGELOG.md` follows, where a hash appears only
+when an entry refers to some other commit. It also terminates a regress the first
+four entries walked into: an entry added after the fact needs a commit, which
+needs an entry, which needs a commit.
 
 ## [Unreleased]
 
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-04, `8a856b3`. The changelog this repository owed, and the handoff
+  standard.** *(Written in the commit after, which is the last entry to do so.)*
+
+  This file did not exist, and the register had listed it since Wave 0. It was
+  missed because this repository named it in one row of its own documentation
+  matrix, the Schema row, for an artifact that does not exist yet, while
+  `ZMeta/zmeta-spec/AGENTS.md` names it first among the surfaces that move when
+  any governed artifact changes. The matrix now states that inheritance on every
+  row rather than in one.
+
+  `AGENTS.md` gained section 8, a handoff standard carrying the five questions a
+  completed change leaves answerable, and the rule that a closeout is one act:
+  the battery, then the records, then the commit, in that order. One clause there
+  is not inherited and is the reason the four doctrine patches from `d99f213` are
+  still unapplied: a closeout commit carries no Class F change the operator has
+  not decided, because a closeout that quietly includes a doctrine amendment has
+  made the ratification a formality.
+
+  `docs/plainsight_handoff.md` gained section 0, answering those five questions
+  for `d99f213`.
+
+  Validation: the hygiene gate refused this change three times before it passed,
+  on em dash connectors copied from the parent repository's changelog, which its
+  voice standard permits and this one forbids. That is the gate working on a file
+  it had never seen.
+
+  **What did not change.** No governed artifact. No doctrine criterion amended,
+  nothing stamped, `doctrine/DOCTRINE_STATUS.md` as it was on 2026-08-27.
+
 - **2026-09-04, `d99f213`. The owed review runs, Steps 4 through 6 land, and
-  the repository gets its first test.** *(Written with the commit.)*
+  the repository gets its first test.** *(Written in `8a856b3`, the commit after.)*
 
   The 2026-08-27 entry below closed with an obligation: four of the five doctrine
   files and five of the criteria had no adversarial review. That review ran as
