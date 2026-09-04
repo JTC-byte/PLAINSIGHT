@@ -209,7 +209,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `.githooks/pre-commit` | Runs `validate_retention.py --repo-scan` before every commit | Normative | F | **Git history is the one store crypto-shred cannot reach** | validate_retention |
 | `Makefile` | Four named gates: `validate-kernel`, `validate-manifest`, `prove`, `preflight` | Tooling | C | Nobody runs the same thing twice | tools |
 | `.github/workflows/ci.yml` | Runs the kernel gate on push and pull request, proves the hook still executes, refuses agent co-authorship trailers | Tooling | C | A gate nobody runs. Added 2026-08-27 | tools |
-| `CHANGELOG.md` | Release notes | Advisory | A | Nothing | none |
+| `CHANGELOG.md` | Release notes, and one entry per commit that changed a governed artifact, each naming what did not change. **Delivered 2026-09-04**, backfilled across the first three commits | Advisory | A | Nothing | none |
 
 **Twelve prose documents written new**, plus four moved in unchanged, plus registers, schemas, policy, fixtures, and tools. The "forty stale documents" warning applies to prose, and the way the count stays low is that every rule that can be a mechanism is written as a mechanism instead of as a paragraph. That is design gate 1 below.
 

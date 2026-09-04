@@ -178,6 +178,11 @@ If a required check cannot be run, document the reason in the handoff.
 
 When a governed artifact changes, the matching surfaces move in the same change.
 
+Every row also updates `CHANGELOG.md` and both process records, which is
+`ZMeta/zmeta-spec/AGENTS.md`'s rule rather than a local one, and it is stated
+here because the Schema row below used to be the only place this repository named
+the changelog.
+
 | Changed | Also update |
 |---|---|
 | Doctrine | `DOCTRINE_STATUS.md`, the compiled policy YAML, the enforcing mechanism, its test |
@@ -201,3 +206,41 @@ rather than permits. The alternative repeats the `zisr-recon/src/zisr_recon/guar
 defect one level up, where an expiry check was intended and never written.
 
 One partially stamped item does not stamp its file.
+
+## 8. Handoff standard, and the closeout
+
+Inherited from `ZMeta/zmeta-spec/AGENTS.md` with one addition this repository
+needs. A completed change leaves the next maintainer able to answer five
+questions:
+
+- what changed and why;
+- whether it changed doctrine, semantics, schema, policy, ontology, runtime,
+  docs, or release packaging;
+- what validation ran and what passed;
+- whether a release baseline changed or only the working branch;
+- what remains open or intentionally deferred.
+
+**A closeout runs the battery, updates the records, and commits.** Those are one
+act rather than three, because a session whose work is verified and recorded and
+then left uncommitted has produced nothing a later session can rely on. Git
+history is also the one store a crypto-shred cannot reach, which cuts the other
+way here: the same permanence that makes a committed selector unrecoverable makes
+a committed record durable. The order is the battery, then the records, then the
+commit, because a record written after the commit describes a tree that is
+already in the history.
+
+The surfaces a closeout moves, in addition to whatever the change touched:
+
+| Surface | What it carries |
+|---|---|
+| `CHANGELOG.md` | One entry per commit that changed a governed artifact, naming what did **not** change |
+| `docs/plainsight_worklog.md` | The chronological record, added to and never restyled |
+| `docs/plainsight_handoff.md` | Current state only, rewritten, answering the five questions above |
+
+**The addition this repository needs, and it is the one rule here that is not
+ZMeta's.** A closeout commit carries no Class F change the operator has not
+decided. An agent may draft one, and per R6 as amended may execute the commit of
+a decision the operator has made, so the drafts wait outside the commit as a
+patch with its argument beside it rather than landing inside it. A closeout that
+quietly includes a doctrine amendment has made the ratification a formality, which
+is the failure the whole pin-of-record apparatus exists to prevent.

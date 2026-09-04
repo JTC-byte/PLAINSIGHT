@@ -25,6 +25,43 @@ choose rather than defects.
 
 ---
 
+## 0. The five questions, for the commit that closed this session
+
+`ZMeta/zmeta-spec/AGENTS.md` sets a Handoff Standard: a completed change leaves
+the next maintainer able to answer five questions. They are answered here for
+`d99f213` so a reader does not have to reconstruct them from section 2.
+
+**What changed and why.** The 2026-08-27 worklog entry closed with an obligation,
+that four of the five doctrine files and five of the criteria had no adversarial
+review while the two older files had fourteen agents each. That review ran, a
+second review ran over the layer model the same session produced, and Steps 4, 5
+and 6 landed alongside them.
+
+**Which surfaces moved.** Spec, ontology, synthetic corpus, tooling, the gate
+battery, the artifact register, and the process records. **No semantics contract,
+no schema, no policy pack, no runtime, no connector, and no release packaging**,
+because none of those exists yet. Critically, **no doctrine criterion was amended
+and nothing was stamped**: `doctrine/DOCTRINE_STATUS.md` is byte-identical to
+2026-08-27, so every mechanism that reads it sees what it saw then.
+
+**What validation ran and what passed.** All six implemented kernel-gate checks,
+all three validator self-test suites (60 layer-model breaks, 16 ontology, 6
+cast), the twelve-case telemetry test suite, the pre-commit hook, and
+`git diff --check`. Everything passed. One check is a stub and five are pending,
+and the aggregator counts neither as a pass.
+
+**Whether a release baseline changed.** No. PSE has no version, no tag, and no
+published artifact, so only `master` moved. `CONFORMANCE.md` states the bar that
+would have to be met before any external conformance statement.
+
+**What remains open or deferred.** Four doctrine patches in the review directory,
+two of which carry the confirmed blockers, all four the operator's to decide.
+Twenty-one recorded readings across the two rank-3 artifacts. Every basis stamp.
+`doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md`, both owed. The D-001
+repo scan, still a stub the hook calls. Sections 3 and 4 below carry the detail.
+
+---
+
 ## 1. Where the project is
 
 The doctrine is committed and has now been adversarially reviewed twice. The
