@@ -12,10 +12,12 @@ exists to prevent.
 `d99f213`, and the closeout commits after it moved records, `AGENTS.md`
 rules, fact corrections, and one hygiene check with its self-test. The tree is
 clean at the commit that carries this file.
-**Date:** 2026-09-04. The previous session began 2026-09-03 and landed
-`d99f213`, `8a856b3` and `533da17` on 2026-09-04; its worklog entry and the
-review directory carry 2026-09-03 because that is what was true when each was
-written, and a process record is added to rather than restyled.
+**Date:** 2026-09-05, closing a session that began 2026-09-04 and landed
+`377d7d4` and `7c14888`; the clock rolled over during the second, whose records
+carry the day they were written. The session before it began 2026-09-03 and
+landed `d99f213`, `8a856b3` and `533da17` on 2026-09-04; its worklog entry and
+the review directory carry 2026-09-03 for the same reason, and a process record
+is added to rather than restyled.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md, all
 committed in `5d53973` and `a54061b`. **Every conclusion is stamped. Every basis
 is unstamped.** A seventh EGRESS criterion, EG-7, is drafted and
@@ -40,23 +42,52 @@ because patch 4 adds EG-7.
 `AGENTS.md` section 8 sets the handoff standard, inherited from
 `ZMeta/zmeta-spec/AGENTS.md`: a completed change leaves the next maintainer
 able to answer five questions. They are answered newest first: the commit
-that carries this file, then `377d7d4`, then `d99f213`, `8a856b3` and
-`533da17`, the three commits the previous session landed, so a reader does
-not have to reconstruct them from section 2.
+that carries this file, then `7c14888` and `377d7d4`, then `d99f213`,
+`8a856b3` and `533da17`, the three commits the session before landed, so a
+reader does not have to reconstruct them from section 2.
 
-### The commit that carries this file, 2026-09-04
+### The commit that carries this file, 2026-09-05
+
+**What changed and why.** A closeout checkpoint, which `AGENTS.md` section 8
+defines as the battery, the records, and the commit in one act. The committed
+tree at `7c14888` was verified from a fresh clone rather than the working tree:
+every CI step, the full preflight battery, and all four self-test suites pass
+there, the hook is executable and runs, and no commit in the history carries an
+agent trailer. This session's three verification passes, the scripts that
+applied every edit, the workflow scripts, and both commit messages were
+persisted to `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/`,
+beside the previous session's review, and section 6 points there. The worklog
+was at its cap again, so the 2026-08-26 Step 3 entry moved to the archive
+unedited and the worklog gained this commit's entry.
+
+**Which surfaces moved.** This file, the worklog, and the archive. No tooling,
+doctrine, schema, policy, runtime, or connector, and no changelog entry, by the
+changelog's own rule that an entry follows a changed governed artifact.
+
+**What validation ran and what passed.** The full battery on the working tree
+and on a fresh clone of `7c14888`, both forms of `git diff --check`, the hook,
+and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending.
+
+**Whether a release baseline changed.** No release baseline changed; only
+`master` moved.
+
+**What remains open or deferred.** Patches 2 through 4, the telemetry test's
+absence from the hook, Step 7 unblocked and not started, and everything in
+sections 3 and 4.
+
+### `7c14888`, 2026-09-04
 
 **What changed and why.** The tense rule `377d7d4` stated in `AGENTS.md`
 section 8 became a gate. `tools/validate_hygiene.py` refuses the two pre-commit
-words in this file as `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and its new
+words in the handoff as `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and its new
 `--self-test` plants each word and asserts the refusal, so removing the check
 fails the test, which is design gate 1. The worklog had reached its ten-entry
 cap, so `docs/plainsight_worklog_archive.md` opened with the Wave 0 entry moved
-into it unedited, and the worklog gained this commit's entry.
+into it unedited, and the worklog gained its entry.
 
 **Which surfaces moved.** Tooling (`tools/validate_hygiene.py`, the hygiene
 description in `tools/validate_conformance.py`, the `Makefile` target and help
-line, and the CI step), `AGENTS.md` sections 5 and 8, this file, the worklog,
+line, and the CI step), `AGENTS.md` sections 5 and 8, the handoff, the worklog,
 `CHANGELOG.md`, the new archive, and its row in `docs/THE-GAMEPLAN.md` section
 2.2. No doctrine, schema, policy, runtime, or connector.
 
@@ -102,7 +133,7 @@ on the tree it created.
 absence from the hook, and everything in sections 3 and 4. The tense check
 landed in the commit after, above.
 
-### The three commits of the previous session
+### The three commits of the session before
 
 **What changed and why.** The 2026-08-27 worklog entry closed with an obligation,
 that four of the five doctrine files and five of the criteria had no adversarial
@@ -122,7 +153,7 @@ no schema, no policy pack, no runtime, no connector, and no release packaging**,
 because none of those exists yet. Critically, **no doctrine criterion was amended
 and nothing was stamped**: `doctrine/DOCTRINE_STATUS.md` was byte-identical to
 2026-08-27 at `533da17`. `377d7d4` changed three lines of fact in it and no
-stamp; the commit that carries this file does not touch it.
+stamp; neither `7c14888` nor the commit that carries this file touches it.
 
 **What validation ran and what passed.** All six implemented kernel-gate checks,
 all three validator self-test suites (60 layer-model breaks, 16 ontology, 6
@@ -290,6 +321,7 @@ Full record, including every verdict with its quoted evidence, in
 | What | Where | Why it matters |
 |---|---|---|
 | Both doctrine review records | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | Findings, verdicts, and the four patches. The second directory is what the next session reads. |
+| This session's verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The three draft-and-verify passes behind `377d7d4` and `7c14888` with every finding and verdict, the scripts that applied each edit, the workflow scripts, both commit messages, and a README that indexes them. |
 | Measured Sherlock review | `../Sherlock/sherlock/CAPABILITIES.md` | 64 KB. Source of the 481/429/414 site counts and the 78.8 percent false-positive measurement. |
 | Sherlock clone and image | `../Sherlock/sherlock/`, `sherlock-local:0.16.1` | Commit `9100f9d`, 477 MB image, rebuildable. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The operator's wider compartmentalization work. Its dead-drop shape is the contrast EG-3 is measured against. |
@@ -321,8 +353,8 @@ there.
   test suite alone. The pre-commit hook runs the same set less the telemetry
   test, which CI runs as a step of its own.
 - **The worklog holds ten live entries against its ten-entry cap.** The archive
-  is open at `docs/plainsight_worklog_archive.md` with the Wave 0 entry in it,
-  and the next closeout moves the oldest live entry there before it adds one.
+  is open at `docs/plainsight_worklog_archive.md` with the two oldest entries in
+  it, and the next closeout moves the oldest live entry there before it adds one.
   The hygiene gate refuses an eleventh.
 - Write the handoff in the tense of the tree the commit will create, per
   `AGENTS.md` section 8. This file was wrong about that in three commits.

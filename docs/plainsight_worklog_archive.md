@@ -71,3 +71,80 @@ it is listed in `plainsight_handoff.md` section 6.
 
 **Next:** Step 2. The operator stamps or amends D1 through D5 in
 `doctrine/DOCTRINE_STATUS.md`.
+
+---
+
+## 2026-08-26, Step 3. Doctrine drafted. Not ratified, not finished.
+
+**Class:** F (doctrine drafts, unratified, binding nothing) plus A (process
+records). Drafting Class F is permitted and expected. Nothing was landed.
+
+New session rooted at `plainsight/`, cold-started from `README.md`. Harvested
+the Wave 0 origin session in full: transcript
+`b94b0c75-dfa8-4ed6-b1e6-6854a95710d6.jsonl` under the `Z-ISR/Sherlock` project
+directory, 3.4 MB, 1,070 records, 9 operator prompts, 2026-08-19 to 2026-08-26.
+
+Step 2 was not touched. It is the operator's act.
+
+Drafted `doctrine/SUBJECT_SELECTION.md`, fifteen criteria SS-1 through SS-15,
+and `doctrine/RETENTION.md`, seventeen criteria RT-1 through RT-17. Both carry
+the `ENTRY_CRITERIA.md` header pattern: DRAFTED, AWAITING RATIFICATION, nothing
+binds, per-criterion markers with conclusion and basis stamped separately. Both
+carry a `## What is explicitly NOT gated` section and a rejected-readings
+section.
+
+**One deviation from the Step 3 done-condition, stated rather than quiet.**
+`docs/THE-GAMEPLAN.md` §3.1 requires the rejected-readings section to start
+empty. Both files start it populated instead. §5.4 had already derived and
+rejected the HMAC membership oracle, and `DOCTRINE_STATUS.md` already carries
+three rejected readings. An empty section would have discarded work already
+done. The operator can refuse this reading.
+
+Two citations were verified rather than trusted before being written into a
+rank-1 file. `ZISR COP/docs/OPERATIONAL_CONTRACT.md:272` does carry the
+prohibition on inferring that a link is fine from the absence of a failure
+signal, inside §4, so the RT-12 citation stands. `PLAINSIGHT-design.md:747` is a
+connector-manifest `lineage:` field rather than a global storage rule, so it is
+already the legal form under RT-8; the flat prose claim at `:648` is the actual
+R5 conflict. RT-8 currently names both and is wrong about `:747`.
+
+Ran an adversarial review as a seven-lens workflow with per-lens refutation:
+the guard.py defect class, doctrine lane escape, sentence-versus-mechanism,
+coverage against the source corpus, cross-document consistency, operator-posture
+fidelity including over-restriction as a failure mode, and voice register.
+
+**Stopped at 13 of 14 agents on an approaching usage limit.** All seven attack
+lenses completed. Six of seven verification agents completed. Banked result: 123
+findings raised, 52 refuted, 28 downgraded, 17 confirmed, 26 unverified because
+the seventh verifier did not run. Heavy duplication across lenses, so the
+distinct issue count is well below 123.
+
+No findings were applied. Both drafts stand exactly as written, which is the
+correct state to pause in: the review is evidence about the drafts, not a
+change to them.
+
+**Refused this session:** nothing was collected, no connector was executed, no
+platform was touched. No file in the repository contains a selector belonging to
+a natural person, re-checked on both new files.
+
+**Not done, deliberately:** no commit. No row added to `DOCTRINE_STATUS.md`,
+because the review's confirmed findings include the SS and RT id spaces having
+no rows there, and adding rows before the id space settles would create churn in
+the pin of record.
+
+### Deferred issue register, additions
+
+- **D-003** The review's confirmed and downgraded findings are unapplied. The
+  two blockers are a cross-reference in SS-11 pointing at the wrong RT item, and
+  SS-14 item 5 stating in the present tense that it is enforced by a tool that
+  is currently the D-001 stub. Findings and the workflow journal are at
+  `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/`.
+- **D-004** 26 findings are unverified. The seventh verification agent did not
+  run. They are listed in that same `FINDINGS.md` under UNVERIFIED and must not
+  be treated as confirmed.
+- **D-002 correction.** The handoff recorded the audited tool clones and the
+  Wave 0 workflow journals as not durable and expected to be gone. Both survived
+  and were still present on 2026-08-26. Handoff §5 is corrected in this session.
+
+**Next:** apply the confirmed findings, finish the verification of the 26, then
+Step 2 remains the operator's.
