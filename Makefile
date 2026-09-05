@@ -15,7 +15,7 @@
 
 help:
 	@echo "validate-doctrine     criterion definitions, stamps, cross-references, pin of record"
-	@echo "validate-hygiene      voice, tables, citations against the register, caps, inventories"
+	@echo "validate-hygiene       voice, tables, citations against the register, caps, the handoff's tense, inventories, and its self-test"
 	@echo "validate-layer-model  the nine event types, discriminators, denylists, lineage, producer authority"
 	@echo "validate-ontology     the closed selector vocabulary, anchors, constraints, prohibitions, matchers"
 	@echo "validate-cast         the checkable half of SS-3, the confuser pair, the partition, the seal"
@@ -31,6 +31,7 @@ validate-doctrine:
 
 validate-hygiene:
 	python tools/validate_hygiene.py
+	python tools/validate_hygiene.py --self-test
 
 # The layer model is the single source the Step 7 schema and policy are
 # generated from, so a defect in it is a defect in every generated artifact at

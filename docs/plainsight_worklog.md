@@ -15,72 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-08-26, Wave 0. Repository cut.
-
-**Class:** A (documentation) plus F (doctrine skeleton, unratified, binding
-nothing).
-
-Cut `plainsight/` beside `ZMeta/` and `zisr-recon/` under `Z-ISR/`. Created the
-directory tree from `docs/THE-GAMEPLAN.md` §1.2, including the empty lanes
-`connectors/`, `runner/`, `app/`, and `synthetic/`.
-
-Copied in unchanged: `DOCUMENT_STANDARD.md`, `PLAINSIGHT-design.md`,
-`PLAINSIGHT-FOUNDATION.md`, `OSINT-COP-tool-review.md`, `THE-GAMEPLAN.md`. The
-originals remain at the `Z-ISR/` root and are byte-identical. See D-002.
-`PLAINSIGHT-FOUNDATION.md` keeps its DRAFT status header. Stamping it is Step 2
-and is the operator's act. Editing that line before the stamp would be the
-half-stamping `zisr-recon/docs/ENTRY_CRITERIA.md` warns about.
-
-Wrote `CLAUDE.md`, advisory: North Star, eight-rank authority order with the
-argument for doctrine outranking the semantic contract, eight design gates, two
-voice registers, attribution.
-
-Wrote `AGENTS.md`, normative: dialect declaration with the licensing clause from
-`ZMeta/zmeta-spec/AGENTS.md` quoted exactly, change classes A through F with F
-new and defined by effect rather than path, Execution Limits, required local
-workflow, documentation matrix, ratification rule.
-
-Wrote `doctrine/DOCTRINE_STATUS.md` with sixteen items pending, zero ratified,
-and three rejected readings recorded so they are not re-derived.
-
-Installed `.githooks/pre-commit` calling `tools/validate_retention.py
---repo-scan --staged`, and set `core.hooksPath`. The tool is a stub that exits 0
-and prints that it checked nothing. Replaced at Step 8.
-
-**Refused this session:** nothing was collected, no connector was executed, no
-platform was touched. No file in the repository contains a selector belonging to
-a natural person.
-
-**Not done, deliberately:** no commit was made. `CLAUDE.md` §5 carries ZMeta's
-human-only attribution rule pending R6, and the first commit is the operator's.
-
-### Deferred issue register
-
-- **D-001** `tools/validate_retention.py --repo-scan` is a stub. Real
-  implementation is Step 8. Until then the pre-commit hook is a wired mechanism
-  with no check behind it. This is a known gap, not an oversight.
-- **D-002** Five documents exist twice, byte-identical, at the `Z-ISR/` root and
-  under `plainsight/docs/`. The repository copy is canonical. Two copies of a
-  governed document is the drift condition this framework exists to prevent, and
-  the originals predate the repository so deleting them is the operator's call.
-  Resolution is one of: delete the root copies, or replace them with a one-line
-  pointer to the repository path. Not urgent, and it gets worse the first time
-  one copy is edited.
-
-### Closeout, same session
-
-Added `README.md` as the cold-start entry point, naming the read order and the
-three rules that bind before any doctrine is ratified. Corrected the wording
-above from "moved in" to "copied in", which is what actually happened.
-
-Session context that lives outside this repository and is not reproducible from
-it is listed in `plainsight_handoff.md` section 6.
-
-**Next:** Step 2. The operator stamps or amends D1 through D5 in
-`doctrine/DOCTRINE_STATUS.md`.
-
----
-
 ## 2026-08-26, Step 3. Doctrine drafted. Not ratified, not finished.
 
 **Class:** F (doctrine drafts, unratified, binding nothing) plus A (process
@@ -1310,5 +1244,110 @@ touched, no doctrine criterion amended or stamped, no Class F change proposed.
 **Not done:** patches 2 through 4 are still unapplied and the operator decides
 patch 4. The hook still does not run the telemetry test, and the handoff tense
 check is still a sentence. `doctrine/RETENTION_LEDGER.md` and
+`doctrine/DISCLOSURE.md` are still owed, the D-001 repo scan is still a stub,
+and every basis stamp is still unstamped.
+
+---
+
+## 2026-09-04, the tense rule becomes a gate, and the worklog archive opens.
+
+**Class:** C (`tools/validate_hygiene.py`, the aggregator's description, the
+`Makefile` target and help line, the CI step) plus A (`AGENTS.md` sections 5
+and 8, the handoff, the worklog, `CHANGELOG.md`, the archive, and its row in
+`docs/THE-GAMEPLAN.md` section 2.2).
+
+The entry above landed a rule in `AGENTS.md` section 8 and said in place that no
+gate enforced it. Design gate 1 says a rule that lives in a README is not a
+rule, and the reason the check was not in that commit was ordering: landing it
+before the handoff rewrite would have refused the file being repaired. The
+handoff is clean and committed in `377d7d4`, so the ordering reason is gone and
+the check lands now.
+
+### The check
+
+`tools/validate_hygiene.py` gains `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`: a
+case-insensitive substring test for "untracked" and "uncommitted", scoped to
+`docs/plainsight_handoff.md` alone, in the shape of the em dash check. The
+refusal names the word, says why the tense is wrong, notes that three commits
+shipped it, names the rule, and offers the two legal moves: state what the artifact is in
+the tree the commit creates, or say where it lives if it lives outside the
+repository. The check is factored into `handoff_tense_findings()` so it can run
+on text that is not on disk.
+
+**Measured reach, re-derived rather than carried forward.**
+`git show 533da17:docs/plainsight_handoff.md` has thirteen lines containing one
+of the two words and one line reading "Neither has been committed": fourteen
+wrong lines, thirteen reached. The fourteenth is caught at the closeout or not
+at all, and `AGENTS.md` section 8 now says exactly that, as the half of the rule
+that stays a sentence.
+
+**The test that fails when the constraint is removed.** `--self-test` plants
+each word in four handoff-shaped lines, one of them upper-cased, and asserts one
+refusal with the expected code per line; then it runs a clean sample containing
+"Neither has been committed" and asserts no finding, so the test also documents
+the reach limit. Deleting the body of `handoff_tense_findings()` was tried
+before this entry was written: the four planted cases passed and the self-test
+exited 1. Restored, four refused, one clean, exit 0. The `validate-hygiene`
+target and the CI Housekeeping step both run it.
+
+**One consequence of scoping the check to the handoff.** The handoff can no
+longer quote either word, including to describe this check, which is why its
+section 4 bullet says "the two pre-commit words" rather than naming them. That
+is a cost of a lexical rule and it is accepted; the words belong in this file
+and in `AGENTS.md`, not in the one current-state record.
+
+### The archive
+
+The worklog held ten live entries against a ten-entry cap, so this entry could
+not be added without moving one. `docs/plainsight_worklog_archive.md` opens
+with the Wave 0 entry of 2026-08-26, moved without edit, and the header states
+that rule. The cap check counts `## YYYY-MM-DD` headings in the live file only,
+so the live count is ten again with this entry. The archive's row in
+`docs/THE-GAMEPLAN.md` section 2.2 deferred it until the worklog passed 1,500
+lines; it is marked delivered at the cap instead, and the row says so.
+
+### Validation
+
+The five preflight validators, the four self-test suites (60, 16 and 6
+deliberate breaks refused, plus the four hygiene breaks), the twelve-case
+telemetry suite, the hook, `git diff HEAD --check`, and the kernel gate at six
+implemented, zero failed, one stubbed, five pending. The kernel gate's hygiene
+line now names the handoff's tense among what it covers.
+
+### Agent involvement, stated precisely
+
+No subagent wrote or drafted the check, the test, or this entry; the parent
+session did, reading each file before editing it. A verification pass then
+ran over the staged change: three lenses, code and test, record facts, and
+voice with cross-file consistency, each with a refuter behind it, six agents.
+Twenty-four findings raised, ten above minor; five confirmed, five downgraded,
+none refuted.
+
+**What it caught is the rule this change enforces, one level up.** Relabelling
+the previous section 0 block as `377d7d4` moved what "the commit that carries
+this file" refers to, and three sentences elsewhere in the handoff kept the
+old referent: the resume pointer said patch 1 was applied in this commit, the
+previous-session block said this commit changes three lines of
+`doctrine/DOCTRINE_STATUS.md`, and the state header said the closeout commits
+moved records and fact corrections only. A relabel is a tense change, and no
+lexical check reaches a pronoun. The pass also found that the archive ended
+with a blank line at end of file, which `git diff --check` in the unstaged
+form did not see because everything was staged and `git diff --cached --check`
+refused; the archive body is now lines 18 to 80 of the old worklog rather
+than 18 to 81, and the entry text is unchanged. Smaller: "both process
+records" was used to mean three files where the repository uses it for two,
+the hygiene footer named one rule for every code where the new code has a
+different one, two strings claimed no lexical rule reaches the fourteenth line
+where the true claim is that this check does not, the archive header said the
+worklog exceeded a cap it never exceeded, and the `Makefile` help line and the
+gameplan's deferred row had not moved with the target. All of it is corrected
+in this change.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine criterion amended or stamped, no Class F change proposed.
+
+**Not done:** patches 2 through 4 are still unapplied and the operator decides
+patch 4. The hook still does not run the telemetry test, a mechanism choice the
+operator has not made. `doctrine/RETENTION_LEDGER.md` and
 `doctrine/DISCLOSURE.md` are still owed, the D-001 repo scan is still a stub,
 and every basis stamp is still unstamped.

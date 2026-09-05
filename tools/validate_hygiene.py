@@ -11,6 +11,17 @@ metaphor standing in for a checkable statement, and bolding used for rhythm need
 a reader. This tool checks what a machine can check and says plainly which rules
 it does not reach, rather than implying the file passed a full voice review.
 
+One check here reads a single file for a single defect.
+`docs/plainsight_handoff.md` shipped in three commits, `5d53973`, `a54061b` and
+`d99f213`, describing the tree as it stood before each commit, calling
+committed artifacts uncommitted and tracked files untracked. `AGENTS.md`
+section 8 states the rule; this tool enforces the checkable half of it by
+refusing either word in that file. It reaches thirteen of the fourteen lines
+that were wrong at `533da17`, and the fourteenth, a sentence with neither word,
+is caught at the closeout or not at all. `--self-test` plants each word and
+asserts the refusal, so removing the check fails the test, which is design
+gate 1.
+
 Exit codes: 0 clean, 1 violations found, 2 the tree could not be read.
 """
 
@@ -68,6 +79,12 @@ UNREACHED = (
 HANDOFF_MAX_LINES = 400
 WORKLOG_MAX_LIVE_ENTRIES = 10
 
+#: The pre-commit tense. AGENTS.md section 8: the handoff is written in the tense
+#: of the tree the commit will create, so neither word belongs in it. Matched
+#: case-insensitively as a substring, in the shape of the em dash check above.
+HANDOFF_TENSE_WORDS = ("untracked", "uncommitted")
+HANDOFF_REL = "docs/plainsight_handoff.md"
+
 
 PATH_REF_RE = re.compile(
     r"`((?:doctrine|docs|spec|schema|ontology|policy|tools|runner|conformance|"
@@ -116,6 +133,33 @@ def governed_prose() -> list[Path]:
             if p.is_file() and ".git" not in p.parts:
                 seen[p] = None
     return sorted(seen)
+
+
+def handoff_tense_findings(text: str, rel: str = HANDOFF_REL) -> list[Finding]:
+    """Refuse the pre-commit tense in the handoff, one finding per line.
+
+    Kept as its own function so ``--self-test`` can plant a word and assert the
+    refusal without touching the file on disk.
+    """
+    out: list[Finding] = []
+    for n, line in enumerate(text.splitlines(), 1):
+        low = line.lower()
+        for word in HANDOFF_TENSE_WORDS:
+            if word in low:
+                out.append(
+                    Finding(
+                        "HYGIENE_HANDOFF_PRE_COMMIT_TENSE",
+                        f"{rel}:{n}",
+                        f"describes something as {word!r}, which is the pre-commit tense. "
+                        "The handoff is read next session against a tree in which the "
+                        "commit exists, and three commits shipped one that called "
+                        "committed artifacts uncommitted. AGENTS.md section 8 is the rule",
+                        "state what the artifact is in the tree the commit creates, or "
+                        "say where it lives if it lives outside the repository",
+                    )
+                )
+                break
+    return out
 
 
 def check() -> list[Finding]:
@@ -231,7 +275,9 @@ def check() -> list[Finding]:
     # Caps the files set for themselves.
     handoff = ROOT / "docs" / "plainsight_handoff.md"
     if handoff.is_file():
-        n = len(handoff.read_text(encoding="utf-8").splitlines())
+        handoff_text = handoff.read_text(encoding="utf-8")
+        findings.extend(handoff_tense_findings(handoff_text))
+        n = len(handoff_text.splitlines())
         if n > HANDOFF_MAX_LINES:
             findings.append(
                 Finding(
@@ -288,10 +334,67 @@ def check() -> list[Finding]:
     return findings
 
 
+def self_test() -> int:
+    """Break the tense constraint in memory and assert each break is refused.
+
+    Design gate 1: a constraint is not done until a test fails when it is
+    removed. Deleting the body of ``handoff_tense_findings`` fails the planted
+    cases; widening it to refuse everything fails the clean case. The clean
+    sample deliberately contains the opening clause of the one wrong line at
+    ``533da17`` that carried neither word, so the test also records the reach
+    limit.
+    """
+    planted = (
+        "| `spec/layer-model.yaml` | **Written, untracked.** 2,280 lines. |",
+        "**Wave:** 0 committed, and the first build artifacts exist uncommitted.",
+        "Uncommitted edits to the Makefile wire the three new gates.",
+        "| `AGENTS.md` | Committed, plus an UNTRACKED section 5 edit. |",
+    )
+    clean = (
+        "| `spec/layer-model.yaml` | **Committed in `d99f213`, and reviewed.** |\n"
+        "The tree is clean at the commit that carries this file.\n"
+        "Neither has been committed.\n"
+    )
+    failures = 0
+    for line in planted:
+        got = handoff_tense_findings(line + "\n", rel="<planted>")
+        if len(got) == 1 and got[0].code == "HYGIENE_HANDOFF_PRE_COMMIT_TENSE":
+            print(f"  refused  {line[:60]}")
+        else:
+            failures += 1
+            print(f"  PASSED   {line[:60]}  (expected one refusal, got {len(got)})")
+    got = handoff_tense_findings(clean, rel="<clean>")
+    if got:
+        failures += 1
+        print(f"  REFUSED  a clean sample, {len(got)} finding(s); the check is wider than its rule")
+    else:
+        print("  ok       clean sample passes, including the sentence this check does not reach")
+    if failures:
+        print(
+            f"validate_hygiene --self-test: {failures} case(s) were not refused as claimed. A gate "
+            "nobody has watched fail is an assumption (HYGIENE.md section 2)",
+            file=sys.stderr,
+        )
+        return 1
+    print(
+        f"validate_hygiene --self-test ok: {len(planted)} deliberate breaks, {len(planted)} refused, "
+        "and one clean sample passed"
+    )
+    return 0
+
+
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="Housekeeping gate.")
     ap.add_argument("--quiet", action="store_true", help="Print only on failure.")
+    ap.add_argument(
+        "--self-test",
+        action="store_true",
+        help="Plant each pre-commit-tense word in a handoff line and assert the refusal.",
+    )
     args = ap.parse_args(argv)
+
+    if args.self_test:
+        return self_test()
 
     try:
         findings = check()
@@ -311,7 +414,8 @@ def main(argv: list[str]) -> int:
             print(f.render(), file=sys.stderr)
             print(file=sys.stderr)
         print(
-            f"validate_hygiene: {len(findings)} violation(s). rule: CLAUDE.md section 4.",
+            f"validate_hygiene: {len(findings)} violation(s). Voice rules: CLAUDE.md "
+            "section 4. The handoff tense rule: AGENTS.md section 8.",
             file=sys.stderr,
         )
         return 1

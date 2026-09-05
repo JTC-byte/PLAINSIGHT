@@ -22,6 +22,46 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-04. The tense rule becomes a gate, and the worklog archive opens.**
+
+  `377d7d4` stated in `AGENTS.md` section 8 that the handoff is written in the
+  tense of the tree the commit will create, and said in place that no gate
+  enforced it. `tools/validate_hygiene.py` now does, for the checkable half:
+  `HYGIENE_HANDOFF_PRE_COMMIT_TENSE` refuses "untracked" and "uncommitted" in
+  `docs/plainsight_handoff.md`, case-insensitively, and offers the two legal
+  moves in its refusal. Re-measured against `533da17`, that reaches thirteen of
+  the fourteen lines that were wrong; the fourteenth had neither word, and
+  `AGENTS.md` now says so as the half of the rule that stays a sentence.
+
+  `--self-test` plants each word in four handoff-shaped lines and asserts the
+  refusal, then asserts a clean sample passes, so deleting the check fails the
+  test and widening it fails the test, which is design gate 1. The
+  `validate-hygiene` target and the CI Housekeeping step both run it, and the
+  kernel gate's description of the hygiene entry names the tense among what it
+  covers. The check was not in `377d7d4` because landing it before the handoff
+  rewrite would have refused the file being repaired; that ordering reason is
+  gone.
+
+  The worklog was at its ten-entry cap, so `docs/plainsight_worklog_archive.md`
+  opens with the Wave 0 entry moved into it without edit, and the worklog gains
+  this commit's entry. `AGENTS.md` section 5 names the tense among what the
+  gates cover, and the handoff's section 0 answers the five questions for this
+  commit. The archive's deferred row in `docs/THE-GAMEPLAN.md` section 2.2 is
+  marked delivered, and the `Makefile` help line for `validate-hygiene` names
+  the tense.
+
+  Validation: the five preflight validators, the four self-test suites, the
+  twelve-case telemetry suite, the hook, `git diff --check`, and the kernel gate
+  at 6 implemented, 0 failed, 1 stubbed, 5 pending. The self-test was also run
+  with the check's body removed and failed as designed.
+
+  **What did not change.** No doctrine file. No criterion, no stamp,
+  `doctrine/DOCTRINE_STATUS.md` untouched. No schema, no policy, no connector.
+  The hook still does not run the telemetry test. Patches 2 through 4 are still
+  unapplied and patch 4 is still the operator's Class F decision. The D-001 repo
+  scan is still a stub. Nothing collected, no connector executed, no platform
+  touched.
+
 - **2026-09-04. The two process records are separated by tense, and the
   pre-commit tense is cleared from every file that carried it.**
 

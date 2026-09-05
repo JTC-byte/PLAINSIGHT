@@ -49,7 +49,7 @@ KERNEL_GATE = (
         "hygiene",
         [PY, "tools/validate_hygiene.py", "--quiet"],
         IMPLEMENTED,
-        "voice, table structure, citations against the artifact register, caps",
+        "voice, table structure, citations against the artifact register, caps, and the handoff's tense",
     ),
     (
         "layer-model",

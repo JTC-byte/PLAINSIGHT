@@ -36,7 +36,9 @@ jobs:
         run: python tools/validate_doctrine.py
 
       - name: Housekeeping
-        run: python tools/validate_hygiene.py
+        run: |
+          python tools/validate_hygiene.py
+          python tools/validate_hygiene.py --self-test
 
       # The mechanisms that exist, exercised against the criteria that claim
       # them. Design gate 1 counts a constraint as done only when a test fails

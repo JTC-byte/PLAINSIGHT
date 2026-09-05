@@ -10,8 +10,8 @@ exists to prevent.
 
 **Wave:** 0 committed. The first build artifacts are committed too, in
 `d99f213`, and the closeout commits after it moved records, `AGENTS.md`
-rules, and fact corrections only. The tree is clean at the commit that
-carries this file.
+rules, fact corrections, and one hygiene check with its self-test. The tree is
+clean at the commit that carries this file.
 **Date:** 2026-09-04. The previous session began 2026-09-03 and landed
 `d99f213`, `8a856b3` and `533da17` on 2026-09-04; its worklog entry and the
 review directory carry 2026-09-03 because that is what was true when each was
@@ -27,8 +27,8 @@ first, including its 2026-09-04 amendment.** It is three remaining patches,
 four Class F criteria, twenty-one recorded readings across the two rank-3
 artifacts, and four live questions. Nothing else in this file is blocked on any
 of them, and the readings are places where an agent had to choose rather than
-defects. Patch 1 is applied in the commit that carries this file. Patches 2
-through 4 still apply in order on top of it, verified on 2026-09-04, and the
+defects. Patch 1 is applied in `377d7d4`. Patches 2 through 4 still apply in
+order on top of it, verified on 2026-09-04, and the
 fully patched tree passes the same kernel gate. One number differs, as it
 should: `tools/validate_doctrine.py` counts 59 criteria there against 58 here,
 because patch 4 adds EG-7.
@@ -39,12 +39,40 @@ because patch 4 adds EG-7.
 
 `AGENTS.md` section 8 sets the handoff standard, inherited from
 `ZMeta/zmeta-spec/AGENTS.md`: a completed change leaves the next maintainer
-able to answer five questions. They are answered first for the commit that
-carries this file, then for `d99f213`, `8a856b3` and `533da17`, the three
-commits the previous session landed, so a reader does not have to reconstruct
-them from section 2.
+able to answer five questions. They are answered newest first: the commit
+that carries this file, then `377d7d4`, then `d99f213`, `8a856b3` and
+`533da17`, the three commits the previous session landed, so a reader does
+not have to reconstruct them from section 2.
 
 ### The commit that carries this file, 2026-09-04
+
+**What changed and why.** The tense rule `377d7d4` stated in `AGENTS.md`
+section 8 became a gate. `tools/validate_hygiene.py` refuses the two pre-commit
+words in this file as `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and its new
+`--self-test` plants each word and asserts the refusal, so removing the check
+fails the test, which is design gate 1. The worklog had reached its ten-entry
+cap, so `docs/plainsight_worklog_archive.md` opened with the Wave 0 entry moved
+into it unedited, and the worklog gained this commit's entry.
+
+**Which surfaces moved.** Tooling (`tools/validate_hygiene.py`, the hygiene
+description in `tools/validate_conformance.py`, the `Makefile` target and help
+line, and the CI step), `AGENTS.md` sections 5 and 8, this file, the worklog,
+`CHANGELOG.md`, the new archive, and its row in `docs/THE-GAMEPLAN.md` section
+2.2. No doctrine, schema, policy, runtime, or connector.
+
+**What validation ran and what passed.** The full preflight battery, the four
+self-test suites including the new one, the twelve-case telemetry suite, the
+hook, `git diff --check`, and the kernel gate at 6 implemented, 0 failed, 1
+stubbed, 5 pending. The self-test was also run with the check's body removed
+and failed as designed.
+
+**Whether a release baseline changed.** No release baseline changed; only
+`master` moved.
+
+**What remains open or deferred.** Patches 2 through 4, the telemetry test's
+absence from the hook, and everything in sections 3 and 4.
+
+### `377d7d4`, 2026-09-04
 
 **What changed and why.** Every tracked file that still described the tree as
 it stood before `d99f213` was corrected: this handoff, `README.md`,
@@ -65,14 +93,14 @@ runtime, or connector, because none exists.
 **What validation ran and what passed.** The full preflight battery, the three
 self-test suites, the twelve-case telemetry suite, the hook, `git diff --check`,
 and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending, all green
-on the tree this commit creates.
+on the tree it created.
 
 **Whether a release baseline changed.** No release baseline changed; only
 `master` moved.
 
-**What remains open or deferred.** Patches 2 through 4, the tense check as a
-mechanism, the telemetry test's absence from the hook, and everything in
-sections 3 and 4.
+**What remains open or deferred.** Patches 2 through 4, the telemetry test's
+absence from the hook, and everything in sections 3 and 4. The tense check
+landed in the commit after, above.
 
 ### The three commits of the previous session
 
@@ -93,8 +121,8 @@ and 8, and the process records. **No semantics contract,
 no schema, no policy pack, no runtime, no connector, and no release packaging**,
 because none of those exists yet. Critically, **no doctrine criterion was amended
 and nothing was stamped**: `doctrine/DOCTRINE_STATUS.md` was byte-identical to
-2026-08-27 at `533da17`. The commit that carries this file changes three lines
-of fact in it and no stamp.
+2026-08-27 at `533da17`. `377d7d4` changed three lines of fact in it and no
+stamp; the commit that carries this file does not touch it.
 
 **What validation ran and what passed.** All six implemented kernel-gate checks,
 all three validator self-test suites (60 layer-model breaks, 16 ontology, 6
@@ -157,7 +185,7 @@ Nothing has touched a platform. No account exists. No connector exists.
 | `ontology/selectors.yaml` | **Committed in `d99f213`.** 19 selectors, 5 of them proposed and unstamped. Ten readings await confirmation. Relationship selectors refused, with the reason recorded. |
 | `schema/`, `policy/`, `conformance/` | Empty. Steps 7 through 9. |
 | `tools/validate_doctrine.py` | Committed. Docstring corrected to cover all nine codes. |
-| `tools/validate_hygiene.py` | Committed. Caller split for the telemetry fix. |
+| `tools/validate_hygiene.py` | Committed. Caller split for the telemetry fix. Gained the handoff tense check, `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and a `--self-test` on 2026-09-04. |
 | `tools/validate_conformance.py` | Committed. `KERNEL_GATE` carries twelve entries: six implemented, one stub, five pending. |
 | `tools/validate_layer_model.py` | **Committed in `d99f213`, and hardened after review.** 33 checks, 60 self-test breaks, all refused, 48 by the expected code alone. |
 | `tools/validate_ontology.py` | **Committed in `d99f213`.** 16 self-test breaks, all refused. The corpus-coverage mode waits on a corpus. |
@@ -196,10 +224,11 @@ Three constraints on ordering rather than blocks:
   seven commands and the hook runs six; CI runs the test as a step of its own.
   Both comments now say so. Adding the test to the hook is a mechanism change
   the operator has not made.
-- **The tense rule in `AGENTS.md` section 8 is a sentence.** The lexical check
-  that would enforce it on this file is specified in the 2026-09-04 worklog
-  entry, reaches thirteen of the fourteen lines that were wrong at `533da17`,
-  and is owed as its own Class C change.
+- **The tense rule in `AGENTS.md` section 8 is a gate for two words and a
+  sentence for the rest.** `tools/validate_hygiene.py` refuses the two
+  pre-commit words in this file, and its `--self-test` plants each and proves
+  the refusal. That reached thirteen of the fourteen lines that were wrong at
+  `533da17`; the fourteenth had neither word, and this check does not reach it.
 - **Every basis stamp is unstamped**, all 58 criteria and the 16 D and R decision
   rows. This is now the oldest open item in the program. The conclusions bind;
   the reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md`
@@ -291,10 +320,10 @@ there.
   validators, the telemetry test and the D-001 stub. `make test` runs the
   test suite alone. The pre-commit hook runs the same set less the telemetry
   test, which CI runs as a step of its own.
-- **The worklog is at its ten-entry cap.** The next closeout moves the oldest
-  entries to `docs/plainsight_worklog_archive.md`, which the register plans and
-  which does not exist yet, before it adds one. The hygiene gate refuses an
-  eleventh.
+- **The worklog holds ten live entries against its ten-entry cap.** The archive
+  is open at `docs/plainsight_worklog_archive.md` with the Wave 0 entry in it,
+  and the next closeout moves the oldest live entry there before it adds one.
+  The hygiene gate refuses an eleventh.
 - Write the handoff in the tense of the tree the commit will create, per
   `AGENTS.md` section 8. This file was wrong about that in three commits.
 - Two harness facts that cost this session time: a subagent cannot write a report

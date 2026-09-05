@@ -154,7 +154,8 @@ than it is.** The governed artifacts checked today are the doctrine corpus
 (criterion definitions, per-criterion stamps, cross-references in both
 directions, reconciliation against the pin of record, prose counts), the voice
 standard, table structure, citations against the artifact register, the handoff
-and worklog caps, the tools-to-gates inventory, the layer model in
+and worklog caps, the handoff's tense, the tools-to-gates inventory, the layer
+model in
 `spec/layer-model.yaml` (nine types, discriminators, denylists, lineage,
 producer authority, strata, and the D5 parent on every run), the selector
 registry in `ontology/selectors.yaml` (the closed vocabulary, anchor
@@ -259,11 +260,12 @@ preference. `5d53973` committed a handoff reading "Nothing committed,
 nothing built" in the commit that added twenty-one files. `a54061b`
 committed one whose state header called the hardening pass uncommitted.
 `d99f213` committed one that marked nine artifacts untracked in the commit
-that tracked all nine. No gate reads the handoff for tense, so this is
-caught at the closeout or not at all. The mechanism that would catch it is
-a lexical check on the two words in this one file, which reaches thirteen of
-the fourteen lines that were wrong at `533da17`; it is Class C, it is owed,
-and it is not in the change that first stated this rule.
+that tracked all nine. `tools/validate_hygiene.py` refuses either word in
+that one file as `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and its `--self-test`
+plants each word and asserts the refusal. That check reaches thirteen of the
+fourteen lines that were wrong at `533da17`. The fourteenth, a sentence with
+neither word, is caught at the closeout or not at all, which is the half of
+this rule that stays a sentence.
 
 **The local rule that binds the commit rather than the records.** A closeout
 commit carries no Class F change the operator has not decided. An agent may
