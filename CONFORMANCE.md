@@ -40,7 +40,7 @@ artifact does not yet exist.
 
 | Condition | Artifact | Rank, class | Current state |
 |---|---|---|---|
-| Versioning | `spec/pse-semantics-contract.md` | rank 2, Class B | Does not exist. `docs/THE-GAMEPLAN.md` Step 7, unblocked since `d99f213` delivered Steps 5 and 6, and written last of the three so it explains rules that already exist rather than inventing rules nothing enforces. |
+| Versioning | `spec/pse-semantics-contract.md` | rank 2, Class B | Does not exist. `docs/THE-GAMEPLAN.md` Step 7, unblocked since `f4e00e1` delivered Steps 5 and 6, and written last of the three so it explains rules that already exist rather than inventing rules nothing enforces. |
 | Documentation of the delta | `spec/divergence-register.yaml` | rank 3, Class B | Does not exist. Step 9. `spec/layer-model.yaml`'s `divergences_from_zmeta` block, eight entries, DV-01 through DV-08, is the current input a Step 9 generator will read. It is prose in a Class B file, not yet a governed register with its own validator. |
 | Conformance evidence | `conformance/` | rank 3 for the corpora, Class B and F | Nothing under `conformance/` is tracked. The three planned subdirectories, `connector-harness/`, `gate/`, and `retention/`, are empty on the machine that cut the repository and absent from any clone, because git does not record an empty directory. Steps 7, 8, and 9 fill them. |
 | Release governance | `AGENTS.md` | rank 4, Class A | Exists, committed. Change classes A through F, the required local workflow, and the documentation matrix are in force today. |
@@ -60,7 +60,7 @@ passing, never any one of them read alone.
 |---|---|---|---|---|
 | 1 | `pytest connectors/<id>` | No. `connectors/` is empty. | The adapter's own `translate_<subject>` functions behave as the author intended, against inputs the author chose. | Anything this repository checks independently. The author wrote the code and the test. |
 | 2 | `tools/validate.py --file <events>.jsonl --strict` | No. Depends on `schema/pse-event-0.1.schema.json` and `policy/*.yaml`, both empty, Step 7. | The adapter's sample output is schema-valid and passes every layer denylist, lineage rule, and producer-authority check. | That the selectors used are registered, which is rung 3, or that the sample represents the connector's full output range. |
-| 3 | `tools/validate_ontology.py --corpus` | The tool and `ontology/selectors.yaml` both exist since `d99f213`. The `--corpus` mode this rung needs is deferred and says so rather than passing, because no corpus exists for it to read. The default `--registry` mode lints the registry itself and is what the kernel gate runs. | Every `selector_type` the sample emits is a member of the closed vocabulary. | Schema or policy conformance, which is rung 2. Registry self-consistency, which is not a claim about any connector. |
+| 3 | `tools/validate_ontology.py --corpus` | The tool and `ontology/selectors.yaml` both exist since `f4e00e1`. The `--corpus` mode this rung needs is deferred and says so rather than passing, because no corpus exists for it to read. The default `--registry` mode lints the registry itself and is what the kernel gate runs. | Every `selector_type` the sample emits is a member of the closed vocabulary. | Schema or policy conformance, which is rung 2. Registry self-consistency, which is not a claim about any connector. |
 | 4 | `tools/validate_connector_conformance.py --fixtures ...` | No. Depends on `conformance/connector-harness/fixture.schema.json`, empty, Step 12, and on a connector to write fixtures against, which does not exist. | The adapter, called against a pinned cassette set including `event_count: 0`, returns output matching each fixture's pinned expectation for math, presence, absence, and lineage. | Behavior against a live target on the day it actually runs. A cassette is frozen at capture time and a platform can change under it. |
 | 5 | `tools/validate_conformance.py --kernel-gate` | Yes. | Nothing an implemented gate would refuse regressed anywhere in the repository. | Anything about this connector specifically. It is a whole-repository regression gate, not a connector claim. |
 
@@ -75,7 +75,7 @@ One naming gap between two rank-7 drafts: `docs/PLAINSIGHT-FOUNDATION.md`
 section 4.4 names rung 3 with a `check_ontology` script name, while
 `docs/THE-GAMEPLAN.md` section 2.1 registers the same artifact as
 `tools/validate_ontology.py`. This file uses the registered name, which is the
-one that exists since `d99f213`. Nothing exists under the FOUNDATION name, and
+one that exists since `f4e00e1`. Nothing exists under the FOUNDATION name, and
 FOUNDATION is voice-exempt as a record of intent, so the discrepancy is
 reported here rather than edited there.
 

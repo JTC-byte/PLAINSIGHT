@@ -112,7 +112,9 @@ by any control this repository contains.
   repository.
 - **No agent writes a selector value, handle, email, phone number, or case
   subject name into a tracked file.** This includes worklog entries and commit
-  messages.
+  messages. The repository's own coordinates are not handles in this sense:
+  its public remote, the account that owns it, and the upstream projects it
+  cites may be named, and the D-001 repo scan is written not to refuse them.
 - **No agent decides a Class F change.** Drafting one is permitted and expected.
   Per R6 as amended 2026-08-27, an agent may execute the commit or push of a
   Class F change the operator has decided, on the operator's explicit
@@ -256,14 +258,14 @@ reconcile every state claim in the handoff against that list rather than
 against what `git status` calls untracked.
 
 Three commits have failed this, which is what makes it a rule rather than a
-preference. `5d53973` committed a handoff reading "Nothing committed,
-nothing built" in the commit that added twenty-one files. `a54061b`
+preference. `1abb354` committed a handoff reading "Nothing committed,
+nothing built" in the commit that added twenty-one files. `4c5cd25`
 committed one whose state header called the hardening pass uncommitted.
-`d99f213` committed one that marked nine artifacts untracked in the commit
+`f4e00e1` committed one that marked nine artifacts untracked in the commit
 that tracked all nine. `tools/validate_hygiene.py` refuses either word in
 that one file as `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and its `--self-test`
 plants each word and asserts the refusal. That check reaches thirteen of the
-fourteen lines that were wrong at `533da17`. The fourteenth, a sentence with
+fourteen lines that were wrong at `d803213`. The fourteenth, a sentence with
 neither word, is caught at the closeout or not at all, which is the half of
 this rule that stays a sentence.
 

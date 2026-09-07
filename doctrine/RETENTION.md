@@ -1,6 +1,6 @@
 # Retention doctrine: what is held, in what form, for how long, and how deletion is proved
 
-**Status: DRAFTED 2026-08-26. ALL CONCLUSIONS RECORDED. Landed in commits `5d53973` and `a54061b` on 2026-08-27.**
+**Status: DRAFTED 2026-08-26. ALL CONCLUSIONS RECORDED. Landed in commits `1abb354` and `4c5cd25` on 2026-08-27.**
 
 The operator decided R1, R2, R3 and R5 on 2026-08-26, setting the case ceiling
 at 60 days with a logged freeze as the only path past it, and recorded a
@@ -9,8 +9,8 @@ individually because they encode a choice rather than a mechanism: RT-6's
 incidental TTL, RT-11's blast radius, RT-14 with RT-18, and the consent shape in
 `SUBJECT_SELECTION.md`. **Every basis is unstamped**, deliberately.
 
-**Landed 2026-08-27 in commit `5d53973`; RT-19 landed the same day in
-`a54061b`.** Per R6 as amended, an agent may execute a commit the operator has
+**Landed 2026-08-27 in commit `1abb354`; RT-19 landed the same day in
+`4c5cd25`.** Per R6 as amended, an agent may execute a commit the operator has
 instructed; the authorship stays theirs.
 
 Every criterion carries its own marker. One partially stamped item does not

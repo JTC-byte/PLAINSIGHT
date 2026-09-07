@@ -7,7 +7,7 @@ runs on.
 the gates that check them.** Every doctrine conclusion has been recorded since
 2026-08-27 and every basis is deliberately unstamped. The layer model, the
 selector registry, the unsealed cast draft, and the validators that read them
-landed in `d99f213`. No schema, no policy pack, and no collection mechanism
+landed in `f4e00e1`. No schema, no policy pack, and no collection mechanism
 exists. No connector exists. Nothing here has touched a platform.
 
 ## What this is
@@ -112,3 +112,18 @@ This repository reads from its siblings and writes to none of them.
 - `../zisr-recon/`: the permission-gate precedent.
 - `../ZISR COP/`: the operational client, and the source of several interface
   patterns. PLAINSIGHT is a sibling application, not a mode within it.
+
+## License and repository model
+
+Apache License 2.0; see `LICENSE` and `NOTICE`. PSE is a private dialect
+derived from ZMeta and claims no upstream compatibility.
+
+The public repository at `github.com/JTC-byte/PLAINSIGHT` receives `main` at
+closeouts. Experimental work runs in a local instance and reaches `main` only
+through the closeout in `AGENTS.md` section 8: the battery, the records, and
+the commit. Case material never enters git, per `doctrine/RETENTION.md`, and no
+selector enters a tracked file, per `AGENTS.md` section 4, so the history is
+publishable by rule and the local instance keeps its private material on the
+filesystem rather than in git. The commit-time scan that would enforce the
+retention rule is a stub until Step 8; `docs/plainsight_handoff.md` tracks it
+as D-001.

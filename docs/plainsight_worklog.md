@@ -15,73 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-08-26, Step 2. The operator decided twelve items.
-
-**Class:** F throughout. **Drafted and transcribed by an agent, not landed.** R6
-puts a Class F commit in the ratifier's hands and no commit exists yet.
-
-Put the open decisions to the operator as two rounds of prompts. Recorded in
-`doctrine/DOCTRINE_STATUS.md`: D1 through D5, R1 through R7, and five items that
-arose from the operator's own answers rather than from the drafted list.
-
-**Every conclusion is stamped and every basis is unstamped**, at the operator's
-choice. The reasoning in `PLAINSIGHT-FOUNDATION.md` §3 has not been reviewed, and
-the split-stamp design exists precisely so that unblocks work without pretending
-the argument was read.
-
-Five decisions changed the drafts materially.
-
-- **R4, maximum reach.** S0 through S4 available, plus N0 and L0. The drafted
-  recommendation was S0, S1, S2 only with S3 and S4 refused. The operator
-  overrode it, having been shown the ground-truth argument, and paired the
-  override with their own sequencing: the baseline comes from known consenting
-  people first. That sequencing became SS-17 rather than a sentence.
-- **The web model, from the operator's clarification.** A query names one node,
-  person or organization or location, and returns a searchable list of linked
-  nodes including alias and shell organizations. Nothing spawns a deep dive.
-  Each node is selectable for a deliberate one. This is SS-16, and the important
-  property is that the control is the act rather than the class.
-- **L0 LOCATION added**, because the operator's web has location nodes and the
-  class set had none. A residential address tied to an individual is that
-  person's selector and is not an L0 node, which is the carve-out that stops the
-  class becoming the route by which a home address turns into infrastructure.
-- **R2, ceiling 60 rather than 180**, and **RT-17 reversed**. The first pass had
-  frozen days counting toward the ceiling. The operator wants manual holds for a
-  stated reason, law enforcement handoff being their example, so the freeze is
-  now the one thing that crosses the ceiling. What bounds it is not a cap: every
-  renewal names an obligation and an expected resolution date, and the state
-  escalates rather than repeating.
-- **R7, the interaction line**, which was undrafted and blocked every connector
-  manifest. Authenticating with a team-held credential and reading is permitted.
-  Anything the subject can observe happened is refused. The unauthenticated-only
-  reading would have removed toutatis, informer, and most of the Instagram and
-  Discord tooling, which was stated in the prompt.
-
-**Downstream changes the stamps required.** `CLAUDE.md` §5 no longer says R6 is
-pending. `PLAINSIGHT-design.md:648` was corrected under RT-8, replacing the flat
-"retained forever" with retention for the life of the case and citing the
-stamped decision, which closes the R5 conflict that had rank 7 contradicting
-rank 1. `README.md` and this handoff carry the new counts.
-
-**One error made and corrected in place.** A regular expression written to strip
-the newly-ratified rows out of the pending table also matched the rows it had
-just written into the ratified table, deleting seven of them. Caught by a row
-count immediately after, restored, and the count re-verified against the
-criterion definitions in both documents.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched. Voice and PII gates clean on every edited file. Cross-references,
-criterion counts, and table integrity re-verified mechanically after each batch.
-
-**Not done, deliberately:** no commit. Basis stamps left unstamped. D6, D7, D8
-and R8 remain pending and were not put to the operator.
-
-**Next:** the operator reviews the transcription in `DOCTRINE_STATUS.md` and
-commits it, which is also the repository's first commit. Then Step 4, the
-synthetic cast, which SS-17 has moved onto the critical path for reach.
-
----
-
 ## 2026-08-27, Step 2 closed out. Every doctrine conclusion recorded.
 
 **Class:** F throughout. **Drafted and transcribed by an agent, not landed.**
@@ -1375,6 +1308,153 @@ survivor; patches 2 through 4; the history decision; Step 7;
 scan; every basis stamp.
 
 **Next:** the operator stands up the remote. Then, in the operator's stated
+order: patch 2 and the twelve applying hunks of patch 3 before any doctrine
+voice edit, the refuter continuation and the application of survivors, then
+Step 7.
+
+---
+
+## 2026-09-07, the history rewritten before the first push, and the public-facing files added.
+
+**Class:** A for the records, `README.md`, the new `LICENSE`, `NOTICE` and
+`.gitattributes`, `.gitignore`, the CI permissions block, and hash strings in
+`AGENTS.md`, `CONFORMANCE.md` and the status lines of six doctrine files, one
+added sentence in `AGENTS.md` section 4, plus C for six hash strings in `tools/validate_hygiene.py`, one of them inside the
+self-test fixture, the class the previous entry gave a fixture string. No
+criterion, no stamp, no schema, policy, connector, or validator logic. The push that follows is Class E,
+publication outside the team, and is executed on the operator's instruction.
+
+Later on 2026-09-07 the operator created a public repository for this project
+at `github.com/JTC-byte/PLAINSIGHT`, chose the Apache License 2.0 there, and
+asked for the repository to be cleaned up and locked down so that it could be
+pushed clean, with the working copy kept as a local instance where experiments
+run and the public repository updated from their results. Three things in the
+history were not publishable. The two earliest commits carried the example
+persona's real name and handles in five files, which the previous entry's commit
+had replaced only at the tip. Every commit carried the operator's personal email
+address as author and committer, an address that contains their name. Four
+documents carried absolute paths from the operator's machine. The remote itself
+already held one commit, GitHub's own license file, authored with that same
+address, so the first push replaces it by force; that commit is no ancestor of
+`main`.
+
+### The rewrite
+
+`git filter-repo` 2.47.0, installed into the user site for the purpose, ran on
+a fresh clone with two inputs, both persisted in
+`Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/`. The
+replacement map carries the fourteen literal and two word-bounded rules that
+reproduce the previous commit's persona replacement, proven first by applying
+them to the five files as they stood before that commit and comparing the
+result byte for byte with the files as that commit left them, plus four rules
+that turn the machine paths into `<Z-ISR>` and `<wave-0-scratchpad>`. The
+mailmap turns the author and committer address into the GitHub no-reply address
+for the account. Nine commits went in and nine came out. A bundle of the complete pre-rewrite history was
+written beside the inputs before the real repository was touched.
+
+Verification on the rewritten clone: the tip tree compared to the pre-rewrite
+tip blob by blob differs in four files, `docs/DOCUMENT_STANDARD.md`,
+`docs/OSINT-COP-tool-review.md`, `docs/THE-GAMEPLAN.md` and the handoff, and
+in each only in the lines that carried a path; a search of every rewritten
+commit for the old persona values, the old address, and the machine paths found
+nothing; all nine commits carry the no-reply address; the five validators, the
+hygiene self-test, the telemetry suite and the kernel gate pass on the tip.
+`git filter-repo` also translated the hash references inside commit messages,
+so a message that cited an earlier commit cites its rewritten form.
+
+One consequence is recorded rather than hidden. The previous entry's commit
+described replacing fifty-five line pairs; in the rewritten history those
+values were already fictional in the first commit, so that commit's diff now
+carries only its records and `.gitignore` changes while its message still
+describes the replacement. The message is true of what was done on 2026-09-05
+and 2026-09-07 and is left as written.
+
+### The hash translation
+
+Every hash cited in a current-state file was translated: 4 tokens in
+`AGENTS.md`, 3 in `CONFORMANCE.md`, 1 in `README.md`, 6 in
+`tools/validate_hygiene.py`, and 15 across six doctrine files, all in status
+lines or prose about which commit landed what, none in a criterion. The
+handoff was rewritten with the new hashes. The worklog, its archive, and every
+changelog entry below this one keep the hashes they were written with,
+because a process record is never restyled; the changelog entry for this commit
+carries the table.
+
+| Before | After | Subject |
+|---|---|---|
+| `5d53973` | `1abb354` | Wave 0: governed repository, doctrine foundation, and the doctrine gates |
+| `a54061b` | `4c5cd25` | Hardening: rank 1 grows to four files, plus gate telemetry |
+| `d99f213` | `f4e00e1` | Review wave: two blockers, Steps 4 through 6, and the first test |
+| `8a856b3` | `98f3433` | Closeout: the changelog this repository owed, and the handoff standard |
+| `533da17` | `d803213` | Record 8a856b3 in the changelog, and end the entry regress by rule |
+| `377d7d4` | `89c68a3` | Separate the two records by tense, and clear the pre-commit tense from every file that carried it |
+| `7c14888` | `f907a7a` | Make the handoff tense rule a gate, and open the worklog archive |
+| `2d406db` | `7c0e278` | Closeout checkpoint: the committed tree verified from a fresh clone, and the session's records persisted |
+| `b6d0bb2` | `595cc06` | Make the example persona fictional, and correct the records' patch state |
+
+### The public-facing files
+
+`LICENSE` is the Apache License 2.0 text as GitHub generated it in the remote's
+initial commit, byte-identical: blob `261eeb9`, recorded in the rewrite
+directory's README so the claim can be checked without the remote. `NOTICE` names the copyright holder and states
+the ZMeta derivation in the words ZMeta's own trademark guidance accepts, a
+private ZMeta-derived dialect with no upstream compatibility claim, and links
+the public `zmeta-spec` repository. `.gitattributes` puts LF in the index and on
+every checkout, which ends the CRLF churn the records of the last three sessions
+kept noting. `.gitignore` gains editor, OS and agent residue. The CI workflow
+declares a read-only token. `README.md` gains a section on the license and on
+the model by which the public repository is updated. The branch is renamed from
+`master` to `main`, which is the remote's default.
+
+### The archive
+
+The worklog was at ten live entries, so the 2026-08-26 entry that begins "Step
+2. The operator decided twelve items" moved to
+`docs/plainsight_worklog_archive.md` without edit, after the three already
+there, and this entry took its place. Four entries are archived; ten are live.
+
+### Validation
+
+On the rewritten clone with this commit staged: the five preflight validators,
+the hygiene self-test, the twelve-case telemetry suite, `git diff --cached
+--check`, the hook, and the kernel gate at six implemented, zero failed, one
+stubbed, five pending. A verifier pass over the staged package, one Sonnet lens
+for the mechanical checks and one Opus lens for the five questions, tense,
+voice, consistency and class, returned 30 verdicts: 23 confirmed and 7 refuted.
+One refutation was of the brief, a `check-ignore` invocation without the
+trailing slash the directory-only rules need. One was a reasoned view rather
+than a defect: the repository URL contains the account login, which a literal
+reading of `AGENTS.md` section 4 calls a handle, and the lens argued the rule
+does not reach the repository's own coordinates and proposed a one-clause
+carve-out; the operator decided it, and `AGENTS.md` section 4 gains that
+sentence in this commit. Five were corrected before the commit:
+the scratch clone still resolved the author identity from the global
+configuration, which the apply order now sets before any commit; the handoff
+read pre-rewrite hashes by date where the persona entry of the same day also
+carries them, now read by position; the handoff credited the hook with a
+selector refusal it does not perform, now stated as the D-001 stub; one
+fragment in the commit message; and this class line, which understated the
+`tools/validate_hygiene.py` change.
+
+### Agent involvement, stated precisely
+
+The parent session did the scouting, the map, the rewrite, the comparisons and
+the record writing; it installed `git-filter-repo` into the user site. No
+subagent edited a tracked file. A Sonnet lens and an Opus lens spent about
+202,000 tokens on the staged package. The commit and the push that
+follows it are executed by the agent on the operator's instruction of
+2026-09-07 for those acts, with the operator as author, per R6 as amended.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine criterion amended or stamped, no Class F change proposed,
+no voice edit applied.
+
+**Not done:** the repository settings that lock the remote down after the push;
+the refuter pass over 50 voice-pass chunks and the application of any survivor;
+patches 2 through 4; Step 7; `doctrine/RETENTION_LEDGER.md` and
+`doctrine/DISCLOSURE.md`; the D-001 repo scan; every basis stamp.
+
+**Next:** the push, then the remote settings. Then, in the operator's stated
 order: patch 2 and the twelve applying hunks of patch 3 before any doctrine
 voice edit, the refuter continuation and the application of survivors, then
 Step 7.

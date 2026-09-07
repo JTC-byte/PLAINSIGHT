@@ -25,3 +25,17 @@ _voice-pass/
 # Local operator files
 .env
 *.local.*
+
+# Editor and OS residue
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Local agent settings and merge or patch residue
+.claude/
+*.orig
+*.rej
+*.bak

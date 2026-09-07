@@ -1,14 +1,14 @@
 # Subject selection: who may be a subject, and what the gate returns
 
-**Status: DRAFTED 2026-08-26. ALL CONCLUSIONS RECORDED. Landed in commits `5d53973` and `a54061b` on 2026-08-27.**
+**Status: DRAFTED 2026-08-26. ALL CONCLUSIONS RECORDED. Landed in commits `1abb354` and `4c5cd25` on 2026-08-27.**
 
 The operator decided R2, R3, R4, R6 and R7 on 2026-08-26 and recorded a
 conclusion on every remaining criterion on 2026-08-27. **Every basis is
 unstamped**, which is deliberate: the conclusions were decided in session and the
 reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 has not been reviewed.
 
-**Landed 2026-08-27 in commit `5d53973`; SS-19 through SS-21 landed the same day
-in `a54061b`.** Per R6 as amended, an agent may execute a commit the operator has
+**Landed 2026-08-27 in commit `1abb354`; SS-19 through SS-21 landed the same day
+in `4c5cd25`.** Per R6 as amended, an agent may execute a commit the operator has
 instructed; the authorship stays theirs.
 
 Every criterion carries its own marker. One partially stamped item does not

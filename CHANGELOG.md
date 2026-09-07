@@ -22,6 +22,68 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-07. The history is rewritten before the first push, and the
+  public-facing files land.**
+
+  The operator created a public repository at `github.com/JTC-byte/PLAINSIGHT`.
+  Three things in the history were not publishable: the two earliest commits
+  carried the example persona's real name and handles, which the entry below
+  had replaced only at the tip; every commit carried the operator's personal
+  email address as author and committer; and four documents carried absolute
+  paths from the operator's machine. The whole history was rewritten with
+  `git filter-repo` on a fresh clone before anything was pushed. The persona
+  values were replaced in every historical blob by the map the entry below
+  used, the address became the GitHub no-reply address for the account, and the
+  paths became `<Z-ISR>` and `<wave-0-scratchpad>`. Nine commits in, nine out;
+  the rewritten tip differs from the pre-rewrite tip in four files, path lines
+  only; no rewritten commit contains the old values, the old address, or a
+  machine path.
+
+  Every hash changed. Current-state files cite the new hashes as of this
+  commit: `AGENTS.md`, `CONFORMANCE.md`, `README.md`, `tools/validate_hygiene.py`,
+  six doctrine files in their status lines, and the handoff. The worklog, its
+  archive, and every entry below this one keep the hashes they were written
+  with, and this table translates them.
+
+  | Before | After |
+  |---|---|
+  | `5d53973` | `1abb354` |
+  | `a54061b` | `4c5cd25` |
+  | `d99f213` | `f4e00e1` |
+  | `8a856b3` | `98f3433` |
+  | `533da17` | `d803213` |
+  | `377d7d4` | `89c68a3` |
+  | `7c14888` | `f907a7a` |
+  | `2d406db` | `7c0e278` |
+  | `b6d0bb2` | `595cc06` |
+
+  `LICENSE` carries the Apache License 2.0 text as GitHub generated it in the
+  remote's initial commit. `NOTICE` names the copyright holder and the ZMeta
+  derivation with no compatibility claim. `.gitattributes` normalizes line
+  endings to LF. `.gitignore` gains editor, OS and agent residue. The CI
+  workflow declares a read-only token. `AGENTS.md` section 4 gains one
+  sentence: the repository's own coordinates, its remote, its account and the
+  upstream projects it cites, are not handles under the rule against writing a
+  handle into a tracked file, and the D-001 scan is written not to refuse them.
+  `README.md` states the license and the model by which the public repository
+  is updated. The branch is `main`. The
+  worklog moves its oldest entry to the archive without edit and gains this
+  commit's entry, which records the rewrite in full.
+
+  Validation: the five preflight validators, the hygiene self-test, the
+  twelve-case telemetry suite, `git diff --cached --check`, the hook, and the
+  kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending, on the
+  rewritten clone with this commit staged; a blob-level comparison of the two
+  tips; a search of every rewritten commit for the removed values.
+
+  **What did not change.** No doctrine criterion, no stamp, and no doctrine
+  text beyond the hash tokens in six status lines; `doctrine/DOCTRINE_STATUS.md`
+  changed in two hash tokens and nothing else. No schema, no policy, no
+  connector, no validator logic. No voice edit is applied. Patches 2 through 4
+  are still unapplied and patch 4 is still the operator's Class F decision. The
+  D-001 repo scan is still a stub. Nothing collected, no connector executed, no
+  platform touched.
+
 - **2026-09-07. The example persona in the documents becomes fictional, and the
   records correct the patch state.**
 

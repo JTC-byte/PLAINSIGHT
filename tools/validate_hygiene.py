@@ -12,12 +12,12 @@ a reader. This tool checks what a machine can check and says plainly which rules
 it does not reach, rather than implying the file passed a full voice review.
 
 One check here reads a single file for a single defect.
-`docs/plainsight_handoff.md` shipped in three commits, `5d53973`, `a54061b` and
-`d99f213`, describing the tree as it stood before each commit, calling
+`docs/plainsight_handoff.md` shipped in three commits, `1abb354`, `4c5cd25` and
+`f4e00e1`, describing the tree as it stood before each commit, calling
 committed artifacts uncommitted and tracked files untracked. `AGENTS.md`
 section 8 states the rule; this tool enforces the checkable half of it by
 refusing either word in that file. It reaches thirteen of the fourteen lines
-that were wrong at `533da17`, and the fourteenth, a sentence with neither word,
+that were wrong at `d803213`, and the fourteenth, a sentence with neither word,
 is caught at the closeout or not at all. `--self-test` plants each word and
 asserts the refusal, so removing the check fails the test, which is design
 gate 1.
@@ -341,7 +341,7 @@ def self_test() -> int:
     removed. Deleting the body of ``handoff_tense_findings`` fails the planted
     cases; widening it to refuse everything fails the clean case. The clean
     sample deliberately contains the opening clause of the one wrong line at
-    ``533da17`` that carried neither word, so the test also records the reach
+    ``d803213`` that carried neither word, so the test also records the reach
     limit.
     """
     planted = (
@@ -351,7 +351,7 @@ def self_test() -> int:
         "| `AGENTS.md` | Committed, plus an UNTRACKED section 5 edit. |",
     )
     clean = (
-        "| `spec/layer-model.yaml` | **Committed in `d99f213`, and reviewed.** |\n"
+        "| `spec/layer-model.yaml` | **Committed in `f4e00e1`, and reviewed.** |\n"
         "The tree is clean at the commit that carries this file.\n"
         "Neither has been committed.\n"
     )

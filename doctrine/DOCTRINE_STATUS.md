@@ -10,7 +10,7 @@ criterion refuses rather than permits.
 
 ## Ratified
 
-**Landed 2026-08-27 in commits `5d53973` (the Wave 0 rows) and `a54061b` (the
+**Landed 2026-08-27 in commits `1abb354` (the Wave 0 rows) and `4c5cd25` (the
 EG, CR, HY, SS-19 to SS-21 and RT-19 rows)**, authored by the operator. R6 as
 amended that day permits an agent to execute the commit of a decision the
 operator made; the decision and the authorship stayed theirs. These rows are the

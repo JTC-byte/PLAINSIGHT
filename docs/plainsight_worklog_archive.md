@@ -268,3 +268,70 @@ criterion counts, and table integrity re-checked mechanically.
 were not applied. The remaining downgraded items are wording precision.
 
 **Next:** Step 2 is the operator's. Step 4 is unblocked.
+
+---
+
+## 2026-08-26, Step 2. The operator decided twelve items.
+
+**Class:** F throughout. **Drafted and transcribed by an agent, not landed.** R6
+puts a Class F commit in the ratifier's hands and no commit exists yet.
+
+Put the open decisions to the operator as two rounds of prompts. Recorded in
+`doctrine/DOCTRINE_STATUS.md`: D1 through D5, R1 through R7, and five items that
+arose from the operator's own answers rather than from the drafted list.
+
+**Every conclusion is stamped and every basis is unstamped**, at the operator's
+choice. The reasoning in `PLAINSIGHT-FOUNDATION.md` §3 has not been reviewed, and
+the split-stamp design exists precisely so that unblocks work without pretending
+the argument was read.
+
+Five decisions changed the drafts materially.
+
+- **R4, maximum reach.** S0 through S4 available, plus N0 and L0. The drafted
+  recommendation was S0, S1, S2 only with S3 and S4 refused. The operator
+  overrode it, having been shown the ground-truth argument, and paired the
+  override with their own sequencing: the baseline comes from known consenting
+  people first. That sequencing became SS-17 rather than a sentence.
+- **The web model, from the operator's clarification.** A query names one node,
+  person or organization or location, and returns a searchable list of linked
+  nodes including alias and shell organizations. Nothing spawns a deep dive.
+  Each node is selectable for a deliberate one. This is SS-16, and the important
+  property is that the control is the act rather than the class.
+- **L0 LOCATION added**, because the operator's web has location nodes and the
+  class set had none. A residential address tied to an individual is that
+  person's selector and is not an L0 node, which is the carve-out that stops the
+  class becoming the route by which a home address turns into infrastructure.
+- **R2, ceiling 60 rather than 180**, and **RT-17 reversed**. The first pass had
+  frozen days counting toward the ceiling. The operator wants manual holds for a
+  stated reason, law enforcement handoff being their example, so the freeze is
+  now the one thing that crosses the ceiling. What bounds it is not a cap: every
+  renewal names an obligation and an expected resolution date, and the state
+  escalates rather than repeating.
+- **R7, the interaction line**, which was undrafted and blocked every connector
+  manifest. Authenticating with a team-held credential and reading is permitted.
+  Anything the subject can observe happened is refused. The unauthenticated-only
+  reading would have removed toutatis, informer, and most of the Instagram and
+  Discord tooling, which was stated in the prompt.
+
+**Downstream changes the stamps required.** `CLAUDE.md` §5 no longer says R6 is
+pending. `PLAINSIGHT-design.md:648` was corrected under RT-8, replacing the flat
+"retained forever" with retention for the life of the case and citing the
+stamped decision, which closes the R5 conflict that had rank 7 contradicting
+rank 1. `README.md` and this handoff carry the new counts.
+
+**One error made and corrected in place.** A regular expression written to strip
+the newly-ratified rows out of the pending table also matched the rows it had
+just written into the ratified table, deleting seven of them. Caught by a row
+count immediately after, restored, and the count re-verified against the
+criterion definitions in both documents.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched. Voice and PII gates clean on every edited file. Cross-references,
+criterion counts, and table integrity re-verified mechanically after each batch.
+
+**Not done, deliberately:** no commit. Basis stamps left unstamped. D6, D7, D8
+and R8 remain pending and were not put to the operator.
+
+**Next:** the operator reviews the transcription in `DOCTRINE_STATUS.md` and
+commits it, which is also the repository's first commit. Then Step 4, the
+synthetic cast, which SS-17 has moved onto the critical path for reach.

@@ -1,6 +1,6 @@
 # Credential lifecycle: the accounts that do the looking
 
-**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `a54061b` on 2026-08-27.**
+**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `4c5cd25` on 2026-08-27.**
 
 `docs/THE-GAMEPLAN.md` §2.2 deferred this file until the credential pool had a
 real shape. SS-20 gave it one on 2026-08-27 by separating the accounts that
@@ -11,7 +11,7 @@ justification is narrow: whose account performs a collection determines which
 identity a third party permanently records as having looked at a person, and that
 is a subject-selection consequence rather than an operations detail.
 
-Landed 2026-08-27 in commit `a54061b`, authored by the operator. Per R6 as
+Landed 2026-08-27 in commit `4c5cd25`, authored by the operator. Per R6 as
 amended the conclusions are in force, and every basis is unstamped.
 
 ---

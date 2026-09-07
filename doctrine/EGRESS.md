@@ -1,6 +1,6 @@
 # Egress doctrine: the two environments, and what crosses between them
 
-**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `a54061b` on 2026-08-27.**
+**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `4c5cd25` on 2026-08-27.**
 
 `docs/THE-GAMEPLAN.md` §2.2 deferred this file until the deployment decision was
 made. The operator made it on 2026-08-27: code work stays local, anything live
@@ -12,7 +12,7 @@ Rank 1 alongside `SUBJECT_SELECTION.md` and `RETENTION.md`, because this documen
 answers the third of doctrine's three questions: what leaves the machine. It has
 no opinion on which hypervisor, which provider, or how the link is built.
 
-Landed 2026-08-27 in commit `a54061b`, authored by the operator. Per R6 as
+Landed 2026-08-27 in commit `4c5cd25`, authored by the operator. Per R6 as
 amended the conclusions are in force, and every basis is unstamped.
 
 ---

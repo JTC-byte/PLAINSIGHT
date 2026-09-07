@@ -1,0 +1,12 @@
+PLAINSIGHT, and PSE, the PLAINSIGHT Semantic Envelope
+Copyright 2026 Incept.IO
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+PSE is a private dialect derived from ZMeta (zmeta-event-1.0), an open
+specification published under the Apache License, Version 2.0 at
+https://github.com/JTC-byte/zmeta-spec. PSE does not claim upstream ZMeta
+compatibility and must not be described as ZMeta-conformant. The changes from
+ZMeta are documented in this repository: spec/layer-model.yaml carries the
+current divergence list, and spec/divergence-register.yaml will carry the
+governed register when it exists.

@@ -1,5 +1,9 @@
 name: CI
 
+# The workflow token reads the repository and does nothing else.
+permissions:
+  contents: read
+
 on:
   push:
   pull_request:

@@ -1,0 +1,12 @@
+# Line endings. The index holds LF and every checkout gets LF, so the
+# validators, the pre-commit hook, and CI read the same bytes on every
+# platform, and a Windows checkout stops producing CRLF churn in diffs.
+* text=auto eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
+.githooks/* text eol=lf
+*.bundle binary

@@ -1,6 +1,6 @@
 # Hygiene doctrine: housekeeping, and adjudicating the gates themselves
 
-**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `a54061b` on 2026-08-27.**
+**Status: DRAFTED 2026-08-27. ALL CONCLUSIONS RECORDED. Landed in commit `4c5cd25` on 2026-08-27.**
 
 Advisory, Class A, and the only doctrine file that is not rank 1. It governs how
 this repository keeps itself honest over time rather than what may be collected.
