@@ -148,3 +148,123 @@ the pin of record.
 
 **Next:** apply the confirmed findings, finish the verification of the 26, then
 Step 2 remains the operator's.
+
+---
+
+## 2026-08-26, Step 3 continued. Review findings applied.
+
+**Class:** F (doctrine drafts, still unratified) plus A (process records).
+
+Resumed the stopped review workflow from cache. **The seventh verification agent
+had not completed when the findings below were applied, so the 26 unverified
+findings are still unverified.** They carry no verdict and were not applied. That
+is D-004 and it is open.
+
+One consequence to be aware of when that verifier does return: it began reading
+the drafts before these edits and will finish after them, so a verdict of
+REFUTED from it may mean the finding was already fixed rather than that it was
+never real. Read its reasons against the current text, not the verdict alone.
+
+Applied both confirmed blockers and all nine distinct confirmed majors, plus six
+findings from the downgraded set that were real on inspection. The full list is
+in `plainsight_handoff.md` §4 under D-003. Two of the six downgraded items
+changed an obligation rather than a wording, and both are recorded here because
+a reader of the drafts will want to know they were added after review rather
+than designed in:
+
+- **Class N0 NON-PERSON was added to SS-1.** The class set covered only natural
+  persons. CrossLinked's function is to enumerate an organization, and a company
+  domain is nobody's personal data, so with no class for it the set either
+  silently forbade a wanted capability or forced an analyst to file an
+  organization under a person class. N0 authorizes the organization and never its
+  members, and it is not self-certifying.
+- **The RT-17 freeze is capped at 180 cumulative days.** The drafted version gave
+  the freeze an expiry and allowed unlimited renewal, which is the same loophole
+  reached one logged act at a time, and it nullified RT-5's ceiling.
+
+`DOCTRINE_STATUS.md` now carries a per-criterion row for all thirty-two Step 3
+criteria. Before that, both documents declared their own tables to be an index
+into a pin of record that had no rows for them, so no criterion was actually
+stampable. Pending count is now 48 of 48, zero ratified. `README.md` and the
+handoff counts were corrected from sixteen.
+
+Two citations in the drafts were checked against their sources rather than
+trusted. `ZISR COP/docs/OPERATIONAL_CONTRACT.md:272` does carry the prohibition
+RT-12 attributes to it. `PLAINSIGHT-design.md:747` is a connector-manifest
+`lineage:` field and is already legal under RT-8, so RT-8's action-on-stamping
+note was narrowed to the prose claim at `:648`, which is the actual conflict.
+
+One claim was removed rather than supported. A drafted line in RT-15 said the
+cast-versus-live distinction was discovered when a Wave 0 sweep flagged the
+design's fictional cast. The worklog records no such sweep and the only tool
+that could have run one is the D-001 stub, so the line now states the same
+requirement as an inference from the files, and says no sweep has been run.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched. PII sweep re-run over every authored file, clean. Voice gate clean on
+all five edited files.
+
+**Not done, deliberately:** no commit, no stamp. The remaining downgraded
+findings are wording precision and do not change an obligation.
+
+**Next:** Step 2 is the operator's. Step 4, the synthetic cast, is unblocked and
+has lead time that cannot be recovered later.
+
+### Second pass, same session. The seventh verifier returned.
+
+It completed after the entry above was written, so the note above about the 26
+unverified findings is superseded rather than wrong: it was true when written.
+Final review tally across all fourteen agents: **123 raised, 66 refuted, 5 of
+the remaining 26 confirmed, the rest downgraded.** Three of those five
+confirmations were findings already fixed in the first pass, and
+`doctrine-status-has-no-rows-and-no-machine-form` came back REFUTED because the
+verifier read the rows that had been added by then, which is the caveat above
+working as intended.
+
+Ten findings were applied in this pass. Four changed an obligation and are
+recorded here.
+
+- **The authorization record had no stratum.** It is the one object that
+  necessarily carries both a live selector and a named person, since an S1
+  consent record names who consented, and the drafted strata table gave it no
+  store, no TTL, and no shred path. It is now stratum 1, inside the case
+  boundary under the case key, never in the repository. RT-1 is one of the four
+  criteria with no later date on which it can be decided, which is what made
+  this the pass's one blocker.
+- **`verify_shred` check 1 violated the rule printed three lines below it.** The
+  drafted check decrypted "a known stratum-0 blob for the case", which check 2
+  requires to be gone, so check 1 would have passed on a not-found error while
+  reporting that the key had been destroyed. A check that can pass for a reason
+  other than the one claimed is not a check, and this one was in the criterion
+  that says so. It now runs against a witness ciphertext held outside the
+  enumerable delete path, and a not-found, permission-denied, or malformed-input
+  result is a verification failure.
+- **SS-8's gate fixture could not be built.** It called for a fixture naming a
+  "NEVER-listed selector", and no such object exists or may exist, because a
+  per-selector never-collect list is exactly what SS-14 item 5 and RT-15 forbid.
+  The fixture is now built on a NEVER item the gate can evaluate, and SS-14
+  carries a table naming where each of its six items is actually enforced, which
+  stops the list reading as six mechanisms when two of them are rules pending
+  R7.
+- **The RT-17 freeze cap was replaced with a better rule.** The first pass
+  capped cumulative freeze time at 180 days. Frozen days now count toward RT-5's
+  ceiling instead, so a freeze buys no case more total life than any other case
+  gets, and each renewal must name the obligation it serves and an expected
+  resolution date. The uncomfortable half is argued in place: if an obligation
+  outlives 180 days, this system is the wrong holder of the material.
+
+Also: SS-14 item 3 claimed the system was structurally incapable of mutating a
+platform, which it is not, and the vocabulary that would make it so is R7 and is
+undrafted. It now carries the conservative reading on the same footing as item 1.
+SS-6's dispatch check now covers a credential draw, which it did not.
+`purpose` is constrained to a sentence that does not name the subject, because
+`RETENTION_LEDGER.md` copies it into a tracked file that survives every shred.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched. Voice and PII gates clean on all edited files. Cross-references,
+criterion counts, and table integrity re-checked mechanically.
+
+**Not done, deliberately:** no commit, no stamp. Eight findings stand refuted and
+were not applied. The remaining downgraded items are wording precision.
+
+**Next:** Step 2 is the operator's. Step 4 is unblocked.

@@ -22,6 +22,41 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-07. The example persona in the documents becomes fictional, and the
+  records correct the patch state.**
+
+  `docs/PLAINSIGHT-design.md`, `docs/PLAINSIGHT-FOUNDATION.md`,
+  `docs/OSINT-COP-tool-review.md` and `docs/THE-GAMEPLAN.md` carried a worked
+  example whose name and handles belonged to a real person, and one fixture
+  string in `tools/tests/test_gate_log.py` reused the handle. On the operator's
+  instruction of 2026-09-05 every value is replaced with a fictional one of the
+  same length, fifty-five line pairs with no length difference, so the
+  fixed-width mockups keep their alignment; six of the values are masked email
+  hints that still carried the last letter of the old surname. A tree-wide search for every variant of the old
+  values returns nothing. The values remain in `5d53973` and `d99f213`, which
+  only a history rewrite removes.
+
+  `.gitignore` gains `_voice-pass/`, where the 2026-09-05 voice pass writes its
+  survivor files, so working material cannot enter a commit. The handoff
+  corrects its statement that patches 2 through 4 still apply in order: since
+  `377d7d4` one of patch 3's two `doctrine/HYGIENE.md` hunks anchors on a
+  sentence that commit rewrote, and the other twelve hunks and patch 4 apply
+  without it.
+  The worklog moves its oldest entry to the archive without edit and gains this
+  commit's entry, which records the voice pass harvest.
+
+  Validation: the five preflight validators, the twelve-case telemetry suite,
+  both forms of `git diff --check`, the hook, and the kernel gate at 6
+  implemented, 0 failed, 1 stubbed, 5 pending, on the working tree and on the
+  staged tree.
+
+  **What did not change.** No doctrine file. No criterion, no stamp,
+  `doctrine/DOCTRINE_STATUS.md` untouched. No schema, no policy, no connector,
+  no validator logic. No voice edit is applied. Patches 2 through 4 are still
+  unapplied and patch 4 is still the operator's Class F decision. The D-001
+  repo scan is still a stub. Nothing collected, no connector executed, no
+  platform touched.
+
 - **2026-09-04. The tense rule becomes a gate, and the worklog archive opens.**
 
   `377d7d4` stated in `AGENTS.md` section 8 that the handoff is written in the

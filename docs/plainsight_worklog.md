@@ -15,126 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-08-26, Step 3 continued. Review findings applied.
-
-**Class:** F (doctrine drafts, still unratified) plus A (process records).
-
-Resumed the stopped review workflow from cache. **The seventh verification agent
-had not completed when the findings below were applied, so the 26 unverified
-findings are still unverified.** They carry no verdict and were not applied. That
-is D-004 and it is open.
-
-One consequence to be aware of when that verifier does return: it began reading
-the drafts before these edits and will finish after them, so a verdict of
-REFUTED from it may mean the finding was already fixed rather than that it was
-never real. Read its reasons against the current text, not the verdict alone.
-
-Applied both confirmed blockers and all nine distinct confirmed majors, plus six
-findings from the downgraded set that were real on inspection. The full list is
-in `plainsight_handoff.md` §4 under D-003. Two of the six downgraded items
-changed an obligation rather than a wording, and both are recorded here because
-a reader of the drafts will want to know they were added after review rather
-than designed in:
-
-- **Class N0 NON-PERSON was added to SS-1.** The class set covered only natural
-  persons. CrossLinked's function is to enumerate an organization, and a company
-  domain is nobody's personal data, so with no class for it the set either
-  silently forbade a wanted capability or forced an analyst to file an
-  organization under a person class. N0 authorizes the organization and never its
-  members, and it is not self-certifying.
-- **The RT-17 freeze is capped at 180 cumulative days.** The drafted version gave
-  the freeze an expiry and allowed unlimited renewal, which is the same loophole
-  reached one logged act at a time, and it nullified RT-5's ceiling.
-
-`DOCTRINE_STATUS.md` now carries a per-criterion row for all thirty-two Step 3
-criteria. Before that, both documents declared their own tables to be an index
-into a pin of record that had no rows for them, so no criterion was actually
-stampable. Pending count is now 48 of 48, zero ratified. `README.md` and the
-handoff counts were corrected from sixteen.
-
-Two citations in the drafts were checked against their sources rather than
-trusted. `ZISR COP/docs/OPERATIONAL_CONTRACT.md:272` does carry the prohibition
-RT-12 attributes to it. `PLAINSIGHT-design.md:747` is a connector-manifest
-`lineage:` field and is already legal under RT-8, so RT-8's action-on-stamping
-note was narrowed to the prose claim at `:648`, which is the actual conflict.
-
-One claim was removed rather than supported. A drafted line in RT-15 said the
-cast-versus-live distinction was discovered when a Wave 0 sweep flagged the
-design's fictional cast. The worklog records no such sweep and the only tool
-that could have run one is the D-001 stub, so the line now states the same
-requirement as an inference from the files, and says no sweep has been run.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched. PII sweep re-run over every authored file, clean. Voice gate clean on
-all five edited files.
-
-**Not done, deliberately:** no commit, no stamp. The remaining downgraded
-findings are wording precision and do not change an obligation.
-
-**Next:** Step 2 is the operator's. Step 4, the synthetic cast, is unblocked and
-has lead time that cannot be recovered later.
-
-### Second pass, same session. The seventh verifier returned.
-
-It completed after the entry above was written, so the note above about the 26
-unverified findings is superseded rather than wrong: it was true when written.
-Final review tally across all fourteen agents: **123 raised, 66 refuted, 5 of
-the remaining 26 confirmed, the rest downgraded.** Three of those five
-confirmations were findings already fixed in the first pass, and
-`doctrine-status-has-no-rows-and-no-machine-form` came back REFUTED because the
-verifier read the rows that had been added by then, which is the caveat above
-working as intended.
-
-Ten findings were applied in this pass. Four changed an obligation and are
-recorded here.
-
-- **The authorization record had no stratum.** It is the one object that
-  necessarily carries both a live selector and a named person, since an S1
-  consent record names who consented, and the drafted strata table gave it no
-  store, no TTL, and no shred path. It is now stratum 1, inside the case
-  boundary under the case key, never in the repository. RT-1 is one of the four
-  criteria with no later date on which it can be decided, which is what made
-  this the pass's one blocker.
-- **`verify_shred` check 1 violated the rule printed three lines below it.** The
-  drafted check decrypted "a known stratum-0 blob for the case", which check 2
-  requires to be gone, so check 1 would have passed on a not-found error while
-  reporting that the key had been destroyed. A check that can pass for a reason
-  other than the one claimed is not a check, and this one was in the criterion
-  that says so. It now runs against a witness ciphertext held outside the
-  enumerable delete path, and a not-found, permission-denied, or malformed-input
-  result is a verification failure.
-- **SS-8's gate fixture could not be built.** It called for a fixture naming a
-  "NEVER-listed selector", and no such object exists or may exist, because a
-  per-selector never-collect list is exactly what SS-14 item 5 and RT-15 forbid.
-  The fixture is now built on a NEVER item the gate can evaluate, and SS-14
-  carries a table naming where each of its six items is actually enforced, which
-  stops the list reading as six mechanisms when two of them are rules pending
-  R7.
-- **The RT-17 freeze cap was replaced with a better rule.** The first pass
-  capped cumulative freeze time at 180 days. Frozen days now count toward RT-5's
-  ceiling instead, so a freeze buys no case more total life than any other case
-  gets, and each renewal must name the obligation it serves and an expected
-  resolution date. The uncomfortable half is argued in place: if an obligation
-  outlives 180 days, this system is the wrong holder of the material.
-
-Also: SS-14 item 3 claimed the system was structurally incapable of mutating a
-platform, which it is not, and the vocabulary that would make it so is R7 and is
-undrafted. It now carries the conservative reading on the same footing as item 1.
-SS-6's dispatch check now covers a credential draw, which it did not.
-`purpose` is constrained to a sentence that does not name the subject, because
-`RETENTION_LEDGER.md` copies it into a tracked file that survives every shred.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched. Voice and PII gates clean on all edited files. Cross-references,
-criterion counts, and table integrity re-checked mechanically.
-
-**Not done, deliberately:** no commit, no stamp. Eight findings stand refuted and
-were not applied. The remaining downgraded items are wording precision.
-
-**Next:** Step 2 is the operator's. Step 4 is unblocked.
-
----
-
 ## 2026-08-26, Step 2. The operator decided twelve items.
 
 **Class:** F throughout. **Drafted and transcribed by an agent, not landed.** R6
@@ -1346,3 +1226,155 @@ patch 4. The hook still does not run the telemetry test. Step 7 is unblocked and
 not started. `doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md` are
 still owed, the D-001 repo scan is still a stub, and every basis stamp is still
 unstamped.
+
+---
+
+## 2026-09-07, the example persona made fictional, the voice pass harvested, and a stale patch hunk found.
+
+**Class:** A (four advisory documents, `.gitignore`, the three records) plus C
+for one fixture string in `tools/tests/test_gate_log.py`, the class this worklog
+gave that file when it was created. No doctrine, spec,
+schema, policy, or runtime artifact changed.
+
+On 2026-09-05 the operator concurred with the previous rundown's
+recommendation to start Step 7 and added two instructions to run first: replace
+every variant of their own name in the documents with a made-up one, and pass
+every document through the ZMeta Register 1 voice standard, so that Step 7 does
+not produce documents that need the same pass. That session applied the
+replacement, launched a voice-pass workflow, started two mapping agents for
+Step 7, and ended on a usage limit at 20:04 UTC with nothing committed. This
+session recovered what it left, verified it, and committed the half that was
+finished.
+
+### The replacement
+
+Four documents in `docs/` carried a worked example, the subject in the design
+mockups, the persona in the tool review, one line each in the foundation and
+the gameplan, whose name and handles belonged to a real person. One fixture
+string in `tools/tests/test_gate_log.py` reused the handle. Every value was
+replaced with a fictional one of identical length: fifty-five removed lines,
+fifty-five added, no length difference in any pair, checked by a script over
+the diff, so the fixed-width mockups in the design document kept their
+alignment. Six masked email hints, five in the design document and one in the
+tool review, still carried the last letter of the old surname, and the tool
+review paired one with a candidate it no longer matched; the records verifier
+described below found them, and they were corrected, same length, before the
+commit. A tree-wide case-insensitive search for every variant returns nothing. The
+battery is green on the result. This entry, the handoff and the changelog name
+neither the old values nor the new ones; the diff carries them.
+
+The old handle remains in `5d53973` and `d99f213`. A history rewrite is the only
+thing that removes it, there is no remote yet so a rewrite is feasible, and every
+record here cites hashes a rewrite would change. That is the operator's decision
+and it falls due before the first push.
+
+`.gitignore` gains `_voice-pass/`, the directory the voice pass writes its
+survivor files into, so that working material cannot enter a commit.
+
+### The harvest
+
+The voice-pass workflow cut sixteen files into 58 chunks of about 1,500 words:
+`README.md`, `CLAUDE.md`, `AGENTS.md`, `CONFORMANCE.md`, the five doctrine
+files, `synthetic/CAST.md`, the handoff, and the five rank-7 documents in
+`docs/`. The worklog, its archive, the changelog and the doctrine status pin were
+excluded by rule. Each chunk had a lens that drafted paragraph-level edits with
+the exact original text and a refuter, default REJECT, that checked anchors and
+meaning and wrote the survivors to `_voice-pass/`. Doctrine chunks carried extra
+rules: no criterion paragraph, no enforcement pointer, no counted phrase, no
+table.
+
+| Stage | Count |
+|---|---|
+| Lens agents that returned | 57 of 58 |
+| Edits proposed | 814 |
+| Refuter agents that returned a verdict | 6 of 56 started |
+| Refuter agents that failed on the session limit | 50 |
+| Survivor files written | 9, three of them without a returned verdict |
+| Drafts passing the applier's mechanical checks | 719 of 814 |
+
+Of the 95 mechanical refusals, 69 changed a number, 14 kept an em dash in the
+replacement, 12 compressed, and one has an anchor that is not unique; one draft
+carries two of those reasons. All 556
+em dashes in tracked markdown sit in the five `docs/` files the hygiene gate
+exempts, so the governed files already pass the mechanical half and the lenses
+on them hunted the unchecked half. Nothing is applied. The drafts, the six
+verdicts, the survivors, the workflow script and journal, the applier with its
+chunk table, and the two Step 7 mapping reports are copied to
+`Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/` with a README,
+because the previous session's scratchpad is a temp directory. A scan of that
+directory for the operator's identity returned nothing.
+
+One tension surfaced. The handoff records `docs/PLAINSIGHT-FOUNDATION.md` as
+voice-exempt, a record of intent. The pass drafted 114 edits for it across five
+chunks, because the operator asked for all documentation. Which of the two
+holds is the operator's call and is recorded in the handoff.
+
+### The stale hunk
+
+The handoff and the 2026-09-04 amendment to `DECISIONS.md` both said patches 2,
+3 and 4 still applied in order. Measured on a fresh clone of `2d406db`: patch 2
+applies clean; patch 3 fails on its second `doctrine/HYGIENE.md` hunk, which
+anchors on a sentence `377d7d4` rewrote when patch 1 landed with the docstring
+correction, and the tree already carries the corrected claim that hunk was
+drafted to add, so the hunk is stale in intent as well as anchor. Patch 3 has
+thirteen hunks, two in HYGIENE.md: `git apply --exclude` lands the eleven
+outside that file, the first HYGIENE.md hunk applies alone and is saved beside
+the patches as `patch-3b-hygiene-first-hunk-only.patch`, so twelve of thirteen
+land, and patch 4 applies on top. The fully patched tree passes the kernel gate
+and `tools/validate_doctrine.py` counts 59 criteria there. The handoff is corrected in this commit and `DECISIONS.md`
+gains a dated amendment. The claim had been false since `377d7d4`.
+
+### The archive
+
+The worklog was at ten live entries, so the 2026-08-26 entry that begins "Step
+3 continued" moved to `docs/plainsight_worklog_archive.md` without edit, after
+the two already there, and this entry took its place. Three entries are
+archived; ten are live.
+
+### Validation
+
+The five preflight validators, the twelve-case telemetry suite, `git diff
+--check` and `git diff --cached --check`, the hook at commit, and the kernel
+gate at six implemented, zero failed, one stubbed, five pending, on the working
+tree before staging and on the staged tree. Three Sonnet verifiers, each told to
+run the command and quote the output, re-derived the 22 state claims in the
+rundown given to the operator: 21 confirmed, one refuted for how a transcript
+filter was described, a detail no fact depended on. A second pass over these
+records before the commit, one Sonnet lens for the mechanical checks and one
+Opus lens for the five questions, tense, voice and consistency, returned 20
+verdicts: 18 confirmed and 2 refuted. One refutation was of the brief rather
+than the record, a heading count the parent stated wrong in the prompt. The
+other was the class of the fixture change, B in the draft and C by `AGENTS.md`
+section 3 and this worklog's own precedent, corrected above. The Opus lens also
+found two things outside its questions: a hunk count of twelve that the exclude
+command alone does not deliver, corrected above with the hunk-level route, and
+the six masked hints described under the replacement. Both passes are in this
+session's workflow journals.
+
+### Agent involvement, stated precisely
+
+The 2026-09-05 session ran 114 workflow agents, a lens and a refuter for each of
+58 chunks: the 29 chunks over the rank-7 documents on Opus, the 29 over governed
+files and the handoff inheriting the session model. It ran two Explore agents on
+Opus for the Step 7 maps. Its parent applied the replacement with a script that
+asserted every count before writing. This session's parent did the harvest with
+Python over the workflow journal, wrote the artifacts directory, and wrote these
+records; no subagent edited a tracked file. Three Sonnet verifiers spent about
+198,000 tokens on the state claims, and a Sonnet lens and an Opus lens about
+201,000 on these records. The commit was executed by
+the agent on the operator's instruction of 2026-09-07 for this act, with the
+operator as author, per R6 as amended.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine criterion amended or stamped, no Class F change proposed,
+no voice edit applied.
+
+**Not done:** the refuter pass over 50 chunks and the application of any
+survivor; patches 2 through 4; the history decision; Step 7;
+`doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md`; the D-001 repo
+scan; every basis stamp.
+
+**Next:** the operator stands up the remote. Then, in the operator's stated
+order: patch 2 and the twelve applying hunks of patch 3 before any doctrine
+voice edit, the refuter continuation and the application of survivors, then
+Step 7.

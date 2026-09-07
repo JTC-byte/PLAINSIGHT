@@ -10,14 +10,15 @@ exists to prevent.
 
 **Wave:** 0 committed. The first build artifacts are committed too, in
 `d99f213`, and the closeout commits after it moved records, `AGENTS.md`
-rules, fact corrections, and one hygiene check with its self-test. The tree is
-clean at the commit that carries this file.
-**Date:** 2026-09-05, closing a session that began 2026-09-04 and landed
-`377d7d4` and `7c14888`; the clock rolled over during the second, whose records
-carry the day they were written. The session before it began 2026-09-03 and
-landed `d99f213`, `8a856b3` and `533da17` on 2026-09-04; its worklog entry and
-the review directory carry 2026-09-03 for the same reason, and a process record
-is added to rather than restyled.
+rules, fact corrections, and one hygiene check with its self-test. The commit
+that carries this file makes the example persona in the documents fictional.
+The tree is clean at that commit.
+**Date:** 2026-09-07, closing a session that harvested what the session of
+2026-09-05 left when it ended on a usage limit with nothing committed: the
+persona replacement, verified and committed here; a Register 1 voice pass over
+sixteen files, drafted for 57 of 58 chunks, verified for six, and applied
+nowhere; and two Step 7 mapping reports. The session before that, 2026-09-04
+into 2026-09-05, landed `377d7d4`, `7c14888` and `2d406db`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md, all
 committed in `5d53973` and `a54061b`. **Every conclusion is stamped. Every basis
 is unstamped.** A seventh EGRESS criterion, EG-7, is drafted and
@@ -25,156 +26,83 @@ unratified in patch 4, with amendments to EG-2, CR-3 and CR-6 beside it.
 **Kernel gate:** 6 implemented, 1 stubbed, 5 pending. Green.
 
 **Resume here. Read `_session-artifacts/2026-09-03-plainsight-doctrine-review-2/DECISIONS.md`
-first, including its 2026-09-04 amendment.** It is three remaining patches,
-four Class F criteria, twenty-one recorded readings across the two rank-3
-artifacts, and four live questions. Nothing else in this file is blocked on any
-of them, and the readings are places where an agent had to choose rather than
-defects. Patch 1 is applied in `377d7d4`. Patches 2 through 4 still apply in
-order on top of it, verified on 2026-09-04, and the
-fully patched tree passes the same kernel gate. One number differs, as it
-should: `tools/validate_doctrine.py` counts 59 criteria there against 58 here,
-because patch 4 adds EG-7.
+first, including its 2026-09-04 and 2026-09-07 amendments.** It is three
+remaining patches, four Class F criteria, twenty-one recorded readings across
+the two rank-3 artifacts, and four live questions. Nothing else in this file is
+blocked on any of them, and the readings are places where an agent had to
+choose rather than defects. Patch 1 is applied in `377d7d4`. Measured on a fresh
+clone of `2d406db` on 2026-09-07: patch 2 applies clean; patch 3 no longer
+applies whole, because its second `doctrine/HYGIENE.md` hunk anchors on a
+sentence `377d7d4` rewrote, and the tree already carries the corrected claim
+that hunk was drafted to add. Patch 3 has thirteen hunks, two of them in
+HYGIENE.md: `git apply --exclude=doctrine/HYGIENE.md` lands the eleven outside
+that file, the first HYGIENE.md hunk applies alone from
+`patch-3b-hygiene-first-hunk-only.patch` beside the patches, so twelve of
+thirteen land, and patch 4 then applies on top. That tree passes the same
+kernel gate, and `tools/validate_doctrine.py` counts 59 criteria there against
+58 here, because patch 4 adds EG-7. Until 2026-09-07 this file said the
+three applied in order; they had not since `377d7d4`.
 
 ---
 
-## 0. The five questions, for the commits since Wave 0
+## 0. The five questions, for the commit that carries this file
 
 `AGENTS.md` section 8 sets the handoff standard, inherited from
 `ZMeta/zmeta-spec/AGENTS.md`: a completed change leaves the next maintainer
-able to answer five questions. They are answered newest first: the commit
-that carries this file, then `7c14888` and `377d7d4`, then `d99f213`,
-`8a856b3` and `533da17`, the three commits the session before landed, so a
-reader does not have to reconstruct them from section 2.
+able to answer five questions. This section answers them for the commit that
+carries this file. For every earlier commit they are answered in
+`CHANGELOG.md`, one entry per commit that changed a governed artifact, and in
+the worklog entries dated 2026-09-03 to 2026-09-05, so they no longer
+accumulate here. Two facts from those earlier answers still bind a reader: no
+doctrine criterion has been amended and nothing has been stamped since
+2026-08-27, `377d7d4` having changed three lines of fact in
+`doctrine/DOCTRINE_STATUS.md` and no stamp; and no release baseline has ever
+changed, because PSE has no version, no tag, and no published artifact.
 
-### The commit that carries this file, 2026-09-05
+### The commit that carries this file, 2026-09-07
 
-**What changed and why.** A closeout checkpoint, which `AGENTS.md` section 8
-defines as the battery, the records, and the commit in one act. The committed
-tree at `7c14888` was verified from a fresh clone rather than the working tree:
-every CI step, the full preflight battery, and all four self-test suites pass
-there, the hook is executable and runs, and no commit in the history carries an
-agent trailer. This session's three verification passes, the scripts that
-applied every edit, the workflow scripts, and both commit messages were
-persisted to `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/`,
-beside the previous session's review, and section 6 points there. The worklog
-was at its cap again, so the 2026-08-26 Step 3 entry moved to the archive
-unedited and the worklog gained this commit's entry.
+**What changed and why.** The example persona in the documents is fictional.
+`docs/PLAINSIGHT-design.md`, `docs/PLAINSIGHT-FOUNDATION.md`,
+`docs/OSINT-COP-tool-review.md` and `docs/THE-GAMEPLAN.md` carried a worked
+example whose name and handles belonged to a real person, and one fixture
+string in `tools/tests/test_gate_log.py` reused the handle. The operator asked
+on 2026-09-05 for a made-up replacement, and every value was replaced with one
+of identical length, fifty-five line pairs in all, so the fixed-width mockups
+kept their alignment; the replacement was applied on 2026-09-05, re-verified
+before this commit, and extended to six masked email hints that still carried
+the last letter of the old surname. `.gitignore` gains `_voice-pass/`, where the voice pass
+writes its survivor files, so that working material cannot enter a commit. This
+file corrects its own statement about the patches, above, and gains the harvest
+in section 6. The worklog had ten live entries, so its oldest moved to the
+archive without edit before this commit's entry was added.
 
-**Which surfaces moved.** This file, the worklog, and the archive. No tooling,
-doctrine, schema, policy, runtime, or connector, and no changelog entry, by the
-changelog's own rule that an entry follows a changed governed artifact.
+**Which surfaces moved.** Four advisory documents in `docs/`, one test fixture
+string, `.gitignore`, `CHANGELOG.md`, this file, the worklog, and the archive.
+No doctrine file, no criterion, no stamp, no schema, no policy, no connector, no
+tooling logic.
 
 **What validation ran and what passed.** The full battery on the working tree
-and on a fresh clone of `7c14888`, both forms of `git diff --check`, the hook,
-and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending.
+and again on the staged tree: the five implemented validators, the twelve-case
+telemetry suite, `git diff --check` and `git diff --cached --check`, the hook at
+commit, and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending. A
+script paired every removed line with its replacement and found no length
+difference. A tree-wide search for every variant of the old name returns
+nothing. Three Sonnet verifiers re-derived the 22 state claims this session
+reported to the operator and confirmed 21; the one refuted concerned how a
+transcript filter was described, and no fact depended on it. A second pass, one
+Sonnet lens for the mechanical checks and one Opus lens for the five questions
+and cross-record consistency, read these records before the commit; the worklog
+entry states what it found.
 
 **Whether a release baseline changed.** No release baseline changed; only
 `master` moved.
 
-**What remains open or deferred.** Patches 2 through 4, the telemetry test's
-absence from the hook, Step 7 unblocked and not started, and everything in
-sections 3 and 4.
-
-### `7c14888`, 2026-09-04
-
-**What changed and why.** The tense rule `377d7d4` stated in `AGENTS.md`
-section 8 became a gate. `tools/validate_hygiene.py` refuses the two pre-commit
-words in the handoff as `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and its new
-`--self-test` plants each word and asserts the refusal, so removing the check
-fails the test, which is design gate 1. The worklog had reached its ten-entry
-cap, so `docs/plainsight_worklog_archive.md` opened with the Wave 0 entry moved
-into it unedited, and the worklog gained its entry.
-
-**Which surfaces moved.** Tooling (`tools/validate_hygiene.py`, the hygiene
-description in `tools/validate_conformance.py`, the `Makefile` target and help
-line, and the CI step), `AGENTS.md` sections 5 and 8, the handoff, the worklog,
-`CHANGELOG.md`, the new archive, and its row in `docs/THE-GAMEPLAN.md` section
-2.2. No doctrine, schema, policy, runtime, or connector.
-
-**What validation ran and what passed.** The full preflight battery, the four
-self-test suites including the new one, the twelve-case telemetry suite, the
-hook, `git diff --check`, and the kernel gate at 6 implemented, 0 failed, 1
-stubbed, 5 pending. The self-test was also run with the check's body removed
-and failed as designed.
-
-**Whether a release baseline changed.** No release baseline changed; only
-`master` moved.
-
-**What remains open or deferred.** Patches 2 through 4, the telemetry test's
-absence from the hook, and everything in sections 3 and 4.
-
-### `377d7d4`, 2026-09-04
-
-**What changed and why.** Every tracked file that still described the tree as
-it stood before `d99f213` was corrected: this handoff, `README.md`,
-`CONFORMANCE.md`, and the five doctrine status headers, the last through patch
-1 of the 2026-09-03 review, applied whole on the operator's instruction after
-each of its eighteen hunks was classed by effect. The worklog gained the entry
-that `8a856b3` and `533da17` owed. `AGENTS.md` section 8 gained the rule that
-separates the two records by tense, because the closeout order it prescribes
-had produced a handoff in the pre-commit tense three times.
-
-**Which surfaces moved.** `AGENTS.md` sections 5, 6 and 8, `CHANGELOG.md`,
-`README.md`, `CONFORMANCE.md`, both process records, six doctrine files in
-wording and fact only, the Step 7 marker in `docs/THE-GAMEPLAN.md`, and
-comments in the `Makefile`, the pre-commit hook and the CI workflow. No
-criterion's obligation moved and nothing was stamped. No schema, policy,
-runtime, or connector, because none exists.
-
-**What validation ran and what passed.** The full preflight battery, the three
-self-test suites, the twelve-case telemetry suite, the hook, `git diff --check`,
-and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending, all green
-on the tree it created.
-
-**Whether a release baseline changed.** No release baseline changed; only
-`master` moved.
-
-**What remains open or deferred.** Patches 2 through 4, the telemetry test's
-absence from the hook, and everything in sections 3 and 4. The tense check
-landed in the commit after, above.
-
-### The three commits of the session before
-
-**What changed and why.** The 2026-08-27 worklog entry closed with an obligation,
-that four of the five doctrine files and five of the criteria had no adversarial
-review while the two older files had fourteen agents each. That review ran, a
-second review ran over the layer model the same session produced, and Steps 4, 5
-and 6 landed alongside them in `d99f213`. `8a856b3` wrote the changelog the
-register had listed since Wave 0 and added the handoff standard as
-`AGENTS.md` section 8. `533da17` recorded `8a856b3` in that changelog and
-stated the convention that ends the entry regress: from the next change
-onward an entry rides in the same commit as the work it describes and cites
-no hash.
-
-**Which surfaces moved.** Spec, ontology, synthetic corpus, tooling, the gate
-battery, the artifact register, `CHANGELOG.md`, `AGENTS.md` sections 5, 6
-and 8, and the process records. **No semantics contract,
-no schema, no policy pack, no runtime, no connector, and no release packaging**,
-because none of those exists yet. Critically, **no doctrine criterion was amended
-and nothing was stamped**: `doctrine/DOCTRINE_STATUS.md` was byte-identical to
-2026-08-27 at `533da17`. `377d7d4` changed three lines of fact in it and no
-stamp; neither `7c14888` nor the commit that carries this file touches it.
-
-**What validation ran and what passed.** All six implemented kernel-gate checks,
-all three validator self-test suites (60 layer-model breaks, 16 ontology, 6
-cast), the twelve-case telemetry test suite, the pre-commit hook, and
-`git diff --check`. Everything passed. One check is a stub and five are pending,
-and the aggregator counts neither as a pass.
-
-**Whether a release baseline changed.** PSE has no version, no tag, and no
-published artifact, so only `master` moved. `CONFORMANCE.md` states the bar that
-would have to be met before any external conformance statement.
-
-**What remains open or deferred.** Four doctrine patches in the review directory,
-applying in order. Patch 2 carries both confirmed blockers, patch 4 carries
-the four Class F criteria, and the review classes patches 1 and 3 as Class A
-with nothing to decide. None had landed at `533da17`, for the reason
-`CHANGELOG.md` records: a closeout commit carries no Class F change the
-operator has not decided, which is `AGENTS.md` section 8. Patch 1 has since
-landed, above.
-Twenty-one recorded readings across the two rank-3 artifacts. Every basis stamp.
-`doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md`, both owed. The D-001
-repo scan, still a stub the hook calls. Sections 3 and 4 below carry the detail.
+**What remains open or deferred.** The old handle remains in `5d53973` and
+`d99f213`, which only a history rewrite removes, and that decision is the
+operator's before any push to a remote. The voice pass: 50 chunks have drafts
+and no refuter verdict, nothing is applied, and whether
+`docs/PLAINSIGHT-FOUNDATION.md` is in scope is the operator's call, section 4.
+Patches 2 through 4 as stated above. Everything in sections 3 and 4.
 
 ---
 
@@ -191,6 +119,14 @@ Three build steps are committed in `d99f213`: Step 5's layer model, which is
 the single source the schema and policy are generated from, Step 6's selector
 registry, and Step 4's cast draft. The cast is unsealed, so nothing can be
 scored and SS-14 item 6 still refuses all collection.
+
+The operator's order of work, stated 2026-09-05, is the documentation pass first
+and then Step 7, so that Step 7 does not produce documents that need the same
+pass. The persona replacement half of that pass is committed here. The voice
+half is drafted, harvested to
+`Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/`, and applied
+nowhere; section 4 states its numbers. Step 7 is unblocked and not started, and
+two mapping reports for it sit in the same directory.
 
 Nothing has touched a platform. No account exists. No connector exists.
 
@@ -223,7 +159,7 @@ Nothing has touched a platform. No account exists. No connector exists.
 | `tools/validate_cast.py` | **Committed in `d99f213`.** 6 self-test breaks, all refused. Plus `--placeholder-scan`. |
 | `tools/validate_retention.py` | Stub. Exits 0, checks nothing. D-001. |
 | `tools/gate_log.py` | Committed, then corrected in three places the review found. |
-| `tools/tests/test_gate_log.py` | **Committed in `d99f213`.** The first test in the repository. 12 tests, 7 deliberate breaks all refused. |
+| `tools/tests/test_gate_log.py` | **Committed in `d99f213`.** The first test in the repository. 12 tests, 7 deliberate breaks all refused. One fixture string became fictional in the commit that carries this file. |
 | `Makefile`, `ci.yml`, `.githooks/pre-commit` | Committed. The layer-model, ontology and cast gates, the PyYAML install and `fetch-depth: 0` landed in `d99f213`. The hook runs six commands, one of them the D-001 stub that checks nothing; `make preflight` runs those six plus the telemetry test. Both files' comments now state that difference. Whether the hook should run the test too is a mechanism choice the operator has not made. |
 | `connectors/`, `runner/`, `app/` | Empty. Later steps. |
 
@@ -247,6 +183,27 @@ Three constraints on ordering rather than blocks:
 
 ## 4. Known gaps
 
+- **The voice pass is drafted and applied nowhere.** The 2026-09-05 workflow cut
+  sixteen files into 58 chunks and ran a lens and a refute-by-default verifier
+  per chunk. 57 lenses returned 814 edits; 6 refuters returned verdicts before
+  the session limit ended the run, and 50 did not. Nine survivor files sit in
+  `_voice-pass/`, three of them written by refuters whose verdicts never
+  returned. The applier's own checks pass 719 of the 814 drafts and refuse 95,
+  69 of those for changing a number. All 556 em dashes in tracked markdown sit
+  in the five `docs/` files the hygiene gate exempts. The continuation is a new
+  workflow, since resume is same-session only, with the refuters reading the
+  harvested drafts.
+- **Whether `docs/PLAINSIGHT-FOUNDATION.md` is in scope for the voice pass is
+  undecided.** The naming-drift bullet below records that it is voice-exempt as
+  a record of intent; the pass drafted 114 edits for it across five chunks,
+  because the operator asked for all documentation. One of the two has to give.
+- **The old handle is in the history.** Two commits, `5d53973` and `d99f213`,
+  carry the example values this commit replaced. A history rewrite is the only
+  removal, there is no remote yet so one is feasible, and every record in this
+  repository cites hashes that a rewrite would change.
+- **The patch set has one stale hunk**, stated at the top of this file. The
+  `DECISIONS.md` amendment of 2026-09-04 and this file both said the three
+  patches applied in order; both are corrected as of 2026-09-07.
 - **D-001.** `tools/validate_retention.py --repo-scan` is a stub. The pre-commit
   hook calls a mechanism that performs no check. Real implementation is Step 8.
   The 2026-09-03 review confirmed that EG-5 and RT-19 both cite the scan as
@@ -283,7 +240,7 @@ Three constraints on ordering rather than blocks:
   §4.4 names rung 3 of the adapter ladder `check_ontology`; the register in
   `docs/THE-GAMEPLAN.md` §2.1 registers it as `tools/validate_ontology.py`. The
   register is the authority and Step 6 uses that name. FOUNDATION is
-  voice-exempt as a record of intent and was left unedited.
+  voice-exempt as a record of intent, and no voice edit has been applied to it.
 - **Two review findings were refuted on grounds worth remembering**, so they are
   not re-raised next session. `count_only` is defined nowhere in doctrine, so the
   social web of named nodes is permitted rather than refused, and doctrine
@@ -321,7 +278,8 @@ Full record, including every verdict with its quoted evidence, in
 | What | Where | Why it matters |
 |---|---|---|
 | Both doctrine review records | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | Findings, verdicts, and the four patches. The second directory is what the next session reads. |
-| This session's verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The three draft-and-verify passes behind `377d7d4` and `7c14888` with every finding and verdict, the scripts that applied each edit, the workflow scripts, both commit messages, and a README that indexes them. |
+| The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The three draft-and-verify passes behind `377d7d4` and `7c14888` with every finding and verdict, the scripts that applied each edit, the workflow scripts, both commit messages, and a README that indexes them. |
+| The 2026-09-05 voice pass and Step 7 maps | `Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/` | 57 lens drafts and 6 refuter returns as JSON, the nine survivor files, the workflow script and journal, the applier with its chunk table and mechanical check, and the two Opus mapping reports for Step 7. A README indexes them. |
 | Measured Sherlock review | `../Sherlock/sherlock/CAPABILITIES.md` | 64 KB. Source of the 481/429/414 site counts and the 78.8 percent false-positive measurement. |
 | Sherlock clone and image | `../Sherlock/sherlock/`, `sherlock-local:0.16.1` | Commit `9100f9d`, 477 MB image, rebuildable. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The operator's wider compartmentalization work. Its dead-drop shape is the contrast EG-3 is measured against. |
@@ -348,17 +306,20 @@ there.
   the document they enforce.
 - Repo prose follows Register 1 in `CLAUDE.md` §4. Published briefings follow
   `docs/DOCUMENT_STANDARD.md`. Doctrine never becomes a briefing.
+- The operator's order of work is the documentation pass, then Step 7.
 - The gates need PyYAML. `make preflight` runs the five implemented
   validators, the telemetry test and the D-001 stub. `make test` runs the
   test suite alone. The pre-commit hook runs the same set less the telemetry
   test, which CI runs as a step of its own.
 - **The worklog holds ten live entries against its ten-entry cap.** The archive
-  is open at `docs/plainsight_worklog_archive.md` with the two oldest entries in
-  it, and the next closeout moves the oldest live entry there before it adds one.
-  The hygiene gate refuses an eleventh.
+  at `docs/plainsight_worklog_archive.md` holds the three oldest, and the next
+  closeout moves the oldest live entry there before it adds one. The hygiene
+  gate refuses an eleventh.
+- `_voice-pass/` is ignored by `.gitignore` as of the commit that carries this
+  file. Nothing in it is applied, and it is deleted once the voice pass lands.
 - Write the handoff in the tense of the tree the commit will create, per
   `AGENTS.md` section 8. This file was wrong about that in three commits.
-- Two harness facts that cost this session time: a subagent cannot write a report
-  file outside the repository, so a review agent returns findings as text and the
-  parent persists them; and a Bash heredoc breaks on an apostrophe, so prose
-  files are written with the Write tool.
+- Two harness facts that cost earlier sessions time: a subagent cannot write a
+  report file outside the repository, so a review agent returns findings as text
+  and the parent persists them; and a Bash heredoc breaks on an apostrophe, so
+  prose files are written with the Write tool.

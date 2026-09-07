@@ -17,6 +17,11 @@ pulled/
 # an archive, and this is telemetry with a 90 day TTL. doctrine/RETENTION.md RT-19.
 .gate-log/
 
+# Voice-pass survivor files. Working material for documentation edits, applied
+# by tools outside the repository and never committed. The harvest lives in
+# Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/.
+_voice-pass/
+
 # Local operator files
 .env
 *.local.*
