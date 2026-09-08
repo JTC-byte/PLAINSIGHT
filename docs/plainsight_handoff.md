@@ -10,17 +10,19 @@ exists to prevent.
 
 **Wave:** 0 committed. The first build artifacts are committed too, in
 `f4e00e1`, and the closeout commits after it moved records, `AGENTS.md`
-rules, fact corrections, and one hygiene check with its self-test. The commit
-that carries this file is the one prepared for the first push to the public
-repository: it follows a rewrite of the whole history, adds the license and
-notice files, and translates every hash in a current-state file. The tree is
-clean at that commit.
-**Date:** 2026-09-07, the session that landed `595cc06`, the persona
-replacement, and then this commit once the operator had created the public
-repository at `github.com/JTC-byte/PLAINSIGHT`. The session before, 2026-09-04
-into 2026-09-05, landed `89c68a3`, `f907a7a` and `7c0e278`. Every hash in this
-file is post-rewrite; section 7 says how to read the ones in the process
-records.
+rules, fact corrections, and one hygiene check with its self-test. The
+publication commit `ac60ac4` followed a rewrite of the whole history, added the
+license and notice files, translated every hash in a current-state file, and
+was pushed to `origin`. The commit that carries this file is the closeout
+checkpoint after it: the pre-commit hook gains the executable bit the first CI
+run found unset. The tree is clean at that commit.
+**Date:** 2026-09-08, closing a session that began 2026-09-07 and landed
+`595cc06`, the persona replacement, then `ac60ac4`, the publication commit,
+once the operator had created the repository at
+`github.com/JTC-byte/PLAINSIGHT`, and then this checkpoint after midnight. The
+session before, 2026-09-04 into 2026-09-05, landed `89c68a3`, `f907a7a` and
+`7c0e278`. Every hash in this file is post-rewrite; section 7 says how to read
+the ones in the process records.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md, all
 committed in `1abb354` and `4c5cd25`. **Every conclusion is stamped. Every basis
 is unstamped.** A seventh EGRESS criterion, EG-7, is drafted and
@@ -61,67 +63,43 @@ nothing has been stamped since 2026-08-27, `89c68a3` having changed three lines
 of fact in `doctrine/DOCTRINE_STATUS.md` and no stamp; and no release baseline
 has ever changed, because PSE has no version, no tag, and no published artifact.
 
-### The commit that carries this file, 2026-09-07
+### The commit that carries this file, 2026-09-08
 
-**What changed and why.** The operator created a public repository for this
-project, so the history had to be publishable before its first push. Three
-things in it were not. The two earliest commits carried the example persona's
-real name and handles in five files, which `595cc06` had replaced only at the
-tip. Every commit carried the operator's personal email address as author and
-committer. Four documents carried absolute paths from the operator's machine.
-The whole history was therefore rewritten with `git filter-repo` on a fresh
-clone, before anything was pushed: the persona values were replaced in every
-historical blob by the same map `595cc06` used, the author and committer
-address became the GitHub no-reply address, and the machine paths became the
-placeholders `<Z-ISR>` and `<wave-0-scratchpad>`. Nine commits in, nine out,
-and the rewritten tip differs from the pre-rewrite tip in four files, path
-lines only. Every hash changed. The current-state files cite the new hashes as
-of this commit; the process records keep the hashes they were written with,
-and the `CHANGELOG.md` entry for this commit carries the translation table.
-The branch is `main`. `LICENSE` carries the Apache License 2.0 text, `NOTICE`
-names the copyright holder and the ZMeta derivation, `.gitattributes`
-normalizes line endings, `.gitignore` covers editor and agent residue, the CI
-workflow token is read-only, `README.md` states the license and the model by
-which the public repository is updated, and `AGENTS.md` section 4 gains one
-sentence: the repository's own coordinates are not handles under its rule, so
-the D-001 scan is written not to refuse them. The worklog had ten live entries,
-so its oldest moved to the archive without edit before this commit's entry was
-added.
+**What changed and why.** A closeout checkpoint after the publication commit
+`ac60ac4`, whose own five answers are in its `CHANGELOG.md` entry and in the
+2026-09-07 worklog entry. `ac60ac4` was pushed to `origin` late on 2026-09-07,
+replacing GitHub's initial commit by force, and the first CI run on GitHub
+failed at the step that checks the pre-commit hook is executable:
+`.githooks/pre-commit` had mode 100644 in every commit since Wave 0, and every
+earlier verification that reported it executable ran in Git Bash on Windows,
+where `test -x` is true for any file with a shebang line. This commit sets the
+mode to 100755, adds the changelog entry for that, appends a postscript to the
+2026-09-07 worklog entry, and rewrites this file to the state after the push.
 
-**Which surfaces moved.** Every commit in the history, through the rewrite.
-In this commit: `AGENTS.md` in hash strings and one added sentence in section
-4, `CONFORMANCE.md`, `README.md`, six doctrine files and
-`tools/validate_hygiene.py` in hash strings only, `.github/workflows/ci.yml`
-in its permissions block, `.gitignore`, and the new `LICENSE`, `NOTICE` and
-`.gitattributes`, plus `CHANGELOG.md`, this file, the worklog, and the archive.
-No criterion, no stamp, no schema, no policy, no connector, no validator logic.
-The six doctrine files changed in the hash tokens of their status lines and
-nowhere else.
+**Which surfaces moved.** `.githooks/pre-commit` in mode only, `CHANGELOG.md`,
+the worklog, and this file. No tooling content, no doctrine, no criterion, no
+stamp, no schema, no policy, no connector.
 
-**What validation ran and what passed.** On the rewritten clone: the five
-implemented validators, the hygiene self-test, the twelve-case telemetry suite,
-`git diff --cached --check`, the hook, and the kernel gate at 6 implemented, 0
-failed, 1 stubbed, 5 pending. The rewritten tip was compared to the pre-rewrite
-tip blob by blob, and four files differ, in path lines only. Every rewritten
-commit was searched for the old persona values, the old address, and the
-machine paths, and nothing was found. The hash map was applied to the
-current-state files and the worklog entry records the count. A verifier pass
-read this commit before it was made; the worklog entry states what it found.
+**What validation ran and what passed.** The five implemented validators, the
+hygiene self-test, the twelve-case telemetry suite, `git diff --cached --check`,
+the hook, and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending,
+on the working tree. The CI run on `ac60ac4` passed every step before the hook
+mode check, failed there, and did not reach the steps after it. The CI run on
+this commit is the check that matters for the fix, and it runs after the push.
 
 **Whether a release baseline changed.** No release baseline changed. `main`
-moved, and this commit is the first prepared for `origin`, the public
-repository at `github.com/JTC-byte/PLAINSIGHT`. The push is an
-operator-instructed act under `AGENTS.md` section 4, a force push because the
-remote holds one commit that is not an ancestor of `main`, and it is recorded
-in the worklog entry that follows it.
+moved and is pushed to `origin` at `github.com/JTC-byte/PLAINSIGHT`.
 
-**What remains open or deferred.** The push itself, and the repository
-settings that lock the remote down after it: branch protection on `main`,
-Dependabot alerts, and the wiki and projects tabs. The pre-rewrite history
-survives as a bundle in `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/`,
-outside the repository, and whether to keep it is the operator's call. The
-voice pass: 50 chunks have drafts and no refuter verdict, nothing is applied,
-and whether `docs/PLAINSIGHT-FOUNDATION.md` is in scope is the operator's call,
+**What remains open or deferred.** The repository is private while the operator
+finishes account setup and is intended to be public; branch protection on
+`main` and secret scanning wait on that flip, because the free plan offers
+neither on a private repository. GitHub still serves the replaced initial
+commit by hash until it collects unreachable objects, and a support request
+removes it sooner. The pre-rewrite bundle in
+`Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` is the only
+copy of the old history, and the operator decides whether to keep it. The voice
+pass: 50 chunks have drafts and no refuter verdict, nothing is applied, and
+whether `docs/PLAINSIGHT-FOUNDATION.md` is in scope is the operator's call,
 section 4. Patches 2 through 4 as stated above. Everything in sections 3 and 4.
 
 ---
@@ -148,7 +126,9 @@ drafted, harvested to
 nowhere; section 4 states its numbers. Step 7 is unblocked and not started, and
 two mapping reports for it sit in the same directory.
 
-The repository is public from its first push. The model, stated by the operator
+The repository received its first push on 2026-09-07 and is private while the
+operator finishes account setup, with public as the intended state. The model,
+stated by the operator
 on 2026-09-07, is one local instance where experiments run and one public
 repository that receives `main` at closeouts. Nothing about that model is new
 to the repository: case material never enters git under `doctrine/RETENTION.md`
@@ -192,7 +172,7 @@ Nothing has touched a platform. No account exists. No connector exists.
 | `tools/validate_retention.py` | Stub. Exits 0, checks nothing. D-001. |
 | `tools/gate_log.py` | Committed, then corrected in three places the review found. |
 | `tools/tests/test_gate_log.py` | **Committed in `f4e00e1`.** The first test in the repository. 12 tests, 7 deliberate breaks all refused. One fixture string became fictional in `595cc06`. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | Committed. The layer-model, ontology and cast gates, the PyYAML install and `fetch-depth: 0` landed in `f4e00e1`. The workflow token is read-only as of the commit that carries this file. The hook runs six commands, one of them the D-001 stub that checks nothing; `make preflight` runs those six plus the telemetry test. Both files' comments state that difference. Whether the hook should run the test too is a mechanism choice the operator has not made. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | Committed. The layer-model, ontology and cast gates, the PyYAML install and `fetch-depth: 0` landed in `f4e00e1`. The workflow token is read-only as of the commit that carries this file. The hook runs six commands, one of them the D-001 stub that checks nothing; `make preflight` runs those six plus the telemetry test. Both files' comments state that difference. Whether the hook should run the test too is a mechanism choice the operator has not made. The hook has mode 100755 as of the commit that carries this file; every commit before it had 100644, and the first CI run on GitHub is what caught it. |
 | `connectors/`, `runner/`, `app/` | Empty. Later steps. |
 
 ## 3. What blocks
@@ -215,6 +195,15 @@ Three constraints on ordering rather than blocks:
 
 ## 4. Known gaps
 
+- **The replaced initial commit is still served by hash.** GitHub keeps
+  unreachable commits until its own collection runs, and the repository's
+  activity view records the force-push with both hashes. A support request
+  removes it sooner. Its content is one license file and the address the
+  rewrite removed.
+- **Branch protection and secret scanning wait on the public flip.** The free
+  plan offers neither on a private repository, and both were refused on
+  2026-09-07 while the repository was private. Wiki and projects are off, and
+  Dependabot alerts and security updates are on.
 - **Hashes in the process records refer to the pre-rewrite history.** The
   worklog, its archive, and every `CHANGELOG.md` entry below the 2026-09-07
   rewrite entry cite the hashes they were written with, because a process
@@ -362,6 +351,9 @@ there.
   deleted once the voice pass lands.
 - Write the handoff in the tense of the tree the commit will create, per
   `AGENTS.md` section 8. This file was wrong about that in three commits.
+- Only CI on Linux checks a file mode. Git Bash on Windows reports any file with
+  a shebang line as executable, so a local `test -x` proves nothing about the
+  mode git records.
 - Two harness facts that cost earlier sessions time: a subagent cannot write a
   report file outside the repository, so a review agent returns findings as text
   and the parent persists them; and a Bash heredoc breaks on an apostrophe, so

@@ -1458,3 +1458,24 @@ patches 2 through 4; Step 7; `doctrine/RETENTION_LEDGER.md` and
 order: patch 2 and the twelve applying hunks of patch 3 before any doctrine
 voice edit, the refuter continuation and the application of survivors, then
 Step 7.
+
+### Postscript, 2026-09-08: the first CI run failed on the hook
+
+The push went through late on 2026-09-07, replacing GitHub's initial commit by
+force, and the CI run on the publication commit failed at the step "Pre-commit hook is executable
+and runs". `.githooks/pre-commit` has had mode 100644 in every commit since
+Wave 0, and the bundle of the pre-rewrite history confirms the rewrite did not
+change it. Every record that reported the hook executable, including this
+worklog's 2026-08-27 and 2026-09-05 entries, described a Git Bash check on
+Windows, where `test -x` is true for any file with a shebang line. This was the
+first time the check ran on Linux. The closeout checkpoint after the
+publication commit sets the mode to 100755, records it in the changelog and in
+this postscript, and rewrites the handoff to the state after the push.
+
+Two more things observed after the push. GitHub still serves the replaced
+initial commit by hash, as expected for an unreachable commit until GitHub
+collects it; a support request can remove it sooner. The repository showed as
+private when the lockdown settings ran, so branch protection was refused on the
+free plan and secret scanning reports disabled; wiki and projects are off, and
+Dependabot alerts and security updates are on. The visibility is the operator's
+setting and is recorded here as found.

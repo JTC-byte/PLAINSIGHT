@@ -22,6 +22,28 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-08. The pre-commit hook gains its executable bit, after the first
+  CI run on GitHub found it unset.**
+
+  `.githooks/pre-commit` had mode 100644 in every commit since Wave 0, and the
+  bundle of the pre-rewrite history confirms the rewrite did not change it.
+  Every verification that reported the hook executable, including the
+  fresh-clone check of 2026-09-05, ran in Git Bash on Windows, where `test -x`
+  reports true for any file with a shebang line. The defect stayed invisible
+  until the publication commit reached GitHub and the CI step "Pre-commit hook
+  is executable and runs" failed on Linux. This commit sets the mode to 100755,
+  adds this entry, appends a postscript to the worklog entry for the
+  publication commit, and rewrites the handoff to the state after the push; no
+  other file changes.
+
+  Validation: the local battery is unchanged, because a file mode does not
+  affect a Windows checkout. The check that matters is the CI step on this
+  commit, which runs after the push and cannot be recorded here.
+
+  **What did not change.** No tooling content; the hook changes in mode only. No
+  doctrine, no criterion, no stamp, no schema, no policy, no connector, no
+  validator logic.
+
 - **2026-09-07. The history is rewritten before the first push, and the
   public-facing files land.**
 
