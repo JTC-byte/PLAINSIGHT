@@ -22,6 +22,75 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-08. Step 7 lands: the schema, the policy pack, the corpora and the
+  contract, all generated from the layer model; the review's patches 2 and 3
+  land in doctrine; the kernel gate grows to seven.**
+
+  The operator decided three things on 2026-09-08 and this commit carries all
+  three: the voice pass is parked, the 2026-09-03 review's patches 2, 3c and
+  3b land, and Step 7 is built. It also carries what the repository going public
+  the same day changed.
+
+  **Doctrine.** Patches 2, 3c and 3b from
+  `Z-ISR/_session-artifacts/2026-09-03-plainsight-doctrine-review-2/` land in
+  five doctrine files, on the operator's instruction of 2026-09-08. Patch 2
+  changes the domain `doctrine/SUBJECT_SELECTION.md` SS-4's required-field table
+  gives `subject_class` from three classes to the seven R4 decided as maximum
+  reach on 2026-08-26, and repairs SS-1's N0 paragraph the same way; that is a
+  reach change in the table's text, Class F by effect, decided by the operator
+  as R4 and instructed for landing here, and the commit is authored by the
+  operator per R6 as amended. Patch 3c is patch 3 with its one pre-rewrite hash
+  translated, twelve of thirteen hunks, ten confirmed minors including the
+  `guard.py` precedent its own repository fixed; the thirteenth hunk was stale in
+  intent and is dropped. Patch 3b is the sound HYGIENE.md hunk alone. Patch 4,
+  the four Class F criteria, is regenerated against this tree as `patch-4b` in
+  the review directory and is not applied; it waits on the operator.
+  `doctrine/DOCTRINE_STATUS.md` gains two pending rows for the contract's
+  sections 5 and 12 and one readings row for S7-R1 to S7-R7. No criterion's
+  conclusion changed and nothing is stamped.
+
+  **Step 7.** `tools/generate_pse.py` reads `spec/layer-model.yaml` and
+  `ontology/selectors.yaml` and writes `schema/pse-event-0.1.schema.json`,
+  `policy/semantics.yaml`, `policy/lineage.yaml`, `policy/producer-authority.yaml`
+  and `policy/violation-codes.yaml`; `--check` regenerates them in memory and
+  refuses drift. `tools/build_corpus.py` writes `conformance/must-pass.jsonl`,
+  one synthetic case covering every subtype in one lineage chain, and
+  `conformance/must-fail.jsonl`, one break per fixture, and refuses drift the same
+  way. `tools/validate.py` is rung 2 of the conformance ladder: schema failures
+  named through a code map, producer authority before any semantic check, the
+  recursive denylist, the payload rules, lineage at subtype granularity, the
+  cross-event citation and circularity rules, `expect_only`, no short-circuit,
+  and a self-test that breaks the runner and asserts each break is caught.
+  `spec/pse-semantics-contract.md` is written last, UNRATIFIED, thirteen
+  sections with an enforcement label on every rule; its sections 5 and 12 are
+  stamp targets. Seven readings the generator took where the model is silent are
+  recorded as S7-R1 to S7-R7 in the contract, the schema and the semantics policy.
+  The `schema` entry in `KERNEL_GATE` turns implemented, the pre-commit hook and
+  `make preflight` gain the check, and `CONFORMANCE.md`, `docs/THE-GAMEPLAN.md`
+  and the Makefile describe the new state.
+
+  **The public repository.** Branch protection on `main` refuses force-pushes
+  and deletions, requires linear history, includes admins, and sets no required
+  status check; secret scanning and push protection are on; non-provider pattern
+  scanning would not enable on this plan. The CI run on `6247953` passed every
+  step, which the previous entry could not record. The handoff's claim that the
+  2026-09-07 hash rewrite left the patch measurement intact is corrected: it
+  moved one patch-3 anchor, which patch 3c fixes.
+
+  Validation: the five validators with their self-tests, the twelve-case
+  telemetry suite, `tools/validate.py --kernel` at 44 must-pass events clean and
+  98 must-fail fixtures refused for the expected code with five self-test breaks
+  caught, `git diff --cached --check`, the hook, and the kernel gate at 7
+  implemented, 0 failed, 1 stubbed, 4 pending.
+
+  **What did not change.** No criterion conclusion, no stamp, no basis. Patch 4
+  is not applied and EG-7 does not exist in the tree. The layer model and the
+  selector registry are unchanged in content. No voice edit is applied and the
+  voice pass is parked by the operator's decision. The D-001 repo scan is still a
+  stub. No connector, no runner, no store, no gate corpus. Nothing collected, no
+  platform touched. The worklog moves its oldest entry to the archive without
+  edit and gains this commit's entry.
+
 - **2026-09-08. The pre-commit hook gains its executable bit, after the first
   CI run on GitHub found it unset.**
 

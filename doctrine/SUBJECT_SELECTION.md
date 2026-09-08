@@ -175,9 +175,13 @@ Two boundaries keep N0 from becoming the hole in the class set.
 - **N0 authorizes the organization, never its members.** The output of an
   organization enumeration is a list of people, and each of those people is
   S5 INCIDENTAL on arrival and cannot become a pivot origin. Promoting one to a
-  target requires that person's own authorization record under S0, S1, or S2.
-  `conformance/gate/` carries the refusal fixture for an N0-derived selector
-  used as a seed.
+  target requires that person's own authorization record, under whichever of
+  S0, S1, S2, S3 or S4 they belong to, which is the R4 reach SS-16 relies on.
+  The class is per case, so the refusal keys on the per-case class and never on
+  the selector value: `conformance/gate/` carries the fixture refusing an
+  S5-classed selector dispatched as a seed inside the same case, and the same
+  person seeded in a new case under a written S3 or S4 record is a decision
+  rather than a refusal.
 - **N0 is not self-certifying.** "This is institutional" is a written statement
   in the authorization record, recorded by a person, on the SS-1 rule that the
   gate reads a class rather than inferring one. A role account named for a
@@ -262,7 +266,7 @@ Required fields:
 | Field | Answers |
 |---|---|
 | `case_id` | Which case this authorizes, opaque, no subject name |
-| `subject_class` | S0, S1, or S2 |
+| `subject_class` | S0, S1, S2, S3, S4, N0, or L0, the SS-1 set. Never S5, which SS-1 marks not authorizable |
 | `selectors` | The exact seed selectors authorized, typed against `ontology/selectors.yaml` |
 | `pivot_depth_max` | How far a chain may walk from a seed before it needs a new decision |
 | `purpose` | Why this case exists, in one sentence, bound to the case at creation, stated without naming or describing the subject, on the same rule as `case_id` |
@@ -293,19 +297,27 @@ test proves each one is read.**
 This criterion exists because of a measured defect in the precedent, and it is
 the single most important line in this document.
 
-In `zisr-recon/src/zisr_recon/guard.py`, `scope` is declared on the frozen
-dataclass, listed in the required-fields check, and printed by `describe()`.
-`check()` never reads it. The only question `check()` asks of the
-authorization is `has_origin`, which is true whenever the file is complete. A
-complete authorization file therefore permits every non-NEVER address on
-earth, while the tool reports a scope in its own status line. Separately,
-`from datetime import date` at line 54 is the only occurrence of that token in
-the file, and `expires_on` does not exist at all, so no authorization can
-expire.
+**As measured on 2026-08-26** in `zisr-recon/src/zisr_recon/guard.py`,
+`scope` was declared on the frozen dataclass, listed in the required-fields
+check, and printed by `describe()`, and `check()` never read it. The only
+question `check()` asked of the authorization was `has_origin`, which is true
+whenever the file is complete, so a complete authorization file permitted every
+non-NEVER address on earth while the tool reported a scope in its own status
+line. Separately, `from datetime import date` was the only occurrence of that
+token in the file, and `expires_on` did not exist at all, so no authorization
+could expire.
 
-Both were verified by grep on 2026-08-26. Neither is exploitable where it sits,
-because no origin is authorized and the tool cannot act. They stop being
-harmless the moment the gated object is a person.
+Both were verified by grep. Neither was exploitable where it sat, because no
+origin was authorized and the tool could not act. They stop being harmless the
+moment the gated object is a person.
+
+**That repository hardened the first half on 2026-09-01**, after its own
+adversarial review: `authorized_targets` now carries the ranges in
+machine-readable form and `check()` refuses anything outside them, with `scope`
+kept as the prose explaining why those ranges. `expires_on` is still absent
+there. The defect class is what this criterion is built on rather than the
+current state of that file, and the fix landing upstream is evidence that the
+class is real rather than a reason to relax the rule.
 
 The rule that follows: for each of `selectors`, `pivot_depth_max`, and
 `expires_on`, `conformance/gate/*.jsonl` carries a fixture that is identical to
@@ -609,7 +621,10 @@ Three consequences:
 
 - **A node is not a run.** Appearing in a web costs the subject nothing beyond
   the enumeration that surfaced them, and SS-11's incidental TTL governs how
-  long that residue lives.
+  long that residue lives. **That is 7 days under RT-6, non-extendable, and a
+  case extension does not move it**, so a node nobody deep-dived is gone on day
+  eight and the enumeration is re-run rather than recovered. RT-6 records that
+  cost as accepted and names the first real loss as the trigger to reopen it.
 - **Depth is unbounded, breadth is deliberate.** Chaining ten deep dives is
   permitted. Auto-expanding one enumeration into ten runs is not.
 - **The pre-flight count in SS-12 is what makes this visible**, because the
@@ -840,7 +855,8 @@ Three mitigations, all already used elsewhere in this program:
 This section exists so the doctrine is productive rather than obstructive, and
 so nobody defers buildable work waiting for a permission it does not need.
 
-None of the following requires any subject authorization beyond S0, S1, and S2:
+None of the following needs a subject authorization beyond what the class it
+names already requires:
 
 - The Run, Item, and Claim spine, and the blob store.
 - PSE, its schemas, the selector registry, and the whole policy pack.

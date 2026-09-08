@@ -238,6 +238,16 @@ media expires at 90 days, which is the design's real intent and preserves the
 lineage promise for the period the case exists. `forever` is scoped by
 `retain_until`, never above it. A text blob does not outlive its case.
 
+**The 90 day figure is inherited and under RT-5 it can almost never fire.** It
+comes from `PLAINSIGHT-design.md`, written before the operator set the ceiling at
+60 rather than the drafted 180, so on an ordinary case media dies with the case
+and the media clock is the case clock. The number is kept rather than retired
+because it is the correct behaviour for the one case that reaches past 60 days,
+which is an RT-17 freeze, and a media blob under a freeze is the one place the
+distinction is real. An implementer configuring from this line should know it is
+a ceiling that the case ceiling almost always beats, which is the unfalsifiable
+check `HYGIENE.md` HY-2 exists to catch.
+
 The design's own reasoning survives intact. A `retain_raw: 90d` that silently
 voids the lineage promise is worse than an honest tombstone, and the tombstone
 is what the skeleton renders.
@@ -368,7 +378,7 @@ A missing heartbeat renders in the case header as its consequence:
 ▨ RETENTION SWEEP HAS NOT RUN SINCE 2026-10-02 · retain_until is not being enforced
 ```
 
-This follows `../ZISR COP/docs/OPERATIONAL_CONTRACT.md` §4, lines 315 to 317,
+This follows `../ZISR COP/docs/OPERATIONAL_CONTRACT.md` §4, lines 315 to 316,
 which prohibits "inferring 'link is fine' from absence of a failure signal
 rather than an active freshness check". That file sits in a sibling repository
 this one reads from and never writes to, per `README.md`, and the same section's
@@ -440,9 +450,13 @@ is not permanent. It is telemetry, and telemetry that is kept forever has become
 an archive of how the tools behaved in 2026, which nobody will read and which
 grows without bound.
 
-**Ninety days rolling**, swept on every write rather than by a scheduled job,
-because the writer is already running and a separate schedule would be a second
-thing that can fail silently. Inaction is deletion here as everywhere else.
+**Ninety days rolling**, swept on every write and on every read rather than by
+a scheduled job, because the writer and the reader are already running and a
+separate schedule would be a third thing that can fail silently. The read-side
+sweep is not decoration: a write-only sweep leaves an idle repository holding
+records past the TTL and rendering them in the summary, which inverts the rule it
+was chosen to serve. Inaction is deletion once something runs, and for this
+stratum nothing runs unless a gate does.
 
 **Untracked, and that is a decision rather than an oversight.** A telemetry file
 in git is permanent, which contradicts the TTL in the one direction that cannot
@@ -453,9 +467,12 @@ it anyway.
 telemetry record names the file and the line. It never names the string that
 matched. A `--repo-scan` refusal fires because a selector-shaped value was found
 in a tracked file, and a record quoting that value would take the gate's own
-evidence and make it the durable surface the gate exists to prevent. The allowed
-field list in `tools/gate_log.py` is a fixed tuple, so widening the record
-requires editing that tuple rather than passing an extra argument.
+evidence and make it the durable surface the gate exists to prevent. Two things
+hold it: the allowed field list in `tools/gate_log.py` is a fixed tuple and an
+unknown keyword is discarded rather than raised, so widening the record requires
+editing that tuple; and the location is checked against a shape, so a caller
+passing a matched value writes a redaction and the refusal is still counted.
+`tools/tests/test_gate_log.py` breaks both and asserts the refusal.
 
 **RT-18. A disclosure export is the one path by which a whole non-synthetic case
 leaves the machine. It exists only under an active freeze.**
@@ -688,8 +705,8 @@ field-capture cadence section, adapted to cases.
 
 This section exists so the doctrine is productive rather than obstructive.
 
-- Collecting at full depth against S0, S1, and S2 subjects. The retention rules
-  bound how long, never how much.
+- Collecting at full depth against any authorized subject class. The retention
+  rules bound how long, never how much.
 - Keeping raw bytes for the life of the case. Content-addressed raw capture
   from the first run is a design invariant and this document does not weaken
   it. Stdout that was thrown away cannot be recaptured.

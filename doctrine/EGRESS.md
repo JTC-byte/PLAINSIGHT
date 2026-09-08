@@ -29,8 +29,16 @@ not reach, `verify_shred` does not check, and the receipt does not cover. The
 deployment decision therefore decides whether retention is a mechanism or a
 mechanism plus an exception, and there is no third option.
 
-**One thing this doctrine does not claim.** The isolated environment is not an
-anonymity boundary. Its egress identity differs from the operator's home
+**Two things this doctrine does not claim.** The first is a residual EG-3
+creates and does not name: an interface on LOCAL that reads across the boundary
+holds an authenticated read channel into the case store for the life of a
+session, so a LOCAL compromise during a session reaches whatever that session can
+read. EG-3 bounds what persists afterwards and does not bound what is seen
+during. Hardening the machine on either side is an operator act, outside this
+document on the same reasoning that keeps the hypervisor out of it.
+
+The second is anonymity. The isolated environment is not an anonymity
+boundary. Its egress identity differs from the operator's home
 connection, and that reduces cross-contamination between research activity and
 personal accounts. It does not make collection unattributable, and a dedicated
 egress address would make the research population *more* correlatable rather than
@@ -90,6 +98,9 @@ persists on LOCAL after a session closes.
 **EG-4. The credential pool never exists on LOCAL.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
 
+Enforced in `CREDENTIAL_LIFECYCLE.md` CR-4, which is where an implementer
+handling a credential reads it.
+
 Session tokens, cookies, API keys and persona passwords live in ISOLATED and are
 drawn there. A credential on LOCAL is a credential in reach of a development
 machine's shell history, editor state, crash dumps and backups. Detailed in
@@ -115,6 +126,13 @@ watching. A cassette is captured against a live platform in ISOLATED and then
 committed to git from LOCAL, which is exactly the path RT-15 governs: **a
 cassette captured against anything other than an S2 or N0 target must not make
 that crossing**, because git is the store a crypto-shred cannot reach.
+
+**RT-15's mechanism is the pre-commit scan and that scan is currently the D-001
+stub**, which this criterion states rather than borrowing. The prohibition above
+is a rule an author follows until Step 8 writes the check. RT-1 reaches the same
+conclusion from the capture side, that a live-subject cassette is stratum 0 and
+is not a thing this system keeps, so the artifact this crossing would refuse is
+one the corpus already forbids at capture.
 
 **EG-6. Every run records the environment it executed from, and a run from the
 wrong environment is refused rather than logged.**

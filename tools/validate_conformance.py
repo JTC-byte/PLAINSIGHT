@@ -81,10 +81,12 @@ KERNEL_GATE = (
     ),
     (
         "schema",
-        None,
-        PENDING,
-        "Step 7. schema/pse-event-0.1.schema.json does not exist. Generated "
-        "from spec/layer-model.yaml, which does",
+        [PY, "tools/validate.py", "--kernel", "--quiet"],
+        IMPLEMENTED,
+        "the generated schema, policy pack and corpora current against "
+        "spec/layer-model.yaml; every must-pass event clean; every must-fail "
+        "fixture refused for its expected code, and for that code alone where "
+        "the model requires it; and the runner's own self-test",
     ),
     (
         "ontology",

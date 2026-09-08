@@ -51,6 +51,15 @@ python tools/validate_cast.py --placeholder-scan --quiet || {
   exit 1
 }
 
+python tools/validate.py --kernel --quiet || {
+  echo ""
+  echo "pre-commit refused: a generated artifact is stale, or the conformance corpora do not grade."
+  echo "  rule:  spec/layer-model.yaml header, CONFORMANCE.md section 3 rung 2, CLAUDE.md design gate 1"
+  echo "  moves: run python tools/generate_pse.py and python tools/build_corpus.py to regenerate;"
+  echo "         never edit schema/, policy/ or conformance/*.jsonl by hand; then commit again."
+  exit 1
+}
+
 python tools/validate_retention.py --repo-scan --staged || {
   echo ""
   echo "pre-commit refused: a staged file contains a selector-shaped string."

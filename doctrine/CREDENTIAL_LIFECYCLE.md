@@ -11,6 +11,11 @@ justification is narrow: whose account performs a collection determines which
 identity a third party permanently records as having looked at a person, and that
 is a subject-selection consequence rather than an operations detail.
 
+This document has no opinion on schema shape. Where it names a field or a state
+it is naming an enforcement point rather than specifying a data model, and which
+values are permitted is the rank-1 half because CR-8's stop keys on one of
+them.
+
 Landed 2026-08-27 in commit `4c5cd25`, authored by the operator. Per R6 as
 amended the conclusions are in force, and every basis is unstamped.
 
@@ -75,8 +80,9 @@ view and every export, which the design already specifies as `▮▮▮▮▮`.
 **CR-4. Credentials live only in ISOLATED.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
 
-Restated from `EGRESS.md` EG-4 because this is the file an implementer reads when
-handling one. A credential on LOCAL is within reach of a development machine's
+Enforces `EGRESS.md` EG-4, restated because this is the file an implementer
+reads when handling one. The phrasing is the one `tools/validate_doctrine.py`
+parses, so the pair is reconciled by the D-01 check rather than by a reader. A credential on LOCAL is within reach of a development machine's
 shell history, editor state, crash dumps and backups, none of which the sweep
 reaches.
 
@@ -85,9 +91,10 @@ budget.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
 
 Two runs sharing a session concurrently is the pattern platforms flag first. One
-advisory lock per persona, and a per-persona daily job budget that refuses rather
-than queues when exhausted, so exhaustion is visible at the moment it happens
-rather than as unexplained slowness.
+single-holder lock per persona, and a per-persona daily job budget that refuses
+rather than queues when exhausted, so exhaustion is visible at the moment it
+happens rather than as unexplained slowness. Which lock and which number are
+rank-3 questions; that exhaustion refuses rather than slows is this file's.
 
 ---
 
@@ -141,7 +148,8 @@ produces a false negative in an assessment.
 - How many personas exist, on which platforms, or how they were provisioned.
   That is an operator judgment constrained by platform acceptance rather than by
   this document.
-- Running at full rate against S0 and S2 subjects with whatever pool exists.
+- Running against S0, S1 and S2 subjects with whatever pool exists, inside the
+  per-persona concurrency and budget CR-5 sets.
 - Rotating, retiring or adding personas at any time, provided CR-1's
   disjointness check still passes.
 

@@ -95,6 +95,8 @@ is listed below, and none of it blocks a build.
 | R8 beyond `count_only \| refuse` | Conclusion, scoped | not blocking v0.1 | The v0.1 pair is stamped. Whether a third disposition exists is left open until a connector manifest shapes the question |
 | `doctrine/DISCLOSURE.md` | Artifact | nothing yet | **Its deferral trigger has fired.** RT-18 is the second egress path `docs/THE-GAMEPLAN.md` §2.2 named as the trigger. RETENTION.md RT-14 and RT-18 stand in |
 | `PLAINSIGHT-FOUNDATION.md` DRAFT header | Housekeeping | nothing | Line 4 still reads DRAFT and says nothing is operator-ratified. D1 through D5 now are. Clearing that line is the operator's act |
+| `spec/pse-semantics-contract.md` §5, subject authorization | Artifact, stamp target | the first collection run, with the other seven items SS-14 item 6 names | Drafted 2026-09-08 with Step 7. The section explains how the SS-4 record and the gate's decision appear on the wire and the D5 line the generated lineage policy carries. Stamping it stamps the explanation, not the doctrine it explains |
+| `spec/pse-semantics-contract.md` §12, retention, shred and egress | Artifact, stamp target | the first collection run | Drafted 2026-09-08 with Step 7. The section explains the strata per type, what crosses to LOCAL, and the shred receipt. Same rule |
 
 ### Step 3 criteria: all conclusions recorded 2026-08-27
 
@@ -184,6 +186,7 @@ makes it true.
 
 | Marker | Reading | Raised |
 |---|---|---|
+| **S7-R1** to **S7-R7** | **Seven readings the Step 7 generator took where `spec/layer-model.yaml` is silent**, listed in `spec/pse-semantics-contract.md` section 13.1 and written into the generated schema's `$comment` and `policy/semantics.yaml` under `readings`. The consequential one is S7-R1, the rule deciding which optional payload fields a subtype may carry; its cost is visible per subtype in `policy/semantics.yaml` under `allowed`, and the remedy, if the operator wants a tighter shape, is an optional list per subtype in the model. Reversing any of the seven is an edit to `tools/generate_pse.py` and a regeneration, never a hand edit to a generated file | 2026-09-08 |
 | **AR-1** | **Publishing a roster of accounts carrying injection payloads would be publishing accusations this system cannot verify.** The operator raised publication as a possible public good and marked it a later decision. The argument to weigh first is the program's own: SS-18 establishes that precision is not computable against an S4 subject, because confirming a claim requires an oracle and the analyst's judgment is the system's own output re-entered as ground truth. A published list therefore carries a false-positive rate that is unknown by construction, and each false positive is a public accusation against an identifiable party who has no way to contest it. The defensive value the operator wants is carried better by the payload-family finding under SS-21, which generalizes to accounts nobody has seen and names nobody. If publication is still wanted, the honest form publishes signatures rather than accounts. Recorded rather than decided; the operator may confirm, amend, or refuse this reading | 2026-08-27 |
 
 ## Rejected readings, do not re-derive

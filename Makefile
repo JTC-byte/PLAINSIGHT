@@ -1,4 +1,4 @@
-.PHONY: help validate-doctrine validate-hygiene validate-layer-model validate-ontology validate-cast test validate-kernel preflight gate-telemetry
+.PHONY: help validate-doctrine validate-hygiene validate-layer-model validate-ontology validate-cast generate validate-schema test validate-kernel preflight gate-telemetry
 
 # The named gates. A gate is a stable token rather than a hand-copied command
 # string, so a new check joins the battery in one place. That place is
@@ -6,12 +6,13 @@
 #
 # What exists here is what there is to check. The governed artifacts are the
 # doctrine corpus (58 criteria across four rank-1 files and one advisory file,
-# with a pin of record they reconcile against), the layer model in spec/ that the
-# schema and policy will be generated from, the selector registry in ontology/,
-# the unsealed cast draft in synthetic/, and the voice standard every tracked
-# file is held to. The schema, policy, divergence-register and connector gates
-# are named as PENDING inside the aggregator with the step that delivers each,
-# so `validate-kernel` reports the gap rather than passing over it.
+# with a pin of record they reconcile against), the layer model in spec/ and
+# the schema, policy pack and conformance corpora generated from it, the
+# selector registry in ontology/, the unsealed cast draft in synthetic/, and
+# the voice standard every tracked file is held to. The authorization,
+# retention-policy, divergence-register and connector gates are named as
+# PENDING inside the aggregator with the step that delivers each, so
+# `validate-kernel` reports the gap rather than passing over it.
 
 help:
 	@echo "validate-doctrine     criterion definitions, stamps, cross-references, pin of record"
@@ -19,6 +20,8 @@ help:
 	@echo "validate-layer-model  the nine event types, discriminators, denylists, lineage, producer authority"
 	@echo "validate-ontology     the closed selector vocabulary, anchors, constraints, prohibitions, matchers"
 	@echo "validate-cast         the checkable half of SS-3, the confuser pair, the partition, the seal"
+	@echo "generate              rewrite the schema, the policy pack and the corpora from the layer model"
+	@echo "validate-schema       generated artifacts current, both corpora graded, the runner's self-test"
 	@echo "test                  the mechanisms that exist, exercised against the criteria that claim them"
 	@echo "validate-kernel       the full battery, including what is not built yet"
 	@echo "preflight             what must be green before a commit"
@@ -56,6 +59,19 @@ validate-cast:
 	python tools/validate_cast.py --placeholder-scan
 	python tools/validate_cast.py --self-test
 
+# Step 7. The schema, the four policy files and both conformance corpora are
+# generated from spec/layer-model.yaml and the fixture tables, and nothing else
+# writes them. `generate` rewrites them. `validate-schema` refuses when what is
+# on disk differs from what the model generates, then grades both corpora and
+# runs the runner's own self-test. A generated file edited by hand is drift, and
+# drift is a refusal rather than something a diff review might notice.
+generate:
+	python tools/generate_pse.py
+	python tools/build_corpus.py
+
+validate-schema:
+	python tools/validate.py --kernel
+
 # Design gate 1: a constraint is not done until a test fails when it is removed.
 # Until 2026-09-03 no test existed here, so every mechanism on disk was an
 # assumption in the sense doctrine/HYGIENE.md section 2 warns about.
@@ -66,16 +82,17 @@ validate-kernel:
 	python tools/validate_conformance.py --kernel-gate
 
 # preflight is the pre-commit battery plus the telemetry test. The hook runs the
-# same six commands and not the test, which CI runs as a step of its own. A gate
-# that is only enforced in CI is enforced only after the thing it guards has
-# already been committed, and git history is the one store a crypto-shred cannot
-# reach.
+# same seven commands and not the test, which CI runs as a step of its own. A
+# gate that is only enforced in CI is enforced only after the thing it guards
+# has already been committed, and git history is the one store a crypto-shred
+# cannot reach.
 preflight:
 	python tools/validate_doctrine.py
 	python tools/validate_hygiene.py
 	python tools/validate_layer_model.py
 	python tools/validate_ontology.py
 	python tools/validate_cast.py --placeholder-scan
+	python tools/validate.py --kernel
 	python tools/tests/test_gate_log.py
 	python tools/validate_retention.py --repo-scan --staged
 

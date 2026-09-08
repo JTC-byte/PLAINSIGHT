@@ -36,19 +36,37 @@ value.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
 
 `tools/gate_log.py` appends one line per gate run: timestamp, gate token,
-outcome, violation code, and the location. **It records the file and the line. It
-never records the string that matched.**
+outcome, violation code, and the location. A refusing run writes that one run
+record carrying the finding count, then one detail record per finding, so the
+run count and the refusal rate this file adjudicates against are the true ones.
+**It records the file and the line. It never records the string that matched.**
 
 That rule is the whole safety of this mechanism. A `--repo-scan` refusal exists
 because a selector-shaped string was found in a tracked file, and a telemetry
 record quoting that string would place the value into a durable local log,
-turning the gate's own evidence into the surface the gate exists to prevent. The
-allowed field list in `gate_log.py` is a fixed tuple rather than a convention, so
-a caller cannot widen the record by accident.
+turning the gate's own evidence into the surface the gate exists to prevent.
+
+Two mechanisms hold it, and until 2026-09-03 the second one did not exist. The
+allowed field list in `gate_log.py` is a fixed tuple, and the recorder discards
+an unknown keyword rather than raising, so a caller cannot widen the record. The
+location itself is checked against a shape, a repository-relative path with an
+optional line number or a criterion id, and a caller that passes anything else
+writes `REDACTED_WHERE` while the refusal is still counted. Before that check the
+rule was a caller convention: every caller happened to pass `f.where`, and the
+value was one argument away. `tools/tests/test_gate_log.py` breaks both and
+asserts the refusal.
 
 Telemetry never blocks a gate. Every failure path in the recorder is swallowed,
 because a gap in the pattern of life costs a decision later and a crashed gate
 costs enforcement now.
+
+**One opt-out is legal and it is named here so it is not the flag HY-2 warns
+about.** Setting `PLAINSIGHT_NO_GATE_LOG` suppresses recording for that process,
+which exists so a test can exercise the recorder without writing to the
+repository's own log. It suppresses the telemetry and never the gate: every
+check still runs and still refuses. `make gate-telemetry` prints the variable's
+existence on every summary, so a window with no records has a stated reason to
+look for.
 
 **HY-2. Both directions are adjudicated, against stated thresholds.**
 *[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*

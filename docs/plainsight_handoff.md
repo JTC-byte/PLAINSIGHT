@@ -8,45 +8,33 @@ session rather than accumulating here. ZMeta's handoff reached 2,080 lines
 carrying eleven superseded state sections, which is the failure mode this cap
 exists to prevent.
 
-**Wave:** 0 committed. The first build artifacts are committed too, in
-`f4e00e1`, and the closeout commits after it moved records, `AGENTS.md`
-rules, fact corrections, and one hygiene check with its self-test. The
-publication commit `ac60ac4` followed a rewrite of the whole history, added the
-license and notice files, translated every hash in a current-state file, and
-was pushed to `origin`. The commit that carries this file is the closeout
-checkpoint after it: the pre-commit hook gains the executable bit the first CI
-run found unset. The tree is clean at that commit.
-**Date:** 2026-09-08, closing a session that began 2026-09-07 and landed
-`595cc06`, the persona replacement, then `ac60ac4`, the publication commit,
-once the operator had created the repository at
-`github.com/JTC-byte/PLAINSIGHT`, and then this checkpoint after midnight. The
-session before, 2026-09-04 into 2026-09-05, landed `89c68a3`, `f907a7a` and
-`7c0e278`. Every hash in this file is post-rewrite; section 7 says how to read
-the ones in the process records.
-**Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md, all
-committed in `1abb354` and `4c5cd25`. **Every conclusion is stamped. Every basis
-is unstamped.** A seventh EGRESS criterion, EG-7, is drafted and
-unratified in patch 4, with amendments to EG-2, CR-3 and CR-6 beside it.
-**Kernel gate:** 6 implemented, 1 stubbed, 5 pending. Green.
+**Wave:** 0 committed, and Step 7 committed in the commit that carries this
+file. The first build artifacts landed in `f4e00e1`; the publication commit
+`ac60ac4` rewrote the history and pushed it; `6247953` fixed the hook mode. This
+commit lands the 2026-09-03 review's patches 2, 3c and 3b in doctrine, the
+schema, the policy pack, the two conformance corpora, the semantics contract,
+and the three tools that generate and grade them. The tree is clean at this
+commit.
+**Date:** 2026-09-08, closing a session that began the same afternoon. The
+repository went public during it, and the operator decided three things: the
+voice pass is parked, the patches land, and Step 7 is built. Every hash in this
+file is post-rewrite; section 7 says how to read the ones in the process
+records.
+**Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
+every conclusion stamped, every basis unstamped. Patches 2, 3c and 3b are in
+the tree. Patch 4b, the four Class F items with EG-7, is regenerated against
+this tree and waits on the operator.
+**Kernel gate:** 7 implemented, 1 stubbed, 4 pending. Green.
 
-**Resume here. Read `_session-artifacts/2026-09-03-plainsight-doctrine-review-2/DECISIONS.md`
-first, including its 2026-09-04 and 2026-09-07 amendments.** It is three
-remaining patches, four Class F criteria, twenty-one recorded readings across
-the two rank-3 artifacts, and four live questions. Nothing else in this file is
-blocked on any of them, and the readings are places where an agent had to
-choose rather than defects. Patch 1 is applied in `89c68a3`. Measured on
-2026-09-07 on a fresh clone of the commit now `7c0e278`: patch 2 applies clean;
-patch 3 no longer applies whole, because its second `doctrine/HYGIENE.md` hunk
-anchors on a sentence `89c68a3` rewrote, and the tree already carries the
-corrected claim that hunk was drafted to add. Patch 3 has thirteen hunks, two
-of them in HYGIENE.md: `git apply --exclude=doctrine/HYGIENE.md` lands the
-eleven outside that file, the first HYGIENE.md hunk applies alone from
-`patch-3b-hygiene-first-hunk-only.patch` beside the patches, so twelve of
-thirteen land, and patch 4 then applies on top. That tree passes the same
-kernel gate, and `tools/validate_doctrine.py` counts 59 criteria there against
-58 here, because patch 4 adds EG-7. The rewrite changed no doctrine blob, and this
-commit changes only the commit hashes in six status blocks, so the measurement
-holds on the rewritten history.
+**Resume here.** Two files first:
+`_session-artifacts/2026-09-03-plainsight-doctrine-review-2/DECISIONS.md`,
+whose 2026-09-08 amendment says one patch remains, and
+`_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
+which is what the operator is buying and standing up in parallel. The next
+build step is Step 8, compiling the doctrine to policy, and its first artifact
+is `schema/subject-authorization.schema.json` from SS-4's table, which patch 2
+made correct. Nothing in Step 8 waits on patch 4b except EG-7's own compiled
+form.
 
 ---
 
@@ -57,304 +45,274 @@ holds on the rewritten history.
 able to answer five questions. This section answers them for the commit that
 carries this file. For every earlier commit they are answered in
 `CHANGELOG.md`, one entry per commit that changed a governed artifact, and in
-the worklog entries dated 2026-09-03 to 2026-09-07. Two facts from those
-earlier answers still bind a reader: no doctrine criterion has been amended and
-nothing has been stamped since 2026-08-27, `89c68a3` having changed three lines
-of fact in `doctrine/DOCTRINE_STATUS.md` and no stamp; and no release baseline
-has ever changed, because PSE has no version, no tag, and no published artifact.
+the worklog. Two facts from those earlier answers still bind a reader: no
+doctrine criterion's conclusion has been amended and nothing has been stamped
+since 2026-08-27; and no release baseline has ever changed, because PSE has no
+tag and no published artifact.
 
-### The commit that carries this file, 2026-09-08
+**What changed and why.** Three decisions the operator made on 2026-09-08 after
+the repository went public and a first investigation became the goal. Patches
+2, 3c and 3b from the 2026-09-03 review land in five doctrine files: patch 2
+restores to SS-4's required-field table the seven subject classes R4 decided on
+2026-08-26, which is the table Step 8's authorization schema compiles from;
+patch 3c is patch 3's twelve sound hunks with one hash translated; patch 3b is
+the one sound HYGIENE.md hunk. Step 7 is built: `tools/generate_pse.py` writes
+the schema and the four policy files from `spec/layer-model.yaml`,
+`tools/build_corpus.py` writes the two corpora, `tools/validate.py` grades them
+and refuses drift in any generated file, and `spec/pse-semantics-contract.md`
+was written last, UNRATIFIED, with an enforcement label on every rule. The
+voice pass is parked because it is not on the path to a first run.
 
-**What changed and why.** A closeout checkpoint after the publication commit
-`ac60ac4`, whose own five answers are in its `CHANGELOG.md` entry and in the
-2026-09-07 worklog entry. `ac60ac4` was pushed to `origin` late on 2026-09-07,
-replacing GitHub's initial commit by force, and the first CI run on GitHub
-failed at the step that checks the pre-commit hook is executable:
-`.githooks/pre-commit` had mode 100644 in every commit since Wave 0, and every
-earlier verification that reported it executable ran in Git Bash on Windows,
-where `test -x` is true for any file with a shebang line. This commit sets the
-mode to 100755, adds the changelog entry for that, appends a postscript to the
-2026-09-07 worklog entry, and rewrites this file to the state after the push.
+**Which surfaces moved.** Doctrine text in `SUBJECT_SELECTION.md`,
+`RETENTION.md`, `EGRESS.md`, `CREDENTIAL_LIFECYCLE.md` and `HYGIENE.md`, none
+of it a conclusion; `DOCTRINE_STATUS.md` in its pending and readings tables
+only. Schema, policy and conformance, all new. The contract, new. Three tools,
+new, plus the `schema` entry in `KERNEL_GATE`, the Makefile, and the pre-commit
+hook. `CONFORMANCE.md`, `docs/THE-GAMEPLAN.md`, `CHANGELOG.md`, the worklog,
+its archive, and this file. No stamp, no connector, no runtime.
 
-**Which surfaces moved.** `.githooks/pre-commit` in mode only, `CHANGELOG.md`,
-the worklog, and this file. No tooling content, no doctrine, no criterion, no
-stamp, no schema, no policy, no connector.
+**What validation ran and what passed.** The five validators and their
+self-tests, the twelve-case telemetry suite, `tools/validate.py --kernel` at 44
+must-pass events clean and 98 must-fail fixtures refused for the expected code
+with five self-test breaks caught, `git diff --cached --check`, the hook, and
+the kernel gate at 7 implemented, 0 failed, 1 stubbed, 4 pending. The CI run on
+`6247953` passed every step, which the previous handoff could not record.
 
-**What validation ran and what passed.** The five implemented validators, the
-hygiene self-test, the twelve-case telemetry suite, `git diff --cached --check`,
-the hook, and the kernel gate at 6 implemented, 0 failed, 1 stubbed, 5 pending,
-on the working tree. The CI run on `ac60ac4` passed every step before the hook
-mode check, failed there, and did not reach the steps after it. The CI run on
-this commit is the check that matters for the fix, and it runs after the push.
+**Whether a release baseline changed.** No. `main` moves.
 
-**Whether a release baseline changed.** No release baseline changed. `main`
-moved and is pushed to `origin` at `github.com/JTC-byte/PLAINSIGHT`.
-
-**What remains open or deferred.** The repository is private while the operator
-finishes account setup and is intended to be public; branch protection on
-`main` and secret scanning wait on that flip, because the free plan offers
-neither on a private repository. GitHub still serves the replaced initial
-commit by hash until it collects unreachable objects, and a support request
-removes it sooner. The pre-rewrite bundle in
-`Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` is the only
-copy of the old history, and the operator decides whether to keep it. The voice
-pass: 50 chunks have drafts and no refuter verdict, nothing is applied, and
-whether `docs/PLAINSIGHT-FOUNDATION.md` is in scope is the operator's call,
-section 4. Patches 2 through 4 as stated above. Everything in sections 3 and 4.
+**What remains open or deferred.** Patch 4b and its four Class F decisions.
+Every stamp in section 4. The provisioning the operator is doing in parallel,
+section 3. Step 8 onward. The parked voice pass. Everything in section 4.
 
 ---
 
 ## 1. Where the project is
 
-The doctrine is committed and has now been adversarially reviewed twice. The
-first two rank-1 files went through fourteen agents on 2026-08-26; the four newer
-files and the five newer criteria went through five lenses and five verifiers on
-2026-09-03. Two blockers were confirmed, both the same defect, and both are
-drafted as a patch rather than applied. Patch 1, the review's fact
-corrections, is applied. Patches 2 through 4 wait on the operator.
+The doctrine is committed, twice reviewed, and now carries the review's fact
+corrections and precision edits. One patch remains, and it is the one an agent
+may draft and never decide.
 
-Three build steps are committed in `f4e00e1`: Step 5's layer model, which is
-the single source the schema and policy are generated from, Step 6's selector
-registry, and Step 4's cast draft. The cast is unsealed, so nothing can be
-scored and SS-14 item 6 still refuses all collection.
+Steps 4, 5, 6 and 7 are committed. The layer model is the single source; the
+schema, the four policy files and both corpora are generated from it and
+nothing else writes them; a hand edit to any of them refuses at the hook, at
+`make preflight`, and at the kernel gate. Rung 2 of the conformance ladder
+exists and runs. The contract exists with a version and explains, with a label
+on every rule, which surface enforces it and which rules nothing enforces yet.
 
-The operator's order of work, stated 2026-09-05, is the documentation pass first
-and then Step 7, so that Step 7 does not produce documents that need the same
-pass. The persona replacement half of that pass is committed. The voice half is
-drafted, harvested to
-`Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/`, and applied
-nowhere; section 4 states its numbers. Step 7 is unblocked and not started, and
-two mapping reports for it sit in the same directory.
+The operator's goal, stated 2026-09-08, is a first full investigation against
+consenting subjects who will confirm the findings. Those subjects are S1
+CONSENTING, the best class the program has. The gate between here and that run
+is `doctrine/SUBJECT_SELECTION.md` SS-14 item 6: eight artifacts stamped and a
+four-check preflight passing in the runner process. Two of the eight now exist
+as the contract's sections 5 and 12, unstamped. Steps 8 through 12 build the
+rest on LOCAL. The operator provisions the ISOLATED environment, the collection
+personas, the SIMs, the mobile egress and the consent records in parallel, per
+the provisioning plan outside this repository, and the two tracks rejoin at the
+first live run.
 
-The repository received its first push on 2026-09-07 and is private while the
-operator finishes account setup, with public as the intended state. The model,
-stated by the operator
-on 2026-09-07, is one local instance where experiments run and one public
-repository that receives `main` at closeouts. Nothing about that model is new
-to the repository: case material never enters git under `doctrine/RETENTION.md`
-RT-15 and the ignore rules, selectors never enter a tracked file under
-`AGENTS.md` section 4, and the values that were in the history are now removed
-from every commit, so the history is publishable and the local instance holds
-its private material on the filesystem rather than in git. The commit-time scan
-that would enforce RT-15 is the D-001 stub and checks nothing until Step 8.
-
-Nothing has touched a platform. No account exists. No connector exists.
+The repository is public at `github.com/JTC-byte/PLAINSIGHT` with the lockdown
+applied. Nothing has touched a platform. No account exists. No connector
+exists.
 
 ## 2. What exists
 
 | Path | State |
 |---|---|
-| `LICENSE`, `NOTICE` | Committed in the commit that carries this file. Apache License 2.0, and the notice naming the copyright holder and the ZMeta derivation without a compatibility claim. |
-| `.gitattributes` | Committed in the commit that carries this file. LF in the index and on every checkout. |
+| `LICENSE`, `NOTICE`, `.gitattributes` | Committed in `ac60ac4`. |
 | `CLAUDE.md` | Committed. Advisory. R6 amended 2026-08-27. |
-| `AGENTS.md` | Committed. Section 5 carries the gate commands and the PyYAML dependency, both from `f4e00e1`. Section 8, the handoff standard and the closeout rule, landed in `98f3433`, which also added the section 6 rule that every matrix row moves the changelog and both process records. Section 4 states, as of the commit that carries this file, that the repository's own coordinates are not handles under its rule. |
-| `CHANGELOG.md` | **Committed in `98f3433`**, backfilled across the first three commits. From the next change onward an entry rides in the commit it describes and cites no hash. `d803213` has no entry of its own, by that rule. Every entry below the 2026-09-07 rewrite entry cites pre-rewrite hashes; that entry translates them. |
-| `doctrine/DOCTRINE_STATUS.md` | The pin of record. 58 conclusions stamped, 0 bases. |
-| `doctrine/SUBJECT_SELECTION.md` | SS-1 to SS-21. Reviewed twice. Two confirmed blockers, drafted as patch 2, not applied. Patch 1 applied 2026-09-04. |
-| `doctrine/RETENTION.md` | RT-1 to RT-19. Reviewed twice. |
-| `doctrine/EGRESS.md` | EG-1 to EG-6. Reviewed 2026-09-03. One real gap, drafted as EG-7. |
-| `doctrine/CREDENTIAL_LIFECYCLE.md` | CR-1 to CR-8. Reviewed 2026-09-03. |
-| `doctrine/HYGIENE.md` | HY-1 to HY-4. Reviewed 2026-09-03. Three claims about the recorder were false and the recorder was fixed. |
-| `doctrine/RETENTION_LEDGER.md` | **Missing.** Required at v0.1. Shape in RT-10. |
+| `AGENTS.md` | Committed. Section 5 names the gate commands; section 8 the handoff standard. Section 5's stated command list predates the seventh hook command and is corrected at the next touch. |
+| `CHANGELOG.md` | Committed. One entry per governed commit, newest first. Every entry below the 2026-09-07 rewrite entry cites pre-rewrite hashes; that entry translates them. |
+| `doctrine/DOCTRINE_STATUS.md` | The pin of record. 58 conclusions stamped, 0 bases. Two pending rows for the contract's stamp targets and one readings row for S7-R1 to S7-R7, both from the commit that carries this file. |
+| `doctrine/SUBJECT_SELECTION.md` | SS-1 to SS-21. Patches 1, 2, 3c in. SS-4's table gives `subject_class` R4's seven classes. |
+| `doctrine/RETENTION.md` | RT-1 to RT-19. Patches 1, 2, 3c in. |
+| `doctrine/EGRESS.md` | EG-1 to EG-6. Patches 1, 3c in. EG-7 is drafted in patch 4b, not applied. |
+| `doctrine/CREDENTIAL_LIFECYCLE.md` | CR-1 to CR-8. Patches 1, 2, 3c in. |
+| `doctrine/HYGIENE.md` | HY-1 to HY-4. Patches 1, 3b in. |
+| `doctrine/RETENTION_LEDGER.md` | **Missing.** Required at v0.1. Shape in RT-10. Step 11. |
 | `doctrine/DISCLOSURE.md` | **Missing, owed.** Trigger fired when RT-18 created a second egress path. |
-| `CONFORMANCE.md` | **Committed in `f4e00e1`.** The not-ZMeta claim, the four licensing conditions with three of four honestly marked absent, the five-rung ladder with four rungs it marks as unable to run, and what the kernel gate does not cover. Its section 3 and 4 counts were reconciled against the aggregator on 2026-09-04, having been written inside `f4e00e1` before the ontology entry flipped in that same commit. |
-| `spec/layer-model.yaml` | **Committed in `f4e00e1`, and reviewed.** 2,280 lines. Nine event types, 37 subtypes, 57 violation codes, 16 fixtures mapped. Eleven readings await confirmation. 31 review findings, three of them blockers: 29 repaired and two recorded as readings. |
-| `synthetic/CAST.md` | **Committed in `f4e00e1`.** DRAFT, UNRATIFIED. Three personas, four confuser pairs. Six decisions for the operator in its section 9. |
-| `synthetic/GROUND_TRUTH.yaml` | **Committed in `f4e00e1`, UNSEALED.** Placeholders only. |
-| `ontology/selectors.yaml` | **Committed in `f4e00e1`.** 19 selectors, 5 of them proposed and unstamped. Ten readings await confirmation. Relationship selectors refused, with the reason recorded. |
-| `schema/`, `policy/`, `conformance/` | Empty. Steps 7 through 9. |
-| `tools/validate_doctrine.py` | Committed. Docstring corrected to cover all nine codes. |
-| `tools/validate_hygiene.py` | Committed. Caller split for the telemetry fix. Gained the handoff tense check, `HYGIENE_HANDOFF_PRE_COMMIT_TENSE`, and a `--self-test` on 2026-09-04. |
-| `tools/validate_conformance.py` | Committed. `KERNEL_GATE` carries twelve entries: six implemented, one stub, five pending. |
-| `tools/validate_layer_model.py` | **Committed in `f4e00e1`, and hardened after review.** 33 checks, 60 self-test breaks, all refused, 48 by the expected code alone. |
-| `tools/validate_ontology.py` | **Committed in `f4e00e1`.** 16 self-test breaks, all refused. The corpus-coverage mode waits on a corpus. |
-| `tools/validate_cast.py` | **Committed in `f4e00e1`.** 6 self-test breaks, all refused. Plus `--placeholder-scan`. |
-| `tools/validate_retention.py` | Stub. Exits 0, checks nothing. D-001. |
-| `tools/gate_log.py` | Committed, then corrected in three places the review found. |
-| `tools/tests/test_gate_log.py` | **Committed in `f4e00e1`.** The first test in the repository. 12 tests, 7 deliberate breaks all refused. One fixture string became fictional in `595cc06`. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | Committed. The layer-model, ontology and cast gates, the PyYAML install and `fetch-depth: 0` landed in `f4e00e1`. The workflow token is read-only as of the commit that carries this file. The hook runs six commands, one of them the D-001 stub that checks nothing; `make preflight` runs those six plus the telemetry test. Both files' comments state that difference. Whether the hook should run the test too is a mechanism choice the operator has not made. The hook has mode 100755 as of the commit that carries this file; every commit before it had 100644, and the first CI run on GitHub is what caught it. |
-| `connectors/`, `runner/`, `app/` | Empty. Later steps. |
+| `CONFORMANCE.md` | Committed. Rewritten in the commit that carries this file to the state with rung 2 existing, seven implemented gates, eleven divergences, and both runner requirements exercised. |
+| `spec/layer-model.yaml` | Committed in `f4e00e1`, reviewed. Unchanged in content since; the generator reads it. Eleven readings await confirmation. |
+| `spec/pse-semantics-contract.md` | **Committed in the commit that carries this file. UNRATIFIED.** `pse-event-0.1`, Unlocked. Thirteen sections; every rule labelled schema, policy, runner, gate, review, rendering, or unratified. Sections 5 and 12 are SS-14 item 6 stamp targets. |
+| `spec/divergence-register.yaml` | Empty. Step 9. The contract's section 13.2 lists eleven divergences plus three that surfaced in generation. |
+| `schema/pse-event-0.1.schema.json` | **Committed in the commit that carries this file. Generated.** Draft 2020-12, one closed payload per subtype, registry keys inlined as the selector enum, confidence refused as `false`. |
+| `policy/semantics.yaml`, `policy/lineage.yaml`, `policy/producer-authority.yaml`, `policy/violation-codes.yaml` | **Committed in the commit that carries this file. Generated.** Lineage at subtype granularity with the D5 line bound to `SUBJECT_NOT_AUTHORIZED`; producer authority composed per type and subtype under `effective`; 57 codes each naming its emitter. |
+| `conformance/must-pass.jsonl`, `conformance/must-fail.jsonl` | **Committed in the commit that carries this file. Generated.** 44 events in one synthetic case covering all 37 subtypes; 98 fixtures, one break each, 52 of 57 codes covered and the five uncovered named with their reason. No value appears in either. |
+| `conformance/gate/`, `conformance/retention/`, `conformance/connector-harness/` | Empty. Steps 8 and 12. |
+| `ontology/selectors.yaml` | Committed in `f4e00e1`. 19 selectors, 5 proposed and unstamped. Ten readings await confirmation. |
+| `synthetic/CAST.md`, `synthetic/GROUND_TRUTH.yaml` | Committed in `f4e00e1`. DRAFT, UNSEALED, placeholders only. Six decisions for the operator in CAST.md section 9. |
+| `tools/generate_pse.py` | **Committed in the commit that carries this file.** The only writer of the five generated artifacts. `--check` refuses drift. Seven readings recorded. |
+| `tools/build_corpus.py` | **Committed in the commit that carries this file.** The only writer of the two corpora. `--check` refuses drift. Prints the codes with no fixture on every build. |
+| `tools/validate.py` | **Committed in the commit that carries this file.** Rung 2. `--kernel` runs both drift checks, grades both corpora with `expect_only` and no short-circuit, and runs its self-test. |
+| `tools/validate_doctrine.py`, `validate_hygiene.py`, `validate_layer_model.py`, `validate_ontology.py`, `validate_cast.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. Hygiene now governs 20 files. |
+| `tools/validate_conformance.py` | Committed. `KERNEL_GATE` carries twelve entries: seven implemented, one stub, four pending, as of the commit that carries this file. |
+| `tools/validate_retention.py` | Stub. Exits 0, checks nothing. D-001. Step 8. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | Committed. The Makefile gains `generate` and `validate-schema` and `preflight` runs eight commands; the hook runs seven, adding `tools/validate.py --kernel --quiet`; CI runs the kernel gate, which now includes it. |
+| `connectors/`, `runner/`, `app/` | Empty. Steps 10 to 13. |
 
 ## 3. What blocks
 
-**Nothing blocks a build.** The two blockers block a *schema*, which is Step 8,
-and they are one patch away.
+**Nothing blocks Step 8.** Its authorization schema compiles from SS-4's table,
+which patch 2 corrected. Its retention policy compiles from RETENTION.md, whose
+conclusions are stamped. Its gate fixtures are the three the model's map
+assigns to `conformance/gate/`, whose shapes the must-fail corpus already
+exercises. EG-7's compiled form waits on patch 4b.
 
-Three constraints on ordering rather than blocks:
+**What blocks the first live run is SS-14 item 6**, and it is a list rather
+than a step: SUBJECT_SELECTION.md and RETENTION.md per criterion, stamped;
+`policy/subject-authorization.yaml` and `schema/subject-authorization.schema.json`;
+`policy/retention.yaml`; `ontology/selectors.yaml` with its five proposed rows
+stamped; the contract's sections 5 and 12; `synthetic/CAST.md` sealed and
+hash-pinned with a confuser pair; `runner/dispatch_allowlist.yaml`; and the
+four-check preflight passing in the runner process. The sealed cast is a
+precondition for every run, consenting subjects included. The operator has been
+told the fork: provision the cast alongside the collection pool, or decide a
+Class F amendment to SS-14 item 6. Neither is decided.
 
-- **EG-2 and RT-4 both have no later date.** The case store lives in ISOLATED and
-  every blob is encrypted with a per-case key from the first write. The DMZ
-  environment therefore has to exist before the first blob does, and the
-  operator has said that environment is being stood up.
-- **The cast is unsealed, so nothing is scoreable.** SS-14 item 6 refuses all
-  collection until the cast is sealed and stamped, and sealing needs the accounts,
-  which need the SIMs.
-- **Live execution stays an operator act.** `AGENTS.md` §4's first Execution Limit
-  is unchanged. An agent builds and analyzes; the operator runs anything that
-  reaches a platform.
+**Three constraints on ordering rather than blocks.** EG-2 and RT-4 have no
+later date: the ISOLATED environment exists before the first blob. Live
+execution stays an operator act under `AGENTS.md` section 4. Accounts age, so
+the personas the operator creates now are worth more at the first run than any
+created then.
+
+**The operator's parallel track**, from the provisioning plan: a DigitalOcean
+account separate from the estate and the DMZ compartment, one host to start,
+administered through a separate Cloudflare account's Access tunnel; physical
+prepaid SIMs from a retail carrier, one per persona, provenance recorded; mobile
+egress per session-bearing persona and no commercial proxy pool; the collection
+personas on Instagram, Telegram and Discord; the consent records; a paid search
+API only if org-to-person bootstrapping is wanted, which needs EG-7 stamped. A
+research pass on the router and carrier choices ran during this session and is
+persisted outside the repository once it completes.
 
 ## 4. Known gaps
 
-- **The replaced initial commit is still served by hash.** GitHub keeps
-  unreachable commits until its own collection runs, and the repository's
-  activity view records the force-push with both hashes. A support request
-  removes it sooner. Its content is one license file and the address the
-  rewrite removed.
-- **Branch protection and secret scanning wait on the public flip.** The free
-  plan offers neither on a private repository, and both were refused on
-  2026-09-07 while the repository was private. Wiki and projects are off, and
-  Dependabot alerts and security updates are on.
-- **Hashes in the process records refer to the pre-rewrite history.** The
-  worklog, its archive, and every `CHANGELOG.md` entry below the 2026-09-07
-  rewrite entry cite the hashes they were written with, because a process
-  record is never restyled. The 2026-09-07 rewrite entry in `CHANGELOG.md` carries the table
-  that translates each of the nine. Every other tracked file cites post-rewrite
-  hashes as of the commit that carries this file.
-- **The voice pass is drafted and applied nowhere.** The 2026-09-05 workflow cut
-  sixteen files into 58 chunks and ran a lens and a refute-by-default verifier
-  per chunk. 57 lenses returned 814 edits; 6 refuters returned verdicts before
-  the session limit ended the run, and 50 did not. Nine survivor files sit in
-  `_voice-pass/`, three of them written by refuters whose verdicts never
-  returned. The applier's own checks pass 719 of the 814 drafts and refuse 95,
-  69 of those for changing a number. All 556 em dashes in tracked markdown sit
-  in the five `docs/` files the hygiene gate exempts. The continuation is a new
-  workflow, since resume is same-session only, with the refuters reading the
-  harvested drafts. The rewrite changed four of the sixteen files in path
-  lines, so the drafts anchored on those lines need re-checking before use.
-- **Whether `docs/PLAINSIGHT-FOUNDATION.md` is in scope for the voice pass is
-  undecided.** The naming-drift bullet below records that it is voice-exempt as
-  a record of intent; the pass drafted 114 edits for it across five chunks,
-  because the operator asked for all documentation. One of the two has to give.
-- **The patch set has one stale hunk**, stated at the top of this file. The
-  `DECISIONS.md` amendments of 2026-09-04 and 2026-09-07 record it.
-- **D-001.** `tools/validate_retention.py --repo-scan` is a stub. The pre-commit
-  hook calls a mechanism that performs no check. Real implementation is Step 8.
-  The 2026-09-03 review confirmed that EG-5 and RT-19 both cite the scan as
-  though it were live, and patch 3 corrects them to state the stub in place.
-- **The pre-commit hook does not run the telemetry test.** `make preflight` runs
-  seven commands and the hook runs six; CI runs the test as a step of its own.
-  Both comments now say so. Adding the test to the hook is a mechanism change
-  the operator has not made.
-- **The tense rule in `AGENTS.md` section 8 is a gate for two words and a
-  sentence for the rest.** `tools/validate_hygiene.py` refuses the two
-  pre-commit words in this file, and its `--self-test` plants each and proves
-  the refusal. That reached thirteen of the fourteen lines that were wrong at
-  `d803213`; the fourteenth had neither word, and this check does not reach it.
-- **Every basis stamp is unstamped**, all 58 criteria and the 16 D and R decision
-  rows. This is now the oldest open item in the program. The conclusions bind;
-  the reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and `docs/THE-GAMEPLAN.md`
-  §3.0 has never been read.
-- **`PLAINSIGHT-FOUNDATION.md` line 4 still reads DRAFT** and says nothing is
-  operator-ratified, while D1 through D5 are. Clearing it is the operator's act.
-- **AR-1 awaits a decision**: whether publishing a roster of accounts carrying
-  injection payloads is a public good or an accusation this system cannot verify.
-- **The ratification ladder terminates in one person.** The operator is the
-  ratifier, the maintainer and the analyst, so every operator-approval gate is
-  the operator approving their own request. Stated rather than left implicit,
-  because a control whose bypass is undocumented gets bypassed silently.
-- **The compatibility-claim check reads one file, not the tree.**
-  `tools/validate_layer_model.py` refuses the forbidden claim inside
-  `spec/layer-model.yaml` only. `docs/THE-GAMEPLAN.md` Step 9 states the
-  whole-tree version as a done-condition of `tools/validate_divergence_register.py`,
-  which does not exist. A tree scan needs two deliberate exemptions, since the
-  gameplan's own done-condition and the validator's source both quote the
-  string, so it is a small design question rather than a one-line addition.
-- **A naming drift between two rank-7 drafts.** `docs/PLAINSIGHT-FOUNDATION.md`
-  §4.4 names rung 3 of the adapter ladder `check_ontology`; the register in
-  `docs/THE-GAMEPLAN.md` §2.1 registers it as `tools/validate_ontology.py`. The
-  register is the authority and Step 6 uses that name. FOUNDATION is
-  voice-exempt as a record of intent, and no voice edit has been applied to it.
-- **Two review findings were refuted on grounds worth remembering**, so they are
-  not re-raised next session. `count_only` is defined nowhere in doctrine, so the
-  social web of named nodes is permitted rather than refused, and doctrine
-  deliberately has no sensitivity axis for a category of data: RT-1 puts a
-  criminal record on the same case clock as a follower count, which is a live
-  question and not a defect.
+- **Patch 4b is the one remaining Class F draft.** EG-7 third-party host
+  declaration, CR-3's environment-variable item, CR-6's clearing act, EG-2's
+  vault-key custody sentence. Each lands unratified and refuses until stamped.
+  Six hunks; applies to this tree; the clone with it applied counts 59
+  criteria.
+- **Seven generation readings await confirmation, S7-R1 to S7-R7.** S7-R1 is the
+  consequential one: which optional payload fields a subtype may carry, decided
+  by a stated rule because the model is silent. Its cost is visible in
+  `policy/semantics.yaml` under each type's `allowed`: a probe's six free
+  optionals on all three phases, an adjudication's `entity_id` on all nine
+  dispositions. The remedy is an optional list per subtype in the model,
+  Class B.
+- **Two layer-model readings shape the schema and are unstamped.** LM-R1, which
+  nine types; LM-R2, that no numeric confidence exists. Reversing LM-R2 is five
+  edits in a stated order and the validator refuses any proper subset.
+- **Five codes have no fixture, by design.** `SCOPE_DRIFT_UNADJUDICATED` is a
+  gate chain rule, Step 8. `EGRESS_STRATUM_REFUSED` fires at the crossing.
+  `INCIDENTAL_ESTIMATE_MISSING` and `ADJUDICATION_REASON_MISSING` are runner
+  rules. `REASON_NAMES_SUBJECT` is a review rule with no mechanism.
+  `tools/build_corpus.py` prints the list on every build.
+- **One promised fixture does not exist.** The model's `temporal_never_repaired`
+  rule says the corpus carries a fixture for a producer that fills
+  `asserted_at` from `observed_at`; the fixture map names none, and L-15 refuses
+  a name outside the tool's list, so adding it edits
+  `tools/validate_layer_model.py` and `docs/THE-GAMEPLAN.md` section 2.3
+  together.
+- **`ABSENCE_CLAIMED_WITHOUT_CANARY` fires on every `attempted_and_absent`.** No
+  canary proof exists before Step 12, so there is no exemption, and the
+  must-pass corpus avoids the value rather than pretending a proof.
+- **`tools/validate_ontology.py --corpus` is owed.** Its deferral said until a
+  corpus exists; `conformance/must-pass.jsonl` is one. Rung 2 enforces the same
+  property meanwhile, because the schema inlines the registry keys.
+- **`AGENTS.md` section 5 lists six hook commands and the hook runs seven.** A
+  one-paragraph correction at the next touch of that file.
+- **The voice pass is parked.** 814 drafts, 6 refuter verdicts, nothing
+  applied, harvested in `_session-artifacts/2026-09-05-plainsight-voice-pass/`.
+  The 16 drafts on this file are dead, this file having been rewritten three
+  times since. Doctrine anchors moved again with patches 2 and 3c, so any
+  resumption re-checks anchors first. Not on the path to a first run.
+- **The public repository's non-provider secret scanning would not enable** on
+  this plan. Branch protection, secret scanning and push protection are on.
+  The replaced initial commit is still served by hash until GitHub collects it.
+- **D-001.** `tools/validate_retention.py --repo-scan` is a stub. Step 8. The
+  corpora carry only bracketed placeholders so the real scan finds nothing to
+  refuse there.
+- **The cast is unsealed**, so nothing is scoreable and SS-14 item 6 refuses all
+  collection. Sealing needs the operator's SIMs and accounts and the six
+  decisions in CAST.md section 9.
+- **Every basis stamp is unstamped**, the oldest open item in the program.
+- **`PLAINSIGHT-FOUNDATION.md` line 4 still reads DRAFT.** The operator's act.
+- **AR-1 awaits a decision.**
+- **The ratification ladder terminates in one person**, stated so the bypass is
+  documented.
+- **The compatibility-claim check reads one file, not the tree.** Step 9.
+- **Two review findings were refuted on grounds worth remembering**: `count_only`
+  is defined nowhere in doctrine, so the social web of named nodes is permitted;
+  and doctrine has no per-category clock, which is a live question in
+  DECISIONS.md part 6 rather than a defect.
 
-## 5. The two 2026-09-03 reviews, and why their numbers differ
+## 5. How Step 7 was verified, and what it did not verify
 
-**The doctrine review.** Five lenses raised 92 findings; five verifiers
-instructed to refute confirmed 21, downgraded 35 and refuted 27. Deduplicated: 2
-blockers, 6 majors. The refutation rate is the useful number, and its cause is
-consistent: a reviewer reads one criterion, does not find the answer, and does
-not check the sibling file that has it. SS-16 alone answered three findings that
-declared doctrine silent.
+The generated artifacts are checked three ways. `tools/generate_pse.py --check`
+and `tools/build_corpus.py --check` prove the files on disk are what the model
+and the fixture tables generate. `tools/validate.py` proves the schema and
+policy refuse what the corpus says they refuse, for the stated code and, where
+the model requires it, for that code alone. Its self-test removes a denylist
+group, grants a connector authority over clusters, drops the D5 required parent,
+forgets a selector's GENERATED provenance, and drops the nested-hit code, and
+asserts the matching fixture stops failing each time, so the runner is
+load-bearing rather than coincident.
 
-**The layer-model review.** 31 findings, 3 blockers, 18 majors, all applied and
-none refuted. The difference is method rather than luck: that reviewer mutated
-the model and called the validator, so it reported what a check does rather than
-what it appears to do, and a measured result has nothing to refute. Read that
-way, its eighteen majors are one finding said eighteen times, that a check which
-cannot refuse is not a check, which is RT-9's rule turned on the tooling.
-
-The lesson for the next review is to make the reviewer run the mechanism wherever
-one exists, and to reserve the refute-by-default verifier pass for findings about
-prose, where a reader can be wrong about what a document says.
-
-Full record, including every verdict with its quoted evidence, in
-`Z-ISR/_session-artifacts/2026-09-03-plainsight-doctrine-review-2/`.
+What this does not verify. The corpus was authored by the same session that
+wrote the generator, and the systematic denylist fixtures are derived from the
+model the schema is derived from, so a misreading shared by both would be
+self-consistent. The thirteen named fixtures and the code-specific ones are
+explicit mutations and do not share that weakness. No second pass has read the
+generator against the model; that is the review this step is owed, on the
+2026-09-04 method: lenses that run the mechanism and quote the result.
 
 ## 6. Session context that lives outside this repository
 
-**Durable, on disk:**
-
 | What | Where | Why it matters |
 |---|---|---|
-| Both doctrine review records | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | Findings, verdicts, and the four patches plus the split `patch-3b`. The second directory is what the next session reads. |
-| The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The three draft-and-verify passes behind `89c68a3` and `f907a7a` with every finding and verdict, the scripts that applied each edit, the workflow scripts, both commit messages, and a README that indexes them. Its hashes are pre-rewrite. |
-| The 2026-09-05 voice pass and Step 7 maps | `Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/` | 57 lens drafts and 6 refuter returns as JSON, the nine survivor files, the workflow script and journal, the applier with its chunk table and mechanical check, and the two Opus mapping reports for Step 7. A README indexes them. |
-| The 2026-09-07 history rewrite | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The replacement map and mailmap the rewrite ran with, the commit map from old to new hashes, and a bundle of the complete pre-rewrite history, which is the only copy of it and still carries the values the rewrite removed. |
-| Measured Sherlock review | `../Sherlock/sherlock/CAPABILITIES.md` | 64 KB. Source of the 481/429/414 site counts and the 78.8 percent false-positive measurement. |
-| Sherlock clone and image | `../Sherlock/sherlock/`, `sherlock-local:0.16.1` | Commit `9100f9d`, 477 MB image, rebuildable. |
-| DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The operator's wider compartmentalization work. Its dead-drop shape is the contrast EG-3 is measured against. |
-| Tool clones and workflow journals | The Wave 0 session scratchpad, `<wave-0-scratchpad>/` in the documents that cite it | All six audited tools plus nine more, with git history, and 202 agent transcripts. In a temp directory any cleanup can remove. Copy before relying on them. |
-
-**Published briefings, on claude.ai:** the Sherlock Field Manual, PLAINSIGHT
-audit and system design, and PLAINSIGHT Foundation. Renderings of the three
-`docs/` files. Nothing is in them that is not in the repository.
+| Both doctrine review records, the patches, `patch-3c` and `patch-4b` | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | DECISIONS.md's 2026-09-08 amendment states what landed and what remains. |
+| The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies. Pre-rewrite hashes. |
+| The 2026-09-05 voice pass and Step 7 maps | `Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/` | The parked drafts, and the two mapping reports the generator was built from. |
+| The 2026-09-07 history rewrite and its verification records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history, and under `verification/` the three workflow results, edit lists and commit messages of that session. Carries the removed values; unshared. |
+| The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, what the agent builds, and the critical path to a first S1 run. |
+| DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The compartmentalization invariants the ISOLATED environment inherits. |
+| Measured Sherlock review, clone and image | `../Sherlock/sherlock/CAPABILITIES.md`, `../Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
+| Tool clones and workflow journals | The Wave 0 session scratchpad | Fifteen clones with history and 202 agent transcripts. Temp; copy before relying on them. |
 
 **One measurement worth re-running rather than trusting.** Tool liveness in
-`docs/OSINT-COP-tool-review.md` reflects 2026-08-26 and rots fast. Four of the
-six tools were already dead at audit time. Re-probe before relying on any verdict
-there.
+`docs/OSINT-COP-tool-review.md` reflects 2026-08-26. Re-probing is an operator
+act.
 
 ## 7. Standing rules a new session should not have to rediscover
 
-- No agent executes a connector against a live platform. `AGENTS.md` §4.
-- No agent lands a Class F change. Drafting is expected, and four drafts are
-  waiting.
-- No selector belonging to a natural person enters a tracked file, including
-  worklog entries and commit messages. A synthetic value is still a value, which
-  is why the cast is placeholders and `--placeholder-scan` refuses a filled one.
+- No agent executes a connector against a live platform. `AGENTS.md` section 4.
+- No agent lands a Class F change. Patch 4b is the draft that is waiting.
+- No selector belonging to a natural person enters a tracked file, including the
+  corpora, which carry bracketed placeholders only.
+- **Never edit a generated file by hand.** `schema/`, `policy/`, and the two
+  corpora are written by `tools/generate_pse.py` and `tools/build_corpus.py`
+  alone; edit the model or the fixture tables and regenerate. The hook, `make
+  preflight` and the kernel gate refuse drift.
 - Unratified binds nothing, and mechanisms read `DOCTRINE_STATUS.md` rather than
-  the document they enforce.
-- Repo prose follows Register 1 in `CLAUDE.md` §4. Published briefings follow
-  `docs/DOCUMENT_STANDARD.md`. Doctrine never becomes a briefing.
-- The operator's order of work is the documentation pass, then Step 7.
-- **The public repository is `origin`, `github.com/JTC-byte/PLAINSIGHT`, and
-  `main` is the only branch that goes there.** A push is an operator-instructed
-  act under `AGENTS.md` §4 and follows a closeout. Experiments run in the local
-  instance and reach `main` only through the closeout. Commits carry the GitHub
-  no-reply address as author, and the repository-local `user.email` is set to
-  that address.
+  the document they enforce. The contract's sections 5 and 12 bind nothing until
+  their rows carry a stamp.
+- Repo prose follows Register 1 in `CLAUDE.md` section 4; the contract is
+  governed prose and the hygiene gate checks it.
+- The operator's order of work, decided 2026-09-08: Step 8 onward toward a first
+  run; the voice pass is parked.
+- **The public repository is `origin`, and `main` is the only branch that goes
+  there.** A push is an operator-instructed act and follows a closeout. Commits
+  carry the GitHub no-reply address.
 - **Hashes in the worklog, its archive, and every changelog entry below the
-  2026-09-07 rewrite entry are pre-rewrite.** That entry translates them. A hash in any other tracked file is post-rewrite.
-- The gates need PyYAML. `make preflight` runs the five implemented
-  validators, the telemetry test and the D-001 stub. `make test` runs the
-  test suite alone. The pre-commit hook runs the same set less the telemetry
-  test, which CI runs as a step of its own.
+  2026-09-07 rewrite entry are pre-rewrite.** That entry translates them.
+- The gates need PyYAML and jsonschema. `make preflight` runs eight commands; the
+  hook runs seven, leaving the telemetry test to CI.
 - **The worklog holds ten live entries against its ten-entry cap.** The archive
-  at `docs/plainsight_worklog_archive.md` holds the four oldest, and the next
-  closeout moves the oldest live entry there before it adds one. The hygiene
-  gate refuses an eleventh.
-- `_voice-pass/` is ignored by `.gitignore`. Nothing in it is applied, and it is
-  deleted once the voice pass lands.
+  holds five. The next closeout moves the oldest live entry there first.
 - Write the handoff in the tense of the tree the commit will create, per
-  `AGENTS.md` section 8. This file was wrong about that in three commits.
-- Only CI on Linux checks a file mode. Git Bash on Windows reports any file with
-  a shebang line as executable, so a local `test -x` proves nothing about the
-  mode git records.
-- Two harness facts that cost earlier sessions time: a subagent cannot write a
-  report file outside the repository, so a review agent returns findings as text
-  and the parent persists them; and a Bash heredoc breaks on an apostrophe, so
+  `AGENTS.md` section 8.
+- Only CI on Linux checks a file mode. The Edit tool on Windows writes CRLF into
+  an existing file; `.gitattributes` normalizes the index, and the working copy
+  is normalized before the battery so the hook parses.
+- Two harness facts: a subagent cannot write outside the repository, so the
+  parent persists its reports; and a Bash heredoc breaks on an apostrophe, so
   prose files are written with the Write tool.

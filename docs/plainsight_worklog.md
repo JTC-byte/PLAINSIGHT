@@ -15,89 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-08-27, Step 2 closed out. Every doctrine conclusion recorded.
-
-**Class:** F throughout. **Drafted and transcribed by an agent, not landed.**
-
-The session crossed midnight, so the earlier entries carry 2026-08-26 and this
-one carries 2026-08-27. That is what was true when each was written.
-
-Put the remaining open items to the operator. Recorded: **D6 nine event types,
-D7 `pse-event-0.1` with an Unlocked status header, D8 one repo with the lane
-boundary and the split trigger recorded, R8's v0.1 bystander set closed at
-`count_only | refuse`.** D6 was the item actually blocking the build, because
-`spec/layer-model.yaml` is the single source the schema and policy enums are both
-generated from and it could not be written without the event-type set.
-
-**One correction to what the operator had been told.** A previous entry and the
-handoff both described the open set as D6, D7, D8 and R8. That was incomplete:
-twenty-two of the thirty-five SS and RT criteria still carried no conclusion
-stamp, because only the ones tied to a stamped D or R item had received one, and
-an unstamped criterion refuses. The full open set was put to them in the same
-round and the record now matches.
-
-The operator chose to stamp the mechanism criteria as drafted and to have the
-four that encode a choice put individually. Those four:
-
-- **RT-6, the incidental TTL: 7 days, non-extendable.** As drafted.
-- **RT-11, `SHRED_FAILED` blast radius: system-wide, cleared only by a passing
-  `verify_shred`.** As drafted, and the logged-override alternative was offered
-  and declined.
-- **SS-2, consent shape: per-case, revocable, explicit expiry.** As drafted.
-  Standing consent per person was offered, and declined despite the friction it
-  imposes on the calibration baseline population.
-- **RT-14, demo and export material: changed.** The operator added a carve-out
-  the drafts did not contain.
-
-### RT-18, the change the operator made
-
-The drafted rule was that nothing from a non-synthetic case leaves the case
-boundary and demos are built on the cast. The operator added: unless it is to
-share with law enforcement or another appropriate agency, in which case the
-entire case should be exportable.
-
-That is a second egress path, so it is written as its own criterion rather than
-as an exception clause. **RT-18 binds the disclosure export to an active RT-17
-freeze**, which is what stops it becoming a general-purpose export with a
-serious-sounding name and means every disclosure inherits the freeze's
-requirement to name the obligation it serves. It exports the complete case, it is
-a logged act naming the receiving agency, it is recorded in the ledger, it does
-not alter the shred path, and the interface states at the moment of export that
-the copy is permanently outside every mechanism here.
-
-**RT-18 deliberately inverts data minimization**, and that is recorded in the
-criterion rather than left as a quirk. Design gate 7 makes every projection lossy
-and enforces citation completeness and minimization together. A disclosure export
-enforces completeness and refuses to minimize, because handing an agency a
-thinned subset of the evidence misrepresents what was found, and choosing which
-parts they see is not a decision this project is positioned to make. It is the
-only place in the system where that is true.
-
-**A deferral trigger fired as a result.** `docs/THE-GAMEPLAN.md` §2.2 defers
-`doctrine/DISCLOSURE.md` until a second egress path exists. RT-18 is that path.
-`DISCLOSURE.md` is now owed rather than deferred, and RT-14 with RT-18 stands in.
-
-### State
-
-All 55 doctrine items carry a recorded conclusion. **Every basis is unstamped**,
-at the operator's choice, so `PLAINSIGHT-FOUNDATION.md` §3 and
-`THE-GAMEPLAN.md` §3.0 remain unread reasoning behind stamped conclusions. Two
-housekeeping items follow from the stamps and are the operator's: the DRAFT
-header at `PLAINSIGHT-FOUNDATION.md` line 4 still says nothing is
-operator-ratified, and D1 through D5 now are.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched. Voice and PII gates clean. Criterion counts, cross-references and table
-integrity re-verified after each batch.
-
-**Not done, deliberately:** no commit, no basis stamps, and `DISCLOSURE.md` not
-written.
-
-**Next:** the operator commits. Then Step 4 and Step 5, which are independent of
-each other and both unblocked.
-
----
-
 ## 2026-08-27, the doctrine gates. Written before the first commit.
 
 **Class:** C (tooling) plus A (documentation).
@@ -1479,3 +1396,137 @@ private when the lockdown settings ran, so branch protection was refused on the
 free plan and secret scanning reports disabled; wiki and projects are off, and
 Dependabot alerts and security updates are on. The visibility is the operator's
 setting and is recorded here as found.
+
+---
+
+## 2026-09-08, the repository goes public, the review's patches land, and Step 7 is built.
+
+**Class:** B for the schema, the four policy files, the two corpora and the
+contract, all new and all generated or written from the layer model; B for the
+doctrine text of patches 2, 3c and 3b, of which patch 2's change to SS-4's
+table is Class F by effect, decided by the operator as R4 on 2026-08-26 and
+instructed for landing today; C for three new tools, the `schema` entry in the
+aggregator, the hook's seventh command and the Makefile targets; A for
+`CONFORMANCE.md`, `docs/THE-GAMEPLAN.md`, the pin of record's pending and
+readings rows, and the records. No stamp. Patch 4 is not applied. The commit is
+executed by the agent on the operator's instruction of 2026-09-08 for that act,
+with the operator as author, per R6 as amended.
+
+### The harvest
+
+The previous session ended at `6247953` and nothing followed it. Its three
+verification workflow results, the edit lists that applied each record, the
+three commit messages and the rewrite script lived only in the session directory
+and are now under `verification/` in
+`Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/`, indexed in
+that README. CI on `6247953` is green on every step, which the handoff could not
+record. A dry run of the patches against the tree refuted one sentence in the
+handoff: the hash rewrite did move a patch-3 anchor, the status line in
+`doctrine/CREDENTIAL_LIFECYCLE.md` whose `a54061b` became `4c5cd25`, so patch 3
+with the HYGIENE.md exclusion no longer applied. `patch-3c` is patch 3 with
+that one token translated, and DECISIONS.md gained a dated amendment.
+
+### The repository goes public
+
+The operator flipped it during the session. Branch protection on `main` now
+refuses force-pushes and deletions, requires linear history, includes admins,
+and sets no required status check, because required checks would reject every
+direct closeout push. Secret scanning and push protection are on. Non-provider
+pattern scanning would not enable through the API on this plan.
+
+### Three decisions
+
+The operator asked for a first full investigation against consenting subjects
+and, after the distance to it was laid out, decided three things: the voice
+pass is parked, since it is not on the path to a run; patches 2, 3c and 3b land;
+Step 7 starts. The patches applied cleanly to the working tree, the battery
+stayed green with doctrine at 58, and patch 4 was regenerated against the
+result as `patch-4b`, six hunks, which a scratch clone shows applying with
+`tools/validate_doctrine.py` counting 59 there. It is not applied.
+
+### Step 7
+
+`tools/generate_pse.py` reads the layer model and the registry and writes the
+schema and the four policy files; `--check` regenerates in memory and refuses
+drift. The generation contract left about twenty things unstated, and the
+generator takes seven readings rather than inventing rules, recorded as S7-R1 to
+S7-R7 in the schema's `$comment`, in `policy/semantics.yaml`, in the contract
+and in the pin. The first run of S7-R1, the rule for which optional fields a
+subtype may carry, put `exit_criterion` on every SYSTEM_EVENT subtype including
+the heartbeats; the rule was tightened so a field a rule requires is not a free
+optional and a condition's value narrows to the subtypes whose enum carries it,
+and the second run put it on CREDENTIAL_STATE alone.
+
+`tools/validate.py` is rung 2. Schema failures are named through a code map
+rather than reported as keywords; producer authority runs before any semantic
+check; the denylist walks the payload recursively; a rule that requires a field
+owns that field's shape failures, which is how a missing `purpose_hash` fires
+`CASE_PURPOSE_UNBOUND` rather than the generic code; lineage is checked at
+subtype granularity with the D5 line bound to `SUBJECT_NOT_AUTHORIZED`; the
+citation, promotion, adjudication and circularity rules resolve against a case
+index. It does not short-circuit on a schema failure at all, and records the
+checks it could not reach when a type is unknown. Its self-test removes five
+things and asserts the matching fixture stops failing each time.
+
+`tools/build_corpus.py` writes one synthetic case of 44 events covering all 37
+subtypes in one lineage chain, and 98 must-fail fixtures: the thirteen the
+model's map names for this corpus, the D5 shape twice, one per prohibited group
+of every type, and one per envelope, lineage, producer and rule code. Every
+value is a bracketed placeholder and every id is a uuid of a label. The first
+grading run failed 13 fixtures for two causes, a null `motivated_by` on a seed
+run read as a missing field and the producer check running against a subtype
+the schema had already refused, plus one `false`-schema error that jsonschema
+reports with no validator and an empty path. All three are fixed in the runner
+and the second run graded clean. Five codes have no fixture and the builder
+prints them on every run.
+
+`spec/pse-semantics-contract.md` was written last, after everything above was
+green: thirteen sections, an enforcement label on every rule, sections 5 and 12
+marked as the stamp targets SS-14 item 6 names, and the seven readings and the
+one promised-but-absent fixture stated in section 13. The `schema` entry in
+`KERNEL_GATE` turned implemented, the hook and `make preflight` gained
+`tools/validate.py --kernel`, and the gate reports seven implemented, one stub,
+four pending. Hygiene governs the contract as its twentieth file and found no
+voice or citation defect.
+
+### The provisioning question
+
+The operator asked where to host the ISOLATED environment, which SIMs to buy,
+and what to stand up in Cloudflare or DigitalOcean. The answer is
+`Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
+outside the repository because it names providers and hardware the doctrine
+deliberately does not. A follow-up on routers and carriers ran as a workflow of
+36 agents on Opus, seven research lenses and one refuter per decision-bearing
+claim under a refute-by-default brief with a fetched page required: 18 confirmed,
+10 refuted. The refutations mattered. Dual SIM is not dual modem; the topology
+lens's primary router pick, the RUTX50, has no FCC grant; the cheap MVNO phone
+plans that would do both jobs in one SIM forbid a SIM in a router in their own
+terms; the plans that permit a router are data-only, so two lines per persona
+is what the ToS-clean shape costs; and the premise that a consumer prepaid
+line's public address is stable for a session's life is unverified anywhere.
+The plan's section 10 carries the recommendation, one single-modem router per
+persona with a one-router test before a fleet, and the research is persisted
+beside it.
+
+### Agent involvement, stated precisely
+
+The parent session did the harvest, the patch dry runs, the lockdown calls, the
+provisioning plan, the generator, the validator, the corpus builder, the
+contract, the record edits and this entry. The only workflow was the research
+one, on Opus throughout, and no subagent edited a tracked file. The operator
+decided the three items, instructed the patches, and instructed the closeout
+commit. No push has been instructed at the time of writing.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine conclusion amended or stamped, patch 4 not applied, no
+voice edit applied, no generated file edited by hand.
+
+**Not done:** Step 8 onward; the patch 4b decision; the review this step is
+owed, on the 2026-09-04 method; `tools/validate_ontology.py --corpus`, whose
+trigger has fired; the `AGENTS.md` section 5 command count; `RETENTION_LEDGER.md`
+and `DISCLOSURE.md`; the cast; every basis stamp; the one-router test, which is
+the operator's.
+
+**Next:** Step 8, compiling the doctrine to policy, beginning with the
+authorization schema from SS-4's corrected table. In parallel, the operator's
+track from the provisioning plan.

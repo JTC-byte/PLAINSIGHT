@@ -335,3 +335,86 @@ and R8 remain pending and were not put to the operator.
 **Next:** the operator reviews the transcription in `DOCTRINE_STATUS.md` and
 commits it, which is also the repository's first commit. Then Step 4, the
 synthetic cast, which SS-17 has moved onto the critical path for reach.
+
+---
+
+## 2026-08-27, Step 2 closed out. Every doctrine conclusion recorded.
+
+**Class:** F throughout. **Drafted and transcribed by an agent, not landed.**
+
+The session crossed midnight, so the earlier entries carry 2026-08-26 and this
+one carries 2026-08-27. That is what was true when each was written.
+
+Put the remaining open items to the operator. Recorded: **D6 nine event types,
+D7 `pse-event-0.1` with an Unlocked status header, D8 one repo with the lane
+boundary and the split trigger recorded, R8's v0.1 bystander set closed at
+`count_only | refuse`.** D6 was the item actually blocking the build, because
+`spec/layer-model.yaml` is the single source the schema and policy enums are both
+generated from and it could not be written without the event-type set.
+
+**One correction to what the operator had been told.** A previous entry and the
+handoff both described the open set as D6, D7, D8 and R8. That was incomplete:
+twenty-two of the thirty-five SS and RT criteria still carried no conclusion
+stamp, because only the ones tied to a stamped D or R item had received one, and
+an unstamped criterion refuses. The full open set was put to them in the same
+round and the record now matches.
+
+The operator chose to stamp the mechanism criteria as drafted and to have the
+four that encode a choice put individually. Those four:
+
+- **RT-6, the incidental TTL: 7 days, non-extendable.** As drafted.
+- **RT-11, `SHRED_FAILED` blast radius: system-wide, cleared only by a passing
+  `verify_shred`.** As drafted, and the logged-override alternative was offered
+  and declined.
+- **SS-2, consent shape: per-case, revocable, explicit expiry.** As drafted.
+  Standing consent per person was offered, and declined despite the friction it
+  imposes on the calibration baseline population.
+- **RT-14, demo and export material: changed.** The operator added a carve-out
+  the drafts did not contain.
+
+### RT-18, the change the operator made
+
+The drafted rule was that nothing from a non-synthetic case leaves the case
+boundary and demos are built on the cast. The operator added: unless it is to
+share with law enforcement or another appropriate agency, in which case the
+entire case should be exportable.
+
+That is a second egress path, so it is written as its own criterion rather than
+as an exception clause. **RT-18 binds the disclosure export to an active RT-17
+freeze**, which is what stops it becoming a general-purpose export with a
+serious-sounding name and means every disclosure inherits the freeze's
+requirement to name the obligation it serves. It exports the complete case, it is
+a logged act naming the receiving agency, it is recorded in the ledger, it does
+not alter the shred path, and the interface states at the moment of export that
+the copy is permanently outside every mechanism here.
+
+**RT-18 deliberately inverts data minimization**, and that is recorded in the
+criterion rather than left as a quirk. Design gate 7 makes every projection lossy
+and enforces citation completeness and minimization together. A disclosure export
+enforces completeness and refuses to minimize, because handing an agency a
+thinned subset of the evidence misrepresents what was found, and choosing which
+parts they see is not a decision this project is positioned to make. It is the
+only place in the system where that is true.
+
+**A deferral trigger fired as a result.** `docs/THE-GAMEPLAN.md` §2.2 defers
+`doctrine/DISCLOSURE.md` until a second egress path exists. RT-18 is that path.
+`DISCLOSURE.md` is now owed rather than deferred, and RT-14 with RT-18 stands in.
+
+### State
+
+All 55 doctrine items carry a recorded conclusion. **Every basis is unstamped**,
+at the operator's choice, so `PLAINSIGHT-FOUNDATION.md` §3 and
+`THE-GAMEPLAN.md` §3.0 remain unread reasoning behind stamped conclusions. Two
+housekeeping items follow from the stamps and are the operator's: the DRAFT
+header at `PLAINSIGHT-FOUNDATION.md` line 4 still says nothing is
+operator-ratified, and D1 through D5 now are.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched. Voice and PII gates clean. Criterion counts, cross-references and table
+integrity re-verified after each batch.
+
+**Not done, deliberately:** no commit, no basis stamps, and `DISCLOSURE.md` not
+written.
+
+**Next:** the operator commits. Then Step 4 and Step 5, which are independent of
+each other and both unblocked.
