@@ -145,7 +145,7 @@ python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
 
-`make preflight` runs the pre-commit hook's six commands plus the telemetry
+`make preflight` runs the pre-commit hook's seven commands plus the telemetry
 test, which the hook leaves to CI, and `make validate-kernel` runs the
 aggregator. The gate battery is defined once, in
 `KERNEL_GATE` inside `tools/validate_conformance.py`, so a new check joins it
@@ -204,13 +204,16 @@ section 8 sets for it.
 
 Doctrine items carry a per-item marker with the item, the date, and the
 ratifier. Conclusion is ratified separately from basis. The standard phrasing is
-from `zisr-recon/docs/ENTRY_CRITERIA.md`: no emitter should be built on a
-rationale the operator was never shown.
+from `../zisr-producers/recon/docs/ENTRY_CRITERIA.md`: no emitter should be
+built on a rationale the operator was never shown. That repository stood at
+`../zisr-recon/` until the 2026-09-10 consolidation, which is the path the
+dated measurements in `doctrine/` and `docs/` still name.
 
 **Unratified binds nothing, and the mechanism reads the stamp rather than the
 file.** There must be a test asserting that an unratified criterion refuses
-rather than permits. The alternative repeats the `zisr-recon/src/zisr_recon/guard.py`
-defect one level up, where an expiry check was intended and never written.
+rather than permits. The alternative repeats the
+`../zisr-producers/recon/src/zisr_recon/guard.py` defect one level up, where an
+expiry check was intended and never written.
 
 One partially stamped item does not stamp its file.
 

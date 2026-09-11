@@ -22,9 +22,13 @@ pulled/
 # Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/.
 _voice-pass/
 
-# Local operator files
+# Local operator files. LOCAL_*.md is where the account and provisioning record
+# lives, which carries mailbox addresses, account names and hardware identifiers
+# that are operator identity rather than case material. EG-4 keeps that off a
+# public tree.
 .env
 *.local.*
+LOCAL_*.md
 
 # Editor and OS residue
 .vscode/

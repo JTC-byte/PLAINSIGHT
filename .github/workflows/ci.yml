@@ -15,13 +15,16 @@ jobs:
       # Full history, not the default single commit. The attribution check at
       # the end of this job reads `git log`, and with depth 1 it would read one
       # commit body and pass a trailer anywhere below the tip.
+      # Pinned to the Node 24 majors. GitHub removes Node 20 from the runners on
+      # 2026-09-16, and checkout@v4 and setup-python@v5 both run on it, so the
+      # older pins stop working rather than warning.
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 

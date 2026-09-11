@@ -109,7 +109,9 @@ This repository reads from its siblings and writes to none of them.
   `zmeta-event-1.0` and is licensed as a private dialect by that repository's
   `AGENTS.md`.
 - `../ZMeta/zmeta-field-capture/`: the retention and evidence precedent.
-- `../zisr-recon/`: the permission-gate precedent.
+- `../zisr-producers/recon/`: the permission-gate precedent. It stood at
+  `../zisr-recon/` when that precedent was measured, and moved on 2026-09-10
+  when four producer repositories were consolidated.
 - `../ZISR COP/`: the operational client, and the source of several interface
   patterns. PLAINSIGHT is a sibling application, not a mode within it.
 
