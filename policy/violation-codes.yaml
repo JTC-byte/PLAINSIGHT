@@ -53,7 +53,8 @@ violation_codes:
     since: pse-event-0.1
     emitted_by:
     - schema
-    fires_when: event_subtype is outside the type's set
+    fires_when: event_subtype is outside the type's set, or the payload discriminator const differs from
+      it
   - code: ENUM_VALUE_INVALID
     severity: fail
     since: pse-event-0.1
@@ -110,19 +111,21 @@ violation_codes:
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: an IDENTITY_EVENT carries confidence
+    fires_when: an IDENTITY_EVENT carries confidence, rollup, weakest_seam, or score
   - code: AUTHORIZATION_RECORD_INLINED
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: an event that references the SS-4 authorization record carries its selectors
+    fires_when: an event that references the SS-4 authorization record carries its selectors, its evidence_ref,
+      or the purpose sentence rather than a reference. AUTHORIZE_EVENT, COLLECT_EVENT and SYSTEM_EVENT
   - code: CASE_PURPOSE_UNBOUND
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - semantics
-    fires_when: a GRANT lacks purpose_hash
+    fires_when: a GRANT lacks purpose_hash, or a PERMITTED decision resolves to a GRANT without one. Gate
+      fixture 14
   - code: COLLECT_HAS_CONTENT
     severity: fail
     since: pse-event-0.1
@@ -148,19 +151,20 @@ violation_codes:
     emitted_by:
     - gate
     - semantics
-    fires_when: a RUN_START has no COLLECT_EVENT PERMITTED parent
+    fires_when: a RUN_START has no COLLECT_EVENT PERMITTED parent, or the gate refuses a selector outside
+      the case authorization. Gate fixture 4
   - code: SCOPE_DRIFT_UNADJUDICATED
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - gate
-    fires_when: the composed pivot chain leaves the authorized set. SS-9
+    fires_when: the composed pivot chain leaves the authorized set. SS-9, gate fixture 5
   - code: OBSERVATION_HAS_IDENTITY
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: a PROBE_EVENT or EXTRACT_EVENT carries cluster_id
+    fires_when: a PROBE_EVENT or EXTRACT_EVENT carries cluster_id, members, accepted, band, or rationale_codes
   - code: OBSERVATION_HAS_INFERENCE
     severity: fail
     since: pse-event-0.1
@@ -172,7 +176,7 @@ violation_codes:
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: a PROBE_EVENT carries selector_type
+    fires_when: a PROBE_EVENT carries selector_type, value, or claims. Run, Item, Claim stays three levels
   - code: OBSERVATION_HAS_INLINE_RAW
     severity: fail
     since: pse-event-0.1
@@ -185,7 +189,8 @@ violation_codes:
     emitted_by:
     - denylist
     fires_when: an observation-layer or adjudication-layer payload carries review_state or its variants.
-      D3 made review_state a projection over appended events
+      D3 made review_state a projection over appended events, so a stored column is the same defect wherever
+      it appears
   - code: SELECTOR_TYPE_UNREGISTERED
     severity: fail
     since: pse-event-0.1
@@ -211,26 +216,28 @@ violation_codes:
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: a LINK_EVENT carries cluster_id
+    fires_when: a LINK_EVENT carries cluster_id, members, asserted_by, band, or rationale_codes
   - code: LINK_HAS_ACCEPTANCE
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - denylist
     - semantics
-    fires_when: a LINK_EVENT arrives with accepted true
+    fires_when: a LINK_EVENT arrives with accepted true, accepted absent, or accepted_at present. Fixture
+      12
   - code: RAW_ABOVE_OBSERVATION
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: a fusion
+    fires_when: a fusion, adjudication, or state payload re-carries raw, value, source_path, raw_span,
+      or features
   - code: FUSION_HAS_INFERENCE_FIELDS
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - denylist
-    fires_when: an IDENTITY_EVENT carries model
+    fires_when: an IDENTITY_EVENT carries model, accepted, link_type, or review_state
   - code: CLUSTER_MEMBERS_INSUFFICIENT
     severity: fail
     since: pse-event-0.1
@@ -261,7 +268,8 @@ violation_codes:
     since: pse-event-0.1
     emitted_by:
     - semantics
-    fires_when: a basis claim traces to a GENERATED origin or to a member's own emitted value
+    fires_when: a basis claim traces to a GENERATED origin or to a member's own emitted value, without
+      circularity_override
   - code: SELECTOR_ANCHOR_PROHIBITED
     severity: fail
     since: pse-event-0.1
@@ -274,7 +282,7 @@ violation_codes:
     since: pse-event-0.1
     emitted_by:
     - runtime
-    fires_when: DISPUTE or REVOKE lacks reason
+    fires_when: DISPUTE or REVOKE lacks reason, or IGNORE lacks it while the target is load-bearing
   - code: SUBJECT_CLASS_MISSING
     severity: fail
     since: pse-event-0.1
@@ -343,13 +351,13 @@ violation_codes:
     emitted_by:
     - semantics
     fires_when: a stratum-2 payload's reason sentence names or describes the subject. The payload survives
-      the shred
+      the shred, so the sentence would outlive the case material it describes. RT-2, SS-4
   - code: LINEAGE_MISSING
     severity: fail
     since: pse-event-0.1
     emitted_by:
     - lineage
-    fires_when: a subtype that requires lineage has none
+    fires_when: a subtype that requires lineage has none, or none of its required parents. Fixture 13
   - code: LINEAGE_PARENT_TYPE_INVALID
     severity: fail
     since: pse-event-0.1

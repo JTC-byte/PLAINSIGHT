@@ -2063,72 +2063,72 @@ violation_codes:
   severities: [fail, warn]
   codes:
     # Envelope and shape
-    - { code: SCHEMA_INVALID, severity: fail, since: pse-event-0.1, fires_when: the envelope violates the generated schema in a way no narrower code names }
-    - { code: VERSION_MISMATCH, severity: fail, since: pse-event-0.1, fires_when: pse_version or derived_from differs from the declared const }
-    - { code: CASE_ID_MISSING, severity: fail, since: pse-event-0.1, fires_when: case_id is absent or not a uuid. D4 keys the shred on it }
-    - { code: EVENT_TYPE_UNKNOWN, severity: fail, since: pse-event-0.1, fires_when: event_type is outside the nine }
-    - { code: EVENT_SUBTYPE_MISMATCH, severity: fail, since: pse-event-0.1, fires_when: event_subtype is outside the type's set, or the payload discriminator const differs from it }
-    - { code: ENUM_VALUE_INVALID, severity: fail, since: pse-event-0.1, fires_when: a closed-set field carries a value outside its set }
-    - { code: PAYLOAD_FIELD_MISSING, severity: fail, since: pse-event-0.1, fires_when: a field the subtype requires is absent }
-    - { code: LAYER_COLLAPSE_NESTED, severity: fail, since: pse-event-0.1, fires_when: a prohibited name appears below depth zero of the payload. Proves the denylist is recursive }
-    - { code: LAYER_FIELD_ABOVE_LAYER, severity: fail, since: pse-event-0.1, fires_when: a payload carries a field that belongs to a layer above or beside its own and no narrower code names it }
-    - { code: CREDENTIAL_VALUE_IN_PAYLOAD, severity: fail, since: pse-event-0.1, fires_when: a credential-value name or a filled argv appears in any payload. CR-3 }
-    - { code: PRODUCER_NOT_ALLOWED, severity: fail, since: pse-event-0.1, fires_when: source.producer has no authority for the type and subtype. Fires before any semantic check }
+    - { code: SCHEMA_INVALID, severity: fail, since: pse-event-0.1, fires_when: "the envelope violates the generated schema in a way no narrower code names" }
+    - { code: VERSION_MISMATCH, severity: fail, since: pse-event-0.1, fires_when: "pse_version or derived_from differs from the declared const" }
+    - { code: CASE_ID_MISSING, severity: fail, since: pse-event-0.1, fires_when: "case_id is absent or not a uuid. D4 keys the shred on it" }
+    - { code: EVENT_TYPE_UNKNOWN, severity: fail, since: pse-event-0.1, fires_when: "event_type is outside the nine" }
+    - { code: EVENT_SUBTYPE_MISMATCH, severity: fail, since: pse-event-0.1, fires_when: "event_subtype is outside the type's set, or the payload discriminator const differs from it" }
+    - { code: ENUM_VALUE_INVALID, severity: fail, since: pse-event-0.1, fires_when: "a closed-set field carries a value outside its set" }
+    - { code: PAYLOAD_FIELD_MISSING, severity: fail, since: pse-event-0.1, fires_when: "a field the subtype requires is absent" }
+    - { code: LAYER_COLLAPSE_NESTED, severity: fail, since: pse-event-0.1, fires_when: "a prohibited name appears below depth zero of the payload. Proves the denylist is recursive" }
+    - { code: LAYER_FIELD_ABOVE_LAYER, severity: fail, since: pse-event-0.1, fires_when: "a payload carries a field that belongs to a layer above or beside its own and no narrower code names it" }
+    - { code: CREDENTIAL_VALUE_IN_PAYLOAD, severity: fail, since: pse-event-0.1, fires_when: "a credential-value name or a filled argv appears in any payload. CR-3" }
+    - { code: PRODUCER_NOT_ALLOWED, severity: fail, since: pse-event-0.1, fires_when: "source.producer has no authority for the type and subtype. Fires before any semantic check" }
     # Confidence
-    - { code: CONFIDENCE_PROHIBITED, severity: fail, since: pse-event-0.1, fires_when: a numeric confidence appears on a type where the confidence section prohibits it }
-    - { code: EXTRACT_HAS_CONFIDENCE, severity: fail, since: pse-event-0.1, fires_when: an EXTRACT_EVENT carries confidence in the envelope or the payload }
-    - { code: CLUSTER_HAS_ROLLUP_CONFIDENCE, severity: fail, since: pse-event-0.1, fires_when: an IDENTITY_EVENT carries confidence, rollup, weakest_seam, or score }
+    - { code: CONFIDENCE_PROHIBITED, severity: fail, since: pse-event-0.1, fires_when: "a numeric confidence appears on a type where the confidence section prohibits it" }
+    - { code: EXTRACT_HAS_CONFIDENCE, severity: fail, since: pse-event-0.1, fires_when: "an EXTRACT_EVENT carries confidence in the envelope or the payload" }
+    - { code: CLUSTER_HAS_ROLLUP_CONFIDENCE, severity: fail, since: pse-event-0.1, fires_when: "an IDENTITY_EVENT carries confidence, rollup, weakest_seam, or score" }
     # Authorization layer
-    - { code: AUTHORIZATION_RECORD_INLINED, severity: fail, since: pse-event-0.1, fires_when: an event that references the SS-4 authorization record carries its selectors, its evidence_ref, or the purpose sentence rather than a reference. AUTHORIZE_EVENT, COLLECT_EVENT and SYSTEM_EVENT }
-    - { code: CASE_PURPOSE_UNBOUND, severity: fail, since: pse-event-0.1, fires_when: a GRANT lacks purpose_hash, or a PERMITTED decision resolves to a GRANT without one. Gate fixture 14 }
-    - { code: COLLECT_HAS_CONTENT, severity: fail, since: pse-event-0.1, fires_when: a COLLECT_EVENT carries any collected content. SS-19 }
-    - { code: INCIDENTAL_ESTIMATE_MISSING, severity: fail, since: pse-event-0.1, fires_when: a PERMITTED decision for a reaching connector lacks incidental_estimate or its reason. SS-12 }
-    - { code: BYSTANDER_DISPOSITION_OUT_OF_SET, severity: fail, since: pse-event-0.1, fires_when: bystander_disposition is outside count_only and refuse. SS-10 }
-    - { code: SUBJECT_NOT_AUTHORIZED, severity: fail, since: pse-event-0.1, fires_when: a RUN_START has no COLLECT_EVENT PERMITTED parent, or the gate refuses a selector outside the case authorization. Gate fixture 4 }
-    - { code: SCOPE_DRIFT_UNADJUDICATED, severity: fail, since: pse-event-0.1, fires_when: the composed pivot chain leaves the authorized set. SS-9, gate fixture 5 }
+    - { code: AUTHORIZATION_RECORD_INLINED, severity: fail, since: pse-event-0.1, fires_when: "an event that references the SS-4 authorization record carries its selectors, its evidence_ref, or the purpose sentence rather than a reference. AUTHORIZE_EVENT, COLLECT_EVENT and SYSTEM_EVENT" }
+    - { code: CASE_PURPOSE_UNBOUND, severity: fail, since: pse-event-0.1, fires_when: "a GRANT lacks purpose_hash, or a PERMITTED decision resolves to a GRANT without one. Gate fixture 14" }
+    - { code: COLLECT_HAS_CONTENT, severity: fail, since: pse-event-0.1, fires_when: "a COLLECT_EVENT carries any collected content. SS-19" }
+    - { code: INCIDENTAL_ESTIMATE_MISSING, severity: fail, since: pse-event-0.1, fires_when: "a PERMITTED decision for a reaching connector lacks incidental_estimate or its reason. SS-12" }
+    - { code: BYSTANDER_DISPOSITION_OUT_OF_SET, severity: fail, since: pse-event-0.1, fires_when: "bystander_disposition is outside count_only and refuse. SS-10" }
+    - { code: SUBJECT_NOT_AUTHORIZED, severity: fail, since: pse-event-0.1, fires_when: "a RUN_START has no COLLECT_EVENT PERMITTED parent, or the gate refuses a selector outside the case authorization. Gate fixture 4" }
+    - { code: SCOPE_DRIFT_UNADJUDICATED, severity: fail, since: pse-event-0.1, fires_when: "the composed pivot chain leaves the authorized set. SS-9, gate fixture 5" }
     # Observation layer
-    - { code: OBSERVATION_HAS_IDENTITY, severity: fail, since: pse-event-0.1, fires_when: a PROBE_EVENT or EXTRACT_EVENT carries cluster_id, members, accepted, band, or rationale_codes }
-    - { code: OBSERVATION_HAS_INFERENCE, severity: fail, since: pse-event-0.1, fires_when: an EXTRACT_EVENT carries link_type or model }
-    - { code: OBSERVATION_HAS_CLAIM, severity: fail, since: pse-event-0.1, fires_when: a PROBE_EVENT carries selector_type, value, or claims. Run, Item, Claim stays three levels }
-    - { code: OBSERVATION_HAS_INLINE_RAW, severity: fail, since: pse-event-0.1, fires_when: a PROBE_EVENT carries raw bytes inline rather than by sha256 reference }
-    - { code: EXTRACT_HAS_REVIEW_STATE, severity: fail, since: pse-event-0.1, fires_when: an observation-layer or adjudication-layer payload carries review_state or its variants. D3 made review_state a projection over appended events, so a stored column is the same defect wherever it appears }
-    - { code: SELECTOR_TYPE_UNREGISTERED, severity: fail, since: pse-event-0.1, fires_when: selector_type is not a key in ontology/selectors.yaml. Fixture 10 }
-    - { code: ABSENCE_CLAIMED_WITHOUT_CANARY, severity: fail, since: pse-event-0.1, fires_when: attempted_and_absent is asserted for a field whose always_present is not canary-proven. Fixture 6 }
-    - { code: EGRESS_ENVIRONMENT_REFUSED, severity: fail, since: pse-event-0.1, fires_when: a RUN_START names LOCAL as its environment. EG-6 }
+    - { code: OBSERVATION_HAS_IDENTITY, severity: fail, since: pse-event-0.1, fires_when: "a PROBE_EVENT or EXTRACT_EVENT carries cluster_id, members, accepted, band, or rationale_codes" }
+    - { code: OBSERVATION_HAS_INFERENCE, severity: fail, since: pse-event-0.1, fires_when: "an EXTRACT_EVENT carries link_type or model" }
+    - { code: OBSERVATION_HAS_CLAIM, severity: fail, since: pse-event-0.1, fires_when: "a PROBE_EVENT carries selector_type, value, or claims. Run, Item, Claim stays three levels" }
+    - { code: OBSERVATION_HAS_INLINE_RAW, severity: fail, since: pse-event-0.1, fires_when: "a PROBE_EVENT carries raw bytes inline rather than by sha256 reference" }
+    - { code: EXTRACT_HAS_REVIEW_STATE, severity: fail, since: pse-event-0.1, fires_when: "an observation-layer or adjudication-layer payload carries review_state or its variants. D3 made review_state a projection over appended events, so a stored column is the same defect wherever it appears" }
+    - { code: SELECTOR_TYPE_UNREGISTERED, severity: fail, since: pse-event-0.1, fires_when: "selector_type is not a key in ontology/selectors.yaml. Fixture 10" }
+    - { code: ABSENCE_CLAIMED_WITHOUT_CANARY, severity: fail, since: pse-event-0.1, fires_when: "attempted_and_absent is asserted for a field whose always_present is not canary-proven. Fixture 6" }
+    - { code: EGRESS_ENVIRONMENT_REFUSED, severity: fail, since: pse-event-0.1, fires_when: "a RUN_START names LOCAL as its environment. EG-6" }
     # Inference layer
-    - { code: INFERENCE_HAS_FUSION_STATE, severity: fail, since: pse-event-0.1, fires_when: a LINK_EVENT carries cluster_id, members, asserted_by, band, or rationale_codes }
-    - { code: LINK_HAS_ACCEPTANCE, severity: fail, since: pse-event-0.1, fires_when: a LINK_EVENT arrives with accepted true, accepted absent, or accepted_at present. Fixture 12 }
+    - { code: INFERENCE_HAS_FUSION_STATE, severity: fail, since: pse-event-0.1, fires_when: "a LINK_EVENT carries cluster_id, members, asserted_by, band, or rationale_codes" }
+    - { code: LINK_HAS_ACCEPTANCE, severity: fail, since: pse-event-0.1, fires_when: "a LINK_EVENT arrives with accepted true, accepted absent, or accepted_at present. Fixture 12" }
     # Fusion layer
-    - { code: RAW_ABOVE_OBSERVATION, severity: fail, since: pse-event-0.1, fires_when: a fusion, adjudication, or state payload re-carries raw, value, source_path, raw_span, or features }
-    - { code: FUSION_HAS_INFERENCE_FIELDS, severity: fail, since: pse-event-0.1, fires_when: an IDENTITY_EVENT carries model, accepted, link_type, or review_state }
-    - { code: CLUSTER_MEMBERS_INSUFFICIENT, severity: fail, since: pse-event-0.1, fires_when: a CLUSTER has fewer than two members }
-    - { code: RATIONALE_MISSING, severity: fail, since: pse-event-0.1, fires_when: rationale_codes is empty or member_seams omits a member }
-    - { code: RATIONALE_NOTE_MISSING, severity: fail, since: pse-event-0.1, fires_when: rationale code k is present without a note }
-    - { code: BAND_UNSUPPORTED, severity: fail, since: pse-event-0.1, fires_when: band almost_certain rests on codes from a single evidence class }
-    - { code: MERGE_CIRCULAR, severity: fail, since: pse-event-0.1, fires_when: a basis claim traces to a GENERATED origin or to a member's own emitted value, without circularity_override }
+    - { code: RAW_ABOVE_OBSERVATION, severity: fail, since: pse-event-0.1, fires_when: "a fusion, adjudication, or state payload re-carries raw, value, source_path, raw_span, or features" }
+    - { code: FUSION_HAS_INFERENCE_FIELDS, severity: fail, since: pse-event-0.1, fires_when: "an IDENTITY_EVENT carries model, accepted, link_type, or review_state" }
+    - { code: CLUSTER_MEMBERS_INSUFFICIENT, severity: fail, since: pse-event-0.1, fires_when: "a CLUSTER has fewer than two members" }
+    - { code: RATIONALE_MISSING, severity: fail, since: pse-event-0.1, fires_when: "rationale_codes is empty or member_seams omits a member" }
+    - { code: RATIONALE_NOTE_MISSING, severity: fail, since: pse-event-0.1, fires_when: "rationale code k is present without a note" }
+    - { code: BAND_UNSUPPORTED, severity: fail, since: pse-event-0.1, fires_when: "band almost_certain rests on codes from a single evidence class" }
+    - { code: MERGE_CIRCULAR, severity: fail, since: pse-event-0.1, fires_when: "a basis claim traces to a GENERATED origin or to a member's own emitted value, without circularity_override" }
     # Adjudication layer
-    - { code: SELECTOR_ANCHOR_PROHIBITED, severity: fail, since: pse-event-0.1, fires_when: an Account is promoted with an anchor_selector_type whose registry entry has may_anchor_entity false. Fixture 3 }
-    - { code: ADJUDICATION_REASON_MISSING, severity: fail, since: pse-event-0.1, fires_when: DISPUTE or REVOKE lacks reason, or IGNORE lacks it while the target is load-bearing }
+    - { code: SELECTOR_ANCHOR_PROHIBITED, severity: fail, since: pse-event-0.1, fires_when: "an Account is promoted with an anchor_selector_type whose registry entry has may_anchor_entity false. Fixture 3" }
+    - { code: ADJUDICATION_REASON_MISSING, severity: fail, since: pse-event-0.1, fires_when: "DISPUTE or REVOKE lacks reason, or IGNORE lacks it while the target is load-bearing" }
     # State layer
-    - { code: SUBJECT_CLASS_MISSING, severity: fail, since: pse-event-0.1, fires_when: an ASSESS_EVENT lacks subject_class. SS-18 }
-    - { code: CITATION_MISSING, severity: fail, since: pse-event-0.1, fires_when: an ASSESS_EVENT has no citations or a citation does not resolve in lineage }
-    - { code: HINT_CITED_AS_VALUE, severity: fail, since: pse-event-0.1, fires_when: a hint or constraint selector satisfies a citation for the value it constrains. Fixture 1 }
-    - { code: GENERATED_CITED_AS_OBSERVED, severity: fail, since: pse-event-0.1, fires_when: a GENERATED selector is cited with no PROMOTE generated_to_observed. Fixture 2 }
-    - { code: CITATION_UNADJUDICATED, severity: fail, since: pse-event-0.1, fires_when: a cited claim has no ADJUDICATE_EVENT VERIFY }
-    - { code: CITATION_CAVEAT_MISSING, severity: fail, since: pse-event-0.1, fires_when: a possible-band cluster is cited without a caveat }
+    - { code: SUBJECT_CLASS_MISSING, severity: fail, since: pse-event-0.1, fires_when: "an ASSESS_EVENT lacks subject_class. SS-18" }
+    - { code: CITATION_MISSING, severity: fail, since: pse-event-0.1, fires_when: "an ASSESS_EVENT has no citations or a citation does not resolve in lineage" }
+    - { code: HINT_CITED_AS_VALUE, severity: fail, since: pse-event-0.1, fires_when: "a hint or constraint selector satisfies a citation for the value it constrains. Fixture 1" }
+    - { code: GENERATED_CITED_AS_OBSERVED, severity: fail, since: pse-event-0.1, fires_when: "a GENERATED selector is cited with no PROMOTE generated_to_observed. Fixture 2" }
+    - { code: CITATION_UNADJUDICATED, severity: fail, since: pse-event-0.1, fires_when: "a cited claim has no ADJUDICATE_EVENT VERIFY" }
+    - { code: CITATION_CAVEAT_MISSING, severity: fail, since: pse-event-0.1, fires_when: "a possible-band cluster is cited without a caveat" }
     # System layer
-    - { code: DIAGNOSTIC_CARRIES_VALUE, severity: fail, since: pse-event-0.1, fires_when: a SYSTEM_EVENT carries the value it is reporting on. RT-19 }
-    - { code: FREEZE_RENEWAL_UNJUSTIFIED, severity: fail, since: pse-event-0.1, fires_when: a RETENTION_RENEWAL names no obligation or no expected resolution date. RT-17 }
-    - { code: CREDENTIAL_QUARANTINE_NO_EXIT, severity: fail, since: pse-event-0.1, fires_when: a credential enters quarantine with no written exit criterion. CR-6 }
-    - { code: CREDENTIAL_BURN_NO_FINDING, severity: fail, since: pse-event-0.1, fires_when: a credential is burned with no finding_ref naming the stratum-3 capability finding. CR-7 makes the recording the load-bearing half }
-    - { code: REASON_NAMES_SUBJECT, severity: fail, since: pse-event-0.1, fires_when: a stratum-2 payload's reason sentence names or describes the subject. The payload survives the shred, so the sentence would outlive the case material it describes. RT-2, SS-4 }
+    - { code: DIAGNOSTIC_CARRIES_VALUE, severity: fail, since: pse-event-0.1, fires_when: "a SYSTEM_EVENT carries the value it is reporting on. RT-19" }
+    - { code: FREEZE_RENEWAL_UNJUSTIFIED, severity: fail, since: pse-event-0.1, fires_when: "a RETENTION_RENEWAL names no obligation or no expected resolution date. RT-17" }
+    - { code: CREDENTIAL_QUARANTINE_NO_EXIT, severity: fail, since: pse-event-0.1, fires_when: "a credential enters quarantine with no written exit criterion. CR-6" }
+    - { code: CREDENTIAL_BURN_NO_FINDING, severity: fail, since: pse-event-0.1, fires_when: "a credential is burned with no finding_ref naming the stratum-3 capability finding. CR-7 makes the recording the load-bearing half" }
+    - { code: REASON_NAMES_SUBJECT, severity: fail, since: pse-event-0.1, fires_when: "a stratum-2 payload's reason sentence names or describes the subject. The payload survives the shred, so the sentence would outlive the case material it describes. RT-2, SS-4" }
     # Lineage and egress
-    - { code: LINEAGE_MISSING, severity: fail, since: pse-event-0.1, fires_when: a subtype that requires lineage has none, or none of its required parents. Fixture 13 }
-    - { code: LINEAGE_PARENT_TYPE_INVALID, severity: fail, since: pse-event-0.1, fires_when: a parent's type or subtype is outside the allowed set for the child }
-    - { code: LINEAGE_PARENT_UNRESOLVED, severity: fail, since: pse-event-0.1, fires_when: a based_on id resolves to no event in the case }
-    - { code: LINEAGE_PAYLOAD_BASED_ON_NOT_SUBSET, severity: fail, since: pse-event-0.1, fires_when: payload.based_on or basis_claims names an id absent from lineage.based_on }
-    - { code: LINEAGE_CROSS_CASE, severity: fail, since: pse-event-0.1, fires_when: a parent belongs to a different case_id. The shred is per case }
-    - { code: EGRESS_STRATUM_REFUSED, severity: fail, since: pse-event-0.1, fires_when: a stratum-0 or stratum-1 payload is presented for crossing to LOCAL. EG-5 }
+    - { code: LINEAGE_MISSING, severity: fail, since: pse-event-0.1, fires_when: "a subtype that requires lineage has none, or none of its required parents. Fixture 13" }
+    - { code: LINEAGE_PARENT_TYPE_INVALID, severity: fail, since: pse-event-0.1, fires_when: "a parent's type or subtype is outside the allowed set for the child" }
+    - { code: LINEAGE_PARENT_UNRESOLVED, severity: fail, since: pse-event-0.1, fires_when: "a based_on id resolves to no event in the case" }
+    - { code: LINEAGE_PAYLOAD_BASED_ON_NOT_SUBSET, severity: fail, since: pse-event-0.1, fires_when: "payload.based_on or basis_claims names an id absent from lineage.based_on" }
+    - { code: LINEAGE_CROSS_CASE, severity: fail, since: pse-event-0.1, fires_when: "a parent belongs to a different case_id. The shred is per case" }
+    - { code: EGRESS_STRATUM_REFUSED, severity: fail, since: pse-event-0.1, fires_when: "a stratum-0 or stratum-1 payload is presented for crossing to LOCAL. EG-5" }
 
   # The sixteen fixtures named in docs/THE-GAMEPLAN.md section 2.3, each mapped
   # to the rule in this file that fires it. `rule` is a dotted path the

@@ -104,6 +104,12 @@ is one edit away in this file:
   L-33  lineage.policy_shape is absent or stops requiring subtype granularity,
         so a generator following the precedent's type-granular shape drops
         required_parents and the D5 line lands in no policy.
+  L-34  A violation_codes entry carries a key outside the five, or no
+        fires_when. Both are the signature of an unquoted flow mapping whose
+        sentence contains a comma: YAML ends the value at the comma and turns
+        the rest into keys. The file still parses, so every other check passes
+        and the compiled policy documents the code with half a sentence. This
+        was found on 2026-09-08 with 17 of 57 entries truncated.
 
 `--self-test` breaks the loaded model in memory once per direction a check
 guards and asserts the refusal. doctrine/HYGIENE.md section 2: when a check is
@@ -214,6 +220,14 @@ CREDENTIAL_STATES = ["active", "quarantined", "burned"]
 #: RT-9's five checks, each once. A receipt of [1, 1, 1, 1, 1] is one check
 #: counted five times, which RT-9 says is not a check.
 SHRED_CHECKS = [1, 2, 3, 4, 5]
+
+#: The only keys a violation_codes entry may carry. Anything else means the
+#: entry was written as an unquoted YAML flow mapping whose fires_when sentence
+#: contains a comma: in flow context the comma starts a new mapping entry, so
+#: the sentence is truncated at it and the remainder becomes null-valued keys.
+#: The parse succeeds, so nothing else notices, and the compiled policy carries
+#: a code documented by half a sentence.
+CODE_ENTRY_KEYS = {"code", "severity", "since", "fires_when", "emitted_by"}
 #: The envelope's required set. D4 keys the crypto-shred on case_id.
 ENVELOPE_REQUIRED = ["pse_version", "derived_from", "case_id", "event", "source", "payload"]
 
@@ -1494,6 +1508,24 @@ def check(model: dict, text: str) -> list[Finding]:
             f.append(Finding("LM_CODE_MALFORMED", f"violation_codes.codes {code}", f"severity {entry.get('severity')!r} is not in violation_codes.severities", "use a declared severity"))
         if entry.get("since") != pse.get("version"):
             f.append(Finding("LM_CODE_MALFORMED", f"violation_codes.codes {code}", f"since is {entry.get('since')!r}; every code at this version was minted at {pse.get('version')}", "set since to the minting version"))
+        # L-34. The entry parsed, so no other check sees anything wrong.
+        extra = sorted(set(entry) - CODE_ENTRY_KEYS)
+        if extra:
+            f.append(Finding(
+                "LM_CODE_ENTRY_KEYS",
+                f"violation_codes.codes {code}",
+                f"carries {extra}, which are not entry keys. An unquoted flow mapping ends "
+                "fires_when at its first comma and turns the rest of the sentence into keys, so "
+                "the compiled policy would document this code with a truncated sentence",
+                "quote the fires_when value, then regenerate",
+            ))
+        if not str(entry.get("fires_when") or "").strip():
+            f.append(Finding(
+                "LM_CODE_ENTRY_KEYS",
+                f"violation_codes.codes {code}",
+                "has no fires_when, so the compiled policy would document the code with nothing",
+                "state when the code fires, as a quoted sentence",
+            ))
 
     referenced: dict[str, str] = {}
 
@@ -1821,6 +1853,16 @@ def _mutations() -> list[tuple[str, callable, str, bool, str]]:
     were passing on codes they never claimed to exercise.
     """
 
+    def truncate_fires_when(m):
+        # Exactly what an unquoted flow mapping does to a sentence with a comma:
+        # the value ends at the first comma and the remainder becomes keys.
+        entry = m["violation_codes"]["codes"][0]
+        entry["fires_when"] = "the envelope violates the generated schema in a way no narrower code"
+        entry["names"] = None
+
+    def blank_fires_when(m):
+        m["violation_codes"]["codes"][0]["fires_when"] = ""
+
     def drop_type(m):
         del m["event_types"]["SYSTEM_EVENT"]
 
@@ -1898,7 +1940,16 @@ def _mutations() -> list[tuple[str, callable, str, bool, str]]:
         m["event_types"]["PROBE_EVENT"]["lineage"]["allowed_parents"]["PROBE_EVENT"] = ["RUN_START", "ITEM"]
 
     def dead_code(m):
-        m["violation_codes"]["codes"].append({"code": "DEAD_CODE", "severity": "fail", "since": "pse-event-0.1"})
+        # Well formed in every respect except that no rule fires it, so the
+        # mutation isolates LM_CODE_UNREFERENCED. The entry carries fires_when
+        # because L-34 refuses an entry without one, and a mutation that trips
+        # two checks cannot claim expect_only.
+        m["violation_codes"]["codes"].append({
+            "code": "DEAD_CODE",
+            "severity": "fail",
+            "since": "pse-event-0.1",
+            "fires_when": "never, which is the defect this mutation exists to prove",
+        })
 
     def matrix_drift(m):
         m["lineage"]["matrix"]["LINK_EVENT"] = ["EXTRACT_EVENT", "PROBE_EVENT"]
@@ -2113,6 +2164,9 @@ def _mutations() -> list[tuple[str, callable, str, bool, str]]:
         ("flip an egress flag against its stratum", egress_flag_wrong, "LM_EGRESS_INCONSISTENT", True, ""),
         ("point a fixture at a rule path that does not exist", fixture_rule_missing, "LM_FIXTURE_RULE_UNRESOLVED", True, ""),
         ("define a layer no type uses", orphan_layer, "LM_LAYER_UNUSED", True, ""),
+        ("truncate a code's fires_when at a comma, as an unquoted flow mapping does",
+         truncate_fires_when, "LM_CODE_ENTRY_KEYS", True, ""),
+        ("blank a code's fires_when", blank_fires_when, "LM_CODE_ENTRY_KEYS", True, ""),
     ]
 
 
