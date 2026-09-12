@@ -42,7 +42,7 @@ artifact does not yet exist.
 |---|---|---|---|
 | Versioning | `spec/pse-semantics-contract.md` | rank 2, Class B | Exists as of the commit that lands Step 7, carrying `pse-event-0.1`, Unlocked, and UNRATIFIED. Written last of the Step 7 artifacts so it explains rules that already exist rather than inventing rules nothing enforces. Its sections 5 and 12 are two of the stamp targets `doctrine/SUBJECT_SELECTION.md` SS-14 item 6 names, and neither is stamped. |
 | Documentation of the delta | `spec/divergence-register.yaml` | rank 3, Class B | Does not exist. Step 9. `spec/layer-model.yaml`'s `divergences_from_zmeta` block, eleven entries, DV-01 through DV-11, is the current input a Step 9 generator will read, and the contract's section 13.2 names three more that surfaced in generation. It is prose in a Class B file, not yet a governed register with its own validator. |
-| Conformance evidence | `conformance/` | rank 3 for the corpora, Class B and F | `conformance/must-pass.jsonl` and `conformance/must-fail.jsonl` exist as of the commit that lands Step 7, written by `tools/build_corpus.py` and graded by `tools/validate.py`. The three subdirectories `connector-harness/`, `gate/`, and `retention/` are still empty and absent from any clone, because git does not record an empty directory. Steps 8 and 12 fill them. |
+| Conformance evidence | `conformance/` | rank 3 for the corpora, Class B and F | `conformance/must-pass.jsonl` and `conformance/must-fail.jsonl` exist as of the commit that lands Step 7, written by `tools/build_corpus.py` and graded by `tools/validate.py`. Step 8 filled `conformance/gate/` and `conformance/retention/`, and both are drafted UNRATIFIED, so the checks that read them refuse until the operator stamps them. `conformance/connector-harness/` is still empty and absent from any clone, because git does not record an empty directory, and Step 12 fills it. |
 | Release governance | `AGENTS.md` | rank 4, Class A | Exists, committed. Change classes A through F, the required local workflow, and the documentation matrix are in force today. |
 
 Two of the four conditions, the divergence register and the connector half of
@@ -83,24 +83,63 @@ reported here rather than edited there.
 ## 4. What the kernel gate covers today, and what it does not
 
 `tools/validate_conformance.py --kernel-gate` is the one rung that exists.
-Its `KERNEL_GATE` list carries twelve entries. Seven are implemented: doctrine,
-hygiene, layer-model, ontology, cast, telemetry, and schema. One is a wired
-stub: retention-repo-scan, which is D-001, exits 0, and checks nothing,
-scheduled for Step 8. Four are pending, and each names the artifact that does
-not exist: authorization (Step 8), retention-policy (Step 8),
-divergence-register (Step 9), and connector-conformance (Step 12).
+Its `KERNEL_GATE` list carries sixteen entries in four states, and
+`python tools/validate_conformance.py --list` prints the live list with the
+note each entry carries.
+
+Eight entries are implemented: doctrine, hygiene, layer-model, cast, telemetry,
+retention-repo-scan, schema, and ontology. Step 8 replaced the D-001 stub with
+`tools/validate_retention.py`, so retention-repo-scan left the STUB state and no
+entry carries STUB today. That check reads every tracked file in the working
+tree for a filled selector in its typed form, against thirteen shapes reconciled
+with `ontology/selectors.yaml` in both directions, and it enforces three of
+RT-15's four parts. The fourth part is out of reach for two separate reasons:
+the violation code RT-15 names is not in the wire vocabulary, and git history
+cannot be read by a check that runs at commit time.
+
+Three entries are UNRATIFIED, which is a state Step 8 added to the list. An
+UNRATIFIED check is implemented and refuses, because the artifact it grades
+carries no dated row in `doctrine/DOCTRINE_STATUS.md`. That is a different thing
+from a check that does not exist. The code is written, the aggregator runs it on
+every invocation, and the aggregator asserts the refusal, so an exit 0 from one
+of these three is refused as a gate-list inconsistency rather than counted as a
+pass. The three are authorization, retention-policy, and
+retention-shred-roundtrip. Each one clears when the operator stamps the artifact
+it reads, and not before.
+
+Five entries are pending, and each names what does not exist:
+authorization-dispatch-paths, which is Step 10 and whose subject `runner/` is
+empty; authorization-disjointness, which needs a credential pool that no
+inventory artifact describes; retention-finding, which is Step 11 and reads a
+case store that does not exist; divergence-register, which is Step 9; and
+connector-conformance, which is Step 12.
 
 `validate_conformance.py`'s own docstring states the rule this file repeats: a
 check that is not implemented is reported as PENDING and never as a pass,
-because the alternative already happened once in this program. The stubbed
-retention-repo-scan check is wired into the pre-commit hook and returns 0
-while checking nothing, and it stays honest only because it says so on every
-run. Counting a stub or a pending entry as green would turn a known gap into a
-silent one.
+because the alternative already happened once in this program. The Wave 0
+retention stub was wired into the pre-commit hook and returned 0 while checking
+nothing, and it stayed honest only because it said so on every run. Counting a
+stub, a pending entry, or an unratified refusal as green would turn a known gap
+into a silent one.
 
-A green kernel-gate run today means seven implemented checks passed, one stub
-exited 0 while checking nothing, and four checks did not run at all because
-the authorization and retention policy, the divergence register, and every
+The gate does not run green today. `--kernel-gate` refuses on
+retention-repo-scan, and on that check alone. The scan finds two filled
+selectors that predate Step 8: one in `docs/PLAINSIGHT-FOUNDATION.md` at line
+87, introduced in `1abb354`, a worked example inside a rank-7 record of intent,
+and one in `tools/validate_ontology.py` at line 894, introduced in `f4e00e1`,
+inside that validator's own negative fixture. Both are true on shape and false in
+substance. `docs/PLAINSIGHT-design.md` and `docs/THE-GAMEPLAN.md` already carry
+`repo_scan.document_exemptions` rows of exactly this kind, and
+`docs/PLAINSIGHT-FOUNDATION.md` does not. Adding the two rows was proposed
+during Step 8 and refuted, because narrowing an RT-15 scan is a reach decision
+that belongs to the operator. That decision is open. The pre-commit hook is
+unaffected, because it runs the same mode over the index rather than over the
+working tree.
+
+A green kernel-gate run, once that decision is settled, would mean eight
+implemented checks passed and three unratified checks refused in the way the
+list says they refuse, while five checks did not run at all because the dispatch
+paths, the credential pool, the case store, the divergence register, and every
 connector do not exist. That is a regression gate on the checks that exist. It
 is not a conformance claim about PSE's semantics beyond what the two corpora
 exercise, and it is not a conformance claim about any connector, because none
@@ -117,7 +156,9 @@ Step 7: the grader refuses a must-fail corpus in which a fixture the model marks
 `expect_only` does not set it, and it does not short-circuit on a schema failure
 at all, running every check it can and naming the checks it could not reach when
 an expected code was never reachable. The gate corpus is Step 8's and is graded
-by `tools/validate_authorization.py` when it exists.
+by `tools/validate_authorization.py`, which exists as of Step 8 and refuses,
+because `doctrine/DOCTRINE_STATUS.md` carries no dated row for the artifacts it
+reads.
 
 - **`expect_only`.** ZMeta's runner passes a must-fail fixture when the
   expected violation code appears anywhere in the output. For the fixtures

@@ -22,6 +22,213 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-11. Step 8's eight artifacts are drafted, UNRATIFIED, and refuse
+  until stamped; the kernel gate grows to sixteen entries and turns red on a
+  live retention scan; a decision register and a patch reconciliation record
+  what this session found and did not settle.**
+
+  Two commits landed before this closeout act, `38c93cc` and `ff016af`, each
+  recorded below under its own hash because this session committed them before
+  reaching the point in `AGENTS.md` section 8's order, the battery, then the
+  records, then the commit, where this entry and the two below it are written.
+  This commit carries the third act: Step 8, and the records for all three.
+
+  **Step 8.** Eight artifacts, 9,342 lines, all drafted by subagents in this
+  session and all UNRATIFIED, refusing until `doctrine/DOCTRINE_STATUS.md`
+  carries a dated row for each: `policy/subject-authorization.yaml` (1,403
+  lines), `policy/retention.yaml` (1,617), `schema/subject-authorization.schema.json`
+  (393), `conformance/gate/decisions.jsonl` (21), `conformance/gate/README.md`
+  (548), `conformance/retention/shred-roundtrip.yaml` (542),
+  `tools/validate_authorization.py` (2,713), and `tools/validate_retention.py`
+  (2,105). Both policy files are hand-authored; `tools/generate_pse.py` owns
+  exactly five outputs and neither is among them, and each carries a header
+  saying so. `tools/validate_retention.py` replaces the D-001 stub.
+
+  **The kernel gate.** Sixteen entries. Eight are IMPLEMENTED:
+  doctrine, hygiene, layer-model, cast, telemetry, retention-repo-scan, schema,
+  and ontology. Three are UNRATIFIED: authorization, retention-policy, and
+  retention-shred-roundtrip. Five are PENDING: authorization-dispatch-paths,
+  authorization-disjointness, retention-finding, divergence-register, and
+  connector-conformance. `retention-repo-scan` moves out of STUB; it enforces
+  three of RT-15's four parts. The fourth part is the code RT-15 names,
+  `FIXTURE_CONTAINS_LIVE_SELECTOR`, which is not in the wire vocabulary, and
+  git history, which is out of reach of any commit-time check.
+
+  The kernel gate is red on one check. `tools/validate_retention.py
+  --repo-scan` refuses on two filled handle selectors that predate Step 8:
+  line 87 of `docs/PLAINSIGHT-FOUNDATION.md`, introduced in `1abb354`, a
+  worked example in a rank-7 record of intent, and line 894 of
+  `tools/validate_ontology.py`, introduced in `f4e00e1`, a designed value in
+  that validator's own negative fixture. Neither value is reproduced here,
+  because AGENTS.md section 4 refuses a selector value in a tracked file and
+  the scan reads this file too. Both are true on shape and false in
+  substance. `docs/PLAINSIGHT-design.md` and `docs/THE-GAMEPLAN.md` already
+  carry `repo_scan.document_exemptions` rows of exactly this kind;
+  `docs/PLAINSIGHT-FOUNDATION.md` does not. Adding those rows was proposed and
+  refuted in this session: the proposal used a rank-1 citation above its lane,
+  and narrowing an RT-15 scan is a reach decision. It is the operator's, and it
+  is open. The pre-commit hook is unaffected, because it runs the same mode
+  over the index rather than the working tree, and neither file this commit
+  stages carries a selector.
+
+  **CI fails on this commit when it is pushed.** Line 57 of
+  `.github/workflows/ci.yml` runs `python tools/validate_conformance.py
+  --kernel-gate`, which exits 1 while the scan refuses. The workflow goes red on
+  the push and stays red until the operator decides the exemption. That is the
+  gate reporting a true finding rather than a regression, and the alternative,
+  leaving the scan a stub or pointing it at an empty index, would convert a true
+  positive into a silent one.
+
+  **Step 8 is not done.** `docs/THE-GAMEPLAN.md`'s done-when for Step 8 asks
+  that `tools/validate_authorization.py --fixtures` and
+  `tools/validate_retention.py --policy --shred-roundtrip` both be green,
+  including the check that an unratified criterion refuses rather than
+  permits. All three modes exit 1. Step 8 does not meet its own done-when.
+  Every refusal is the designed one: `doctrine/DOCTRINE_STATUS.md` carries no
+  dated row for any of the eight artifacts, so a criterion absent from the
+  stamp table refuses, a missing artifact refuses, and a fully stamped state
+  permits, the last two exercised by `--self-test`.
+
+  **No review has run.** Step 8's artifacts have had no adversarial review.
+  Compiling the decision register and finding the three defects below is
+  drafting work, not a review of the artifacts against each other or against
+  doctrine.
+
+  **The decision register.** Sixty-six unratified placeholders in the
+  artifacts were compiled and collapse to 51 distinct decisions, 15 entries
+  being second or third copies. Twenty-two of the 51 are grounded in the
+  stack's own documentation. Twenty-nine are the operator's, and 25 of those
+  arrive with at least one option foreclosed. Eight lenses claimed 44 entries
+  grounded and refuters overturned 14 of them, a 32 per cent over-report; every
+  overturn ran one direction, a real rank-1 quote settling a neighbouring
+  question, or two options eliminated and the survivor declared grounded. Four
+  Fable refuters failed on exhausted usage credits and were re-run on Opus;
+  before the re-run the same groups reported 31 grounded, and after it, 17. The
+  register is at
+  `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`.
+
+  **Defects found, not fixed.** Lines 137 to 139 of
+  `tools/validate_conformance.py` say "six of the nine paths" where the tool
+  prints seven refusals. The `evidence_ref` field in
+  `schema/subject-authorization.schema.json` admits only the three pre-R4
+  evidence kinds, which is what criteria SA-U2 and SA-U11 both land on.
+  SA-U16's current `decided_at_step` placement is not wire-legal: line 607 of
+  `spec/layer-model.yaml` requires that field on every REFUSED.
+
+  **Patch 4b.** `patch-4b-obligation-drafts-CLASS-F.post-patch-3.patch` no
+  longer applies; `git apply --check` exits 1 on `doctrine/DOCTRINE_STATUS.md`.
+  The cause is a fifteen-minute race: the patch was regenerated at 2026-09-08
+  18:40:19 and `4e6abda` was committed at 18:55:58, adding three rows to the
+  table the patch anchors on. `git apply --3way` applies
+  `CREDENTIAL_LIFECYCLE.md` and `EGRESS.md` cleanly and `DOCTRINE_STATUS.md`
+  with conflicts; union-resolving that one table conflict yields 59 criteria.
+  Line 192 of the handoff this commit replaces asserted the patch applies,
+  which was false; the handoff no longer says it.
+
+  **The push.** This session pushed `4e6abda` on the operator's instruction,
+  `6247953..4e6abda`, then committed and pushed `38c93cc`; `origin/main` is at
+  `38c93cc`. `ff016af` is one commit ahead of `origin/main`, and the operator
+  has not instructed its push.
+
+  Validation: doctrine at 58 criteria, hygiene and its self-test, layer-model
+  and its self-test, ontology and its self-test, cast and its self-test, the
+  validator's own self-test, `validate.py --kernel` at 44 must-pass events
+  clean and 98 must-fail fixtures refused, `generate_pse.py --check`,
+  `build_corpus.py --check`, the gate-log tests, both forms of `git diff
+  --check`, and the pre-commit hook are all green. `tools/validate_conformance.py
+  --kernel-gate` is red, on `retention-repo-scan` alone, for the reason above.
+  The battery is not green end to end, and this entry does not describe it as
+  such.
+
+  **What did not change.** No doctrine file was edited and no criterion,
+  conclusion, or stamp moved; `doctrine/DOCTRINE_STATUS.md` carries no new
+  dated row. `runner/subject_guard.py` and `runner/dispatch_allowlist.yaml`,
+  Step 10, are not built. The encrypted blob store, the sweep, and
+  `verify_shred.py`, Step 11, are not built. No connector, no runner dispatch,
+  no store. Nothing collected, no platform touched.
+
+- **2026-09-11, `ff016af`. The moved sibling is repointed, the operator's
+  local record is ignored, and CI's actions are pinned past Node 20's
+  retirement.** *(Written in the closeout commit after, because this session
+  committed the fix before the closeout act that records it.)*
+
+  On 2026-09-10, between the previous closeout and this one, four producer
+  repositories were consolidated into `../zisr-producers/`, so
+  `../zisr-recon/` ceased to exist. PLAINSIGHT was not in scope of that move
+  and did not move itself. Eighteen citations across eight files in this
+  repository still named the old path; this commit repoints three of them,
+  `README.md` and two pointers in `AGENTS.md`, to `../zisr-producers/recon/`,
+  because those files describe the current tree in the present tense. The
+  dated measurements in `doctrine/`, `docs/`, and the worklog archive keep the
+  old path, because a record that states what was true when it was written is
+  falsified by editing it after the fact. `tools/validate_hygiene.py` cannot
+  see this class of breakage: its citation check, `PATH_REF_RE`, is anchored
+  to in-repo prefixes and skips a sibling path by design, so a sibling
+  citation that moves is structurally invisible to the battery, and that
+  missing mechanism is not closed by this commit.
+
+  `AGENTS.md` said the pre-commit hook runs six commands. It runs seven, which
+  the Makefile's own comment above the preflight target already stated; this
+  commit corrects the count.
+
+  `LOCAL_*.md` is now in `.gitignore`. The account and provisioning checklist
+  the operator keeps in that file carries mailbox addresses, account names,
+  and hardware identifiers, which are operator identity rather than case
+  material, and no existing rule covered them.
+
+  CI's `actions/checkout` and `actions/setup-python` were pinned at `v4` and
+  `v5`, both of which run on Node 20. GitHub removes Node 20 from its runners
+  on 2026-09-16, after which those pins would stop the workflow rather than
+  warn it. They are now the Node 24 majors, `v5` and `v6`.
+
+  **What did not change.** No doctrine file, no criterion, no stamp. No
+  schema, no policy file, no connector. Class A, B, and C by the commit's own
+  accounting: nothing here alters who may be a subject, what may be collected,
+  how long anything is held, or what may leave the machine.
+
+- **2026-09-11, `38c93cc`. Every `fires_when` value in the layer model is
+  quoted, and a code entry that carries none is refused.** *(Written in the
+  closeout commit after, because this session committed the fix before the
+  closeout act that records it.)*
+
+  Seventeen of the fifty-seven `violation_codes.codes` entries in
+  `spec/layer-model.yaml` were unquoted YAML flow mappings whose `fires_when`
+  sentence contained a comma. YAML ends the value at that comma and turns the
+  remainder into null-valued keys; the file still parsed, so no check saw the
+  defect, and the generated `policy/violation-codes.yaml` documented those
+  seventeen codes with half a sentence, the dropped half carrying the
+  gate-fixture references Step 8 reads. This commit quotes all fifty-seven
+  values, the seventeen truncated ones for meaning and the other forty so the
+  file has one form rather than two, and regenerates
+  `policy/violation-codes.yaml` from the corrected model; the diff measured
+  25/17 in the policy file, 57/57 in the model, and 55/1 in
+  `tools/validate_layer_model.py`, which gains check L-34, `CODE_ENTRY_KEYS`,
+  refusing a code entry that carries a key outside the declared five or
+  carries no `fires_when`.
+
+  Two prior sessions recorded this fix as green while
+  `tools/validate_layer_model.py --self-test` was exiting 1. The `dead_code`
+  self-test fixture appended a code entry with no `fires_when`, which made
+  L-34 fire alongside `LM_CODE_UNREFERENCED` and broke that row's
+  `expect_only`. This commit gives the fixture a `fires_when` value; the
+  self-test now reports 62 deliberate breaks, 62 refused, 50 by the expected
+  code alone, 12 cascading, and 44 distinct codes exercised. No gate in the
+  repository had run that self-test to catch the regression:
+  `tools/validate_conformance.py` invokes the validator with `--quiet`, the
+  pre-commit hook runs seven plain commands, `make preflight` runs eight, and
+  `.github/workflows/ci.yml` runs one self-test, hygiene's. Only `make
+  validate-layer-model` runs this one, and that is the hole that let two
+  sessions call the fix green.
+
+  Validation: `tools/generate_pse.py --check` and `tools/build_corpus.py
+  --check` both confirm the schema, the other three policy files, and both
+  conformance corpora are byte-identical, so the fix reaches only the files it
+  targets.
+
+  **What did not change.** No doctrine file, no criterion, no stamp. No
+  schema, no connector. Class B and C by the commit's own accounting: no
+  change to who may be a subject, what may be retained, or what may leave.
+
 - **2026-09-08. Step 7 lands: the schema, the policy pack, the corpora and the
   contract, all generated from the layer model; the review's patches 2 and 3
   land in doctrine; the kernel gate grows to seven.**

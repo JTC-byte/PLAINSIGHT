@@ -1,0 +1,1617 @@
+# policy/retention.yaml
+#
+# The compiled retention table. doctrine/RETENTION.md RT-2 names this file by
+# path and says what it is for: "The five-stratum table is compiled into
+# `policy/retention.yaml` and the validator reads the compiled form, not this
+# prose." The prose is rank 1 and decides. This file is what executes, and the
+# cadence in doctrine/RETENTION.md section 9 re-runs
+# `tools/validate_retention.py --policy` at every doctrine change so the two
+# cannot drift apart quietly.
+#
+# HAND-AUTHORED. This is the contrast that matters when reading alongside the
+# four files next to it. policy/semantics.yaml, policy/lineage.yaml,
+# policy/producer-authority.yaml and policy/violation-codes.yaml are GENERATED
+# by tools/generate_pse.py from spec/layer-model.yaml and carry a do-not-edit
+# banner, and `tools/generate_pse.py --check` refuses any difference between
+# those files and what the model generates. That tool owns exactly five targets
+# and this file is not one of them, because this file is compiled from rank-1
+# doctrine rather than from the layer model. Generating it would put a Class F
+# artifact behind a Class C tool sourced from rank 3.
+#
+# WHAT REFUSES ITS DRIFT FROM DOCTRINE. `tools/validate_retention.py --policy`
+# is the self-lint, named by RT-2 and by the cadence section. It reads this
+# compiled form, refuses a subject-carrying field assigned to a surviving
+# stratum, and reconciles the strata tokens here against
+# `tools/validate_layer_model.py` STRATA, SURVIVING_STRATA and CROSSING_STRATA.
+# Nothing in this file is a rule until a check can make it refuse, which is
+# CLAUDE.md design gate 1.
+#
+# Authority: rank 3, Class F (CLAUDE.md section 2, AGENTS.md section 3). Rank 1
+# wins every conflict with this file. Class F because every number below is a
+# statement about how long a person's data is held, so an agent may draft this
+# file and may never decide it.
+#
+# THIS FILE IS UNRATIFIED AND IT REFUSES RATHER THAN PERMITS.
+# doctrine/DOCTRINE_STATUS.md is the pin of record: "Mechanisms read this file
+# rather than the document they enforce. An unratified criterion refuses rather
+# than permits." doctrine/SUBJECT_SELECTION.md SS-14 item 6 names
+# `policy/retention.yaml` among the artifacts that must be stamped there before
+# any collection at all, including against a synthetic account. There is no row
+# for this path in that table today. The readings below are an agent's
+# compilation of stamped conclusions and bind nothing until the operator
+# stamps them.
+#
+# THE FAIL-CLOSED CONVENTION, AND IT IS THE LOAD-BEARING ONE. Every value
+# doctrine does not state is written as the one-key mapping `{unratified: U-nn}`
+# and never as a scalar. A reader expecting a number gets a mapping and fails
+# where it stands, rather than proceeding on a plausible default. Each U-nn is
+# an entry under `retention.unratified.entries` carrying the question, the legal
+# options, what does not happen while it is open, and the sentence rendered to
+# the operator. An invented threshold here would be indistinguishable from a
+# ratified one after a week, which is why the shape refuses instead.
+#
+# ONE NOTE FOR THE NEXT READER, SO A WRONG SHAPE IS NOT RE-DERIVED. The artifact
+# register at docs/THE-GAMEPLAN.md describes this file as "retain_until defaults
+# per class". There is no per-class table below and there must not be one. RT-5
+# is stamped and flat: "Default case TTL is 30 days. Extensions are 30 days. The
+# hard ceiling is 60 days", with no mention of subject class. The only
+# differentiated duration in ratified doctrine is RT-6's 7 day incidental TTL,
+# which names a relation to the case rather than a subject class. The register
+# carries no rank in the authority order; RETENTION.md is rank 1. Building a
+# seven-value map today would also create exactly the failure CLAUDE.md design
+# gate 2 names, a one-line diff to a single class in a file that reads as
+# configuration and is Class F by effect. See retention.readings RET-R1.
+#
+# Voice: CLAUDE.md section 4, Register 1. Comments say why a rule exists and
+# cite the file and criterion id that requires it. They do not cite line
+# numbers, which drift. Every rendered state below is rendered as its
+# consequence rather than as its token, which is why the render strings are
+# copied from doctrine verbatim rather than paraphrased.
+#
+# NO VALUE APPEARS IN THIS FILE. AGENTS.md section 4 keeps an agent from writing
+# a selector value, handle, email, phone number or case subject name into a
+# tracked file. RT-15 makes that a scanned property rather than a habit.
+
+retention:
+  version: 0.1
+  authority_rank: 3
+  change_class: F
+  status: DRAFT 2026-09-11, drafted by an agent, UNRATIFIED
+  compiled_from: doctrine/RETENTION.md
+  decides: [R1, R2, R3, R5, D4]
+  self_lint: tools/validate_retention.py
+  code_vocabulary: spec/layer-model.yaml
+  # Every violation code this file's rules fire is read from the layer model
+  # rather than copied, so the two vocabularies cannot drift. One code exists
+  # today, FREEZE_RENEWAL_UNJUSTIFIED, and it covers RT-17 alone. The names for
+  # the rest are unratified and carried as U-07 rather than minted here.
+
+  ratification:
+    pin_of_record: doctrine/DOCTRINE_STATUS.md
+    row_for_this_path: absent
+    required_by: doctrine/SUBJECT_SELECTION.md SS-14 item 6
+    refuses_rather_than_permits: true
+    consequence: >
+      No collection at all, including against a synthetic account, until a dated
+      row in doctrine/DOCTRINE_STATUS.md names this path with a ratifier. The
+      sweep refuses to run rather than running with an unratified TTL, which is
+      the behaviour doctrine/RETENTION.md states in its own header for both
+      runner/retention_sweep.py and tools/validate_retention.py.
+    criteria_compiled_here:
+      - RT-1
+      - RT-2
+      - RT-3
+      - RT-4
+      - RT-5
+      - RT-6
+      - RT-7
+      - RT-8
+      - RT-9
+      - RT-10
+      - RT-11
+      - RT-12
+      - RT-13
+      - RT-14
+      - RT-15
+      - RT-16
+      - RT-17
+      - RT-18
+      - RT-19
+    conclusions_bind_bases_do_not: >
+      Every RT conclusion is stamped 2026-08-27 and every basis is unstamped
+      deliberately. doctrine/DOCTRINE_STATUS.md records the effect of that in the
+      Blocks column, "nothing mechanical", so the durations below bind and the
+      reasoning behind them is unread.
+
+  read_by:
+    - path: tools/validate_retention.py
+      how: >
+        --policy reads the compiled strata table and refuses a subject-carrying
+        field assigned to a surviving stratum. RT-2 names this as the check.
+    - path: tools/validate_retention.py
+      how: >
+        --repo-scan reads ontology/selectors.yaml repo_scan and the exemptions
+        there, and reads repo_scan below only for the criterion pointer. RT-15.
+    - path: tools/validate_retention.py
+      how: >
+        --finding scans a candidate writeup against the case's selector set
+        before the shred. RT-13.
+    - path: runner/retention_sweep.py
+      how: >
+        reads case_ttl, incidental, blob_policy and freeze, skips cases in the
+        frozen state, refuses a renewal carrying no obligation and no expected
+        resolution date, and writes a heartbeat on every run. RT-5, RT-6, RT-12,
+        RT-17.
+    - path: runner/verify_shred.py
+      how: reads verification.checks and runs them outside the sweep. RT-9.
+    - path: runner/reconcile_ledger.py
+      how: >
+        reads ledger.required_columns and diffs doctrine/RETENTION_LEDGER.md
+        against storage in both directions. RT-10.
+    - path: conformance/retention/shred-roundtrip.yaml
+      how: >
+        exercises shred, encryption and verification against the rules declared
+        here rather than restating them.
+    - path: tools/validate_conformance.py
+      how: >
+        the KERNEL_GATE aggregator's retention-policy entry, PENDING until this
+        file has a stamp row.
+
+  # What this file does not decide, said plainly so a reader does not go looking.
+  not_here:
+    - Which payload of which event type sits in which stratum. policy/semantics.yaml
+      carries a per-type `retention` block for that, generated from
+      spec/layer-model.yaml. This file declares the strata themselves and the two
+      do not restate each other.
+    - The witness ciphertext's designation mechanics, its recorded digest, and
+      the per-case inventory. RT-9 sends all three to
+      conformance/retention/shred-roundtrip.yaml by name. The three write-path
+      properties RT-9 states in the same sentence are compiled under
+      verification.witness below, because a store that does not read them cannot
+      designate a witness at first write.
+    - A maximum enforcement lag as a declared field. RT-6 puts the figure in
+      conformance/retention/ as a case asserting incidental content is gone
+      within 24 hours of its TTL, and doctrine/HYGIENE.md HY-2 argues against
+      minting a second number to say the same thing.
+    - The selector shapes the repo scan matches on. ontology/selectors.yaml
+      repo_scan is the source, with its three-way detectability split, its
+      synthetic discrimination keyed on the cast seal, and its document
+      exemptions. repo_scan below cites that block rather than duplicating it.
+    - Who may be a subject and what the authorization record contains.
+      doctrine/SUBJECT_SELECTION.md is rank 1 on that question and
+      policy/subject-authorization.yaml is its compiled form.
+    - The connector manifest's `canary_subject_class` field encoding. RT-15 fixes
+      the value set at `synthetic | institutional`, and the field's name, type
+      and position are schema questions settled in
+      schema/connector-manifest.schema.json at Step 12.
+    - Any per-subject-class TTL table. See the header note and RET-R1.
+    - Any cross-case roster, index, or RT-2 exception register. See
+      cross_case_persistence below.
+
+  readings:
+    # Interpretive calls this compilation had to make. Each names the sources in
+    # tension. Confirming one is a stamp in doctrine/DOCTRINE_STATUS.md rather
+    # than an edit here.
+    - id: RET-R1
+      question: Whether the compiled TTL is one number or a per-subject-class map
+      reading: >
+        One number. case_ttl carries 30, 30 and 60 for every subject class, and
+        incidental carries the single differentiated duration at 7 days.
+      alternatives:
+        - A seven-value map keyed on the SS-1 class set, all at 30 today, giving
+          a place to differentiate later
+      sources: [doctrine/RETENTION.md RT-5, doctrine/RETENTION.md RT-6, docs/THE-GAMEPLAN.md artifact register]
+      note: >
+        The register row that implies a map is rank 7 and RT-5 is rank 1. A map
+        with seven identical values is also the one-line-diff shape CLAUDE.md
+        design gate 2 warns about.
+    - id: RET-R2
+      question: Whether the compiled table carries seven rows, six keys, or five
+      reading: >
+        Seven rows, each keyed by name and each declaring its stratum token.
+      alternatives:
+        - Six keys matching tools/validate_layer_model.py STRATA, merging the two
+          stratum-1 rows
+        - Five numbered keys with stratum T held outside the table
+      sources: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-2, doctrine/DOCTRINE_STATUS.md Step 3 table, tools/validate_layer_model.py STRATA]
+      note: >
+        RT-1 states the object's shape literally as seven rows across five
+        numbered levels plus telemetry, and it is the criterion that owns the
+        table. The two stratum-1 rows carry different subject-value descriptions,
+        "Yes, derived" against "Yes, verbatim, plus a named person", and a table
+        keyed on the integer loses the stricter one.
+    - id: RET-R3
+      question: Whether RT-5's 60 day ceiling is an absolute deadline or a cap on extensions
+      reading: >
+        An absolute deadline. The refusal compares a proposed retain_until
+        against the case's opening anchor plus 60 days.
+      alternatives:
+        - At most one 30 day extension, refusing the second regardless of dates
+      sources: [doctrine/RETENTION.md RT-5, doctrine/RETENTION.md RT-17 point 5]
+      note: >
+        RT-17 point 5 calls the ceiling "absolute for every ordinary case". The
+        counted reading would silently shorten a case opened below 30 days, which
+        no criterion asks for. The anchor instant itself is U-02.
+    - id: RET-R4
+      question: What object RT-6's 7 day incidental clock acts on
+      reading: >
+        Content whose computed subject_relation is incidental. That column exists
+        today and is independent of the manifest disposition.
+      alternatives:
+        - The message partitions specifically, which narrows the rule to one
+          connector shape
+        - Declared and inert at v0.1, admitting a ratified number with nothing to
+          sweep
+      sources: [doctrine/SUBJECT_SELECTION.md SS-10, doctrine/SUBJECT_SELECTION.md SS-11, doctrine/RETENTION.md RT-6]
+      note: >
+        SS-10 makes subject_relation a computed column the runner derives from the
+        pivot chain, never an asserted one. The disposition governs what a
+        connector declares it reaches; the relation governs what was stored.
+        Whether the clock also reaches stratum-0 blobs is U-12.
+    - id: RET-R5
+      question: What RT-11's system-wide halt blocks
+      reading: >
+        Connector dispatch. Retention, verification, reconciliation and
+        validation jobs continue to run.
+      alternatives:
+        - All runner activity except verify_shred on the failed case
+      sources: [doctrine/RETENTION.md RT-11, spec/pse-semantics-contract.md PROBE_EVENT]
+      note: >
+        The halt clears only by running verify_shred on the failed case, so
+        verify_shred cannot sit inside the blocked set. The broad reading would
+        also stop every other case's TTL being enforced while the halt is up,
+        which inverts the rule.
+    - id: RET-R6
+      question: Whether this file carries an empty RT-2 exception register
+      reading: No. There is no exception shape in this file.
+      alternatives:
+        - An empty list, so a future exception is visibly a ratified addition
+      sources: [doctrine/SUBJECT_SELECTION.md SS-21, doctrine/DOCTRINE_STATUS.md Step 3 table]
+      note: >
+        SS-21 states that a persistent roster "would require a deliberate ratified
+        exception to RT-2, not an implicit one, and this criterion does not create
+        it". Pre-building the shape is building the door doctrine declined to
+        build.
+    - id: RET-R7
+      question: At what age a missing heartbeat renders RT-12's degraded state
+      reading: >
+        At the heartbeat's own next due time, with no grace, per job.
+      alternatives:
+        - A declared grace multiple, for instance twice the interval
+        - Two thresholds declared here, one for the daily sweep and one for the
+          monthly reconcile
+      sources: [doctrine/RETENTION.md RT-12, spec/pse-semantics-contract.md SWEEP_HEARTBEAT, doctrine/HYGIENE.md HY-2]
+      note: >
+        SWEEP_HEARTBEAT and RECONCILE_HEARTBEAT already carry their next due time
+        on the wire, so the threshold is per job and no new number is needed. HY-2
+        records that thresholds here are deliberately non-numeric with one
+        contributor.
+    - id: RET-R8
+      question: Whether stratum T belongs in this table
+      reading: >
+        Yes, as the seventh row, carrying RT-19's own sentence that it sits
+        outside the numbered strata deliberately.
+      alternatives:
+        - Held in a separate telemetry block outside the strata table
+      sources: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-19, tools/gate_log.py]
+      note: >
+        RT-1 lists it in the same table. tools/gate_log.py already implements the
+        90 day rolling TTL on write and on read, so this row describes a mechanism
+        that runs rather than one that is planned.
+    - id: RET-R9
+      question: Whether a case whose subject class is S2 runs a different clock
+      reading: No. An S2 case runs the same 30, 30 and 60 day clock.
+      alternatives:
+        - A stated S2 exemption setting the case TTL to permanent
+        - A longer but finite S2 TTL
+      sources: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-5]
+      note: >
+        RT-1 assigns lifetime by stratum rather than by subject class, and the
+        synthetic corpus is already permanent at stratum 4. A live run against an
+        S2 persona still produces ordinary stratum-0 and stratum-1 output. An
+        exemption would be a new Class F permission the operator can add later.
+
+  # -------------------------------------------------------------------------
+  # RT-1. STRATA
+  # -------------------------------------------------------------------------
+  # An object's stratum is declared at write time, never decided at delete time.
+  # Sensitivity decreases as durability increases: the durable rows are durable
+  # because they carry no subject-derived values.
+  strata:
+    cites: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-2]
+    declared_at: write_time
+    decided_at_delete_time: false
+    tokens: [0, 1, 2, 3, 4, "T"]
+    surviving: [2, 3]
+    permanent: [2, 3, 4]
+    crossing_to_local: [2, 3, 4]
+    # The three sets above are pinned identically in tools/validate_layer_model.py
+    # as STRATA, SURVIVING_STRATA and CROSSING_STRATA, and --policy reconciles
+    # them. If one moves, both move in the same change.
+    rows:
+      - name: raw_capture
+        stratum: 0
+        contents: >
+          Response bytes, page captures, connector stdout and stderr, cassettes
+          captured against a live subject
+        carries_subject_values: true
+        subject_values: Yes, verbatim
+        lifetime: case_ttl
+        inside_shred_boundary: true
+      - name: case_material
+        stratum: 1
+        contents: >
+          Items, extracts, claims, inferences, message rows, dispositions, notes,
+          the full-text index, DRAFT exports, Return Briefs
+        carries_subject_values: true
+        subject_values: Yes, derived
+        lifetime: case_ttl
+        inside_shred_boundary: true
+      - name: authorization
+        stratum: 1
+        contents: >
+          The per-case subject authorization record and every evidence object it
+          points at, including the S1 consent record
+        carries_subject_values: true
+        subject_values: Yes, verbatim, plus a named person
+        lifetime: case_ttl
+        inside_shred_boundary: true
+        note: >
+          The one object in the system that necessarily carries both a live
+          selector and a named person. It lives inside the case boundary under
+          the case key and it dies with the case. It is never in the repository,
+          and conformance/gate/*.jsonl holds synthetic records only.
+      - name: skeleton
+        stratum: 2
+        contents: >
+          Run, item, and claim structure: opaque ids, timestamps, connector at
+          version, argv template with values redacted, exit codes, counts,
+          coverage intervals, egress, the ledger row, the tombstone
+        carries_subject_values: false
+        subject_values: "No"
+        lifetime: permanent
+        inside_shred_boundary: false
+        note: >
+          This row is what makes the posture coherent. After a shred the record
+          that an experiment happened remains auditable while the material it ran
+          on no longer exists, and neither sentence is true without it.
+      - name: findings
+        stratum: 3
+        contents: >
+          Capability findings, scorecards with persona age and truth-file hash,
+          connector health history, the RT-13 finding-check stamp
+        carries_subject_values: false
+        subject_values: No, or synthetic only
+        lifetime: permanent
+        inside_shred_boundary: false
+      - name: synthetic_corpus
+        stratum: 4
+        contents: >
+          The cast, GROUND_TRUTH.yaml, cassettes captured against S2, conformance
+          fixtures
+        carries_subject_values: false
+        subject_values: Synthetic only
+        lifetime: permanent_in_git
+        inside_shred_boundary: false
+      - name: gate_telemetry
+        stratum: "T"
+        contents: >
+          One record per gate run: timestamp, gate, outcome, violation code,
+          location
+        carries_subject_values: false
+        subject_values: None, by construction
+        lifetime: rolling_90_days
+        inside_shred_boundary: false
+        tracked: false
+        note: >
+          Sits outside the numbered strata deliberately. It is not case material,
+          so it is not inside the shred boundary. It is not a finding, so it is
+          not permanent.
+
+    cassette_rule:
+      cites: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-15, doctrine/RETENTION.md RT-16]
+      live_subject_cassette_stratum: 0
+      persisting_cassette_stratum: 4
+      permitted_capture_targets: [S2, N0]
+      satisfies_rt16_floor: false
+      statement: >
+        A cassette captured against a live S0 or S1 subject is stratum 0 and dies
+        with the case. A cassette that persists is captured against an S2 or N0
+        target, where it is stratum 4 and permanent. A live-subject cassette is
+        not a thing this system keeps, so it cannot satisfy RT-16's floor and must
+        not be relied on to.
+
+  # -------------------------------------------------------------------------
+  # RT-2. NO SUBJECT-DERIVED VALUE IN A SURVIVING STRATUM
+  # -------------------------------------------------------------------------
+  surviving_stratum_rule:
+    cites: [doctrine/RETENTION.md RT-2]
+    rule: >
+      A stratum-2 or stratum-3 object containing a subject-derived value is a
+      defect, not a judgment call.
+    enforced_by: tools/validate_retention.py --policy
+    refuses: a policy file that assigns a subject-carrying field to a surviving stratum
+    code:
+      unratified: U-07
+    unclassified_objects:
+      unratified: U-14
+
+  cross_case_persistence:
+    cites: [doctrine/RETENTION.md RT-2, doctrine/SUBJECT_SELECTION.md SS-21]
+    exception_register_present: false
+    statement: >
+      A durable list of accounts, indexed and accumulated across cases, is
+      structurally the same object as a target package regardless of the intent
+      behind it, and RT-2 refuses it for the same reason it refuses every other
+      subject-derived value in a surviving stratum. Keeping one would require a
+      deliberate ratified exception to RT-2, and neither SS-21 nor this file
+      creates one.
+    consequence_if_needed: >
+      An exception arrives as a structural change to this file reviewed as one,
+      with its own dated row in doctrine/DOCTRINE_STATUS.md. It does not arrive
+      as a value added to a list that was already here.
+
+  # -------------------------------------------------------------------------
+  # RT-5, RT-6, RT-8. THE CLOCKS
+  # -------------------------------------------------------------------------
+  case_ttl:
+    cites: [doctrine/RETENTION.md RT-5]
+    applies_to_every_subject_class: true
+    default_days: 30
+    extension_days: 30
+    ceiling_days: 60
+    ceiling_is: absolute_deadline
+    ceiling_anchor_instant:
+      unratified: U-02
+    retain_until:
+      is_a_column: true
+      swept_by: runner/retention_sweep.py
+      granularity:
+        unratified: U-02
+      anchor_instant:
+        unratified: U-02
+      comparison:
+        unratified: U-02
+      minimum_at_case_open:
+        unratified: U-15
+      capped_by_authorization_expiry:
+        unratified: U-01
+    at_ceiling: >
+      The case does not extend. It closes, shreds, and is re-authorized from a new
+      purpose record if the work continues. A ceiling that can be extended is not
+      a ceiling, and the re-authorization is cheap precisely because the purpose
+      record is one sentence.
+    only_exception: freeze
+    ceiling_refusal:
+      required: true
+      lives_in: runner/retention_sweep.py
+      note: >
+        doctrine/DOCTRINE_STATUS.md records that the ceiling "needs a refusal
+        behind it", and RT-17 puts that refusal in the same check that handles the
+        freeze, because a ceiling with nothing refusing at it is a number in a
+        table.
+      code:
+        unratified: U-07
+
+  extension:
+    cites: [doctrine/RETENTION.md RT-5, spec/layer-model.yaml SYSTEM_EVENT RETENTION_EXTENSION]
+    length_days: 30
+    required_fields: [author, timestamp, reason]
+    wire_form: SYSTEM_EVENT RETENTION_EXTENSION
+    wire_required_fields: [system_type, author, reason, previous_retain_until, new_retain_until]
+    wire_note: >
+      The layer model already requires previous_retain_until and new_retain_until,
+      which doctrine does not name. Those two are a rank-3 addition that records
+      what changed rather than a fourth doctrinal requirement.
+    inaction_is_deletion: true
+    author_authority:
+      unratified: U-03
+    recorded_in:
+      unratified: U-13
+    extends_incidental_content: false
+
+  incidental:
+    cites: [doctrine/RETENTION.md RT-6, doctrine/SUBJECT_SELECTION.md SS-11]
+    ttl_days: 7
+    applies_to: content whose computed subject_relation is incidental
+    subject_relation_is_computed: true
+    expires_at: the shorter of the case TTL and the incidental TTL
+    extended_by_case_extension: false
+    reaches_stratum_0_blobs:
+      unratified: U-12
+    enforcement_granularity: the sweep interval, which is why the sweep runs daily
+    note: >
+      A weekly sweep against a 7 day TTL means the ratified number is 7 and the
+      enforced number is anywhere from 7 to 14, and doubling the life of the one
+      class whose entire purpose is a shorter life is not a rounding error.
+    differential_machinery: >
+      Deferred to v0.2. The trigger for un-deferring it is the first case where
+      the flat rule destroys something the analyst needed, which is a real cost
+      and is accepted here deliberately.
+    conformance_assertion: >
+      conformance/retention/ carries a case asserting that incidental content is
+      gone within 24 hours of its TTL. The figure lives in the fixture and not in
+      this file.
+
+  blob_policy:
+    cites: [doctrine/RETENTION.md RT-8]
+    text:
+      within_case_value: forever
+      case_level_value_legal: false
+      scoped_by: retain_until
+      statement: >
+        Within a case, text blobs are kept for the life of the case. `forever` is
+        scoped by retain_until, never above it, and a text blob does not outlive
+        its case.
+    media:
+      expires_after_days: 90
+      anchor_instant:
+        unratified: U-04
+      honesty_note: >
+        The 90 day figure is inherited from a rank-7 document and under RT-5 it can
+        almost never fire. On an ordinary case media dies with the case and the
+        media clock is the case clock. It is kept because it is the correct
+        behaviour for the one case that reaches past 60 days, which is a freeze,
+        and a media blob under a freeze is the one place the distinction is real.
+        An implementer configuring from this line should know it is a ceiling that
+        the case ceiling almost always beats, which is the unfalsifiable check
+        doctrine/HYGIENE.md HY-2 exists to catch.
+
+  full_text_index:
+    cites: [doctrine/RETENTION.md RT-7]
+    stratum: 1
+    inside_shred_boundary: true
+    per_case: true
+    shared_across_cases: false
+    statement: >
+      An index over message bodies is a plaintext copy of those bodies with a
+      different access pattern. An index that survives a shred is a searchable
+      archive of the case that was just deleted.
+    accepted_cost: >
+      A per-case index cannot be shared across cases, cannot be warmed once, and
+      is rebuilt rather than incrementally maintained across the case boundary.
+      The cost was stated in the decision and accepted.
+
+  # -------------------------------------------------------------------------
+  # RT-3, RT-4. WHAT A SHRED DESTROYS
+  # -------------------------------------------------------------------------
+  shred:
+    cites: [doctrine/RETENTION.md RT-3, doctrine/RETENTION.md RT-4]
+    unit: the case
+    mechanisms_both_required: true
+    mechanisms:
+      - name: enumerable_deletion
+        act: DROP SCHEMA case_<id> CASCADE
+        reaches: [stratum_1_tables, message_partitions, case_full_text_index]
+      - name: key_destruction
+        act: destruction of the per-case data key
+        reaches: [object_store_replicas, filesystem_snapshots, wal_segments, base_backups, page_cache]
+    why_both: >
+      DROP reaches what can be enumerated. Cryptography reaches what cannot.
+      Backups are the canonical thing that cannot be enumerated, which is why a
+      retention doctrine resting only on DROP is a doctrine that has not thought
+      about backups.
+    ordering_with_the_two_mechanisms:
+      unratified: U-11
+
+  encryption:
+    cites: [doctrine/RETENTION.md RT-4]
+    per_case_data_key: true
+    encrypted_from: first_write
+    key_wrapping: case keys are wrapped by a vault key
+    plaintext_blob_legal: false
+    retrofittable: false
+    statement: >
+      Deleting one case key renders every blob for that case unreadable in a
+      single atomic act, regardless of replicas, snapshots, or caches, all of
+      which defeat rm. This is the criterion that cannot be retrofitted. A blob
+      written in plaintext in week 2 is outside this mechanism forever.
+
+  # -------------------------------------------------------------------------
+  # RT-9. PROVING THE SHRED HAPPENED
+  # -------------------------------------------------------------------------
+  verification:
+    cites: [doctrine/RETENTION.md RT-9]
+    runs_outside_the_shredding_tool: true
+    performed_by: runner/verify_shred.py
+    separate_from: runner/retention_sweep.py
+    check_count: 5
+    all_checks_required: true
+    checks:
+      - id: 1
+        name: key_destruction
+        acts_on: a witness ciphertext for the case, held outside the enumerable delete path
+        passes_when: the decrypt fails on the key
+        fails_when: [decrypt_succeeds, not_found, permission_denied, malformed_input]
+        note: >
+          This check requires a failure and treats a success as the alarm. A draft
+          of it pointed at a stratum-0 blob that check 2 requires to be gone, so
+          the two checks demanded contradictory states of one object and check 1
+          would have passed on a not-found while reporting that the key had been
+          destroyed.
+      - id: 2
+        name: object_absence
+        acts_on: the objects for the case, read through the S3 API
+        passes_when: the objects are gone
+        cached_read_path_permitted: false
+        delete_exit_code_accepted_as_evidence: false
+        note: >
+          A measured incident in the precedent: a read path served cached
+          responses, first read of a key wins, demonstrated on a fresh key by
+          writing 18 bytes and reading 18, writing 34 bytes over it and reading 18
+          again, deleting and reading 18 again.
+      - id: 3
+        name: schema_absence
+        acts_on: any stratum-1 table for the case
+        passes_when: the query errors
+        fails_when: [query_returns_zero_rows]
+        note: >
+          "The table is gone" and "the table returned nothing" are different facts
+          that look identical in a result set.
+      - id: 4
+        name: skeleton_presence
+        acts_on: stratum 2
+        passes_when: stratum 2 is intact and carries the tombstone and the receipt hash
+      - id: 5
+        name: anti_overreach
+        acts_on: an adjacent canary case
+        passes_when: the adjacent case is still fully readable and its blob count is unchanged
+        note: >
+          The failure mode of an over-eager shred is silent. A sweep with a bad
+          case-id filter that destroys two cases reports one success.
+        behaviour_when_no_adjacent_case_exists:
+          unratified: U-11
+    rules:
+      - A deletion is never confirmed with a cached read path, and never with a DELETE's exit code.
+      - A check that can pass for a reason other than the one claimed is not a check.
+    witness:
+      count_per_case: 1
+      designated_at: first_write
+      held_outside: the enumerable delete path
+      digest_recorded: true
+      mechanics_owned_by: conformance/retention/shred-roundtrip.yaml
+      why_here: >
+        RT-9 sends the designation, the recorded digest and the per-case inventory
+        to the conformance artifact. The three properties above are the ones the
+        write path has to know, because a store that has not designated a witness
+        at first write leaves check 1 with nothing to act on at the first real
+        case.
+    receipt_hash:
+      computed_over:
+        unratified: U-09
+      carried_by: [stratum_2_skeleton, ledger_row, SYSTEM_EVENT SHRED_RECEIPT]
+      wire_required_fields: [system_type, receipt_hash, blob_count, checks_passed]
+
+  # -------------------------------------------------------------------------
+  # RT-10. THE LEDGER
+  # -------------------------------------------------------------------------
+  ledger:
+    cites: [doctrine/RETENTION.md RT-10, doctrine/RETENTION.md RT-11, doctrine/RETENTION.md RT-17, doctrine/RETENTION.md RT-18, doctrine/SUBJECT_SELECTION.md SS-4]
+    path: doctrine/RETENTION_LEDGER.md
+    present_in_tree: false
+    stratum: 2
+    survives_the_shred: true
+    carries_subject_derived_values: false
+    rule: A shred with no receipt row did not happen.
+    row_schema_declared_here:
+      unratified: U-08
+    required_columns:
+      - opaque_case_id
+      - subject_class
+      - purpose
+      - retain_until
+      - current_state
+      - receipt_hash
+    required_column_notes:
+      receipt_hash: present once the case is shredded
+      purpose: >
+        SS-4 puts a copy of the purpose sentence in this tracked file, which
+        survives every shred, so the sentence must not name or describe the
+        subject. Where a purpose cannot be stated that way, the ledger carries the
+        hash of the purpose record and the sentence itself stays inside the case
+        boundary.
+    additional_recorded_acts:
+      - name: halt_clearing
+        cites: doctrine/RETENTION.md RT-11
+        fields: [author, timestamp, receipt_hash]
+        written_as: the case's current state
+      - name: halt_override
+        cites: doctrine/RETENTION.md RT-11
+        fields: [case, author, date, reason]
+        rendered_until_resolved: true
+      - name: freeze
+        cites: doctrine/RETENTION.md RT-17
+        fields: [frozen_state, freeze_expires_on]
+      - name: disclosure_export
+        cites: doctrine/RETENTION.md RT-18
+        fields: [author, date, receiving_party, obligation]
+        recorded_against: the case
+    reconcile:
+      job: runner/reconcile_ledger.py
+      scheduled: true
+      directions: both
+      findings:
+        - a case in the ledger with no corresponding storage
+        - storage with no corresponding ledger row
+      cached_read_path_permitted: false
+      writes_heartbeat_on_every_run: true
+      note: >
+        One-directional reconciliation finds only the first. The schedule rests on
+        something that runs rather than on someone remembering what to compare.
+    pinned_connector_versions_read_from_here: true
+
+  # -------------------------------------------------------------------------
+  # RT-11. THE HALT
+  # -------------------------------------------------------------------------
+  halt:
+    cites: [doctrine/RETENTION.md RT-11]
+    trigger: SHRED_FAILED on any case
+    scope: system_wide
+    per_case: false
+    blocks: connector dispatch
+    does_not_block:
+      - runner/retention_sweep.py
+      - runner/verify_shred.py
+      - runner/reconcile_ledger.py
+      - the validators in tools/
+    why_system_wide: >
+      A shred failure is evidence about the mechanism rather than about the case.
+      A retention mechanism that can fail without stopping collection will be
+      found to have been broken for six months.
+    why_the_exemptions: >
+      The halt clears only by running verify_shred on the failed case, so
+      verify_shred cannot sit inside the blocked set. Blocking the sweep as well
+      would stop every other case's TTL being enforced while the halt is up.
+    clears_when: verify_shred passes all five RT-9 checks for the failed case
+    clearing_is_a_logged_act: true
+    clearing_fields: [author, timestamp, receipt_hash]
+    clearing_author_authority:
+      unratified: U-03
+    override:
+      permitted_when: the shred genuinely cannot be completed
+      recorded_in: doctrine/RETENTION_LEDGER.md
+      fields: [case, author, date, reason]
+      rendered_until_resolved: true
+      recorded_in_doctrine_status: false
+      why: >
+        A halt with no documented way out is a weaker control rather than a
+        stronger one, because this program's ladder terminates in one person and
+        SS-15 states the consequence: a control whose bypass is undocumented gets
+        bypassed silently, and a control whose bypass is a dated entry gets
+        bypassed visibly. doctrine/DOCTRINE_STATUS.md is the ratification pin for
+        doctrine items, and a case-level operational override entered there would
+        be the lane escape CLAUDE.md section 2 warns about.
+
+  # -------------------------------------------------------------------------
+  # RT-12. HEARTBEATS
+  # -------------------------------------------------------------------------
+  heartbeats:
+    cites: [doctrine/RETENTION.md RT-12, spec/pse-semantics-contract.md section 12]
+    written_on_every_run_including_empty_ones: true
+    absence_is: a named degraded state, rendered, never a silence
+    degraded_when: now is past the heartbeat's own next_due
+    grace_period: none
+    threshold_is_per_job: true
+    jobs:
+      - name: sweep
+        wire_form: SYSTEM_EVENT SWEEP_HEARTBEAT
+        interval: daily
+        carries: [swept_count, next_due]
+      - name: reconcile
+        wire_form: SYSTEM_EVENT RECONCILE_HEARTBEAT
+        interval: monthly
+        carries: [ledger_only_count, storage_only_count, next_due]
+    scheduled_from_day_one: true
+    note: >
+      The sweep is scheduled while it still has nothing to delete. A scheduled job
+      that does nothing yet is a mechanism. A comment describing a future job is
+      not.
+
+  # -------------------------------------------------------------------------
+  # RT-13, RT-14. WHAT SURVIVES, AND WHAT MAY NOT LEAVE
+  # -------------------------------------------------------------------------
+  finding_check:
+    cites: [doctrine/RETENTION.md RT-13]
+    invocation: tools/validate_retention.py --finding <file> --case <id>
+    scans: a candidate writeup against the case's selector set
+    refuses_on: a match
+    runs_at: case close, before the shred, while the values still exist
+    output: a stamp recording that it passed
+    output_stratum: 3
+    post_shred_run_possible: false
+    rejected_reading: >
+      Retaining a salted HMAC of the case's selector set after the shred so the
+      finding check can run later is rejected and must not be re-derived. A
+      surviving HMAC key plus a surviving digest set is a membership oracle:
+      anyone holding both can test a candidate selector for membership and get a
+      yes or a no. That is a re-identification channel built into the deletion
+      evidence. Running the check before the shred needs no retained digest at
+      all, so the oracle never exists.
+    survivability:
+      - artifact: capability finding
+        carries_subject_values: false
+        survives: true
+      - artifact: scorecard against the cast
+        carries_subject_values: false
+        survives: true
+        note: synthetic only, and it carries its conditions
+      - artifact: case narrative
+        carries_subject_values: true
+        survives: false
+
+  export_boundary:
+    cites: [doctrine/RETENTION.md RT-14]
+    rule: >
+      Screen recordings, screenshots, and exported briefs from a non-synthetic
+      case do not leave the case boundary.
+    technical_control_available: false
+    enforcement: stated rule plus a provided alternative
+    alternative: demos are built on the cast
+    draft_and_return_brief_stratum: 1
+    statement: >
+      DRAFT and Return Brief exports are written inside the case boundary where
+      the sweep reaches them, or they are not written. A demo on the cast is also
+      a better demo, because the ground truth is known and the narrator can say
+      whether the system was right.
+
+  # -------------------------------------------------------------------------
+  # RT-15, RT-16. THE REPOSITORY
+  # -------------------------------------------------------------------------
+  repo_scan:
+    cites: [doctrine/RETENTION.md RT-15]
+    shapes_and_exemptions_source: ontology/selectors.yaml repo_scan
+    implemented_by: tools/validate_retention.py --repo-scan
+    wired_into: .githooks/pre-commit
+    tracked_as: D-001
+    enforcement_parts_all_required:
+      - clause: an Execution Limits clause in AGENTS.md
+        present: true
+      - clause: canary_subject_class as a required connector manifest field
+        present: false
+        values: [synthetic, institutional]
+        refused_when_missing: true
+        note: >
+          `consented` is deliberately not in that enum and the source list it was
+          inherited from had it. A canary declaration carries its target selector
+          and a manifest is a tracked file, so a consented person's selector in a
+          canary is permanent in git and outside every mechanism here. Consent
+          cannot authorize that, because the subject cannot revoke it afterwards
+          and neither can we. `institutional` means an account that is not a
+          natural person, matching N0, so the enum cannot be used to relabel a
+          person's account as infrastructure.
+      - clause: violation code FIXTURE_CONTAINS_LIVE_SELECTOR in policy/violation-codes.yaml
+        present: false
+        note: >
+          The code is named by doctrine and is absent from the generated file.
+          policy/violation-codes.yaml is generated from spec/layer-model.yaml and
+          cannot be hand-edited, so the code lands by a rank-3 edit and a
+          regeneration. U-07 carries that question with the codes doctrine does
+          not name.
+      - clause: tools/validate_retention.py --repo-scan wired into .githooks/pre-commit
+        present: true
+        checks_anything: false
+
+  connector_floor:
+    cites: [doctrine/RETENTION.md RT-16]
+    rule: >
+      A connector version's manifest, cassette, and adapter are not deletable
+      while any case pinned to that version can be reopened.
+    direction: floor
+    forbids_a_deletion_act: true
+    carries_subject_values: false
+    reopenable_predicate:
+      unratified: U-10
+    enforcement:
+      - clause: a Class C clause in AGENTS.md stating the rule
+        present: false
+      - check: a bidirectional reconcile in tools/validate_retention.py
+        reconciles: doctrine/RETENTION_LEDGER.md pinned versions against connectors/<id>/
+        findings:
+          - a pinned version with missing artifacts
+          - an artifact set with no pinning case
+      - code:
+          unratified: U-07
+    note: >
+      RT-16 names the clause and the check so that it is not the one criterion in
+      the document that states a rule and stops, which is what a previous draft of
+      it did.
+
+  # -------------------------------------------------------------------------
+  # RT-17. THE FREEZE
+  # -------------------------------------------------------------------------
+  freeze:
+    cites: [doctrine/RETENTION.md RT-17]
+    stops_the_run: true
+    stops_queued_pivots: true
+    stops_the_sweep_for_one_case: true
+    collects_nothing_further: true
+    notifies_the_operator: true
+    is_a_logged_act: true
+    logged_fields: [author, timestamp, reason]
+    author_authority:
+      unratified: U-03
+    state_recorded_in: doctrine/RETENTION_LEDGER.md
+    retain_until_behaviour: >
+      retain_until is a stored date and does not advance or stop advancing. What
+      changes is that the sweep declines to act on it, and the ledger row carries
+      the freeze expiry.
+    default_expiry_days: 30
+    expiry_settable_per_freeze:
+      unratified: U-05
+    maximum_expiry_days:
+      unratified: U-05
+    renewal_length_days:
+      unratified: U-05
+    crosses_the_case_ceiling: true
+    on_expiry: renewed as a new logged act, or the case shreds on the normal path
+    renewal:
+      required_fields: [obligation, expected_resolution_on]
+      refused_when_either_is_absent: true
+      code: FREEZE_RENEWAL_UNJUSTIFIED
+      cap_on_renewal_count: none
+      wire_form: SYSTEM_EVENT RETENTION_RENEWAL
+      wire_required_fields: [system_type, author, obligation, expected_resolution_on, renewal_ordinal, freeze_expires_on]
+      escalation:
+        second_renewal_renders_a_distinct_state: true
+        why: >
+          A state that looks identical on day 30 and on day 90 stops being read.
+    why_no_cap: >
+      Capping the freeze at the ordinary ceiling would mean the handoff has to
+      complete inside 60 days, which is not a timetable this project controls.
+      What stops a freeze becoming an archive is that every renewal has to name an
+      obligation and an expected resolution date, and that the state escalates
+      rather than repeating.
+    enforcement:
+      job: runner/retention_sweep.py
+      behaviours:
+        - skips cases in the frozen state
+        - refuses a renewal that carries no obligation and no expected resolution date
+        - shreds on the normal path the moment a freeze lapses
+        - carries RT-5's 60 day ceiling refusal in the same check
+      conformance:
+        - a renewal with no named obligation, asserting it is refused
+        - a lapsed freeze, asserting the shred proceeds
+
+  # -------------------------------------------------------------------------
+  # RT-18. THE DISCLOSURE EXPORT
+  # -------------------------------------------------------------------------
+  disclosure_export:
+    cites: [doctrine/RETENTION.md RT-18]
+    available_only_under_an_active_freeze: true
+    available_on_an_ordinary_case: false
+    exports: the complete case
+    projection_or_summary_permitted: false
+    minimization_applied: false
+    minimization_inverted_here_deliberately: true
+    is_a_logged_act: true
+    logged_fields: [author, date, receiving_party, obligation]
+    recorded_in: doctrine/RETENTION_LEDGER.md
+    outside_every_mechanism_once_it_leaves: true
+    interface_states_that_at_the_moment_of_export: true
+    alters_the_freeze_or_the_shred_path: false
+    author_authority:
+      unratified: U-03
+    wire_form:
+      unratified: U-06
+    obligation_bound_by_no_subject_naming:
+      unratified: U-06
+    why_completeness: >
+      Handing an agency a thinned subset of the evidence misrepresents what was
+      found, and choosing which parts of it they see is not a decision this
+      project is positioned to make. Completeness is the correct behaviour here
+      and this is the only place that is true.
+    owed_document: doctrine/DISCLOSURE.md
+    owed_document_state: >
+      Owed rather than deferred. RT-18 is the second egress path that was named as
+      the trigger, and the RT-14 and RT-18 sections stand in the meantime.
+
+  # -------------------------------------------------------------------------
+  # RT-19. GATE TELEMETRY
+  # -------------------------------------------------------------------------
+  gate_telemetry:
+    cites: [doctrine/RETENTION.md RT-19, doctrine/HYGIENE.md HY-1]
+    stratum: "T"
+    ttl_days: 90
+    rolling: true
+    swept_on_write: true
+    swept_on_read: true
+    swept_by_a_scheduled_job: false
+    tracked: false
+    implemented_by: tools/gate_log.py
+    ignored_path: .gate-log/
+    carries_subject_derived_values: false
+    why_both_sweeps: >
+      The writer and the reader are already running, and a separate schedule would
+      be a third thing that can fail silently. A write-only sweep leaves an idle
+      repository holding records past the TTL and rendering them in the summary,
+      which inverts the rule it was chosen to serve.
+    why_untracked: >
+      A telemetry file in git is permanent, which contradicts the TTL in the one
+      direction that cannot be undone.
+    record_rule: >
+      A telemetry record names the file and the line. It never names the string
+      that matched. A --repo-scan refusal fires because a selector-shaped value
+      was found in a tracked file, and a record quoting that value would take the
+      gate's own evidence and make it the durable surface the gate exists to
+      prevent.
+
+  # -------------------------------------------------------------------------
+  # CADENCE
+  # -------------------------------------------------------------------------
+  cadence:
+    cites: [doctrine/RETENTION.md section 9]
+    note: >
+      Most maintenance here is one decision taken at the right time, which is why
+      the list is short and why every step names the act rather than the intent.
+    steps:
+    - when: at_case_open
+      act: the purpose is bound and retain_until is set
+      note: That decision is the maintenance.
+    - when: at_every_extension
+      act: an author, a timestamp, and a reason are recorded
+      note: Inaction needs no act, because inaction is deletion.
+    - when: at_case_close
+      act: run --finding, then shred, then verify_shred, then write the receipt row
+      order_is_normative: true
+    - when: daily
+      act: the sweep runs, whether or not it has anything to do, and writes its heartbeat
+      why: >
+        Daily rather than weekly because the incidental TTL is 7 days and the
+        sweep interval is the enforcement granularity.
+    - when: monthly
+      act: runner/reconcile_ledger.py diffs the ledger against storage in both directions
+      cached_read_path_permitted: false
+    - when: at_every_doctrine_change
+      act: re-run tools/validate_retention.py --policy
+      why: >
+        The strata table in doctrine is prose and this file is what executes.
+
+  # -------------------------------------------------------------------------
+  # RENDERED STATES
+  # -------------------------------------------------------------------------
+  # Copied from doctrine verbatim. A state is rendered as its consequence and
+  # never as its token, because an operator cannot act on the bare string
+  # "shredded", "frozen" or "stale". These strings are governed prose and a
+  # paraphrase of one is a change to the interface.
+  renders:
+    cites: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-12, doctrine/RETENTION.md RT-17]
+    tombstone: "▨ case material shredded 2026-11-04 · purpose served · 41 blobs · receipt 9f2c…a081"
+    sweep_absent: "▨ RETENTION SWEEP HAS NOT RUN SINCE 2026-10-02 · retain_until is not being enforced"
+    frozen: "▨ FROZEN 2026-09-14 by <ratifier> · shred suspended · freeze expires 2026-10-14"
+    channel: the design's existing hatch channel, in the case header
+    escalated_freeze:
+      unratified: U-16
+
+  # -------------------------------------------------------------------------
+  # NOT GATED
+  # -------------------------------------------------------------------------
+  # Stated so the compiled form is productive rather than obstructive, and so a
+  # reader does not infer a bound this doctrine declined to set.
+  not_gated:
+    cites: [doctrine/RETENTION.md section 10]
+    items:
+    - collecting at full depth against any authorized subject class; these rules
+      bound how long, never how much
+    - keeping raw bytes for the life of the case; content-addressed raw capture
+      from the first run is a design invariant and stdout that was thrown away
+      cannot be recaptured
+    - permanent retention of every capability finding, scorecard, connector health
+      record and conformance fixture, which is the program's actual product
+    - permanent retention of the skeleton, which is what makes the shred auditable
+      rather than merely claimed
+    - the entire synthetic corpus, permanently, in git
+
+  # -------------------------------------------------------------------------
+  # UNRATIFIED
+  # -------------------------------------------------------------------------
+  # Every question this compilation met that ratified doctrine does not answer.
+  # Each one is referenced from the field that would have carried a value, as the
+  # one-key mapping {unratified: U-nn}, so a reader reaching for a number gets a
+  # mapping and stops. None of these is a defect in doctrine. They are the places
+  # where compiling a value would have been an agent deciding a Class F question,
+  # and a refusing placeholder is the correct outcome rather than a degraded one.
+  #
+  # Resolving one is a dated stamp in doctrine/DOCTRINE_STATUS.md naming the
+  # option, followed by an edit here that replaces the mapping with the value.
+  # The two acts land in the same change, per the documentation matrix in
+  # AGENTS.md section 6.
+  unratified:
+    refuses_rather_than_permits: true
+    code:
+      unratified: U-07
+    code_note: >
+      These refusals have no violation code because naming one is itself
+      unratified. The rendered sentence carries the consequence, the rule and the
+      moves, which is what a refusal owes its reader. U-07 is the question of what
+      the codes are called and which file holds them.
+    entries:
+      - id: U-01
+        change_class: F
+        referenced_by: [case_ttl.retain_until.capped_by_authorization_expiry]
+        question: >
+          Does expiry or revocation of the subject authorization record drive the
+          case shred, and how does the record's expires_on relate to retain_until?
+          Where the two differ, which one governs, and at what latency does a
+          revocation take effect?
+        blocks: >
+          Setting retain_until at case open, and the refusal that would fire when
+          an extension pushes past the authorization's expires_on.
+        legal_options:
+          - Independent clocks. Expiry stops new collection and existing material
+            runs to retain_until, so a case can hold material it may no longer
+            collect on.
+          - Coupled. expires_on caps retain_until, an extension past it is
+            refused, and expiry enters the shred queue.
+          - The shorter of the two governs both, recorded on the case either way.
+          - Revocation sets retain_until to the current instant and the next daily
+            sweep shreds, which accepts up to a day of lag.
+          - Revocation triggers an out-of-band immediate shred, which needs its own
+            code path and its own verification.
+        sources: [doctrine/SUBJECT_SELECTION.md SS-2, doctrine/SUBJECT_SELECTION.md SS-4, doctrine/RETENTION.md RT-5]
+        refuses_as: |
+          THE CASE DID NOT OPEN. policy/retention.yaml cannot say whether
+          retain_until is capped by the authorization record's expires_on, so
+          nothing can set the column the sweep acts on.
+            where: policy/retention.yaml retention.unratified U-01
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the five options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or open no case
+
+      - id: U-02
+        change_class: B
+        referenced_by:
+          - case_ttl.ceiling_anchor_instant
+          - case_ttl.retain_until.granularity
+          - case_ttl.retain_until.anchor_instant
+          - case_ttl.retain_until.comparison
+        question: >
+          Is retain_until a date or a timestamp, what instant is it anchored to,
+          is the sweep's comparison strict or inclusive, and at what hour in what
+          timezone does the daily sweep run?
+        blocks: >
+          The sweep's comparison, the 60 day ceiling refusal's anchor, and the
+          conformance case that asserts incidental content is gone within 24 hours
+          of its TTL.
+        legal_options:
+          - Date granularity, swept once daily at a fixed UTC hour, comparison
+            retain_until < today. The enforced life of a 7 day object is 7 to 8
+            days.
+          - Timestamp granularity with the same daily sweep. The column is exact
+            and the enforcement still lags up to a day.
+          - Timestamp granularity plus a declared maximum enforcement lag that the
+            conformance case asserts against.
+        sources: [doctrine/RETENTION.md RT-5, doctrine/RETENTION.md RT-6, doctrine/RETENTION.md RT-17 point 2]
+        refuses_as: |
+          THE RETENTION SWEEP DID NOT RUN. policy/retention.yaml carries no
+          anchor, granularity or comparison for retain_until, so nothing can
+          decide which cases are due.
+            where: policy/retention.yaml retention.unratified U-02
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the four mappings here; or leave the sweep stopped and the TTL unenforced
+
+      - id: U-03
+        change_class: F
+        referenced_by:
+          - extension.author_authority
+          - freeze.author_authority
+          - halt.clearing_author_authority
+          - disclosure_export.author_authority
+        question: >
+          Who may author a retention extension, who may author a freeze, who may
+          author the act that clears an RT-11 halt, and who may author a
+          disclosure export?
+        blocks: >
+          The refusal that fires when an extension, a freeze, a halt clearing or a
+          disclosure export names an author who is not entitled to author it.
+        legal_options:
+          - Any named human identity, which matches the layer model's existing
+            human_identity_only constraint and adds nothing.
+          - The ratifier for the freeze, the halt clearing and the disclosure
+            export, and any analyst for an ordinary extension, mirroring the
+            Class F and Class B split the repository already uses.
+          - The authorized_by value on the case's own authorization record, which
+            ties every act to whoever authorized the collection.
+        sources: [doctrine/RETENTION.md RT-5, doctrine/RETENTION.md RT-11, doctrine/RETENTION.md RT-17 point 3, doctrine/RETENTION.md RT-18, spec/layer-model.yaml human_identity_only, doctrine/SUBJECT_SELECTION.md SS-15]
+        refuses_as: |
+          THE EXTENSION WAS NOT RECORDED AND THE CASE IS STILL DUE TO SHRED.
+          policy/retention.yaml does not say who may author a retention act, so
+          the author field has nothing to be checked against.
+            where: policy/retention.yaml retention.unratified U-03
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the four mappings here; or let the case shred on its existing retain_until
+
+      - id: U-04
+        change_class: F
+        referenced_by: [blob_policy.media.anchor_instant]
+        question: >
+          From what instant does the 90 day media clock run: the blob's first
+          write, the case open, or something else?
+        blocks: >
+          Expiry of media blobs inside a frozen case, which is the only situation
+          where the 90 day number can fire at all.
+        legal_options:
+          - Blob first write, so a frozen case sheds media rolling at 90 days while
+            its text survives.
+          - Case open, so all media in a frozen case dies together on one date.
+          - The rule is inert while a case is frozen and media follows the case,
+            which retires the number in practice and should be stated rather than
+            left implicit.
+        sources: [doctrine/RETENTION.md RT-8, doctrine/RETENTION.md RT-17]
+        refuses_as: |
+          THE MEDIA BLOB WAS NOT EXPIRED AND IT IS STILL READABLE INSIDE THE
+          FROZEN CASE. policy/retention.yaml states 90 days with no instant to
+          count from, so nothing can decide whether the blob is past it.
+            where: policy/retention.yaml retention.unratified U-04
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or hold every media blob for the life of the freeze and say so
+
+      - id: U-05
+        change_class: F
+        consequential: true
+        referenced_by:
+          - freeze.expiry_settable_per_freeze
+          - freeze.maximum_expiry_days
+          - freeze.renewal_length_days
+        question: >
+          Is a freeze's expiry settable per freeze or fixed at the 30 day default?
+          If it is settable, is there a maximum, and is a renewal's length settable
+          independently of the first freeze's?
+        blocks: >
+          The sweep's refusal on a freeze whose expiry is set past the point where
+          the escalation can ever be reached.
+        why_this_one_matters: >
+          RT-17's protection against a freeze becoming an archive is the escalating
+          state, and the escalation counts renewals. A first freeze with an
+          unbounded expiry reaches the same place in one logged act that twelve
+          renewals would reach, and the second renewal render never fires. This is
+          the one entry in this list where the wrong default silently removes a
+          control rather than leaving a gap.
+        legal_options:
+          - Fixed at 30 days for every freeze and every renewal, which gives the
+            escalation a predictable cadence and makes a long hold visibly many
+            acts.
+          - Settable, with a maximum the operator declares here.
+          - Settable and unbounded, which is consistent with RT-17's refusal to cap
+            the renewal count and leaves only the named obligation and the render
+            standing against a single long freeze.
+        sources: [doctrine/RETENTION.md RT-17 points 4, 6 and 7]
+        refuses_as: |
+          THE FREEZE WAS NOT APPLIED AND THE CASE REMAINS ON ITS ORDINARY SHRED
+          PATH. policy/retention.yaml cannot say whether the requested expiry is
+          legal, and RT-17's escalation cannot be relied on while the first
+          freeze's length is undecided.
+            where: policy/retention.yaml retention.unratified U-05
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the four mappings here; or apply a freeze at the stated 30 day default and renew it as a logged act
+
+      - id: U-06
+        change_class: F
+        referenced_by:
+          - disclosure_export.wire_form
+          - disclosure_export.obligation_bound_by_no_subject_naming
+        question: >
+          Where is a disclosure export recorded on the wire, and is the obligation
+          sentence bound by the same no-subject-naming rule that constrains purpose
+          and reason?
+        blocks: >
+          The event a disclosure export writes, and the refusal that would fire on
+          an obligation sentence describing the person the case was about.
+        legal_options:
+          - Add a DISCLOSURE_EXPORT subtype to the SYSTEM_EVENT set in
+            spec/layer-model.yaml and regenerate the four generated policy files,
+            extending the subject-naming refusal to cover obligation.
+          - Record the export in the ledger only, with this file declaring the
+            row's required fields and the no-subject-naming constraint, and no wire
+            event at all.
+          - Refuse a disclosure export until doctrine/DISCLOSURE.md exists, which
+            is the only option that does not have an agent shaping what leaves the
+            machine.
+        sources: [doctrine/RETENTION.md RT-18, doctrine/SUBJECT_SELECTION.md SS-4, spec/layer-model.yaml SYSTEM_EVENT subtypes, doctrine/DOCTRINE_STATUS.md DISCLOSURE.md row]
+        refuses_as: |
+          NOTHING LEFT THE MACHINE. policy/retention.yaml cannot say how a
+          disclosure export is recorded or whether its obligation sentence may
+          describe the subject, and a surviving stratum-2 row that names a person
+          is the defect RT-2 exists to refuse.
+            where: policy/retention.yaml retention.unratified U-06
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the two mappings here; or write doctrine/DISCLOSURE.md, which is already owed
+
+      - id: U-07
+        change_class: B
+        referenced_by:
+          - surviving_stratum_rule.code
+          - case_ttl.ceiling_refusal.code
+          - connector_floor.enforcement[2].code
+          - unratified.code
+        also_cited_in_prose_by: [repo_scan.enforcement_parts_all_required]
+        question: >
+          Which violation codes do the retention refusals fire, under what names,
+          and in which file do those names live?
+        blocks: >
+          Every refusal in this file naming its code, and RT-15's
+          FIXTURE_CONTAINS_LIVE_SELECTOR reaching policy/violation-codes.yaml.
+        detail: >
+          Doctrine names exactly one code, FIXTURE_CONTAINS_LIVE_SELECTOR, and it
+          is absent from the generated file. RT-16 requires a code and names none.
+          The RT-2 policy refusal, the RT-5 ceiling refusal, the RT-6 incidental
+          sweep and the five RT-9 checks have no codes at all. One code exists
+          today, FREEZE_RENEWAL_UNJUSTIFIED, and it covers RT-17's renewal alone.
+        legal_options:
+          - Add every retention code to the violation_codes section of
+            spec/layer-model.yaml and regenerate, keeping one closed vocabulary.
+          - Let this file declare its own codes, which creates a second registry
+            and the drift the generated header exists to prevent.
+          - Mint only FIXTURE_CONTAINS_LIVE_SELECTOR, which doctrine names, and
+            leave the unnamed ones for the operator to name.
+        sources: [doctrine/RETENTION.md RT-15, doctrine/RETENTION.md RT-16, doctrine/DOCTRINE_STATUS.md RT-5 row, policy/violation-codes.yaml header]
+        refuses_as: |
+          THE REFUSAL PRINTED NO CODE, SO NOTHING COUNTED IT. policy/retention.yaml
+          has no name for this refusal, and a gate whose firings cannot be counted
+          cannot be adjudicated under doctrine/HYGIENE.md.
+            where: policy/retention.yaml retention.unratified U-07
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md, then edit spec/layer-model.yaml and regenerate; or read the rendered sentence, which states the consequence without a token
+
+      - id: U-08
+        change_class: B
+        referenced_by: [ledger.row_schema_declared_here]
+        question: >
+          Does this file declare the ledger's row schema, and is
+          doctrine/RETENTION_LEDGER.md literal markdown that a tool lints or a
+          rendering of structured data?
+        blocks: >
+          Whatever refuses a malformed ledger row. Three jobs write to that file
+          and one job diffs it against storage.
+        legal_options:
+          - This file declares ledger.required_columns and the validator lints the
+            markdown, so the ledger stays prose a human can read.
+          - The ledger declares its own header and this file names only the path,
+            which is simpler and leaves nothing refusing a malformed row.
+          - The ledger becomes structured data with a markdown rendering, which
+            contradicts the .md path the register carries and the tracked-file
+            constraints RT-15 was written under.
+        sources: [doctrine/RETENTION.md RT-10, doctrine/RETENTION.md RT-11, doctrine/RETENTION.md RT-17, doctrine/RETENTION.md RT-18]
+        note: >
+          The six required columns and the four additional recorded acts are
+          compiled under `ledger` above regardless, because doctrine states them.
+          What is open is whether this file is the schema of record and what lints
+          against it.
+        refuses_as: |
+          THE RECEIPT ROW WAS NOT WRITTEN, AND UNDER RT-10 A SHRED WITH NO RECEIPT
+          ROW DID NOT HAPPEN. policy/retention.yaml does not say which file owns
+          the ledger's row shape, so nothing can refuse a malformed row.
+            where: policy/retention.yaml retention.unratified U-08
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or write doctrine/RETENTION_LEDGER.md with its header and lint nothing
+
+      - id: U-09
+        change_class: B
+        referenced_by: [verification.receipt_hash.computed_over]
+        question: What is the shred receipt hash computed over?
+        blocks: >
+          RT-9 check 4 as anything stronger than a presence test for an arbitrary
+          string, and any independent recomputation of a receipt.
+        legal_options:
+          - A digest over the canonical per-case inventory, which makes the receipt
+            recomputable from surviving stratum-2 data.
+          - A digest over the five check outcomes and the case id, which is cheap
+            and proves less.
+          - An opaque identifier rather than a hash, which needs the field renamed
+            so it stops claiming a property it does not have, per CLAUDE.md design
+            gate 6.
+        sources: [doctrine/RETENTION.md RT-9 check 4, doctrine/RETENTION.md RT-10, spec/layer-model.yaml SHRED_RECEIPT]
+        refuses_as: |
+          THE SHRED IS NOT VERIFIED. policy/retention.yaml states no preimage for
+          the receipt hash, so check 4 can confirm that a string is present and
+          nothing more.
+            where: policy/retention.yaml retention.unratified U-09
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or rename the field so it claims only what it proves
+
+      - id: U-10
+        change_class: B
+        referenced_by: [connector_floor.reopenable_predicate]
+        question: >
+          What does "can be reopened" mean once a case has been shredded, given
+          that the skeleton survives permanently?
+        blocks: >
+          The bidirectional connector reconcile, which reports an artifact set with
+          no pinning case as a finding and therefore needs a predicate for when a
+          pinning case has stopped existing.
+        legal_options:
+          - A shredded case cannot be reopened, so the floor lifts when the last
+            case pinned to a version shreds and the artifact set becomes
+            collectable.
+          - The surviving skeleton constitutes a reopenable case, so the floor is
+            permanent for every version ever used and connectors/ grows without
+            bound.
+          - A stated reopen window after the shred, which is a number doctrine does
+            not state.
+        sources: [doctrine/RETENTION.md RT-16, docs/PLAINSIGHT-design.md per-case version pinning]
+        refuses_as: |
+          THE CONNECTOR VERSION WAS NOT REMOVED AND THE RECONCILE REPORTED NEITHER
+          DIRECTION. policy/retention.yaml has no predicate for a reopenable case,
+          so the floor cannot be shown to have lifted or to still hold.
+            where: policy/retention.yaml retention.unratified U-10
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or keep every pinned version's artifacts and accept unbounded growth
+
+      - id: U-11
+        change_class: B
+        referenced_by:
+          - verification.checks[4].behaviour_when_no_adjacent_case_exists
+          - shred.ordering_with_the_two_mechanisms
+        # checks[4] is the fifth check. The list is zero-indexed and each entry
+        # carries its own `id`, which is the number RT-9's table uses.
+        question: >
+          What does check 5 do when the shredded case is the only case, so no
+          adjacent canary exists? Related: is any order required between the two
+          shred mechanisms, and must a half-completed shred be exercised?
+        blocks: >
+          Verification of the first real shred, which is by construction a shred of
+          the only case.
+        legal_options:
+          - Verification refuses when there is no adjacent case, on the ground that
+            the anti-overreach check cannot be run.
+          - Check 5 is skipped and recorded as skipped, which produces the
+            unfalsifiable check doctrine/HYGIENE.md HY-2 exists to catch.
+          - A permanent canary case exists for this purpose, which is a case that
+            is never shredded and needs its own stratum assignment.
+        sources: [doctrine/RETENTION.md RT-9 check 5, doctrine/RETENTION.md RT-3, doctrine/HYGIENE.md HY-2]
+        refuses_as: |
+          THE SHRED IS NOT VERIFIED AND THE HALT DID NOT CLEAR. policy/retention.yaml
+          does not say what check 5 does without an adjacent case, and RT-11 clears
+          the halt only when all five checks pass.
+            where: policy/retention.yaml retention.unratified U-11
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the two mappings here; or open a second case before shredding the first
+
+      - id: U-12
+        change_class: F
+        referenced_by: [incidental.reaches_stratum_0_blobs]
+        question: >
+          Does the 7 day incidental clock reach stratum-0 blobs, or only the
+          derived stratum-1 rows?
+        blocks: >
+          Enforcement of the incidental TTL against the class it was written for.
+        detail: >
+          A channel subscription's stratum-0 response bytes contain bystander
+          message text, so one blob is simultaneously raw capture at case TTL and
+          incidental content at 7 days. RT-1 assigns the blob to case TTL and RT-6
+          assigns the content inside it to 7 days, and both are stamped.
+        legal_options:
+          - The clock reaches stratum-1 derived rows only, so the raw bytes holding
+            the same text survive to the case TTL and the shorter clock protects a
+            projection rather than the source.
+          - The clock reaches stratum-0 blobs whose content is incidental, which
+            requires per-blob relation tagging at write time and destroys raw
+            capture the case may still cite.
+          - Bystander-dominant capture is written to its own partition from the
+            first write, so the two clocks act on disjoint objects.
+        sources: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-6, doctrine/SUBJECT_SELECTION.md SS-11]
+        refuses_as: |
+          THE INCIDENTAL CONTENT WAS NOT SWEPT. policy/retention.yaml does not say
+          which objects the 7 day clock reaches, so the sweep has nothing it can
+          safely delete without reaching raw capture the case may still cite.
+            where: policy/retention.yaml retention.unratified U-12
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or run no connector that reaches beyond its named selector
+
+      - id: U-13
+        change_class: B
+        referenced_by: [extension.recorded_in]
+        question: >
+          Which object is the audit log that RT-5 records an extension in?
+        blocks: >
+          The read the extension refusal performs, and any reconstruction of a
+          case's extension history.
+        detail: >
+          No artifact in the register is named an audit log.
+          doctrine/RETENTION_LEDGER.md is the case registry, and SYSTEM_EVENT
+          RETENTION_EXTENSION is the wire form. The two are different objects with
+          different lifetimes.
+        legal_options:
+          - The wire event is the audit log, and the ledger carries only the
+            current retain_until.
+          - The ledger is the audit log and carries one row per extension.
+          - Both, with the ledger row citing the event id, which is the pattern the
+            repository uses elsewhere for a rule and its record.
+        sources: [doctrine/RETENTION.md RT-5, doctrine/RETENTION.md RT-10, spec/layer-model.yaml SYSTEM_EVENT RETENTION_EXTENSION]
+        refuses_as: |
+          THE EXTENSION HAS NO RECORD TO BE READ FROM. policy/retention.yaml names
+          no audit log, so nothing can show that a case's current retain_until was
+          reached by extensions somebody authored.
+            where: policy/retention.yaml retention.unratified U-13
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or record no extension and let the case shred
+
+      - id: U-14
+        change_class: F
+        referenced_by: [surviving_stratum_rule.unclassified_objects]
+        question: >
+          What stratum holds the SS-21 injection tag applied at the extract
+          boundary, and what stratum holds the surviving payload-family finding
+          derived from it?
+        blocks: >
+          The RT-2 check on both objects, which cannot refuse a subject-derived tag
+          reaching a surviving stratum until it knows which stratum each is in.
+        detail: >
+          SS-21 tags an injection-carrying account inside the case and keeps the
+          payload family as a finding. A finding is stratum 3 and survives, and a
+          tag on an account is derived from a subject. Neither assignment is
+          compiled anywhere.
+        legal_options:
+          - The tag is stratum 1 and dies with the case, and the payload family is
+            stratum 3 with the account reference stripped at the boundary.
+          - Both are stratum 3, which puts a subject-derived tag in a surviving
+            stratum and needs an explicit RT-2 exception.
+          - The payload family survives only as a synthetic reproduction, so no
+            derived value crosses.
+        sources: [doctrine/SUBJECT_SELECTION.md SS-21, doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-2]
+        refuses_as: |
+          THE INJECTION FINDING WAS NOT WRITTEN. policy/retention.yaml holds no
+          stratum for the tag or for the payload family, and RT-2 makes a
+          subject-derived value in a surviving stratum a defect rather than a
+          judgment call.
+            where: policy/retention.yaml retention.unratified U-14
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or keep the finding inside the case boundary where it dies with the case
+
+      - id: U-15
+        change_class: F
+        referenced_by: [case_ttl.retain_until.minimum_at_case_open]
+        question: >
+          May retain_until be set below 30 days at case open, and is there a floor?
+        blocks: >
+          Nothing that holds data longer. It decides whether a short case is
+          expressible and how many extensions fit under the absolute ceiling.
+        detail: >
+          RT-5 names 30 as the default rather than as a minimum. Under the absolute
+          ceiling reading in RET-R3, a case opened at 7 days can take several
+          extensions inside the same 60 day wall clock, which is a different
+          extension cadence rather than a longer life.
+        legal_options:
+          - Any value at or below the default is legal at open, with the ceiling as
+            the only bound.
+          - 30 days is both the default and the floor, so a shorter case is
+            expressed by closing it early rather than by opening it short.
+          - A stated floor below 30, which is a number doctrine does not state.
+        sources: [doctrine/RETENTION.md RT-5]
+        refuses_as: |
+          THE CASE DID NOT OPEN AT THE REQUESTED RETAIN_UNTIL. policy/retention.yaml
+          does not say whether a value below the 30 day default is legal at case
+          open, so the shorter request cannot be accepted or refused on a rule.
+            where: policy/retention.yaml retention.unratified U-15
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or open the case at the 30 day default and close it early
+
+      - id: U-16
+        change_class: F
+        referenced_by: [renders.escalated_freeze]
+        question: >
+          What string renders the escalated state a second renewal produces?
+        blocks: >
+          The escalation itself, which is the control RT-17 puts in place of a cap
+          on the renewal count.
+        detail: >
+          Doctrine quotes the tombstone, the absent-sweep line and the FROZEN line
+          verbatim, and those three are compiled above unchanged. It requires a
+          distinct escalated state for the second renewal and quotes no string for
+          it. A render string is governed prose under CLAUDE.md section 4, so
+          drafting one here would be an agent writing the sentence an operator
+          reads at the moment a case has been held for ninety days.
+        legal_options:
+          - The operator writes the string, on the pattern of the three doctrine
+            already quotes.
+          - The FROZEN line gains a renewal ordinal and a cumulative held-since
+            date, which keeps one string and makes the escalation numeric.
+          - A distinct channel rather than a distinct string, which is an interface
+            decision rather than a prose one.
+        sources: [doctrine/RETENTION.md RT-17 point 7, doctrine/RETENTION.md RT-12, "CLAUDE.md section 4"]
+        refuses_as: |
+          THE SECOND RENEWAL RENDERED THE SAME FROZEN LINE A THIRD TIME, WHICH IS
+          THE STATE RT-17 POINT 7 REFUSES. policy/retention.yaml carries no string
+          for the escalated state, and a state that looks identical on day 30 and
+          on day 90 stops being read.
+            where: policy/retention.yaml retention.unratified U-16
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or refuse the second renewal until the escalation has somewhere to render

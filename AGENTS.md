@@ -166,15 +166,29 @@ reconciled against the layer model), the cast draft in `synthetic/` (the
 checkable half of SS-3, the confuser pair, the partition, the seal, and no
 filled value while unsealed), and the telemetry recorder in `tools/gate_log.py`
 (HY-1 and RT-19 exercised by `tools/tests/test_gate_log.py`). The schema,
-policy, authorization and connector checks do not exist because the artifacts
-they would check do not exist. `--kernel-gate` prints each of them as PENDING
-with the step that delivers it, and a stubbed or pending check is never counted
-as a pass. The three YAML validators need PyYAML, which CI installs and a local
-checkout must have.
+policy and authorization checks now exist. The schema check grades the generated
+schema, the policy pack and both corpora against `spec/layer-model.yaml`, and the
+authorization and retention checks are implemented and refuse, because the
+artifacts they grade carry no dated row in `doctrine/DOCTRINE_STATUS.md`. The
+connector checks do not exist, because no connector does. `--kernel-gate` prints
+an unimplemented check as PENDING with the step that delivers it, prints an
+implemented check whose artifact carries no stamp as UNRATIFIED and asserts that
+it refused, and never counts a pending, stubbed or unratified check as a pass.
+The three YAML validators need PyYAML, which CI installs and a local checkout
+must have.
 
-`tools/validate_retention.py --repo-scan` is a wired stub that checks nothing.
-That is D-001, it is scheduled for Step 8, and the aggregator reports it as
-STUB rather than green.
+`tools/validate_retention.py --repo-scan` is implemented as of Step 8, which
+closed D-001. It reads every tracked file in the working tree for a filled
+selector in its typed form, against thirteen shapes reconciled with
+`ontology/selectors.yaml` in both directions, and the pre-commit hook runs the
+same mode over the index. It enforces three of RT-15's four parts and does not
+reach the fourth, for two reasons that are worth stating separately. The
+violation code RT-15 names is not in the wire vocabulary, so the scan has no
+legal token to emit for it. Git history is out of reach of any check that runs
+at commit time, so a selector deleted from the working tree and still present in
+an earlier commit is not found. The check refuses today on two values that
+predate Step 8, and `CONFORMANCE.md` section 4 records what they are and what
+the open decision about them is.
 
 If a required check cannot be run, document the reason in the handoff.
 

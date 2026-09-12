@@ -418,3 +418,103 @@ written.
 
 **Next:** the operator commits. Then Step 4 and Step 5, which are independent of
 each other and both unblocked.
+
+---
+
+## 2026-08-27, the doctrine gates. Written before the first commit.
+
+**Class:** C (tooling) plus A (documentation).
+
+Reviewed `ZMeta/zmeta-spec` for the thoroughness bar: its `Makefile` named
+gates, its CI on push and pull request, and `validate_conformance.py` keeping
+`KERNEL_GATE_CHECKS` as one authoritative list so a new sub-check joins the
+battery in one place rather than in every document quoting the command. Two
+patterns carried directly: an empty fixture file proves nothing and is refused,
+and a refusal string names what failed and where.
+
+ZMeta has no `.githooks`. This repository does, and that divergence is correct:
+there the irreversible act is publishing, here it is a selector reaching git
+history.
+
+**Scope, set by the operator: only doctrine exists to check.** No validator was
+written for an artifact that does not exist, and none was stubbed to look busy.
+
+Wrote `tools/validate_doctrine.py`. Every check in it exists because the
+corresponding defect actually occurred during Step 3 and was caught by an
+adversarial review rather than by a mechanism: the SS-11 pointer that named RT-4
+instead of RT-6 and was broken in exactly one direction, the pin of record
+carrying no rows for the criteria that declared themselves indexed into it, a
+criterion marker and its pin row disagreeing silently, and prose counts drifting
+from the tables they count. It reconciles in both directions, because one
+direction finds half the drift.
+
+Wrote `tools/validate_hygiene.py`: the voice standard, table structure, the
+handoff and worklog caps, and the tools-to-gates inventory in both directions.
+Its citation check judges a cited path against the artifact register rather than
+against the filesystem, because `CLAUDE.md` and `AGENTS.md` legitimately name
+artifacts that are planned and unbuilt, and what is not legitimate is a path in
+no register and on no disk. **It prints the Register 1 rules it cannot reach on
+every successful run**, so a green result is not read as a full voice review.
+
+Wrote `tools/validate_conformance.py`, the aggregator, with `KERNEL_GATE` as the
+one authoritative list. It adds one thing to ZMeta's pattern: **a check that is
+not implemented reports as PENDING and never as a pass**, naming the step that
+delivers it. The failure that prevents is one this program has already measured,
+where `validate_retention.py` returns 0 while checking nothing and is harmless
+only because it says so.
+
+Wired `Makefile` with `validate-doctrine`, `validate-hygiene`, `validate-kernel`
+and `preflight`; rewrote `.githooks/pre-commit` to run the preflight battery
+rather than the stub alone; added `.github/workflows/ci.yml` on push and pull
+request. CI also proves the hook is still executable and still runs, so a hook
+that quietly stops working is caught, and it refuses any `Co-Authored-By`
+trailer naming an agent, which makes R6 a mechanism rather than a sentence.
+
+**Two real defects found by the tools on their first runs, both fixed.**
+`runner/reconcile_ledger.py` is named by RT-10 and was in no artifact register,
+which is exactly the gap the adversarial review predicted and which no human
+pass had caught since. SS-14's stamp marker was still partial after the
+2026-08-27 batch stamp, because its marker text differed from the one the batch
+replaced.
+
+**The gates were tested by breaking the corpus.** A reciprocal pointer was
+inverted to reproduce the original SS-11 defect and an em-dash connector was
+inserted into `README.md`; both gates refused, from both directions, and the
+corpus was restored. Design gate 1 asks for a constraint covered by a test that
+fails when the constraint is removed, and a gate nobody has seen fail is an
+assumption.
+
+**Not done, deliberately:** no validator for schema, ontology, policy,
+authorization, connectors or divergence. Those artifacts do not exist, and the
+aggregator names all six as pending with their step.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched.
+
+### R6 amended, and the first commit made
+
+The operator read back the R6 prompt and corrected their answer: an agent may
+commit or push when told to for that act, with the operator marked as author.
+
+Recorded as **R6 v0.2** in `DOCTRINE_STATUS.md` rather than as an edit to v0.1,
+because a stamped item that changes quietly is the drift the pin of record
+exists to prevent. `CLAUDE.md` §5 and `AGENTS.md` §4 both carry the amended
+reading.
+
+The amendment separates two things the original conflated. **The decision stays
+the operator's**, and an agent still may not decide a Class F change. What moved
+is the mechanics: git records the configured identity as author either way, so
+requiring the operator to type the command bought no protection. The
+authorization is per-act rather than standing, so a general willingness to have
+commits made is not authorization for the next one.
+
+The attribution half is unchanged and is now a mechanism rather than a habit:
+`.github/workflows/ci.yml` refuses any history containing a `Co-Authored-By`
+trailer naming an agent.
+
+**This entry is the honesty surface the amendment moves the load onto.** The
+Wave 0 commit was written and executed by an agent under the operator's
+instruction of 2026-08-27, authored as the operator, containing the governance
+skeleton, both rank-1 doctrine documents with all 55 conclusions recorded, the
+three doctrine gates, the Makefile, the CI workflow, and the pre-commit hook.
+Nothing in it was collected and no platform was touched.

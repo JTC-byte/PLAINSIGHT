@@ -10,13 +10,29 @@ One thing is added, because this repository is at a different stage. ZMeta's
 checks all exist. Most of PLAINSIGHT's do not, because the artifacts they would
 check are not built. **A check that is not implemented is reported as PENDING and
 never as a pass.** The failure this prevents is the one the program has already
-measured once: `tools/validate_retention.py` is wired into the pre-commit hook
-and returns 0 while checking nothing, and it is only harmless because it says so
-on every run. An aggregator that counted it as green would convert a known gap
-into a silent one.
+measured once: the Wave 0 `tools/validate_retention.py` was wired into the
+pre-commit hook and returned 0 while checking nothing, and it stayed harmless
+only because it said so on every run. An aggregator that counted it as green
+would have converted a known gap into a silent one. Step 8 replaced that stub
+with a tool that reads the tree, so no entry carries STUB today, and the state
+stays in the list because the next stub is easier to declare than to notice.
 
-Exit codes: 0 every implemented check passed, 1 an implemented check failed,
-2 the gate list itself is inconsistent with the tree.
+A fourth state joined the list at Step 8, because two mechanisms landed that are
+implemented and refuse. `policy/subject-authorization.yaml`,
+`policy/retention.yaml` and the two conformance artifacts beside them are Class F
+and carry no dated row in `doctrine/DOCTRINE_STATUS.md`, and an unratified
+criterion refuses rather than permits. **An UNRATIFIED entry runs its command and
+asserts the refusal.** Exit 1 is the state the entry describes. Exit 2 means a
+governed input could not be read, which is a failure of the tool rather than the
+state, so it is reported as one. Exit 0 means the entry itself is now wrong,
+because the check permits and the list still says it refuses, and that is refused
+as a gate-list inconsistency. The inversion is what keeps a designed refusal
+distinguishable from a broken tree, which is the distinction the PENDING rule
+protects at the other end.
+
+Exit codes: 0 every implemented check passed and every unratified check refused,
+1 an implemented check failed, 2 the gate list itself is inconsistent with the
+tree.
 """
 
 from __future__ import annotations
@@ -32,12 +48,22 @@ PY = sys.executable
 IMPLEMENTED = "implemented"
 STUB = "stub"
 PENDING = "pending"
+UNRATIFIED = "unratified"
 
 #: THE ONE AUTHORITATIVE GATE LIST.
 #:
 #: A new check joins the gate here and nowhere else. Every entry is
 #: (token, argv, state, note). `note` on a pending entry names the step that
 #: delivers it, so the gap is a scheduled gap rather than an unexplained one.
+#: `note` on an unratified entry names what the check reads and which artifact
+#: has no dated row, so the refusal is a state an operator can clear rather than
+#: a failure somebody has to diagnose.
+#:
+#: A token is the token the tool itself declares to `tools/gate_log.py`, so the
+#: telemetry in `make gate-telemetry` and the list below name the same thing.
+#: `tools/validate_retention.py` declares one token per mode and
+#: `tools/validate_authorization.py` declares one for the tool, and the entries
+#: follow each tool rather than imposing one shape on both.
 KERNEL_GATE = (
     (
         "doctrine",
@@ -75,9 +101,14 @@ KERNEL_GATE = (
     ),
     (
         "retention-repo-scan",
-        [PY, "tools/validate_retention.py", "--repo-scan"],
-        STUB,
-        "D-001. Wired into .githooks/pre-commit and checks nothing. Step 8",
+        [PY, "tools/validate_retention.py", "--repo-scan", "--quiet"],
+        IMPLEMENTED,
+        "RT-15, and D-001 closed at Step 8. Every tracked file in the working "
+        "tree read for a filled selector in its typed form, against thirteen "
+        "shapes reconciled with ontology/selectors.yaml in both directions. "
+        "Three of RT-15's four parts: the code the criterion names is not in the "
+        "wire vocabulary, and git history is out of reach of any commit-time "
+        "check. The pre-commit hook runs the same mode over the index",
     ),
     (
         "schema",
@@ -98,16 +129,60 @@ KERNEL_GATE = (
     ),
     (
         "authorization",
+        [PY, "tools/validate_authorization.py", "--fixtures", "--quiet"],
+        UNRATIFIED,
+        "--fixtures. SS-4's nine-field record against the schema's closed "
+        "property set, SS-5's three differential fixtures, the gate value, "
+        "basis, relation and disposition enums reconciled against rank 3, the "
+        "register in both directions, and SS-14's stamp read. It refuses because "
+        "six of the nine paths SS-14 item 6 names carry no dated row, so no run "
+        "may execute. --self-test is green and is a Makefile target of its own",
+    ),
+    (
+        "authorization-dispatch-paths",
         None,
         PENDING,
-        "Step 8. policy/subject-authorization.yaml does not exist. This is the "
-        "D5 mechanism and no run may execute before it does",
+        "Step 10. SS-6's subject is runner/, which is empty, so the scan would "
+        "find zero ungated call sites and exit clean while nothing is gated",
+    ),
+    (
+        "authorization-disjointness",
+        None,
+        PENDING,
+        "SS-20 and CR-1. The credential pool never exists on LOCAL under EG-4 "
+        "and CR-4 and no pool inventory artifact exists anywhere, so the "
+        "comparison against synthetic/CAST.md runs in ISOLATED once a pool is "
+        "provisioned",
     ),
     (
         "retention-policy",
+        [PY, "tools/validate_retention.py", "--policy", "--quiet"],
+        UNRATIFIED,
+        "--policy. RT-1's seven strata rows across five numbered levels plus "
+        "telemetry, RT-2's subject-carrying fields against the surviving strata, "
+        "the stamped durations, and RT-9's five verification checks with their "
+        "false-pass guards. It refuses because policy/retention.yaml carries no "
+        "dated row, which for a retention mechanism means the sweep refuses to "
+        "run rather than running with an unratified TTL",
+    ),
+    (
+        "retention-shred-roundtrip",
+        [PY, "tools/validate_retention.py", "--shred-roundtrip", "--quiet"],
+        UNRATIFIED,
+        "--shred-roundtrip. conformance/retention/shred-roundtrip.yaml graded as "
+        "a document: five checks, each once, each with its passing condition, "
+        "the witness designated at first write, and check 1 asserting failure on "
+        "the key. It proves the fixture is honest and proves nothing about a "
+        "shred, because the store lands at Step 11. It refuses because the "
+        "fixture carries no dated row",
+    ),
+    (
+        "retention-finding",
         None,
         PENDING,
-        "Step 8. policy/retention.yaml does not exist",
+        "Step 11. RT-13's pre-close scan reads the case's selector set from a "
+        "case store that does not exist, and EG-2 puts that store in ISOLATED. "
+        "The mode ships and refuses rather than returning 0",
     ),
     (
         "divergence-register",
@@ -149,7 +224,7 @@ def main(argv: list[str]) -> int:
 
     if args.list:
         for token, _, state, note in KERNEL_GATE:
-            print(f"  {state.upper():12} {token:24} {note}")
+            print(f"  {state.upper():12} {token:29} {note}")
         return 0
 
     if not args.kernel_gate:
@@ -157,7 +232,7 @@ def main(argv: list[str]) -> int:
 
     # The gate list must agree with the tree, in both directions.
     for token, cmd, state, _ in KERNEL_GATE:
-        if state in (IMPLEMENTED, STUB) and cmd is not None:
+        if state in (IMPLEMENTED, STUB, UNRATIFIED) and cmd is not None:
             if not (ROOT / cmd[1]).is_file():
                 print(
                     f"REFUSED GATE_LIST_INCONSISTENT\n"
@@ -168,6 +243,17 @@ def main(argv: list[str]) -> int:
                     file=sys.stderr,
                 )
                 return 2
+        if state == UNRATIFIED and cmd is None:
+            print(
+                f"REFUSED GATE_LIST_INCONSISTENT\n"
+                f"  where: {token}\n"
+                f"  what:  marked unratified and carries no command, so nothing runs "
+                f"and nothing asserts the refusal this entry claims\n"
+                f"  moves: give the entry the argv that refuses, or mark it {PENDING} "
+                f"with the step that delivers it",
+                file=sys.stderr,
+            )
+            return 2
         if state == PENDING and cmd is not None:
             print(
                 f"REFUSED GATE_LIST_INCONSISTENT\n"
@@ -180,32 +266,66 @@ def main(argv: list[str]) -> int:
             return 2
 
     failed: list[str] = []
+    refusing: list[str] = []
     ran = stubbed = pending = 0
 
     for token, cmd, state, note in KERNEL_GATE:
         if state == PENDING:
             pending += 1
-            print(f"  PENDING      {token:24} {note}")
+            print(f"  PENDING      {token:29} {note}")
             continue
         code, out = run(cmd)
         if state == STUB:
             stubbed += 1
-            print(f"  STUB         {token:24} {note}")
+            print(f"  STUB         {token:29} {note}")
+            continue
+        if state == UNRATIFIED:
+            if code == 0:
+                print(
+                    f"REFUSED GATE_LIST_UNRATIFIED_PERMITTED\n"
+                    f"  where: {token}\n"
+                    f"  what:  the list marks this unratified and the check returned 0, "
+                    f"so either the operator stamped the artifact and this entry still "
+                    f"reports a refusal nobody would see, or the check permitted under an "
+                    f"unratified criterion, which is the one thing the pin of record "
+                    f"exists to stop\n"
+                    f"  moves: move the entry to {IMPLEMENTED} if the artifact now "
+                    f"carries a dated row in doctrine/DOCTRINE_STATUS.md; or fix the "
+                    f"check, which is permitting where doctrine refuses",
+                    file=sys.stderr,
+                )
+                return 2
+            if code != 1:
+                failed.append(token)
+                print(f"  FAILED       {token:29} {note}")
+                for line in out.strip().splitlines():
+                    print(f"               | {line}")
+                continue
+            refusing.append(token)
+            print(f"  UNRATIFIED   {token:29} {note}")
             continue
         ran += 1
         if code == 0:
-            print(f"  ok           {token:24} {note}")
+            print(f"  ok           {token:29} {note}")
         else:
             failed.append(token)
-            print(f"  FAILED       {token:24} {note}")
+            print(f"  FAILED       {token:29} {note}")
             for line in out.strip().splitlines():
                 print(f"               | {line}")
 
     print()
     print(
         f"kernel-gate: {ran} implemented, {len(failed)} failed, "
-        f"{stubbed} stubbed, {pending} pending"
+        f"{len(refusing)} unratified and refusing, {stubbed} stubbed, "
+        f"{pending} pending"
     )
+    if refusing:
+        print(
+            "  An unratified check refused, which is the state it is holding rather "
+            "than a defect: no run may execute and no case may open until "
+            "doctrine/DOCTRINE_STATUS.md carries a dated row for each artifact the "
+            "entry names. Run the mode directly to read which rows are missing."
+        )
     if stubbed or pending:
         print(
             "  A stubbed or pending check is not a passing check. "

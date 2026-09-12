@@ -1,0 +1,393 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:plainsight:subject-authorization.schema.json",
+  "title": "PLAINSIGHT subject authorization record",
+  "description": "The SS-4 per-case subject authorization record. Nine required fields, a closed shape, no defaults, and no partial acceptance. Every instance is stratum 1, lives inside the case boundary under the case key, and is never in the repository under any circumstance.",
+  "$comment": "HAND-WRITTEN. The only other schema in this repository is generated, and this one is not, so the header says which. tools/generate_pse.py owns exactly five outputs, the event schema plus the semantics, lineage, producer-authority and violation-codes policies, and `--check` refuses drift in those five byte for byte. This file is not among them, it is not in that generator's GENERATED_KEYS, and nothing writes it but a person compiling doctrine/SUBJECT_SELECTION.md SS-4. The precedent for a hand-authored governed artifact is ontology/selectors.yaml. WHAT REFUSES ITS DRIFT. tools/validate_authorization.py is the self-lint. It reconciles the subject_class enum here against policy/subject-authorization.yaml, which SS-1 names as the enum's home and names this schema as the mechanism that refuses a value outside it, and against the rank 3 mirror in spec/layer-model.yaml, whose own comment records that it mirrors the doctrine rather than deciding it. A generator sourced from the layer model would invert that relationship and make a Class F artifact the output of a Class C tool. AUTHORITY. Rank 3, Class F. Rank 1 doctrine wins every conflict with this file. SUBJECT_SELECTION.md states that it has no opinion on field names, layer boundaries or interface design, so where doctrine disclaims a shape the authority order sends the question to rank 3, and x-plainsight.readings records which source bound each one and what reversing it costs. THIS FILE IS UNRATIFIED. doctrine/DOCTRINE_STATUS.md is the pin of record: mechanisms read it rather than the document they enforce, and an unratified criterion refuses rather than permits. SS-14 item 6 names this path among the artifacts that must be stamped before any collection at all, including collection against a synthetic account. A JSON Schema is inert data and cannot read the pin, so the refusal for this artifact's stamp state lives in its reader, tools/validate_authorization.py, rather than in a root-level refusal here. Putting the stamp state inside the artifact is the pattern the pin of record exists to replace. WHY THIS SCHEMA ALSO REFUSES EVERY RECORD TODAY, WHICH IS A DIFFERENT FACT WITH A DIFFERENT CAUSE. Two of the nine fields have no ratified domain. selectors[].selector_type carries an empty enum, because whether the fourteen stamped ontology keys or all nineteen may be an authorized seed is question SAS-U1 below, and an agent answering it would widen who can be collected on. evidence_ref carries a subschema that admits no value, because SS-4's evidence_ref row names three objects while SS-1 requires a written statement for four of the seven authorizable classes, which is question SA-U2 in policy/subject-authorization.yaml, and because SS-13 requires the credential used for collection to be recorded in the same field's chain, which is SA-U11 there. Each of those two fields names its entry in its own $comment. A complete, well-formed record therefore refuses at a named field carrying a stated question, which is the designed state rather than an unfinished one. WHERE THE INSTANCES LIVE. SS-4 and RETENTION.md RT-1 put the record and every evidence object it points at in stratum 1, inside the case boundary under the case key, dying with the case, and never in the repository under any circumstance. EGRESS.md EG-2 keeps stratum 1 in ISOLATED. This file is a tracked artifact on LOCAL describing an object that is never tracked. It carries no `examples` keyword, because an instance holds a selector value and, under S1, a living person's name, and SS-14 item 5 keeps a natural person's selector out of every tracked file. conformance/gate/*.jsonl holds synthetic records only, and the cast's rule for a tracked draft is that every variable part is a <placeholder>. NO VIOLATION CODE IS MINTED HERE. The code vocabulary is spec/layer-model.yaml and policy/violation-codes.yaml is its generated form, append-only once shipped. This file cites codes by name and mints none. VOICE. CLAUDE.md section 4, Register 1. Every state recorded below is rendered as its consequence rather than as its token, so a reader is told what did not happen and why.",
+  "x-plainsight": {
+    "$comment": "The governance block. An unrecognized keyword is an annotation in draft 2020-12 and changes no validation outcome, which is why the machine-readable state sits here rather than in prose a reader cannot parse. See readings SAS-R3.",
+    "hand_written": true,
+    "generated_by": null,
+    "not_in": "tools/generate_pse.py GENERATED_KEYS",
+    "version": "0.1",
+    "authority_rank": 3,
+    "change_class": "F",
+    "status": "DRAFT 2026-09-11, compiled by an agent from rank 1 doctrine, UNRATIFIED",
+    "binds": false,
+    "compiled_from": "doctrine/SUBJECT_SELECTION.md",
+    "enum_source": "policy/subject-authorization.yaml",
+    "stamp_of_record": "doctrine/DOCTRINE_STATUS.md",
+    "self_lint": "tools/validate_authorization.py",
+    "code_vocabulary": "spec/layer-model.yaml",
+    "compiles_criteria": [
+      "SS-1",
+      "SS-4",
+      "SS-5",
+      "SS-12",
+      "SS-14",
+      "RT-1",
+      "EG-2"
+    ],
+    "decides": [],
+    "read_by": [
+      {
+        "path": "tools/validate_authorization.py",
+        "how": "--fixtures validates each synthetic record in conformance/gate/*.jsonl against this file, and reconciles the subject_class enum here against policy/subject-authorization.yaml and the rank 3 mirror. Step 8."
+      },
+      {
+        "path": "runner/subject_guard.py",
+        "how": "evaluate() validates the record against this file before it reads a field, so a partial record raises rather than proceeding with the rest. Step 10."
+      },
+      {
+        "path": "conformance/gate/*.jsonl",
+        "how": "every fixture's authorization record is an instance of this shape. Synthetic records only, per SS-4."
+      }
+    ],
+    "not_here": [
+      "The subject_class enum's ownership. SS-1 puts the enum in policy/subject-authorization.yaml and makes this schema the mechanism that refuses a value outside it. The enum below is compiled from that file and decides nothing.",
+      "The bystander disposition and the incidental-count estimate. SS-12 puts the estimate on the per-run pre-flight record and SS-10 hands the manifest field to schema/connector-manifest.schema.json at Step 12. This record is per case, and SS-4's table carries neither field. Their wire forms already exist at rank 3 on COLLECT_EVENT.",
+      "purpose_hash. SS-4 puts the purpose sentence on the record and the hash in RETENTION_LEDGER.md where the sentence cannot be written subject-free. spec/layer-model.yaml requires the hash on AUTHORIZE_EVENT GRANT, so the runner computes it at emit rather than storing it here.",
+      "SS-17's baseline scorecard and its dated Class F override. Neither has an artifact yet, which is SA-U6 and SA-U7 in policy/subject-authorization.yaml. A tenth field for an override refuses here as an unknown property.",
+      "The retention numbers and the shred path. Those are RETENTION.md RT-5 and RT-6, compiled in policy/retention.yaml.",
+      "Which subject class a selector belongs to. SS-1 puts the class in the record and rules out inference from a selector value permanently."
+    ],
+    "record_location": {
+      "criterion": "SS-4, RT-1, EG-2",
+      "stratum": 1,
+      "lives": "inside the case boundary under the case key",
+      "dies_with": "the case",
+      "environment": "ISOLATED. EG-2 lets no stratum-0 or stratum-1 object cross to LOCAL.",
+      "in_the_repository": "never, under any circumstance",
+      "why": "An S1 consent record names a living person, so the authorization record is the one object in the system carrying both a selector and a name.",
+      "this_file": "a tracked LOCAL artifact describing an object that is never tracked",
+      "examples_keyword": "absent. SS-14 item 5 keeps a natural person's selector out of every tracked file, and a worked example of this record would carry one. A placeholder-only example on the ontology/selectors.yaml pattern would be permitted and would not validate against the refusing enum below, so it would illustrate nothing."
+    },
+    "partial_is_refused": {
+      "criterion": "SS-4",
+      "rule": "Every field is required because every field answers a question a reviewer will ask, and a record missing one raises rather than proceeding with the rest.",
+      "precedent": "zisr-recon/src/zisr_recon/guard.py OriginAuthorization.load(), which SS-4 records as correct and transfers whole.",
+      "structural_form": [
+        "required lists all nine field names",
+        "additionalProperties is false, so a tenth field refuses as an unknown property",
+        "no default keyword appears anywhere in this file, because a value the system supplies is the system deciding on the subject's behalf (SS-2)",
+        "no anyOf, oneOf, if or then admits a subset of the nine"
+      ],
+      "refuses": "REFUSED INCOMPLETE_AUTHORIZATION\n  where: schema/subject-authorization.schema.json, the nine required field names\n  what:  the record is missing a field SS-4 requires, or carries one SS-4 does not.\n         A partial authorization is refused rather than half-honoured, so the\n         fields that are present authorize nothing\n  moves: write the missing field into the record and revalidate; or, for a field\n         SS-4's table does not carry, record the decision that adds it as a\n         ratified Class F amendment to SS-4 before the schema can accept it; or\n         dispatch nothing, which is what this refusal is holding"
+    },
+    "fields_proven_read": {
+      "criterion": "SS-5",
+      "fields": [
+        "selectors",
+        "pivot_depth_max",
+        "expires_on"
+      ],
+      "rule": "For each field, conformance/gate/*.jsonl carries a fixture identical to a passing fixture except in that one field, and that fixture is refused.",
+      "schema_expressible": [
+        "selectors",
+        "pivot_depth_max"
+      ],
+      "not_schema_expressible": "expires_on. A date in the past is well-formed, so the temporal refusal belongs to tools/validate_authorization.py and runner/subject_guard.py, and the rule it compares by is unratified as SA-U3 in policy/subject-authorization.yaml.",
+      "why": "As measured on 2026-08-26 in zisr-recon's guard.py, scope was declared, required and printed, and check() never read it, so a complete authorization permitted every non-NEVER address on earth. Declaring a field here is not evidence the gate reads it.",
+      "enforced_by": "tools/validate_authorization.py --fixtures, which fails if any of the three fixtures is missing."
+    },
+    "unenforced_here": {
+      "$comment": "Stated in place rather than implied, because a rule that lives in a comment is not a rule (CLAUDE.md design gate 1) and a schema that looks stricter than it is launders the gap (design gate 6).",
+      "items": [
+        "purpose is one sentence that names and describes no subject. This file checks a non-empty string. The no-subject rule is a review rule whose wire-side code is CASE_PURPOSE_UNBOUND, and nothing here refuses a purpose that names a person.",
+        "authorized_by is the ratifier's identity from the session and never free text, per spec/layer-model.yaml. This file checks a non-empty string, so the never-free-text half is the runner's.",
+        "expires_on is compared to nothing here, not to authorized_on, not to the case's retain_until, and not to the S1 consent record's own expiry.",
+        "selectors are typed against ontology/selectors.yaml. The enum that would close that vocabulary is unratified as SAS-U1, so no registry check runs here today and the field refuses instead.",
+        "case_id opacity. A uuid cannot carry a subject name, which makes the no-subject-name half structural. Nothing here proves the id was not derived from a subject value."
+      ]
+    },
+    "ratification": {
+      "pin_of_record": "doctrine/DOCTRINE_STATUS.md",
+      "predicate": "A criterion is stamped when it has a row in the Step 3 per-criterion table and its file carries a dated ratifier row in the Ratified table. The Step 3 table is the mechanism rather than an index of one, and it says so.",
+      "basis_is_not_required": true,
+      "absent_row": "A criterion with no row refuses rather than permits.",
+      "how_an_inert_file_refuses": "Its reader refuses on its behalf. tools/validate_authorization.py reads the pin of record and refuses a dispatch while this path is unstamped, which is the mechanisms-read-the-pin rule. A root-level refusal here would put the artifact's stamp state inside the artifact, and unstamping it would then be a hand edit to a Class F file.",
+      "state_of_record": {
+        "criteria": "SS-1 to SS-21, all criteria",
+        "conclusion_stamped": "2026-08-27",
+        "basis_stamped": "unstamped, deliberately",
+        "ratifier": "operator",
+        "version": "v0.1"
+      },
+      "this_file": {
+        "stamped": false,
+        "blocks": "every collection run, under SS-14 item 6",
+        "refuses": "REFUSED PENDING RATIFICATION\n  where: doctrine/DOCTRINE_STATUS.md, no row for\n         schema/subject-authorization.schema.json\n  what:  a record was validated against a schema the operator has not stamped.\n         SS-14 item 6 refuses all collection, including collection against a\n         synthetic account, until this path is stamped in the pin of record, and\n         an unstamped criterion refuses rather than permits\n  moves: stamp this path in doctrine/DOCTRINE_STATUS.md with a date and a\n         ratifier; or resolve the entries under x-plainsight.unratified first,\n         since two of them decide what a record's fields may hold; or run\n         nothing, which is the state this refusal is holding"
+      }
+    },
+    "readings": {
+      "$comment": "Interpretive calls this compilation had to make where doctrine disclaims the question and rank 3 or an existing precedent answers it. On the S7-R1 to S7-R7 precedent for the generated schema, each names its sources and stays reversible. Confirming or reversing one is a stamp in doctrine/DOCTRINE_STATUS.md rather than an edit in place. A reading is not a gap: a gap is a question doctrine does not answer, and these are questions doctrine sends elsewhere.",
+      "entries": [
+        {
+          "id": "SAS-R1",
+          "change_class": "B",
+          "reading": "This schema is hand-written rather than generated, and tools/validate_authorization.py is what refuses its drift from doctrine.",
+          "sources": "SS-14 item 6 stamps this path as an artifact in its own right. spec/layer-model.yaml's own comment on subject_class names policy/subject-authorization.yaml as the compiled source that the model mirrors, so generating the schema from the model would invert a stated relationship and make a Class F artifact the output of a Class C tool.",
+          "cost": "This is the first schema in the tree with no generator and no byte-for-byte drift check. The reconciliation tools/validate_authorization.py performs against the policy and the mirror is what stands in for one."
+        },
+        {
+          "id": "SAS-R2",
+          "change_class": "A",
+          "reading": "$id is urn:plainsight:subject-authorization.schema.json, unversioned, matching the registered path.",
+          "sources": "The one precedent, schema/pse-event-0.1.schema.json, versions both the filename and the URN. docs/THE-GAMEPLAN.md fixes this filename without a version token, so a versioned URN would drift from the path it names.",
+          "cost": "A later versioning decision moves the $id and every reference to it."
+        },
+        {
+          "id": "SAS-R3",
+          "change_class": "B",
+          "reading": "The governance and unratified state is carried under the custom keyword x-plainsight rather than as prose inside $comment alone.",
+          "sources": "Draft 2020-12 collects an unrecognized keyword as an annotation, so the block changes no validation outcome. tools/validate_authorization.py has to read the unratified entries to render their refusals, and prose in a $comment is not parseable.",
+          "cost": "A custom keyword is a convention this repository has not used before. The prose-only alternative keeps the file conventional and leaves the entries unreadable to a tool."
+        },
+        {
+          "id": "SAS-R4",
+          "change_class": "B",
+          "reading": "Blank is a refusal rather than an absence, so every string field carries minLength 1 and selectors carries minItems 1.",
+          "sources": "SS-12 states the principle for a different field: a blank field is a refusal. SS-4 says selectors holds the exact seed selectors authorized and states no count, and an empty array that a gate reads as no constraint is the measured guard.py defect SS-5 exists for.",
+          "cost": "The empty-selectors bound is not a sentence doctrine wrote. conformance/gate/*.jsonl carries the empty-array refusal as a fixture so the bound is testable, and reversing the reading is a stamp plus a one-line edit."
+        },
+        {
+          "id": "SAS-R5",
+          "change_class": "B",
+          "reading": "A selectors entry is an object pairing a registered selector_type with its value. Its value is a string.",
+          "sources": "EXTRACT_EVENT CLAIM at rank 3 pairs selector_type with value, which is the only precedent for that pair in the tree. A map keyed by selector type cannot carry two selectors of the same type, which an authorization naming two handles requires. Rank 3 types a claim's value as a union including a number, a boolean and null, and that union exists for an extracted claim carrying a negative state, while a seed a person writes into an authorization record is text.",
+          "cost": "If a seed is ever a numeric identifier written as a number, the record refuses until the type widens."
+        },
+        {
+          "id": "SAS-R6",
+          "change_class": "B",
+          "reading": "case_id is a uuid, authorized_on and expires_on are calendar dates, and pivot_depth_max is an integer with minimum 0 and no maximum, each mirroring its rank 3 wire analogue in spec/layer-model.yaml with the same format and pattern pair the generated schema uses.",
+          "sources": "SUBJECT_SELECTION.md states it has no opinion on field names or interface design, so the authority order sends these shapes to rank 3, where AUTHORIZE_EVENT already types authorization_ref as a uuid, expires_on as a date, pivot_depth_max as an integer with minimum 0, and authorized_by as a string. Section 9 records that nothing in the doctrine caps pivot depth, so a maximum here would bound reach the doctrine declined to bound.",
+          "cost": "The record's case_id is typed as the event envelope's case_id rather than as an opaque string of any shape, so a case identifier that is not a uuid refuses."
+        }
+      ]
+    },
+    "unratified": {
+      "$comment": "Questions doctrine does not answer, where writing a value here would decide who may be a subject, what evidence authorizes them, or what a record is. None carries a default. Four are this schema's own and six are owned by policy/subject-authorization.yaml and block fields here. An entry is resolved when doctrine/DOCTRINE_STATUS.md carries a dated row naming its id, at which point its content moves into the field or the block that lists it.",
+      "ratified_by": "a dated row in doctrine/DOCTRINE_STATUS.md naming the entry id, authored by the ratifier",
+      "entries": [
+        {
+          "id": "SAS-U1",
+          "change_class": "F",
+          "question": "May selectors name any of the nineteen keys in ontology/selectors.yaml, or only the fourteen that are not marked proposed?",
+          "options": [
+            "All nineteen, which makes an unstamped selector type an authorizable seed and is reach the operator has not stamped.",
+            "The fourteen stamped keys, which refuses a proposed type at authorization and stales this enum on every registry stamp.",
+            "All nineteen here with tools/validate_authorization.py refusing a proposed type under a named code, which keeps the enum stable and puts the rule outside the schema."
+          ],
+          "nearest": "SS-4 says only that selectors are typed against ontology/selectors.yaml and does not distinguish a stamped key from a proposed one. The registry says each of its five proposed keys needs an operator stamp before a connector may emit it, which governs emission rather than authorization.",
+          "encoded_as": "\"enum\": [] at properties.selectors.items.properties.selector_type. An empty enum admits no value, so every record refuses at that field until the enum is stamped. The refusal is a fact about this field's domain rather than about the artifact's stamp state, which lives in the pin of record.",
+          "blocks": [
+            "every authorization record",
+            "the SS-5 selectors fixture in conformance/gate/"
+          ],
+          "refuses": "REFUSED PENDING RATIFICATION\n  where: schema/subject-authorization.schema.json,\n         properties.selectors.items.properties.selector_type, entry SAS-U1\n  what:  a record named a seed selector type and no selector type is authorizable\n         yet. Five of the registry's nineteen keys are an agent's proposal the\n         operator has not stamped, and admitting them here would make a selector\n         type nobody ratified into an authorized seed\n  moves: stamp one of the three options in doctrine/DOCTRINE_STATUS.md and write\n         the resulting key list into this enum; or authorize nothing, which is\n         what this refusal is holding"
+        },
+        {
+          "id": "SAS-U2",
+          "change_class": "F",
+          "question": "Does a case hold exactly one authorization record, or one per authorized subject?",
+          "options": [
+            "One record per case, which makes a mixed-class case impossible and sends SS-16's promotion path through a new case.",
+            "One record per subject and many per case, which matches SS-16 and means case_id is not unique across records, with some other artifact owning the set.",
+            "One record carrying per-class blocks, a shape doctrine has not described."
+          ],
+          "nearest": "RT-1 says the per-case subject authorization record, singular, and SS-4's table carries one subject_class. SS-16 says a discovered person needs their own authorization record and their own class, and SS-1 says a selector belongs to exactly one class per case. The two readings are not reconciled anywhere.",
+          "encoded_as": "The root of this file is one record with one subject_class, which is the object SS-4's table and RT-1's row describe. Nothing here permits a second record in the same case and nothing here refuses one, because this file validates an instance rather than a set. No uniqueness keyword is asserted over case_id.",
+          "blocks": [
+            "whether case_id identifies a record or a case",
+            "the SS-16 promotion path",
+            "what identical except in one field means for the SS-5 fixtures"
+          ],
+          "refuses": "REFUSED PENDING RATIFICATION\n  where: schema/subject-authorization.schema.json, the root shape, entry SAS-U2\n  what:  two authorization records were offered for one case and nothing decides\n         whether a case may hold more than one. Each record validates alone, so a\n         reader that treats the pair as one authorization would be merging two\n         subjects of possibly different classes under one purpose\n  moves: stamp one of the three options in doctrine/DOCTRINE_STATUS.md and name\n         the artifact that owns the set; or open a second case for the second\n         subject, which is legal under every option; or dispatch nothing"
+        },
+        {
+          "id": "SAS-U3",
+          "change_class": "F",
+          "question": "How does a revoked authorization appear in the record, and what does the gate read between the REVOKE event and the completed shred?",
+          "options": [
+            "No record change. Revocation is the event plus the shred, and a gate reading the record alone sees a live authorization until the shred completes.",
+            "expires_on is rewritten to the revocation date, which fits the nine fields and loses SS-2's distinction between an expiry and a revocation.",
+            "A tenth field, which widens the table SS-4 closes."
+          ],
+          "nearest": "SS-2 says revocation is an event and its effect is that the case shreds on the same path an expiry would take, not a slower one. SS-4's table carries no status, revoked_on or reason. spec/pse-semantics-contract.md carries AUTHORIZE_EVENT REVOKE on the wire, which is the event rather than the record.",
+          "encoded_as": "additionalProperties false plus the nine required names. A status, revoked_on or revocation_reason property refuses as an unknown property, so no record can carry a revocation today and this schema states no revoked state at all.",
+          "blocks": [
+            "what runner/subject_guard.py reads after a REVOKE",
+            "the revocation path in conformance/gate/"
+          ],
+          "refuses": "REFUSED PENDING RATIFICATION\n  where: schema/subject-authorization.schema.json, additionalProperties false,\n         entry SAS-U3\n  what:  a record tried to record its own revocation and the ratified table has no\n         field for one. Accepting the property would widen a closed table, and\n         rewriting expires_on instead would file a revocation as an expiry\n  moves: stamp one of the three options in doctrine/DOCTRINE_STATUS.md; or emit\n         the AUTHORIZE_EVENT REVOKE and shred the case, which SS-2 already\n         requires and which needs no field here; or leave the entry unstamped and\n         treat the record as live until the shred completes, which is what this\n         refusal is warning about"
+        },
+        {
+          "id": "SAS-U4",
+          "change_class": "F",
+          "question": "Does this schema also define the S1 consent record, or only the authorization record that points at it?",
+          "options": [
+            "A second shape under $defs here, which widens a Class F artifact past SS-4's table.",
+            "A new schema/consent-record.schema.json, which is a Normative artifact and a register row an agent would be creating.",
+            "Leave SS-2's mechanism unbuilt and carry the gap, which leaves a stamped criterion with a named mechanism that does not exist."
+          ],
+          "nearest": "SS-2 says a consent record with no expiry is refused at schema validation rather than defaulted, which asserts that a schema for that object exists. SS-1 states its contents: the person, the case purpose, the classes of data, and an expiry. docs/THE-GAMEPLAN.md's Step 8 artifact list carries no consent schema.",
+          "encoded_as": "One root shape, the authorization record. A consent record validated against this file refuses, because its fields are unknown properties here. SS-2's stated refusal therefore has no mechanism at Step 8, and this entry is where that is recorded rather than left to be noticed.",
+          "blocks": [
+            "S1 collection",
+            "SS-2's no-default-expiry refusal",
+            "SA-U8's classes-of-data vocabulary in policy/subject-authorization.yaml"
+          ],
+          "refuses": "REFUSED PENDING RATIFICATION\n  where: schema/subject-authorization.schema.json, the root shape, entry SAS-U4\n  what:  an S1 consent record was offered to the only schema that names consent\n         and this file describes the authorization record instead. The object SS-2\n         says is refused at schema validation has no schema, so a consent record\n         with no expiry would pass unread rather than refuse\n  moves: stamp one of the three options in doctrine/DOCTRINE_STATUS.md and land\n         the consent shape where it decides; or authorize under S0, S2, N0 or L0,\n         none of which needs a consent record; or leave the entry unstamped and\n         collect nothing under S1"
+        }
+      ],
+      "cross_references": {
+        "$comment": "Entries owned by policy/subject-authorization.yaml that decide a field in this file. Their questions, options and refusals live there and are not restated here, because two copies of a Class F question drift.",
+        "entries": [
+          {
+            "id": "SA-U2",
+            "owner": "policy/subject-authorization.yaml",
+            "question": "What does evidence_ref point at for S3, S4, N0 and L0, whose SS-1 evidence is a written statement and whose object is not among SS-4's three named kinds?",
+            "decides": "properties.evidence_ref",
+            "encoded_as": "a subschema that admits no value, so every record refuses at evidence_ref"
+          },
+          {
+            "id": "SA-U11",
+            "owner": "policy/subject-authorization.yaml",
+            "question": "Does evidence_ref carry both the subject's evidence and the collecting credential, and is it therefore a list rather than one value?",
+            "decides": "properties.evidence_ref",
+            "encoded_as": "the same refusing subschema. The field's cardinality is undecided, so no type is asserted for it"
+          },
+          {
+            "id": "SA-U3",
+            "owner": "policy/subject-authorization.yaml",
+            "question": "Is expires_on inclusive or exclusive, against which clock, and does the check re-run for a run already in flight?",
+            "decides": "what a reader does with properties.expires_on",
+            "encoded_as": "form only. This file checks that the value is a calendar date and compares it to nothing"
+          },
+          {
+            "id": "SA-U4",
+            "owner": "policy/subject-authorization.yaml",
+            "question": "Does expiry of the authorization record trigger the case shred, and how does expires_on relate to retain_until in policy/retention.yaml?",
+            "decides": "whether properties.expires_on carries an upper bound",
+            "encoded_as": "no maximum. A bound to authorized_on plus the RT-5 ceiling would invent a coupling doctrine does not state"
+          },
+          {
+            "id": "SA-U5",
+            "owner": "policy/subject-authorization.yaml",
+            "question": "When the S1 consent record's own expiry and the authorization record's expires_on disagree, which binds, and is a mismatch refused at schema validation?",
+            "decides": "whether this file carries a cross-record check",
+            "encoded_as": "no cross-record check. The mismatch is not refused here, and SA-U4 in this schema's own list records that the consent record has no schema to be checked against"
+          },
+          {
+            "id": "SA-U7",
+            "owner": "policy/subject-authorization.yaml",
+            "question": "What artifact is SS-17's dated Class F override, is it per case or global, and does it expire?",
+            "decides": "whether the record carries a tenth field for an override reference",
+            "encoded_as": "no tenth field. A baseline_override_ref property refuses as an unknown property under additionalProperties false"
+          }
+        ]
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "case_id",
+    "subject_class",
+    "selectors",
+    "pivot_depth_max",
+    "purpose",
+    "evidence_ref",
+    "authorized_by",
+    "authorized_on",
+    "expires_on"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "$ref": "#/$defs/uuid",
+      "$comment": "SS-4: which case this authorizes, opaque, with no subject name. Typed as the event envelope's case_id at rank 3, which makes the no-subject-name half structural because a uuid carries no name. Reading SAS-R6."
+    },
+    "subject_class": {
+      "type": "string",
+      "enum": [
+        "S0",
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "N0",
+        "L0"
+      ],
+      "$comment": "SS-1's class set minus S5, which SS-1 marks not authorizable and SS-4 excludes from this field. policy/subject-authorization.yaml carries the enum under authorizable_subject_class and this file refuses a value outside it, which is the split SS-1 states. Widening this list is Class F by effect whatever the diff looks like. An S3 or S4 value is authorizable only behind SS-17, whose baseline object and override artifact are SA-U6 and SA-U7 in the policy and do not exist, and an S3, S4, N0 or L0 record additionally refuses at evidence_ref under SA-U2."
+    },
+    "selectors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/selector"
+      },
+      "$comment": "SS-4: the exact seed selectors authorized, typed against ontology/selectors.yaml. minItems 1 is reading SAS-R4: an empty list read by a gate as no constraint is the measured guard.py defect SS-5 exists for. No maximum count is asserted, because doctrine sets no breadth cap on an authorized subject. One of the three SS-5 fields, and the fixture that mutates this field alone is refused."
+    },
+    "pivot_depth_max": {
+      "type": "integer",
+      "minimum": 0,
+      "$comment": "SS-4: how far a chain may walk from a seed before it needs a new decision. Zero means the chain may not walk and the record authorizes its seeds only. No maximum and no sentinel for unbounded: section 9 records that nothing in the doctrine sets a ceiling on how deep a decision may go, and that there is no aggressiveness budget, no run quota and no rate cap, so a maximum here would bound reach the doctrine declined to bound. A chain that reaches this limit returns REQUIRES_EXTENSION rather than a refusal, and the analyst raises the value. One of the three SS-5 fields."
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "SS-4: why this case exists, in one sentence, bound to the case at creation, stated without naming or describing the subject, on the same rule as case_id. RETENTION_LEDGER.md carries a copy of this sentence in a tracked file that survives every shred, which is why the constraint exists. This file checks a non-empty string. The one-sentence and no-subject halves have no mechanism here, their wire-side code is CASE_PURPOSE_UNBOUND, and x-plainsight.unenforced_here says so rather than leaving the constraint to read as enforced."
+    },
+    "evidence_ref": {
+      "$comment": "REFUSING. SS-4 names three evidence objects, the consent record, the credential record and the cast manifest entry, which are the evidence kinds of S1, S0 and S2. SS-1 requires a written statement for S3, S4, N0 and L0, and no such object is in SS-4's list, which is SA-U2 in policy/subject-authorization.yaml. SS-13 separately requires the credential used for collection to be recorded in this field's chain, which would make the field a list rather than one value, and that is SA-U11 there. The field has no ratified domain, so no value is legal and the record refuses here. A ratifier answering SA-U2 and SA-U11 replaces this subschema. REFUSED PENDING RATIFICATION | where: schema/subject-authorization.schema.json properties.evidence_ref, policy entries SA-U2 and SA-U11 | what: the record carries an evidence reference and nothing decides what that reference may name or how many of them there may be. For four of the seven authorizable classes SS-4's list holds no object at all, so typing the field here would decide what evidence authorizes a third party | moves: stamp SA-U2 and SA-U11 in doctrine/DOCTRINE_STATUS.md and replace this subschema with the shape they decide; or amend SS-4's evidence_ref row at rank 1 the way its subject_class row was amended; or leave both unstamped and authorize nothing, which is what this refusal is holding.",
+      "not": {}
+    },
+    "authorized_by": {
+      "type": "string",
+      "minLength": 1,
+      "$comment": "SS-4: the ratifier. Typed as the rank 3 analogue, which is a string, and rank 3 adds that the value is the ratifier's identity from the session and never free text. This file cannot tell one string from another, so the never-free-text half belongs to the runner and is listed under x-plainsight.unenforced_here."
+    },
+    "authorized_on": {
+      "$ref": "#/$defs/utcDate",
+      "$comment": "SS-4: the date. A calendar date, matching AUTHORIZE_EVENT's expires_on at rank 3 and the generated schema's utcDate. No relation to expires_on is asserted here; see the SA-U3 cross-reference."
+    },
+    "expires_on": {
+      "$ref": "#/$defs/utcDate",
+      "$comment": "SS-4: the date after which the record no longer authorizes anything. Form only, with no maximum and no comparison. Whether the value is inclusive, against which clock, and whether the check re-runs mid-run is SA-U3 in policy/subject-authorization.yaml; how it relates to the case's retain_until is SA-U4 there; a disagreement with an S1 consent record's own expiry is SA-U5 there. One of the three SS-5 fields, and the only one of the three whose refusal a schema cannot carry, because a date in the past is well-formed."
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "utcDate": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^(19[7-9][0-9]|2[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "selector": {
+      "type": "object",
+      "$comment": "One authorized seed selector: a registered type paired with the value a person wrote down. Reading SAS-R5 takes the pair from EXTRACT_EVENT CLAIM at rank 3 rather than a map keyed by type, which cannot carry two selectors of the same type.",
+      "required": [
+        "selector_type",
+        "value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "selector_type": {
+          "type": "string",
+          "enum": [],
+          "$comment": "REFUSING. registry: ontology/selectors.yaml. The registry holds nineteen keys and five of them are an agent's proposal the operator has not stamped, so whether a proposed key may be an authorized seed is unratified as SAS-U1 above. An empty enum admits no value, which refuses every record at this field rather than admitting a selector type nobody ratified. REFUSED PENDING RATIFICATION | where: schema/subject-authorization.schema.json properties.selectors.items.properties.selector_type, entry SAS-U1 | what: a record named a seed selector type and no selector type is authorizable yet, because admitting the registry's five proposed keys would make an unstamped type an authorized seed and admitting only the fourteen stamped keys would stale this enum on every registry stamp | moves: stamp one of SAS-U1's three options in doctrine/DOCTRINE_STATUS.md and write the resulting key list into this enum; or authorize nothing, which is what this refusal is holding. A value outside the enum, once the enum is populated, is SELECTOR_TYPE_UNREGISTERED rather than a bare enum failure."
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "$comment": "The selector's value, which is why an instance of this record is stratum 1 and is never in a tracked file. Typed as a non-empty string under readings SAS-R4 and SAS-R5. No pattern is asserted, because the matcher that would check a value against its registered shape is in ontology/selectors.yaml and SS-19 puts that refusal at argv construction in the runner rather than here."
+        }
+      }
+    }
+  }
+}

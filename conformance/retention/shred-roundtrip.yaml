@@ -1,0 +1,542 @@
+# conformance/retention/shred-roundtrip.yaml
+#
+# The ephemeral-case create/encrypt/shred/verify round trip. docs/THE-GAMEPLAN.md
+# names this file by path and this one-line description: "The ephemeral-case
+# create/encrypt/shred/verify round trip", Normative, Class F, and states why it
+# matters in five words: "The shred mechanism is unexercised."
+#
+# HAND-AUTHORED. This file is a description, not a program. It states what the
+# four-phase round trip must build, what the shred must destroy, what the five
+# RT-9 checks must each prove, and what a check must remain unable to do after
+# the shred. It is read by a person before it is read by any tool, because no
+# tool reads it yet. See `step_boundary` below, which is the most important
+# section in this file: it says plainly what a green run of this document can
+# and cannot mean at Step 8, so a reader ten files downstream does not credit it
+# with more than it does.
+#
+# WHAT THIS FILE DOES NOT DO. It does not restate `policy/retention.yaml`. That
+# file compiles doctrine/RETENTION.md's durations, strata, and mechanisms; this
+# file exercises them against a described scenario. Where a value is compiled
+# there (case_ttl, the strata table, the shred mechanisms, the verification
+# checks), this file cites the field rather than copying the number, so the two
+# cannot read differently after one of them changes.
+#
+# THIS FILE IS UNRATIFIED AND IT REFUSES RATHER THAN PERMITS. Nothing here
+# binds until the operator stamps it in doctrine/DOCTRINE_STATUS.md.
+# doctrine/SUBJECT_SELECTION.md SS-14 item 6 and docs/THE-GAMEPLAN.md section 4
+# name this path among the artifacts that must be stamped before any collection
+# at all, including against a synthetic account. There is no row for this path
+# in doctrine/DOCTRINE_STATUS.md today.
+#
+# THE FAIL-CLOSED CONVENTION, carried from policy/retention.yaml so the two
+# files refuse the same way. Every value doctrine leaves open is written as the
+# one-key mapping `{unratified: SR-Un}`, or, where the open question is the same
+# one already carried in policy/retention.yaml, as `{unratified: U-nn,
+# defined_in: policy/retention.yaml}`. A reader expecting a scalar gets a
+# mapping and fails where it stands, rather than proceeding on a plausible
+# default. Two questions in this file are genuinely new here (SR-U1, SR-U2) and
+# are recorded under `unratified` with the question, the legal options, and the
+# sentence a reader renders. None of them carries a default.
+#
+# WHAT REFUSES ITS DRIFT FROM DOCTRINE. `tools/validate_retention.py
+# --shred-roundtrip` is the named self-lint, in docs/THE-GAMEPLAN.md's Step 8
+# done-when line. It does not exist as an implemented mode today; see
+# `step_boundary.reader_today`. Until it exists, this file is unread by any
+# mechanism, which is stated here rather than left silent.
+#
+# NO VALUE APPEARS IN THIS FILE. No case in this document is real. No selector,
+# handle, address, or case id below names anything that exists. `case_<id>` is
+# doctrine's own literal syntax for `DROP SCHEMA case_<id> CASCADE`, quoted
+# verbatim from doctrine/RETENTION.md RT-3, not a filled-in value.
+#
+# Dialect, matching synthetic/GROUND_TRUTH.yaml: block mappings, block
+# sequences, flow sequences in `[a, b]` form, plain scalars, and null. No
+# anchors, no aliases, no multi-line scalars beyond a `>` block, no multiple
+# documents.
+#
+# Voice: CLAUDE.md section 4, Register 1. Every rendered refusal states what was
+# refused, which rule refused it, and the legal moves, matching the shape in
+# `tools/validate_layer_model.py` and in `policy/retention.yaml`.
+
+shred_roundtrip:
+  fixture_version: 0.1
+  change_class: F
+  status: DRAFT 2026-09-11, drafted by an agent, UNRATIFIED
+  authority: >
+    Not itself ranked by CLAUDE.md section 2 or AGENTS.md section 2, which list
+    conformance/ only as CONFORMANCE.md the document, rank 5. This file is
+    downstream of doctrine/RETENTION.md (rank 1) and policy/retention.yaml
+    (rank 3): it exercises the rules declared there and decides none of them.
+    Where this file and policy/retention.yaml appear to disagree, doctrine
+    governs and this file is wrong.
+  register_entry: docs/THE-GAMEPLAN.md, artifact register, "conformance/retention/shred-roundtrip.yaml"
+  exercises: [doctrine/RETENTION.md RT-1, RT-3, RT-4, RT-9, RT-10, RT-13, "section 9"]
+  asserts_against: policy/retention.yaml
+  self_lint: tools/validate_retention.py --shred-roundtrip
+  self_lint_state: >
+    Unimplemented. tools/validate_retention.py is a STUB at the time this file
+    is drafted; see step_boundary.reader_today.
+  ratification:
+    pin_of_record: doctrine/DOCTRINE_STATUS.md
+    row_for_this_path: absent
+    required_by: [doctrine/SUBJECT_SELECTION.md SS-14 item 6, docs/THE-GAMEPLAN.md section 4]
+    refuses_rather_than_permits: true
+    consequence: >
+      No collection at all, including against a synthetic account, until a
+      dated row in doctrine/DOCTRINE_STATUS.md names this path with a ratifier.
+
+  # ---------------------------------------------------------------------------
+  # STEP BOUNDARY. Read this before anything below it.
+  # ---------------------------------------------------------------------------
+  step_boundary:
+    what_this_file_is: >
+      A declarative description of the four-phase round trip and the five
+      verification checks RT-9 requires, structured so a reader, and
+      eventually a validator, can check it for internal consistency: one named
+      check per RT-9 row, each carrying the one pass condition doctrine
+      states, each written next to the failure modes RT-9 warns must not be
+      mistaken for a pass.
+    what_this_file_is_not: >
+      An executable crypto round trip. docs/THE-GAMEPLAN.md Step 11, "Build
+      the encrypted blob store, retention_sweep.py, and verify_shred.py", is
+      BLOCKED on Step 8 and is where a real case, a real per-case key, and a
+      real S3 endpoint first exist. Nothing in this file opens a case, writes
+      a blob, or destroys a key.
+    reader_today: >
+      tools/validate_retention.py is a STUB. Its own docstring says so: "STUB.
+      Wired into .githooks/pre-commit at Step 1 so the mechanism exists and is
+      called." It takes no --shred-roundtrip argument, ignores every argument
+      it is given, prints a fixed notice, and exits 0 regardless of what this
+      file contains. Running `python tools/validate_retention.py
+      --shred-roundtrip` today reads nothing in this file. That is a known,
+      stated gap: the argument is unimplemented, not the check passing
+      vacuously.
+    what_green_will_mean_once_the_mode_exists: >
+      That this document is internally consistent: five checks, each named
+      once, each carrying the one pass condition RT-9 states, each paired with
+      the failure conditions doctrine warns get mistaken for a pass, and every
+      value this document does not carry rendered as an
+      {unratified: SR-Un} mapping rather than a guess. It will not mean a
+      shred happened. RT-9's five checks are proven against a live store only
+      by the Step 11 CI test docs/THE-GAMEPLAN.md names: "the CI test that
+      opens a case with retain_until in the past, runs the sweep, and passes
+      all five verify_shred checks."
+    vacuous_pass_named: >
+      A fixture describing a check nobody has run is not the check having run.
+      doctrine/HYGIENE.md HY-2 names exactly this failure mode. This section
+      exists so a green Step 8 gate over this file is never read as evidence
+      that a shred was verified.
+
+  # ---------------------------------------------------------------------------
+  # NOT HERE. Said plainly so a reader does not go looking.
+  # ---------------------------------------------------------------------------
+  not_here:
+    - The blob store, retention_sweep.py, and verify_shred.py themselves.
+      Those are Step 11, BLOCKED on Step 8. See step_boundary.
+    - retain_until, extension length, ceiling, freeze, and every other
+      duration. policy/retention.yaml is the compiled source. This file names
+      the objects those durations act on without restating the numbers.
+    - Any violation code. policy/retention.yaml unratified U-07 carries that
+      question and this file mints none.
+    - RT-13's --finding check as a modeled step. It has its own tool
+      invocation, tools/validate_retention.py --finding <file> --case <id>,
+      and its own criterion. See readings SR-R2.
+    - The strata table itself. strata, surviving strata, and lifetimes are
+      compiled once in policy/retention.yaml. This file cites stratum tokens,
+      never redefines them.
+
+  # ---------------------------------------------------------------------------
+  # READINGS. Interpretive calls this compilation had to make, each citing the
+  # sources in tension. Confirming one is a stamp in doctrine/DOCTRINE_STATUS.md
+  # rather than an edit here, same convention as policy/retention.yaml.
+  # ---------------------------------------------------------------------------
+  readings:
+    - id: SR-R1
+      question: Whether create and encrypt are two sequential fixture steps or one
+      reading: >
+        One atomic step, named create_and_encrypt below. RT-4 states every
+        blob is encrypted with a per-case data key "from the first write", so
+        no legal state exists where case material is present and not yet
+        encrypted.
+      alternatives:
+        - Two steps, the second only asserting the property the first
+          established, never performing encryption as a distinct later act
+      sources: [doctrine/RETENTION.md RT-4]
+      note: >
+        The register's four-part name states properties checked, not a
+        literal pipeline. A fixture that sequenced an unencrypted create
+        followed by a later encrypt action would describe a state doctrine
+        forbids rather than a scenario it permits.
+
+    - id: SR-R2
+      question: Whether the round trip includes RT-13's --finding check as a modeled step
+      reading: >
+        Out of scope. RT-13 carries its own criterion and its own invocation,
+        distinct from --shred-roundtrip. This fixture's scenario begins at the
+        shred, with the finding check already passed.
+      alternatives:
+        - In scope, with the create step also constructing a candidate
+          writeup and asserting --finding refuses on a selector match before
+          the shred
+      sources: [doctrine/RETENTION.md RT-13, doctrine/RETENTION.md section 9]
+      note: >
+        Section 9's cadence line orders --finding, shred, verify_shred, and
+        the receipt row in one sequence without merging the artifacts that
+        perform them. RT-13 gets its own coverage under its own invocation.
+
+    - id: SR-R3
+      question: What minimum case topology gives every one of the five RT-9 checks something to act on
+      reading: >
+        Two cases (target and canary). The target carries at least one
+        witness ciphertext (stratum 0), at least one populated stratum-1
+        table, the stratum-1 authorization record, and an intact stratum-2
+        skeleton. The canary carries the same shape and is never shredded.
+      alternatives:
+        - Five separate scenarios, one per check, each isolating a single
+          stratum or object
+        - A fuller scenario mirroring all seven strata rows plus telemetry,
+          also exercising RT-2's no-subject-value-survives rule
+      sources: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-9]
+      note: >
+        Each check names the object it acts on, so the minimum is derived
+        rather than invented. Check 1 needs the witness. Check 2 needs
+        objects readable over the S3 endpoint. Check 3 needs at least one
+        stratum-1 table. Check 4 needs the skeleton. Check 5 needs a second,
+        untouched case. See create_step.
+
+    - id: SR-R4
+      question: Whether this fixture must encode the false-pass traps RT-9 warns about
+      reading: >
+        Yes. Check 1's pass condition already states the discrimination: the
+        decrypt must fail on the key, and a decrypt success, a not-found, a
+        permission-denied, or a malformed-input result are each a verification
+        failure, never a pass. Check 3 must distinguish a query that errors
+        from a query that returns zero rows.
+      alternatives:
+        - A single positive scenario per check, with the false-pass traps
+          covered instead by tools/validate_retention.py's own self-test, on
+          the tools/validate_layer_model.py --self-test precedent
+      sources: [doctrine/RETENTION.md RT-9, doctrine/HYGIENE.md HY-2]
+      note: >
+        doctrine/RETENTION.md recounts a real near-miss: a draft of check 1
+        pointed at the same object check 2 requires to be gone, and would have
+        passed on a not-found while reporting the key destroyed. HY-2's
+        cadence rule, break the corpus deliberately and confirm the check
+        refuses, is why the required_negative_scenarios lists below are part
+        of the checks rather than a separate optional file.
+
+    - id: SR-R5
+      question: The order between shredding, computing the receipt hash, running verify_shred, and writing the receipt row
+      reading: >
+        The shred act computes the receipt hash and writes it into the
+        surviving stratum-2 skeleton. verify_shred runs next and check 4 reads
+        the hash already present there. The ledger row is appended only after
+        all five checks pass.
+      alternatives:
+        - The receipt row is written before verification, and check 4's
+          reference to "the receipt hash" is loosely worded for an eventual
+          state rather than a verification-time fact
+      sources: [doctrine/RETENTION.md RT-9, doctrine/RETENTION.md RT-10, doctrine/RETENTION.md section 9]
+      note: >
+        Section 9's cadence line, "shred, then verify_shred, then write the
+        receipt row", and RT-9 check 4's requirement that the skeleton already
+        carry the receipt hash at verification time, name two different
+        objects. The hash is a skeleton field, produced by the shred. The
+        receipt row is a ledger row, appended after verification. See
+        receipt_step.
+
+    - id: SR-R6
+      question: Whether the created case must include a synthetic stratum-1 authorization record as its own destroyed object
+      reading: >
+        Yes, as its own entry in create_step.builds, distinct from generic
+        stratum-1 coverage.
+      alternatives:
+        - Rely on generic stratum-1 coverage plus policy/retention.yaml
+          --policy confirming the record's classification, without a
+          dedicated fixture entry
+      sources: [doctrine/RETENTION.md RT-1]
+      note: >
+        RT-1 names this record "the object with the highest concentration of
+        subject data" and recounts a draft that gave it no stratum, no TTL,
+        and no shred path at all. A round trip that never destroys one would
+        not re-prove the failure mode RT-1 flags. This is a fixture-coverage
+        choice, not a doctrine value, and it strengthens the scenario rather
+        than narrowing it.
+
+  # ---------------------------------------------------------------------------
+  # PHASE 1: CREATE (and encrypt, as one atomic act). See readings SR-R1, SR-R3, SR-R6.
+  # ---------------------------------------------------------------------------
+  create_step:
+    cites: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-4, doctrine/RETENTION.md RT-9]
+    name: create_and_encrypt
+    atomic: true
+    must_prove: >
+      Every object written for a case exists in encrypted form from its first
+      byte, under a key unique to that case, and that the objects a later
+      shred must destroy and the objects it must not touch are both present
+      before the shred runs.
+    key_wrapping_rule:
+      cites: doctrine/RETENTION.md RT-4
+      per_case_data_key: true
+      encrypted_from: first_write
+      wrapped_by: a vault key
+      plaintext_intermediate_state_legal: false
+      retrofittable: false
+      what_this_buys_the_shred: >
+        Destroying one case key renders every blob for that case unreadable in
+        a single atomic act, regardless of replicas, snapshots, or caches, all
+        of which defeat rm. This is the property shred_step.mechanisms.key_destruction
+        depends on, and it is unavailable to any case whose first write was
+        ever plaintext.
+    case_count: 2
+    case_roles: [target, canary]
+    why_two_cases: >
+      RT-9 check 5 (anti-overreach) requires an adjacent case that is not
+      shredded, to catch the failure mode of an over-eager shred, which is
+      silent: a sweep with a bad case-id filter that destroys two cases still
+      reports one success. One case cannot exercise this check.
+    builds:
+      - object: witness_ciphertext
+        stratum: 0
+        case: target and canary, one each
+        count_per_case: 1
+        designated_at: first_write
+        held_outside: the enumerable delete path
+        digest_recorded: true
+        note: >
+          Exists so check 1 has something to decrypt against after the shred.
+          The designation convention, the digest's input, and the per-case
+          inventory structure are this file's own open question. See
+          unratified SR-U1.
+      - object: ordinary_case_material
+        stratum: 1
+        case: target and canary, one each
+        count: at least one row, in at least one stratum-1 table
+        note: gives check 3 a table to query.
+      - object: subject_authorization_record
+        stratum: 1 (authorization)
+        case: target and canary, one each
+        count: 1
+        note: >
+          Included as its own entry rather than folded into ordinary
+          case_material, per readings SR-R6. Synthetic only: no selector
+          belonging to a natural person appears in this file, and none may
+          appear in the record this entry describes either.
+      - object: skeleton
+        stratum: 2
+        case: target and canary, one each
+        count: 1
+        carries_before_shred: [run_and_item_structure, argv_template_with_values_redacted, exit_codes, counts, coverage_intervals, egress, the_ledger_row]
+        carries_after_shred_on_target_only: [tombstone, receipt_hash]
+        note: >
+          Must already be intact before the shred runs, so check 4 has
+          something to find afterward. The tombstone and the receipt hash are
+          written by shred_step, not by this step.
+
+  # ---------------------------------------------------------------------------
+  # PHASE 2: SHRED. Acts on the target case only. The canary case is untouched.
+  # ---------------------------------------------------------------------------
+  shred_step:
+    cites: [doctrine/RETENTION.md RT-3, doctrine/RETENTION.md RT-9]
+    acts_on: target
+    does_not_act_on: canary
+    unit: the case
+    mechanisms_both_required: true
+    must_prove: >
+      That both mechanisms ran, that each reaches the class of copy the other
+      cannot, and that neither one alone would have been sufficient.
+    mechanisms:
+      - name: enumerable_deletion
+        act: DROP SCHEMA case_<id> CASCADE
+        reaches: [stratum_1_tables, message_partitions, case_full_text_index]
+        proven_by: verify_step.checks (id 3, schema_absence)
+      - name: key_destruction
+        act: destruction of the per-case data key
+        reaches: [object_store_replicas, filesystem_snapshots, wal_segments, base_backups, page_cache]
+        proven_by: verify_step.checks (id 1, key_destruction; id 2, object_absence)
+    why_both: >
+      DROP reaches what can be enumerated. Cryptography reaches what cannot.
+      Backups are the canonical thing that cannot be enumerated.
+    writes_at_shred_time:
+      - target: stratum_2_skeleton.tombstone
+      - target: stratum_2_skeleton.receipt_hash
+        computed_over:
+          unratified: U-09
+          defined_in: policy/retention.yaml
+    ordering_between_the_two_mechanisms:
+      unratified: SR-U2
+    half_completed_shred_scenario:
+      unratified: SR-U2
+
+  # ---------------------------------------------------------------------------
+  # PHASE 3: VERIFY. Runs outside the tool that performed the shred, per RT-9.
+  # ---------------------------------------------------------------------------
+  verify_step:
+    cites: [doctrine/RETENTION.md RT-9]
+    performed_by: a program separate from the one that performed the shred
+    runs_against: [target (after shred_step), canary (untouched)]
+    check_count: 5
+    all_required: true
+    governing_rules:
+      - never confirm a deletion with a cached read path, or with a DELETE's exit code
+      - a check that can pass for a reason other than the one claimed is not a check
+    checks:
+      - id: 1
+        name: key_destruction
+        acts_on: the target case's witness ciphertext (create_step.builds, witness_ciphertext)
+        passes_when: the decrypt fails on the key
+        fails_when: [decrypt_succeeds, not_found, permission_denied, malformed_input]
+        required_negative_scenarios: [decrypt_succeeds, not_found, permission_denied, malformed_input]
+        false_pass_trap: >
+          A draft of this check pointed at a stratum-0 blob that check 2
+          requires to be gone, so the two checks demanded contradictory states
+          of one object, and this check would have passed on a not-found
+          while reporting the key destroyed. The witness exists as a separate,
+          undeleted object for exactly this reason.
+      - id: 2
+        name: object_absence
+        acts_on: every object for the target case
+        passes_when: the objects are gone, read through the S3 API
+        cached_read_path_permitted: false
+        delete_exit_code_accepted_as_evidence: false
+      - id: 3
+        name: schema_absence
+        acts_on: any stratum-1 table for the target case
+        passes_when: the query errors
+        fails_when: [query_returns_zero_rows]
+        required_negative_scenarios: [query_returns_zero_rows]
+        false_pass_trap: >
+          "The table is gone" and "the table returned nothing" are different
+          facts that look identical in a result set.
+      - id: 4
+        name: skeleton_presence
+        acts_on: stratum 2 for the target case
+        passes_when: stratum 2 is intact and carries the tombstone and the receipt hash
+        reads: shred_step.writes_at_shred_time (the receipt hash written there)
+      - id: 5
+        name: anti_overreach
+        acts_on: the canary case
+        passes_when: the canary case is still fully readable and its blob count is unchanged
+        why: >
+          The failure mode of an over-eager shred is silent. A sweep with a
+          bad case-id filter that destroys two cases reports one success.
+        behaviour_with_no_canary_case:
+          unratified: SR-U2
+    what_verification_must_be_unable_to_do_after_the_shred:
+      - decrypt the target case's witness ciphertext, or any other blob for
+        the target case, using the target case's key
+      - read any object for the target case through the S3 API
+      - query any stratum-1 table for the target case without the query erroring
+      - confirm any of the three items above using a cached read path, or a
+        DELETE's exit code, as evidence
+      - report a pass on check 1 for any reason other than the decrypt failing
+        on the key
+      - report a pass on check 3 for any reason other than the query erroring
+
+  # ---------------------------------------------------------------------------
+  # PHASE 4: RECEIPT. No receipt row, no shred, per RT-10.
+  # ---------------------------------------------------------------------------
+  receipt_step:
+    cites: [doctrine/RETENTION.md RT-9, doctrine/RETENTION.md RT-10]
+    rule: a shred with no receipt row did not happen
+    order:
+      - shred_step runs; the receipt hash is computed and written into the
+        target case's surviving stratum-2 skeleton
+      - verify_step runs; check 4 reads the hash already present in the skeleton
+      - only once all five checks in verify_step pass, the ledger row is
+        appended to doctrine/RETENTION_LEDGER.md
+    order_source: see readings SR-R5
+    receipt_hash_computed_over:
+      unratified: U-09
+      defined_in: policy/retention.yaml
+    ledger_row_schema:
+      unratified: U-08
+      defined_in: policy/retention.yaml
+    ledger_survives_the_shred: true
+    ledger_survives_because: stratum 2, no subject-derived value (doctrine/RETENTION.md RT-10)
+
+  # ---------------------------------------------------------------------------
+  # UNRATIFIED. Two questions open in this file specifically, plus the shared
+  # questions this file inherits from policy/retention.yaml because the same
+  # value is read here.
+  # ---------------------------------------------------------------------------
+  unratified:
+    refuses_rather_than_permits: true
+    local_entries:
+      - id: SR-U1
+        change_class: B
+        referenced_by: [create_step.builds, verify_step.checks]
+        question: >
+          What literally designates the witness ciphertext as the witness (a
+          naming convention, a tag field, a fixed first-object-written rule),
+          what its recorded digest is computed over, and what fields the
+          per-case inventory carries?
+        blocks: >
+          Writing check 1 as anything more than a description of intent. A
+          reader cannot state a pass or fail rule without an object it can
+          point to.
+        legal_options:
+          - One designated witness object per case, written first, tracked in
+            a per-case inventory (case_id, witness_object_id, witness_digest)
+            held in the surviving skeleton.
+          - The witness is structurally defined as the first stratum-0 blob
+            written for the case, with no separate inventory.
+          - This file states only the check's pass and fail semantics, in the
+            shape already given under verify_step, and defers every storage
+            mechanic to runner/verify_shred.py's future implementation at
+            Step 11.
+        sources: [doctrine/RETENTION.md RT-9]
+        refuses_as: |
+          CHECK 1 HAS NO OBJECT TO ACT ON. conformance/retention/shred-roundtrip.yaml
+          states the three properties RT-9 requires of the witness and not the
+          fourth, what designates it as the witness a reader can find.
+            where: conformance/retention/shred-roundtrip.yaml unratified SR-U1
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace this mapping; or read this document as pass/fail semantics only, proving nothing about a designated object yet
+
+      - id: SR-U2
+        change_class: B
+        tracks: [policy/retention.yaml, retention.unratified, U-11]
+        referenced_by: [shred_step.ordering_between_the_two_mechanisms, shred_step.half_completed_shred_scenario, verify_step.checks]
+        question: >
+          Is any order required between RT-3's two shred mechanisms, must this
+          fixture model a half-completed shred and assert the corresponding
+          check fails, and what does check 5 do when no adjacent canary case
+          exists? This is the same open doctrine question as
+          policy/retention.yaml's U-11, carried here because it also decides
+          what this fixture's scenarios contain.
+        blocks: >
+          A scenario proving the two shred mechanisms are independently
+          necessary rather than redundant, and a stated behaviour for
+          verifying the first real shred, which is by construction a shred of
+          the only case that exists.
+        legal_options: >
+          See policy/retention.yaml retention.unratified U-11. This entry does
+          not restate the options there, to avoid two independently resolvable
+          copies of one question.
+        sources: [doctrine/RETENTION.md RT-3, doctrine/RETENTION.md RT-9, doctrine/HYGIENE.md HY-2, "policy/retention.yaml retention.unratified U-11"]
+        refuses_as: |
+          THE ROUND TRIP DOES NOT MODEL ITS OWN FAILURE MODES.
+          conformance/retention/shred-roundtrip.yaml cannot state whether a
+          half-completed shred, or a shred with no adjacent canary case, is a
+          scenario this fixture carries, because policy/retention.yaml's U-11
+          is open.
+            where: conformance/retention/shred-roundtrip.yaml unratified SR-U2, tracking policy/retention.yaml retention.unratified U-11
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the options recorded at policy/retention.yaml retention.unratified U-11 in doctrine/DOCTRINE_STATUS.md, and update both files in the same change; or run this round trip only against the full-shred, adjacent-canary scenario it already models
+
+    tracked_from_policy_retention:
+      - id: U-08
+        defined_in: policy/retention.yaml
+        concerns: receipt_step.ledger_row_schema
+        note: >
+          Not re-decided here. If U-08 resolves toward this file linting the
+          ledger, that lint is added to this file's self_lint in the same
+          change.
+      - id: U-09
+        defined_in: policy/retention.yaml
+        concerns: [shred_step.writes_at_shred_time, receipt_step.receipt_hash_computed_over, "verify_step.checks id 4"]
+        note: >
+          Not re-decided here. Check 4 can confirm a string is present at the
+          named field until U-09 resolves; it cannot confirm the string is a
+          correct digest of anything.

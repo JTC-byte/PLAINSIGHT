@@ -5,6 +5,18 @@
 # This runs the `make preflight` battery less the telemetry test, which CI runs
 # as a step of its own. A gate enforced only in CI is enforced only after the
 # thing it guards is already in the history.
+#
+# Step 8 added two validators and did not add either of them here, which is a
+# decision rather than an omission. Their artifact modes refuse while
+# policy/subject-authorization.yaml, schema/subject-authorization.schema.json,
+# policy/retention.yaml and conformance/retention/shred-roundtrip.yaml carry no
+# dated row in doctrine/DOCTRINE_STATUS.md, so wiring one in would block every
+# commit in this repository on a decision only the operator can make, including
+# the commit that records it. The hook's job is narrower and it is already done
+# below: stop a selector value from entering the one store nothing can clear.
+# `--repo-scan --staged` is that check, reading the index rather than the
+# working tree, and `make validate-kernel` runs the working-tree scan where a
+# refusal can be read rather than blocking a commit.
 
 set -e
 
