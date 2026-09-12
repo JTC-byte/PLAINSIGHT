@@ -174,8 +174,8 @@ connector checks do not exist, because no connector does. `--kernel-gate` prints
 an unimplemented check as PENDING with the step that delivers it, prints an
 implemented check whose artifact carries no stamp as UNRATIFIED and asserts that
 it refused, and never counts a pending, stubbed or unratified check as a pass.
-The three YAML validators need PyYAML, which CI installs and a local checkout
-must have.
+The three YAML validators need PyYAML and `tools/validate.py` needs jsonschema.
+CI installs both and a local checkout must have both.
 
 `tools/validate_retention.py --repo-scan` is implemented as of Step 8, which
 closed D-001. It reads every tracked file in the working tree for a filled

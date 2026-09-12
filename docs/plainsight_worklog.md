@@ -1681,3 +1681,67 @@ basis stamp.
 **Next:** the review Step 8 is owed, on the 2026-09-04 method, which is lenses
 that run the mechanism and quote the result, each paired with a refuter. Then
 Step 9, the divergence register and its validator.
+
+### Postscript, 2026-09-12: the pre-push review, the push, and a CI failure nobody had looked at
+
+The operator asked for a full closeout checkpoint: review what is about to be
+pushed, push it, then record everything. This postscript is the record, written
+after the push because the push is part of what it records.
+
+**The review.** Six lenses over `ff016af` and `0e0c840` before either left the
+machine, each finding paired with a refuter whose default was REFUTED. Fourteen
+agents. The lenses were permanence and disclosure, Class F by effect, record
+accuracy re-measured from scratch, commit messages against their commits, what
+CI would do, and reversibility. Five findings survived refutation, all MINOR,
+none a blocker.
+
+Two lenses returned clean. The permanence lens found no selector value, no
+credential, no absolute machine path and no personal datum in either commit. The
+Class F lens answered the question AGENTS.md section 8 raises, whether a closeout
+may carry these artifacts at all: it may, because section 3 rule 2 defines Class
+F by effect and nothing can be reached after these commits that could not be
+reached before. No doctrine file moved, no stamp was added, the authorization
+gate refuses every run, and `retention-repo-scan` became stricter rather than
+looser. Compiling doctrine into refusing policy narrows reach.
+
+**Four corrections landed as `132eef0` before the push.** The handoff said five
+of SS-14 item 6's eight artifacts exist where seven do, an error inherited from
+the previous handoff's counting basis rather than introduced here. The
+over-report statistic read 44 claimed and 14 overturned across three records
+where the grading artifact measures 45 and 15, a rate of 33 per cent rather than
+32; one bad intermediate in the session's fact sheet reached all three records,
+and its arithmetic closed against a correct survivor count, which is why it read
+as sound. The sibling citation count was eighteen and is nineteen. The worklog
+and the changelog cited different lines for the same superseded sentence.
+
+The fifth finding is a defect rather than a figure and is recorded in the
+handoff's known gaps: bare `--repo-scan` catches `UnicodeDecodeError` and
+continues, so it silently skips any tracked file it cannot decode as UTF-8, and
+its own disclosure block does not name that gap. The count is zero today and the
+staged mode the hook runs does not share it.
+
+**The push.** `38c93cc..132eef0`, three commits, on the operator's instruction.
+`origin/main` and `main` agree. Every commit is authored to the operator and the
+history carries no `Co-Authored-By` trailer, which CI refuses.
+
+**What the push found, which is the part worth keeping.** CI had already failed
+on `4e6abda` and on `38c93cc`, both pushed earlier the same day, and nobody had
+looked. The cause is not the red kernel gate this session documented at length.
+It is `DEPENDENCY_MISSING` on `tools/validate.py`: Step 7 introduced a
+`jsonschema` import and the workflow's install step names only PyYAML, so that
+one check has failed on every run since Step 7 landed. `AGENTS.md` stated the
+dependency set as PyYAML alone, so the document and the workflow agreed with each
+other and both were wrong.
+
+The lesson is narrow and worth stating plainly. This session verified the battery
+locally more thoroughly than any before it, ran a six-lens review before pushing,
+and still pushed twice into a red build, because local green and CI green are
+different measurements and only one of them was taken. A CI-fetching lens was in
+the review and reported what the workflow would do from a fresh clone, which is
+how the gap surfaced at all, one push too late. Check the runs after a push, not
+only the battery before one.
+
+**Corrected here:** the workflow installs `jsonschema`, and `AGENTS.md` names
+both dependencies. The kernel gate stays red on `retention-repo-scan` by design,
+so this commit does not turn CI green; it removes a failure that was never
+intended and leaves the one that is disclosed.

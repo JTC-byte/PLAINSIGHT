@@ -31,8 +31,11 @@ jobs:
       # The layer-model, ontology and cast validators parse YAML. Without this step they
       # exit 2 rather than passing vacuously, and the kernel gate reports a
       # failure instead of a green run, so the dependency is explicit here.
+      # tools/validate.py additionally needs jsonschema, which Step 7 introduced
+      # and this step did not install, so every run from 4e6abda to 132eef0
+      # failed with DEPENDENCY_MISSING on that one check.
       - name: Install validator dependencies
-        run: pip install pyyaml
+        run: pip install pyyaml jsonschema
 
       # Doctrine and hygiene run first as named steps: the first reads the
       # doctrine corpus and the second reads every tracked file. The kernel
