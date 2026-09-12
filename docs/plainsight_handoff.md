@@ -105,15 +105,14 @@ by `--self-test`. Clearing the exit code is a stamping act and the operator's.
 either. Section 5 says what is owed.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
-consenting subjects who will confirm the findings. Those subjects are S1
-CONSENTING, the best class the program has. The gate between here and that run
-is `doctrine/SUBJECT_SELECTION.md` SS-14 item 6: eight artifacts stamped and a
-four-check preflight passing in the runner process. Five of the eight now exist
-in the tree, all unstamped: the contract's sections 5 and 12,
-`policy/subject-authorization.yaml`, `schema/subject-authorization.schema.json`
-and `policy/retention.yaml`. The operator provisions the ISOLATED environment,
-the collection personas, the SIMs, the mobile egress and the consent records in
-parallel, and the two tracks rejoin at the first live run.
+consenting subjects who will confirm the findings, who are S1 CONSENTING. The
+gate is SS-14 item 6: eight artifacts stamped and a four-check preflight passing
+in the runner process. Seven of the eight exist and
+none is stamped. `runner/dispatch_allowlist.yaml` is the one absent, and
+`synthetic/CAST.md` is present but unsealed, so its clause is unmet either way.
+Three landed this session: the two authorization artifacts and
+`policy/retention.yaml`. The operator provisions ISOLATED, the personas, the
+SIMs, the egress and the consent records in parallel.
 
 The repository is public at `github.com/JTC-byte/PLAINSIGHT` with the lockdown
 applied. Nothing has touched a platform. No account exists. No connector exists.
@@ -205,7 +204,7 @@ a step: SUBJECT_SELECTION.md and RETENTION.md per criterion, stamped;
 `policy/retention.yaml`; `ontology/selectors.yaml` with its five proposed rows
 stamped; the contract's sections 5 and 12; `synthetic/CAST.md` sealed and
 hash-pinned with a confuser pair; `runner/dispatch_allowlist.yaml`; and the
-four-check preflight passing in the runner process. Five of the eight artifacts
+four-check preflight passing in the runner process. Seven of the eight artifacts
 now exist and none is stamped. The sealed cast is a precondition for every run,
 consenting subjects included. The operator has been told the fork: provision the
 cast alongside the collection pool, or decide a Class F amendment to SS-14
@@ -253,7 +252,7 @@ about 1,720 non-recurring and 205 a month.
 - **`tools/validate_hygiene.py` cannot see a broken sibling citation.**
   `PATH_REF_RE` is anchored to in-repo prefixes and skips sibling paths by
   design. `../zisr-recon/` ceased to exist on 2026-09-10 when four producer
-  repositories were consolidated into `../zisr-producers/`, eighteen citations
+  repositories were consolidated into `../zisr-producers/`, nineteen citations
   across eight files named the old path, and no gate noticed. `ff016af` repointed
   the three live pointers and left the dated measurements alone. The missing
   mechanism is open.
@@ -297,14 +296,15 @@ about 1,720 non-recurring and 205 a month.
   this plan. Branch protection, secret scanning and push protection are on, and
   the replaced initial commit is still served by hash until GitHub collects it.
 - **The cast is unsealed**, so nothing is scoreable and SS-14 item 6 refuses all
-  collection. Sealing needs the operator's SIMs and accounts and the six
-  decisions in CAST.md section 9.
-- **Every basis stamp is unstamped**, the oldest open item in the program.
-  `PLAINSIGHT-FOUNDATION.md` line 4 still reads DRAFT, and AR-1 awaits a
-  decision; both are the operator's acts.
+  collection. Sealing needs the SIMs, the accounts and CAST.md section 9.
+- **Every basis stamp is unstamped**, the oldest open item. FOUNDATION line 4
+  still reads DRAFT and AR-1 awaits a decision, both the operator's acts.
 - **The ratification ladder terminates in one person**, stated so the bypass is
   documented. **The compatibility-claim check reads one file, not the tree**,
-  and closing it is Step 9.
+  and Step 9 closes it.
+- **Bare `--repo-scan` silently skips a file it cannot decode as UTF-8**
+  (`tools/validate_retention.py:1574`); its disclosure omits that gap, the count
+  is zero today, and the staged mode is unaffected.
 
 ## 5. What Step 7's verification covered, and the review Step 8 is owed
 
@@ -328,7 +328,7 @@ and no model constrains them. Three defects are already known and listed in
 section 4, all found by reading rather than by a gate. The owed review is the
 2026-09-04 method: lenses that run the mechanism and quote the result, each
 paired with a refuter. That pairing is not optional. This session measured eight
-lenses claiming grounded on 44 register entries with refuters overturning 14, a
+lenses claiming grounded on 45 register entries with refuters overturning 15, a
 32 per cent over-report, and every overturn ran in one direction, toward
 claiming a decision was settled when it was not.
 

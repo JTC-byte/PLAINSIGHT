@@ -98,8 +98,8 @@ Nothing is released. PSE has no version, no tag, and no published artifact, and
   artifacts were compiled and collapse to 51 distinct decisions, 15 entries
   being second or third copies. Twenty-two of the 51 are grounded in the
   stack's own documentation. Twenty-nine are the operator's, and 25 of those
-  arrive with at least one option foreclosed. Eight lenses claimed 44 entries
-  grounded and refuters overturned 14 of them, a 32 per cent over-report; every
+  arrive with at least one option foreclosed. Eight lenses claimed 45 entries
+  grounded and refuters overturned 15 of them, a 33 per cent over-report; every
   overturn ran one direction, a real rank-1 quote settling a neighbouring
   question, or two options eliminated and the survivor declared grounded. Four
   Fable refuters failed on exhausted usage credits and were re-run on Opus;
@@ -155,7 +155,7 @@ Nothing is released. PSE has no version, no tag, and no published artifact, and
   On 2026-09-10, between the previous closeout and this one, four producer
   repositories were consolidated into `../zisr-producers/`, so
   `../zisr-recon/` ceased to exist. PLAINSIGHT was not in scope of that move
-  and did not move itself. Eighteen citations across eight files in this
+  and did not move itself. Nineteen citations across eight files in this
   repository still named the old path; this commit repoints three of them,
   `README.md` and two pointers in `AGENTS.md`, to `../zisr-producers/recon/`,
   because those files describe the current tree in the present tense. The

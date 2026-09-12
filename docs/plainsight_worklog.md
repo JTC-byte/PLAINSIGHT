@@ -1495,7 +1495,7 @@ place it is hardest to see, inside a tool whose other modes are green.
 
 `../zisr-recon/` ceased to exist on 2026-09-10, when four producer repositories
 were consolidated into `../zisr-producers/`. PLAINSIGHT was not in scope and
-did not move. Eighteen citations across eight files named the old path.
+did not move. Nineteen citations across eight files named the old path.
 `ff016af` repoints the three that describe the current tree, `README.md` and
 two `AGENTS.md` pointers, to `../zisr-producers/recon/`. The dated measurements
 in `doctrine/` and `docs/` and the worklog archive keep the old path, because
@@ -1596,7 +1596,7 @@ documentation. Twenty-nine are the operator's, and 25 of those arrive with at
 least one option already foreclosed.
 
 The grading was adversarial by construction, and it needed to be. Eight lenses
-claimed grounded on 44 entries and the refuters overturned 14, a 32 per cent
+claimed grounded on 45 entries and the refuters overturned 15, a 33 per cent
 over-report. Every overturn ran one direction: a lens produced a real rank-1
 quote that settled a neighbouring question, or eliminated two options and
 declared the survivor grounded. The register is at
@@ -1621,7 +1621,7 @@ fifteen-minute race: the patch was regenerated at 2026-09-08 18:40:19 and
 `4e6abda` was committed at 18:55:58, adding three rows to the table the patch
 anchors on. `git apply --3way` applies the CREDENTIAL_LIFECYCLE.md and
 EGRESS.md hunks cleanly and the DOCTRINE_STATUS.md hunk with conflicts, and
-union-resolving that one table conflict yields 59 criteria. Line 191 of
+union-resolving that one table conflict yields 59 criteria. Line 192 of
 `docs/plainsight_handoff.md` asserted that the patch applies, which this
 session measured as false.
 
