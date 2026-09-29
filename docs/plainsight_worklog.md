@@ -15,84 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-08-27, hardening. Two rank-1 files added, and a count I got wrong.
-
-**Class:** F (two new rank-1 doctrine files, conclusions recorded) plus A.
-
-**Correction to the two entries above.** They state that all 55 doctrine items
-carried a recorded conclusion. The true count at that moment was 52. The number
-was wrong when written, so it is corrected here rather than edited there, because
-a process record showing a correction is worth more than one that reads clean.
-`validate_doctrine.py` now counts criteria mechanically, which is why the error
-surfaced at all.
-
-Four decisions from the operator, and one of them reshaped the plan.
-
-**SS-19, collected content is data and never an instruction.** Raised by the
-operator asking what stops someone using a cast account to attack them through an
-agent. The answer is that the fake accounts are the minor vector and the product
-is the major one, since every bio, display name and message body this system
-collects is attacker-controlled text reaching a context that can act on it. The
-criterion is scoped to the two consequences doctrine owns, an unauthorized
-subject and an unauthorized egress, and leaves general escaping to ranks 2 and 7.
-The sharper case was already in the design: `command_template` interpolates a
-selector into argv, so a handle carrying shell metacharacters is command
-injection reaching further than any prompt. Argv construction refuses a selector
-that does not match its registered matcher rather than escaping it.
-
-**SS-20, the collection pool is not the cast.** This is the finding of the
-session. Two populations of team-created accounts exist and the resemblance is
-the trap: the accounts that authenticate so a connector can read, and the
-accounts that are collected on. Most audited connectors cannot run at all
-without the first, which nobody had scoped. If they overlap the system partly
-observes its own infrastructure, ground truth is wrong in a direction nobody
-would check, and the platform-side log ties collection activity to the
-measurement population permanently. Enforced as a disjointness check that counts
-a shared recovery selector as an intersection.
-
-**`doctrine/EGRESS.md`**, six criteria. The operator chose a compartmentalized
-deployment and, when asked where case material then lives, chose the isolated
-environment. That answer is what makes retention true rather than nearly true: a
-copy on a second machine is a copy the sweep does not reach and the receipt does
-not cover. EG-2 therefore has RT-4's property of having no later date on which it
-can be decided. The file also states plainly what compartmentalization is not: a
-dedicated egress address would make the research population more correlatable
-rather than less, because a static address unique to one account links every
-persona behind it.
-
-**`doctrine/CREDENTIAL_LIFECYCLE.md`**, eight criteria. Carries the measured
-toutatis finding that a session token passed as `-s` on the command line lands in
-shell history and the process list. CR-7 records a burned credential as a
-capability finding rather than as an operational loss, because a burn says this
-connector at this rate against this platform at this account age gets caught, and
-that survives every shred.
-
-**Step 4's done-condition was reshaped** from three personas on two platforms to
-two personas on two platforms across two email domains. One domain would give
-every persona a shared email root, which is a correlation surface the cast exists
-to test and which destroys the confuser pair. Phone numbers cap the cast rather
-than budget or effort, and resold numbers from verification services are ruled
-out on measurement grounds: a recycled number may carry correlations nobody
-designed. The operator chose to provision the collection pool first, since
-without it no connector runs and nothing can be measured.
-
-**Rank 1 now holds four files**, one per question doctrine owns, and both
-governance files moved in the same change per the documentation matrix. Section 3
-of `AGENTS.md` still said an agent may never land a Class F change, which the R6
-amendment had already superseded in section 4; that contradiction is closed.
-
-**The gate learned the two new namespaces.** `validate_doctrine.py` checks EG and
-CR criteria on the same terms as SS and RT, and refused both files on first run
-for having no rows in the pin of record, which is the check working.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched.
-
-**Not done:** the operator's decision that live execution stays an operator act
-means `AGENTS.md` section 4's first Execution Limit is unchanged and correct.
-
----
-
 ## 2026-08-27, gate telemetry, injection tagging, and HYGIENE.md.
 
 **Class:** F (RT-19, SS-21) plus A (HYGIENE.md advisory) plus C (tooling).
@@ -1745,3 +1667,229 @@ only the battery before one.
 both dependencies. The kernel gate stays red on `retention-repo-scan` by design,
 so this commit does not turn CI green; it removes a failure that was never
 intended and leaves the one that is disclosed.
+
+---
+
+## 2026-09-28, every validator self-test joins every automated path, and CI stops skipping the steps after a red one.
+
+**Class:** B and C, and not F. The corrected count in the docstring of
+`tools/validate_authorization.py` is B. The aggregator entries, the hook, the
+preflight target and the CI workflow are C, by the precedent the 2026-09-11
+entry and `4a5c788` set for exactly those files; the operator's brief called the
+change B, and the difference moves no rule. No doctrine file, stamp, allowlist,
+NEVER list, authorization file or `retain_until` value moved. Every change adds
+a refusal or runs one that was being skipped, and none removes one, so under
+`AGENTS.md` section 3 rule 2 nothing can be reached after this change that could
+not be reached before. No runtime exists, so the Class C design-record rule has
+nothing to move.
+
+**Agent involvement.** An agent in a Claude Code session wrote, ran and verified
+every change below on the operator's instruction of 2026-09-28, on the worktree
+branch `claude/hopeful-maxwell-69bb46` cut from `main` at `4a5c788`. The first
+instruction withheld the commit and the push. The operator's second instruction,
+the same day in the same session, was to have the plainsight session review the
+work and, if all of it checked out, to commit, merge to `main` and push. The
+review and what followed from it are the last section of this entry, which is
+written before the commit.
+
+**The finding the work started from** was measured on 2026-09-17 outside this
+repository, by enumerating every validator mode and tracing it against the four
+automated paths: the pre-commit hook through `core.hooksPath`, `make preflight`,
+`.github/workflows/ci.yml`, and `tools/validate_conformance.py --kernel-gate`.
+Five of the six validator self-tests, layer-model, ontology, cast, authorization
+and retention, ran on none of them. Each was reachable only through its own
+`make validate-X` target, which nothing calls. The hygiene self-test ran only
+inside one CI step. This is the hole the handoff's known gaps named after the
+fires_when fix was reported green in two sessions while the layer-model
+self-test exited 1. The worklog carries no entry between 2026-09-11 and this
+one, and this entry does not backfill that gap.
+
+**Measured before any edit, at `4a5c788`.** All six self-tests exit 0:
+layer-model at 62 breaks, ontology at 16, cast at 6, authorization at 41,
+retention at 34, and hygiene at 4. Together they take about 1.3 seconds, against
+1.8 for the whole hook. The kernel gate reports 8 implemented, 1 failed, 3
+unratified and 5 pending, red on `retention-repo-scan` alone, which is the
+disclosed state.
+
+**Found on the way, and worse than the brief.** CI has not run its last two
+steps on any push after 2026-09-08. A step's default condition is `success()`,
+and the kernel gate step was red on the runs for `4e6abda`, `38c93cc`,
+`132eef0` and `4a5c788`, so on all four the step that proves the pre-commit hook
+runs and the check that refuses an agent co-authorship trailer were skipped.
+`CLAUDE.md` section 5 calls the trailer check a mechanism rather than a habit,
+and it had not run for four pushes. Run locally over all seventeen commits, it
+passes.
+
+**What changed.**
+
+- `.github/workflows/ci.yml` gains five named steps, one per unwired self-test,
+  placed before the kernel gate so a self-test that breaks turns its own step
+  red rather than joining a gate that is already red. Every gate step now
+  carries `if: ${{ !cancelled() }}`, so each reports its own result, and the job
+  still fails if any does.
+- `KERNEL_GATE` in `tools/validate_conformance.py` gains six IMPLEMENTED
+  self-test entries, and two STUB entries for `tools/validate_ontology.py
+  --matchers` and `--corpus`, which print DEFERRED, check nothing, exit 0, and
+  were called by nothing. The list grows from sixteen entries to twenty-four.
+  The authorization note's "six of the nine paths" becomes seven of the nine,
+  dated, which is what the tool prints, and the docstring of
+  `tools/validate_authorization.py` carried the same count and is corrected too.
+- `.githooks/pre-commit` runs all six self-tests after the schema check and
+  before the index scan, and prints a self-test's output only when it refuses.
+  `make preflight` runs the same six, so the hook stays preflight less the
+  telemetry test, at thirteen commands against fourteen.
+- `AGENTS.md` section 5, `CONFORMANCE.md` section 4, the comments in the
+  Makefile and the hook, `CHANGELOG.md`, this worklog, its archive and the
+  handoff move to match. The oldest live entry, 2026-08-27 hardening, moved to
+  the archive unedited, because this one would otherwise have been the eleventh.
+
+**The decision to put the self-tests in the hook.** The hook's header records
+why Step 8's artifact modes are absent from it: they refuse by design, so wiring
+one in would block every commit, including the commit that records a stamp. The
+self-tests differ, because they grade the checks rather than the stamps, and
+that claim was measured rather than assumed. A scratch copy of the tree, outside
+the repository, received dated rows in its copy of the pin of record for eight
+paths: the seven SS-14 item 6 paths the authorization gate reported unstamped,
+and the shred round-trip fixture. An earlier draft of this sentence called them
+the eight Step 8 paths, which they are not. All six self-tests stayed green on
+it, and `--policy` and `--shred-roundtrip` flipped to exit 0, which shows the
+simulated stamps took effect. No file in this repository's pin of record was
+touched. The review below showed that the conclusion drawn here reached further
+than this measurement did.
+
+**Design gate 1, run.** Two deliberate breaks, each applied to this worktree and
+to an export of `4a5c788`, with every path run on both and each file restored
+byte for byte afterwards. The first reintroduces the 2026-09-08 regression
+exactly: a `dead_code` fixture with no `fires_when`. The second removes a
+constraint rather than a fixture, by making the shred round-trip's no-canary
+check unreachable.
+
+| Path | `4a5c788`, layer-model break | This tree, layer-model break | `4a5c788`, retention break | This tree, retention break |
+|---|---|---|---|---|
+| The plain validator the old battery runs | exit 0 | exit 0 | exit 1, the designed UNRATIFIED refusal | exit 1, the same |
+| Pre-commit hook | exit 0 | exit 1, naming the self-test | exit 0 | exit 1, naming the self-test |
+| `make preflight`, recipe replayed | exit 0, eight lines | exit 1 at line 8 | exit 0, eight lines | exit 1 at line 12 |
+| Kernel gate | exit 1, `retention-repo-scan` only | exit 1, adding `layer-model-self-test` | exit 1, `retention-repo-scan` only | exit 1, adding `retention-self-test` |
+| CI job, run steps replayed | kernel gate red, last two skipped | `Layer-model self-test` red, every step ran | kernel gate red, last two skipped | `Retention self-test` red, every step ran |
+
+The kernel gate row is the argument for the named CI steps. Its exit code was 1
+before each break and 1 after it, because `retention-repo-scan` holds it red,
+and only its entry line changed. After both restores, the clean tree runs the
+hook green, preflight green at fourteen lines, the kernel gate red on
+`retention-repo-scan` alone, and every CI step green except the kernel gate.
+
+**Not verified.** No run on GitHub, because nothing is pushed. The CI row replays
+the workflow's `run` steps locally under Git Bash on Windows, honouring each
+step's `if`, and skips checkout, Python setup and the pip install; it is not
+`ubuntu-latest`. `make` is not on this machine's PATH, so preflight was replayed
+line by line with make's stop-on-first-failure rule. The first push after this
+change is the first real measurement, and its run should be read step by step.
+
+**Observed and left alone.** The cast and authorization self-tests record their
+runs to `tools/gate_log.py` under the gate's own token, so a self-test run counts
+in that gate's telemetry as a run of the gate, and this change runs both more
+often; the other four record nothing. `tools/validate_doctrine.py` has no
+self-test at all. In this worktree `core.hooksPath` names the main checkout's
+`.githooks`, so a commit made here runs the hook as it stands on `main` rather
+than the edited one. The `--corpus` mode stays owed, and its STUB entry makes the
+debt visible on every kernel-gate run rather than paying it.
+
+**The review, and what it overturned.** The plainsight session reviewed the
+staged tree with seven lenses, each running the mechanism and each followed by a
+refuter. Its verdict was to commit after three fixes. Its record is at
+`Z-ISR/_session-artifacts/2026-09-28-plainsight-selftest-wiring-review/REVIEW.md`.
+Each finding below was reproduced here before it was fixed.
+
+- **Major: sealing the cast would have been refused.** Two cast self-test
+  mutations assumed an unsealed file. `_mut_seal_without_hash` set `sealed` true,
+  which changes nothing on a file already sealed with a hash, and
+  `_mut_real_handle` filled a handle that the placeholder scan ignores once the
+  file is sealed. Reproduced against a really sealed copy of
+  `synthetic/GROUND_TRUTH.yaml`: the `4a5c788` self-test exits 1, missing
+  exactly those two. The defect predates this change, and this change is what
+  would have made it refuse the operator's sealing commit on all four paths.
+  Fixed: the first mutation also nulls the hash, the second also unseals, and
+  the self-test runs every mutation against a sealed in-memory copy as well.
+  The fixed self-test exits 0 on the sealed copy, and reverting the two lines
+  fails the sealed-copy pass on today's unsealed file.
+- **Minor: the stamping claim was wider than its measurement.** The eight-row
+  simulation never completed item 6, because the contract's two stamp-target
+  rows in the Pending table keep its path unstamped whatever the Ratified table
+  says. With those two rows resolved as well, `--fixtures` names no unstamped
+  path, and the authorization self-test exits 1 on
+  `AUTH_SELF_TEST_BASELINE_NOT_CLEAN`: row 8 of
+  `conformance/gate/decisions.jsonl` takes the real pin as its source and
+  asserts a refusal that no longer arises. All 41 breaks are still refused, and
+  the other five self-tests stay green. The claim is narrowed in the hook, the
+  Makefile, the changelog and the gate note, and the handoff records that the
+  commit completing item 6 edits that row too.
+- **Minor: the hook's refusal text misdiagnosed exit 1**, reading it as an
+  unrefused break when these self-tests also exit 1 on a baseline that is not
+  clean, which is what both scenarios above produce. The text now names both
+  causes and a move for each.
+- **Nits:** the CI comment claimed every validator self-test had a named step,
+  and the aggregator docstring said the two stubs had gone unnoticed when the
+  handoff and `CONFORMANCE.md` recorded `--corpus` and `docs/THE-GAMEPLAN.md`
+  recorded `--matchers`. Both are corrected. The first review said the handoff
+  and `CONFORMANCE.md` recorded both, the re-review corrected that, and the
+  corrected reading is the one measured with `git show HEAD:<file>`.
+
+Five follow-ups the review raised, none blocking, recorded here and counted in
+the handoff.
+Nothing fails if a later edit drops a self-test from one of the four paths, so
+the instance is fixed and the class is not; a reconcile that every tool exposing
+`--self-test` appears in `KERNEL_GATE` and in the hook would close it. The
+attribution step prints its ok line when checkout produced no history, a case
+`!cancelled()` makes reachable, so it should capture the status of `git log`
+before grepping. Nothing enforces `!cancelled()` on a future gate step. STUB
+entries discard their command's exit code and output. The two self-tests that
+write telemetry now add a run to their gate's record on every commit.
+
+The review also disclosed two touches of shared state: a `git write-tree` in this
+worktree stored the index's tree object in the shared object store, and one of
+its lenses ran a stamping simulation in the scratch clone the lenses shared
+rather than its own, adding eight unstaged rows to that clone's pin of record
+for a few minutes. The rows were removed, both review clones were confirmed back
+at the reviewed tree, and neither of this repository's checkouts was otherwise
+touched.
+
+**The re-review.** The fix delta was re-reviewed at tree `3045ad6f` with four
+lenses, the mutating ones each in a clone of their own and each followed by a
+refuter, and the verdict was commit. Its record is at
+`Z-ISR/_session-artifacts/2026-09-28-plainsight-selftest-wiring-review/RE-REVIEW.md`.
+It confirmed the cast fix independently: reverting either line fails the
+self-test on today's unsealed file, removing the sealed pass with both lines
+reverted goes green, and a cast filled and sealed in one commit passes all three
+cast modes, all six self-tests and the hook, where `4a5c788` exits 1. It also
+confirmed the item 6 remedy: with all nine paths stamped, switching row 8 of
+`conformance/gate/decisions.jsonl` to a fixture stamp state, or flipping its
+expected decision to PERMITTED together with its register row in
+`conformance/gate/README.md`, returns the authorization self-test and the hook to
+exit 0, and the obvious edits to `artifacts_stamped` or `criteria_absent` do not.
+
+Applied after the re-review, and so not inside the tree it read: the two text
+corrections it recommended, the `--matchers` sentence above and this paragraph;
+the guard it offered for a regression the fix introduced, where a seal block
+that is not a mapping crashed `--self-test` with a traceback because the sealed
+copy is built outside the per-mutation try; and two comment nits it listed, the
+CI comment's "schema check", which is not a CI step, and a handoff "last ran
+there" that read as Windows. The re-review cleared the guard on condition that
+the cast self-test, the non-mapping seal case and the hook be re-run, and all
+three were.
+
+New follow-ups from the re-review, none blocking. After a real fill and seal,
+the filled-handle case goes vacuous in both passes, because unsealing exposes
+every real value to the placeholder scan and the expected code arises whatever
+the mutation does; matching the finding by location as well as by code would
+close it. Nothing asserts that the sealed copy is itself a valid sealed cast, and
+the success line is a literal. The hook's refusal text lists a baseline cause
+that two of the six self-tests lack, and omits a third cause of hygiene's.
+
+Three findings for the operator rather than this change. `synthetic/CAST.md`
+section 8 describes fill and seal as two commits, but the placeholder-scan step
+of the hook already refuses a filled unsealed cast, so the one working route is
+to fill and seal in one commit, which passes the hook after this change. The
+commit that completes SS-14 item 6 also edits `KERNEL_GATE`, because
+`retention-policy` then exits 0 and an UNRATIFIED entry that permits is refused
+as `GATE_LIST_UNRATIFIED_PERMITTED`. Every gate accepts a dated stamp row for a
+path that does not exist, such as `runner/dispatch_allowlist.yaml`.

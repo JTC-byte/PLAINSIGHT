@@ -518,3 +518,81 @@ instruction of 2026-08-27, authored as the operator, containing the governance
 skeleton, both rank-1 doctrine documents with all 55 conclusions recorded, the
 three doctrine gates, the Makefile, the CI workflow, and the pre-commit hook.
 Nothing in it was collected and no platform was touched.
+
+---
+
+## 2026-08-27, hardening. Two rank-1 files added, and a count I got wrong.
+
+**Class:** F (two new rank-1 doctrine files, conclusions recorded) plus A.
+
+**Correction to the two entries above.** They state that all 55 doctrine items
+carried a recorded conclusion. The true count at that moment was 52. The number
+was wrong when written, so it is corrected here rather than edited there, because
+a process record showing a correction is worth more than one that reads clean.
+`validate_doctrine.py` now counts criteria mechanically, which is why the error
+surfaced at all.
+
+Four decisions from the operator, and one of them reshaped the plan.
+
+**SS-19, collected content is data and never an instruction.** Raised by the
+operator asking what stops someone using a cast account to attack them through an
+agent. The answer is that the fake accounts are the minor vector and the product
+is the major one, since every bio, display name and message body this system
+collects is attacker-controlled text reaching a context that can act on it. The
+criterion is scoped to the two consequences doctrine owns, an unauthorized
+subject and an unauthorized egress, and leaves general escaping to ranks 2 and 7.
+The sharper case was already in the design: `command_template` interpolates a
+selector into argv, so a handle carrying shell metacharacters is command
+injection reaching further than any prompt. Argv construction refuses a selector
+that does not match its registered matcher rather than escaping it.
+
+**SS-20, the collection pool is not the cast.** This is the finding of the
+session. Two populations of team-created accounts exist and the resemblance is
+the trap: the accounts that authenticate so a connector can read, and the
+accounts that are collected on. Most audited connectors cannot run at all
+without the first, which nobody had scoped. If they overlap the system partly
+observes its own infrastructure, ground truth is wrong in a direction nobody
+would check, and the platform-side log ties collection activity to the
+measurement population permanently. Enforced as a disjointness check that counts
+a shared recovery selector as an intersection.
+
+**`doctrine/EGRESS.md`**, six criteria. The operator chose a compartmentalized
+deployment and, when asked where case material then lives, chose the isolated
+environment. That answer is what makes retention true rather than nearly true: a
+copy on a second machine is a copy the sweep does not reach and the receipt does
+not cover. EG-2 therefore has RT-4's property of having no later date on which it
+can be decided. The file also states plainly what compartmentalization is not: a
+dedicated egress address would make the research population more correlatable
+rather than less, because a static address unique to one account links every
+persona behind it.
+
+**`doctrine/CREDENTIAL_LIFECYCLE.md`**, eight criteria. Carries the measured
+toutatis finding that a session token passed as `-s` on the command line lands in
+shell history and the process list. CR-7 records a burned credential as a
+capability finding rather than as an operational loss, because a burn says this
+connector at this rate against this platform at this account age gets caught, and
+that survives every shred.
+
+**Step 4's done-condition was reshaped** from three personas on two platforms to
+two personas on two platforms across two email domains. One domain would give
+every persona a shared email root, which is a correlation surface the cast exists
+to test and which destroys the confuser pair. Phone numbers cap the cast rather
+than budget or effort, and resold numbers from verification services are ruled
+out on measurement grounds: a recycled number may carry correlations nobody
+designed. The operator chose to provision the collection pool first, since
+without it no connector runs and nothing can be measured.
+
+**Rank 1 now holds four files**, one per question doctrine owns, and both
+governance files moved in the same change per the documentation matrix. Section 3
+of `AGENTS.md` still said an agent may never land a Class F change, which the R6
+amendment had already superseded in section 4; that contradiction is closed.
+
+**The gate learned the two new namespaces.** `validate_doctrine.py` checks EG and
+CR criteria on the same terms as SS and RT, and refused both files on first run
+for having no rows in the pin of record, which is the check working.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched.
+
+**Not done:** the operator's decision that live execution stays an operator act
+means `AGENTS.md` section 4's first Execution Limit is unchanged and correct.

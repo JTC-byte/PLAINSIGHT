@@ -37,15 +37,25 @@ jobs:
       - name: Install validator dependencies
         run: pip install pyyaml jsonschema
 
+      # Every gate step from here on carries `if: ${{ !cancelled() }}`, so it
+      # runs whatever an earlier step returned. A step's default condition is
+      # success(), which skips every step after the first red one. The kernel
+      # gate was red on the runs for 4e6abda, 38c93cc, 132eef0 and 4a5c788, and
+      # on all four the hook step and the attribution check were skipped, so two
+      # mechanisms did not run while the job read as one known failure. Each
+      # gate now reports its own result, and the job still fails if any does.
+
       # Doctrine and hygiene run first as named steps: the first reads the
       # doctrine corpus and the second reads every tracked file. The kernel
       # gate below runs the whole implemented battery and reports every check
       # that is not built yet as PENDING rather than letting an absent check
       # read as a passing one.
       - name: Doctrine integrity
+        if: ${{ !cancelled() }}
         run: python tools/validate_doctrine.py
 
       - name: Housekeeping
+        if: ${{ !cancelled() }}
         run: |
           python tools/validate_hygiene.py
           python tools/validate_hygiene.py --self-test
@@ -54,9 +64,41 @@ jobs:
       # them. Design gate 1 counts a constraint as done only when a test fails
       # if it is removed.
       - name: Mechanism tests
+        if: ${{ !cancelled() }}
         run: python tools/tests/test_gate_log.py
 
+      # The five validator self-tests no other step runs, one named step each.
+      # Hygiene's runs in the Housekeeping step and tools/validate.py's inside
+      # the kernel gate step. A self-test breaks the governed artifact in memory and
+      # asserts that each break is refused, so it is the test that fails when a
+      # check is removed. Until 2026-09-28 none of these five ran on any
+      # automated path, and a failing layer-model self-test read as green for
+      # two sessions because nothing ran it. These run as named steps before
+      # the kernel gate, so a self-test that breaks turns its own step red
+      # rather than joining a kernel gate that is already red for a disclosed
+      # reason. The kernel gate runs all six again.
+      - name: Layer-model self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_layer_model.py --self-test
+
+      - name: Ontology self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_ontology.py --self-test
+
+      - name: Cast self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_cast.py --self-test
+
+      - name: Authorization self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_authorization.py --self-test
+
+      - name: Retention self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_retention.py --self-test
+
       - name: Kernel gate
+        if: ${{ !cancelled() }}
         run: python tools/validate_conformance.py --kernel-gate
 
       # The pre-commit hook is the primary enforcement, because git history is
@@ -64,6 +106,7 @@ jobs:
       # already exists. This step proves the hook itself still runs, so a hook
       # that silently stops working is caught here rather than never.
       - name: Pre-commit hook is executable and runs
+        if: ${{ !cancelled() }}
         run: |
           test -x .githooks/pre-commit || { echo ".githooks/pre-commit is not executable"; exit 1; }
           git config core.hooksPath .githooks
@@ -73,6 +116,7 @@ jobs:
       # authored by the ratifier (CLAUDE.md section 5, R6 stamped 2026-08-27).
       # Attribution is checkable, so it is checked.
       - name: No agent co-authorship trailers
+        if: ${{ !cancelled() }}
         run: |
           if git log --format='%B' | grep -iE '^Co-Authored-By:.*(claude|anthropic|assistant)'; then
             echo ""

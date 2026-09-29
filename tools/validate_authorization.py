@@ -23,7 +23,7 @@ what stands in for one.
 WHAT THIS GATE REFUSES TODAY, AND WHY THAT IS THE FEATURE. `--fixtures` refuses.
 `doctrine/DOCTRINE_STATUS.md` is the pin of record: mechanisms read it rather
 than the document they enforce, and an unratified criterion refuses rather than
-permits. Six of the nine paths SS-14 item 6 names carry no dated row, nineteen of
+permits. Seven of the nine paths SS-14 item 6 names carry no dated row, nineteen of
 the twenty-one corpus rows are held on an unratified entry, and where the gate's
 decision function lives is itself undecided (VA-U1 below). A green run against
 that state would claim a gate was proven. The checks still run, the stamp

@@ -111,10 +111,20 @@ validate-kernel:
 	python tools/validate_conformance.py --kernel-gate
 
 # preflight is the pre-commit battery plus the telemetry test. The hook runs the
-# same seven commands and not the test, which CI runs as a step of its own. A
+# same thirteen commands and not the test, which CI runs as a step of its own. A
 # gate that is only enforced in CI is enforced only after the thing it guards
 # has already been committed, and git history is the one store a crypto-shred
 # cannot reach.
+#
+# The six validator self-tests joined this list and the hook on 2026-09-28.
+# Before then only CI ran one of them, hygiene's, and the fires_when fix was
+# reported green in two sessions while the layer-model self-test exited 1,
+# because nothing on this path or the hook's ran it. The six are green today and
+# grade the checks rather than the stamps, which is what separates them from the
+# Step 8 artifact modes below. Two ratifying acts reach them anyway: sealing the
+# cast did until the cast self-test was fixed the same day, and completing SS-14
+# item 6 still does, through row 8 of conformance/gate/decisions.jsonl, which the
+# completing commit edits too. The pre-commit hook states the detail.
 #
 # The Step 8 artifact modes are deliberately absent from this list. Every one of
 # them refuses while the four Class F artifacts carry no dated row, so adding
@@ -132,6 +142,12 @@ preflight:
 	python tools/validate_ontology.py
 	python tools/validate_cast.py --placeholder-scan
 	python tools/validate.py --kernel
+	python tools/validate_hygiene.py --self-test
+	python tools/validate_layer_model.py --self-test
+	python tools/validate_ontology.py --self-test
+	python tools/validate_cast.py --self-test
+	python tools/validate_authorization.py --self-test
+	python tools/validate_retention.py --self-test
 	python tools/tests/test_gate_log.py
 	python tools/validate_retention.py --repo-scan --staged
 

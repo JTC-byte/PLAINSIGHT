@@ -7,25 +7,28 @@ Capped at roughly 400 lines, superseded detail moved out rather than accumulated
 ZMeta's handoff reached 2,080 lines carrying eleven superseded state sections,
 which is the failure mode this cap prevents.
 
-**Wave:** 0 committed, Step 7 committed in `4e6abda`, and Step 8 built in the
-commit that carries this file. Eight Step 8 artifacts totalling 9,342 lines are
-in the tree, every one drafted UNRATIFIED and refusing until stamped, which is
-why Step 8 does not meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-09-11. The session pushed `4e6abda` on the operator's
-instruction, fixed and pushed the `fires_when` defect as `38c93cc`, committed
-`ff016af`, built Step 8, and compiled the decision register. `origin/main` is at
-`38c93cc`; `ff016af` and the commit that carries this file are both on `main`
-and origin carries neither.
+**Wave:** 0 committed, Step 7 committed in `4e6abda`, and Step 8 built in
+`0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
+one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
+meet its own done-when. Section 1 states that plainly.
+**Date:** 2026-09-28. `main` and `origin/main` both stood at `4a5c788` when this
+change was cut, on the worktree branch `claude/hopeful-maxwell-69bb46`. The
+commit that carries this file wires every validator self-test into the hook,
+preflight, the kernel gate and CI, and stops CI skipping the steps after a red
+one. The operator made the commit, the merge and the push conditional on the
+plainsight session's review; its three required fixes are in this commit.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
-every conclusion stamped, every basis unstamped. No doctrine file was edited
-this session. Patch 4b, the four Class F items with EG-7, no longer applies to
+every conclusion stamped, every basis unstamped. No doctrine file has changed
+since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
 this tree; section 4 says what that costs and section 3 says whose decision it
 is.
-**Kernel gate:** 16 entries: 8 implemented, 3 unratified, 5 pending. Red on one
-check, `retention-repo-scan`, for a reason that is an open operator decision
-rather than a defect in the tree. Do not describe this battery as green.
+**Kernel gate:** 24 entries: 14 implemented, 3 unratified, 2 stubbed, 5
+pending. Red on one check, `retention-repo-scan`, for a reason that is an open
+operator decision rather than a defect in the tree. Do not describe this battery
+as green.
 
-**Resume here.** Two files first:
+**Resume here.** Read every step of the first CI run after this push, because
+the local replay in the worklog is not a GitHub run. Then two files:
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`,
 which holds the 51 distinct decisions Step 8 surfaced and marks the 29 that are
 the operator's; and
@@ -44,40 +47,43 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Step 8 compiles the doctrine into policy. Eight
-artifacts land: the subject authorization policy and its schema, the retention
-policy, the gate decision corpus and its README, the shred round-trip corpus,
-and the two validators that read them. Both policy files are hand-authored;
-`tools/generate_pse.py` owns exactly five outputs and neither is among them, and
-each carries a header saying so. `tools/validate_retention.py` replaces the
-D-001 stub with a tool that reads the tree. The eight artifacts were drafted by
-subagents in this session, one per artifact, and the parent session integrated
-them and ran the battery. `CLAUDE.md` section 5 puts the precise statement of
-agent involvement in the worklog, and this session's entry carries it.
+**What changed and why.** Every validator self-test now runs on all four
+automated paths: the hook, `make preflight`, the kernel gate, and CI. Five of the
+six ran on none, which is the hole that let a failing layer-model self-test read
+as green for two sessions. CI also stops skipping the steps after a red one: on
+the four pushes after 2026-09-08 the hook step and the co-authorship trailer
+check never ran, because the kernel gate before them was red. The two ontology
+modes that print DEFERRED and exit 0 join the gate list as STUB. The review
+found that the cast self-test assumed an unsealed file, so the new wiring
+would have refused the operator's sealing commit; that is fixed here. An agent
+wrote and verified the change on the operator's instruction, and the worklog's
+2026-09-28 entry carries the measurements, the review and the agent involvement.
 
-**Which surfaces moved.** The eight Step 8 artifacts in the section 2 table are
-new or replaced. `tools/validate_conformance.py` gains the Step 8 entries and the
-UNRATIFIED gate state. The Makefile and the pre-commit hook gain targets and
-comments, and the records move in `AGENTS.md`, `CONFORMANCE.md`, `CHANGELOG.md`,
-the worklog, its archive and this file. No doctrine file, no stamp, no generated
-artifact, no connector, and no runtime changed.
+**Which surfaces moved.** `.github/workflows/ci.yml`, `.githooks/pre-commit`,
+the Makefile's preflight target, `tools/validate_conformance.py`, the cast
+self-test in `tools/validate_cast.py`, one docstring count in
+`tools/validate_authorization.py`, `AGENTS.md` section 5,
+`CONFORMANCE.md` section 4, `CHANGELOG.md`, the worklog, its archive and this
+file. No doctrine file, stamp, schema, policy file, generated artifact, corpus,
+fixture or validator check changed.
 
-**What validation ran and what passed.** Green: doctrine at 58 criteria; hygiene
-and its self-test; layer-model and its self-test; ontology and its self-test;
-cast and its self-test; the validate self-test; `tools/validate.py --kernel` at
-44 must-pass events clean and 98 must-fail fixtures refused;
-`generate_pse.py --check`; `build_corpus.py --check`; the gate-log tests; both
-forms of `git diff --check`; and the pre-commit hook. Red:
-`tools/validate_conformance.py --kernel-gate`, on `retention-repo-scan` alone,
-for the reason in section 3. The three Step 8 modes exit 1, which is the state
-the gate list describes for an UNRATIFIED entry.
+**What validation ran and what passed.** Green: all six self-tests; doctrine;
+hygiene; the hook at thirteen commands; preflight, replayed, at fourteen; and
+both forms of `git diff --check`. Red: the kernel gate, on `retention-repo-scan`
+alone, for the reason in section 3, with its other thirteen implemented entries
+green, three unratified entries refusing as designed, and two stubs. Design gate
+1 ran: two deliberate self-test breaks turned the hook, preflight, the kernel
+gate's entry line and a named CI step red, where the `4a5c788` wiring stayed
+green on the hook and preflight. A really sealed cast refuses under the
+`4a5c788` cast self-test and passes under the fixed one. CI was replayed
+locally rather than run on GitHub.
 
-**Whether a release baseline changed.** No. `main` moves.
+**Whether a release baseline changed.** No. `main` moves once this is merged.
 
 **What remains open or deferred.** Section 3 holds the 29 decisions that are the
-operator's, patch 4b and its four Class F items, the repo-scan exemption, and the
-push of `ff016af`. Section 4 holds the gate-battery hole, every stamp, and the
-adversarial review Step 8 is owed.
+operator's, patch 4b and its four Class F items, and the repo-scan exemption.
+Section 4 holds every stamp, the adversarial review Step 8 is owed, the first
+GitHub run of this wiring, and the gaps this change observed and left alone.
 
 ---
 
@@ -110,7 +116,7 @@ gate is SS-14 item 6: eight artifacts stamped and a four-check preflight passing
 in the runner process. Seven of the eight exist and
 none is stamped. `runner/dispatch_allowlist.yaml` is the one absent, and
 `synthetic/CAST.md` is present but unsealed, so its clause is unmet either way.
-Three landed this session: the two authorization artifacts and
+Three landed in `0e0c840`: the two authorization artifacts and
 `policy/retention.yaml`. The operator provisions ISOLATED, the personas, the
 SIMs, the egress and the consent records in parallel.
 
@@ -123,34 +129,34 @@ applied. Nothing has touched a platform. No account exists. No connector exists.
 |---|---|
 | `LICENSE`, `NOTICE`, `.gitattributes` | Committed in `ac60ac4`. |
 | `CLAUDE.md` | Committed. Advisory. R6 amended 2026-08-27. |
-| `AGENTS.md` | Committed. Section 5 names the gate commands and states the seven hook commands correctly as of `ff016af`; section 8 sets the handoff standard. |
+| `AGENTS.md` | Committed. Section 5 names the gate commands, the thirteen hook commands, and the four paths every validator self-test runs on; section 8 sets the handoff standard. |
 | `CHANGELOG.md` | Committed. One entry per governed commit, newest first. Every entry below the 2026-09-07 rewrite entry cites pre-rewrite hashes; that entry translates them. |
 | `doctrine/DOCTRINE_STATUS.md` | The pin of record. 58 conclusions stamped, 0 bases. No row for any Step 8 artifact, which is why the three Step 8 gates refuse. |
 | `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md` | SS-1 to SS-21 and RT-1 to RT-19. Patches 1, 2 and 3c in. SS-4's table gives `subject_class` R4's seven classes. |
 | `doctrine/EGRESS.md`, `doctrine/CREDENTIAL_LIFECYCLE.md`, `doctrine/HYGIENE.md` | EG-1 to EG-6, CR-1 to CR-8, HY-1 to HY-4. Patch 1 in all three, patch 3c in the first two, patch 2 in CREDENTIAL_LIFECYCLE.md, patch 3b in HYGIENE.md. EG-7 is drafted in patch 4b, not applied. |
 | `doctrine/RETENTION_LEDGER.md`, `doctrine/DISCLOSURE.md` | **Both missing.** The ledger is required at v0.1, its shape is in RT-10, and Step 11 delivers it. DISCLOSURE.md is owed: the trigger fired when RT-18 created a second egress path. |
-| `CONFORMANCE.md` | Committed. Rewritten in the commit that carries this file to the state with Step 8's gates present and the UNRATIFIED state described. |
+| `CONFORMANCE.md` | Committed. Section 4 describes the twenty-four gate entries in all four states, the six self-test entries and the two stubs among them. |
 | `spec/layer-model.yaml` | Committed in `f4e00e1`. `38c93cc` quotes all 57 `fires_when` values, which is a form change that corrected seventeen truncated sentences. Eleven readings await confirmation. |
 | `spec/pse-semantics-contract.md` | Committed in `4e6abda`. **UNRATIFIED.** `pse-event-0.1`, Unlocked. Thirteen sections, every rule labelled. Sections 5 and 12 are SS-14 item 6 stamp targets. |
 | `spec/divergence-register.yaml` | Empty. Step 9. The contract's section 13.2 lists eleven divergences plus three that surfaced in generation. |
 | `schema/pse-event-0.1.schema.json` | Committed in `4e6abda`. **Generated.** Draft 2020-12, one closed payload per subtype, registry keys inlined as the selector enum, confidence refused as `false`. |
-| `schema/subject-authorization.schema.json` | **New in the commit that carries this file. Hand-authored, UNRATIFIED.** 393 lines, compiled from SS-4's required-field table. |
+| `schema/subject-authorization.schema.json` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 393 lines, compiled from SS-4's required-field table. |
 | `policy/semantics.yaml`, `policy/lineage.yaml`, `policy/producer-authority.yaml`, `policy/violation-codes.yaml` | Committed in `4e6abda`. **Generated.** `policy/violation-codes.yaml` was regenerated in `38c93cc`; the other three are byte-identical across that fix. 57 codes, each naming its emitter. |
-| `policy/subject-authorization.yaml` | **New in the commit that carries this file. Hand-authored, UNRATIFIED.** 1,403 lines. Its header says the generator does not own it. |
-| `policy/retention.yaml` | **New in the commit that carries this file. Hand-authored, UNRATIFIED.** 1,617 lines. Same header. |
+| `policy/subject-authorization.yaml` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 1,403 lines. Its header says the generator does not own it. |
+| `policy/retention.yaml` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 1,617 lines. Same header. |
 | `conformance/must-pass.jsonl`, `conformance/must-fail.jsonl` | Committed in `4e6abda`. **Generated.** 44 events covering all 37 subtypes; 98 fixtures, one break each, 52 of 57 codes covered. No value appears in either. |
-| `conformance/gate/decisions.jsonl`, `conformance/gate/README.md` | **New in the commit that carries this file.** The gate decision corpus at 21 lines, and its 548-line README. |
-| `conformance/retention/shred-roundtrip.yaml` | **New in the commit that carries this file. UNRATIFIED.** 542 lines. |
+| `conformance/gate/decisions.jsonl`, `conformance/gate/README.md` | **Committed in `0e0c840`.** The gate decision corpus at 21 lines, and its 548-line README. |
+| `conformance/retention/shred-roundtrip.yaml` | **Committed in `0e0c840`. UNRATIFIED.** 542 lines. |
 | `ontology/selectors.yaml` | Committed in `f4e00e1`. 19 selectors, 5 proposed and unstamped. Ten readings await confirmation. |
 | `synthetic/CAST.md`, `synthetic/GROUND_TRUTH.yaml` | Committed in `f4e00e1`. DRAFT, UNSEALED, placeholders only. Six decisions for the operator in CAST.md section 9. |
 | `tools/generate_pse.py`, `tools/build_corpus.py` | Committed in `4e6abda`. The only writers of the five generated artifacts and the two corpora. `--check` refuses drift in either. |
 | `tools/validate.py` | Committed in `4e6abda`. Rung 2. `--kernel` runs both drift checks, grades both corpora with `expect_only` and no short-circuit, and runs its self-test. |
 | `tools/validate_layer_model.py` | Committed earlier. `38c93cc` adds L-34, `CODE_ENTRY_KEYS`, refusing a code entry with keys outside the declared five or with no `fires_when`. Its self-test reports 62 deliberate breaks, 62 refused, 50 by the expected code alone, 12 cascading, 44 distinct codes exercised. |
-| `tools/validate_authorization.py` | **New in the commit that carries this file.** 2,713 lines. `--fixtures` refuses while nothing is stamped. |
-| `tools/validate_retention.py` | **Replaced in the commit that carries this file.** 2,105 lines, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
+| `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines. `--fixtures` refuses while nothing is stamped. This commit corrects one docstring count, six unstamped paths to seven. |
+| `tools/validate_retention.py` | **Replaced in `0e0c840`.** 2,105 lines, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
 | `tools/validate_doctrine.py`, `validate_hygiene.py`, `validate_ontology.py`, `validate_cast.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
-| `tools/validate_conformance.py` | **Extended in the commit that carries this file.** `KERNEL_GATE` carries sixteen entries: eight implemented, three unratified, five pending. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | Committed, with the Makefile and the hook touched in the commit that carries this file. `make preflight` runs eight commands; the hook runs seven. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`, because GitHub removes Node 20 from the runners on 2026-09-16. |
+| `tools/validate_conformance.py` | **Extended in the commit that carries this file.** `KERNEL_GATE` carries twenty-four entries: fourteen implemented, six of them self-tests; three unratified; two stubs; five pending. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in the commit that carries this file.** `make preflight` runs fourteen commands and the hook thirteen, the six validator self-tests among them. CI runs five self-tests as named steps before the kernel gate, and every gate step carries `if: ${{ !cancelled() }}`, so a red step no longer skips the hook step and the trailer check. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`. |
 | `connectors/`, `runner/`, `app/`, `conformance/connector-harness/` | Empty. Steps 10 to 13. |
 
 ## 3. What blocks
@@ -174,13 +180,13 @@ in a tracked file and the scan reads this file too. Both are
 true on shape and false in substance. `docs/PLAINSIGHT-design.md` and
 `docs/THE-GAMEPLAN.md` already carry `repo_scan.document_exemptions` rows of
 exactly this kind and `docs/PLAINSIGHT-FOUNDATION.md` does not. Adding those
-rows was proposed in this session and refuted: the proposal used a rank-1
+rows was proposed during Step 8 and refuted: the proposal used a rank-1
 citation above its lane, and narrowing an RT-15 scan is a reach decision. The
 pre-commit hook is unaffected, because it runs the same mode over the index
 rather than the working tree, and neither file this commit stages carries a
 selector, so the red check does not block a commit.
 
-**CI is red until that decision is made.** `.github/workflows/ci.yml` line 57
+**CI is red until that decision is made.** `.github/workflows/ci.yml` line 101
 runs `python tools/validate_conformance.py --kernel-gate`, which exits 1 while
 the scan refuses, so the workflow fails on the push that carries this commit and
 keeps failing until the exemption is stamped or the two values are replaced. The
@@ -192,12 +198,6 @@ environment-variable item, CR-6's clearing act, EG-2's vault-key custody
 sentence. The decision is the operator's and an agent may never make it.
 Section 4 records that the patch no longer applies cleanly.
 
-**The push of `ff016af`.** It is a commit on `main` that origin does not carry,
-and a push is an operator-instructed act per section 7. It repoints three
-citations at the moved sibling repository, ignores `LOCAL_*.md`, pins the two CI
-actions to their Node 24 majors, and corrects the hook command count in
-`AGENTS.md`.
-
 **What blocks the first live run is SS-14 item 6**, and it is a list rather than
 a step: SUBJECT_SELECTION.md and RETENTION.md per criterion, stamped;
 `policy/subject-authorization.yaml` and `schema/subject-authorization.schema.json`;
@@ -205,7 +205,15 @@ a step: SUBJECT_SELECTION.md and RETENTION.md per criterion, stamped;
 stamped; the contract's sections 5 and 12; `synthetic/CAST.md` sealed and
 hash-pinned with a confuser pair; `runner/dispatch_allowlist.yaml`; and the
 four-check preflight passing in the runner process. Seven of the eight artifacts
-now exist and none is stamped. The sealed cast is a precondition for every run,
+now exist and none is stamped. **The commit that completes item 6 also edits row
+8 of `conformance/gate/decisions.jsonl`**, which asserts the item 6 refusal from
+the real pin, or the authorization self-test and so the hook refuse it. The
+re-review measured two edits that work: a fixture stamp state on the row, which
+is GF-U1's open question in `conformance/gate/README.md`, or PERMITTED with its
+register row. The same commit moves the entries that then permit out of
+UNRATIFIED in `KERNEL_GATE`. **The cast is filled and sealed in one commit**,
+because the hook refuses a filled unsealed cast, which `synthetic/CAST.md`
+section 8 does not yet say. The sealed cast is a precondition for every run,
 consenting subjects included. The operator has been told the fork: provision the
 cast alongside the collection pool, or decide a Class F amendment to SS-14
 item 6. Neither is decided, and the choice is worth about 1,040 dollars in year
@@ -230,18 +238,12 @@ about 1,720 non-recurring and 205 a month.
 
 ## 4. Known gaps
 
-- **No gate runs `tools/validate_layer_model.py --self-test`, and that hole let
-  two sessions record a failing fix as green.** The `fires_when` fix was
-  reported green in two prior sessions while the self-test exited 1: the
-  `dead_code` fixture appended a code entry with no `fires_when`, so the new
-  L-34 fired alongside `LM_CODE_UNREFERENCED` and broke that row's
-  `expect_only`. This session gave the fixture a `fires_when` value and the
-  self-test now passes. The reason nobody saw it is structural.
-  `tools/validate_conformance.py` invokes the validator with `--quiet`,
-  `.githooks/pre-commit` runs seven plain commands, `make preflight` runs eight,
-  and `.github/workflows/ci.yml` runs exactly one self-test, hygiene's. Only
-  `make validate-layer-model` runs this one. Wiring the self-tests into CI is the
-  fix and it is not done.
+- **The self-test wiring has not run on GitHub.** CI was replayed under Git Bash
+  on Windows only, and the hook and trailer steps last ran on GitHub on 2026-09-08.
+- **Nine follow-ups from the 2026-09-28 review and re-review, none blocking**,
+  listed in that day's worklog entry. The one that matters most: nothing fails
+  if an edit drops a self-test from one of the four paths, so the class is open.
+  `tools/validate_doctrine.py` has no self-test at all.
 - **Patch 4b no longer applies to this tree.** `git apply --check` exits 1 on
   `doctrine/DOCTRINE_STATUS.md`. The cause is a fifteen-minute race: the patch
   was regenerated at 2026-09-08 18:40:19 and `4e6abda` was committed at 18:55:58
@@ -256,13 +258,11 @@ about 1,720 non-recurring and 205 a month.
   across eight files named the old path, and no gate noticed. `ff016af` repointed
   the three live pointers and left the dated measurements alone. The missing
   mechanism is open.
-- **Three defects found in this session and not fixed.**
-  `tools/validate_conformance.py:137-139` says "six of the nine paths" where the
-  tool prints seven refusals. `schema/subject-authorization.schema.json`'s
-  `evidence_ref` admits only the three pre-R4 evidence kinds, which is what SA-U2
-  and SA-U11 both land on. SA-U16's current `decided_at_step` placement is not
-  wire-legal, because `spec/layer-model.yaml:607` requires the field on every
-  REFUSED.
+- **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
+  `schema/subject-authorization.schema.json` admits only the three pre-R4
+  evidence kinds, which is what SA-U2 and SA-U11 both land on. SA-U16's current
+  `decided_at_step` placement is not wire-legal, because
+  `spec/layer-model.yaml:607` requires the field on every REFUSED.
 - **`retention-repo-scan` enforces three of RT-15's four parts.** The code RT-15
   names, `FIXTURE_CONTAINS_LIVE_SELECTOR`, is not in the wire vocabulary, and git
   history is out of reach of any commit-time check.
@@ -288,7 +288,9 @@ about 1,720 non-recurring and 205 a month.
   must-pass corpus avoids the value rather than pretending a proof.
 - **`tools/validate_ontology.py --corpus` is owed.** Its deferral said until a
   corpus exists and `conformance/must-pass.jsonl` is one. Rung 2 enforces the
-  same property meanwhile, because the schema inlines the registry keys.
+  same property meanwhile, because the schema inlines the registry keys. The
+  mode and `--matchers` are STUB entries in the kernel gate, so every run
+  prints the debt.
 - **The voice pass is parked.** 814 drafts, 6 refuter verdicts, nothing applied.
   The drafts on this file are dead, this file having been rewritten four times
   since. Not on the path to a first run.
@@ -321,21 +323,17 @@ second pass has read the generator against the model.
 
 **Step 8 has had no review of any kind.** Its eight artifacts were drafted by
 subagents, integrated by the parent session, and exercised only by their own
-self-tests and by the battery in section 0. The self-tests were written by the
-same agents that wrote the artifacts, which is the weakness named above in a
-sharper form, because the policy files are hand-authored rather than generated
-and no model constrains them. Three defects are already known and listed in
-section 4, all found by reading rather than by a gate. The owed review is the
-2026-09-04 method: lenses that run the mechanism and quote the result, each
-paired with a refuter. That pairing is not optional. This session measured eight
-lenses claiming grounded on 45 register entries with refuters overturning 15, a
-32 per cent over-report, and every overturn ran in one direction, toward
-claiming a decision was settled when it was not.
-
-One operational note on that method: four Fable refuters failed on exhausted
-usage credits and were re-run on Opus, and before the re-run the same groups
-reported 31 grounded where after it they reported 17. A refuter that cannot run
-is worse than no refuter, because its silence reads as agreement.
+self-tests and by the battery the 2026-09-11 worklog entry records. The
+self-tests were written by the same agents that wrote the artifacts, which is
+the weakness named above in a sharper form, because the policy files are
+hand-authored rather than generated and no model constrains them. Three defects
+are already known, all found by reading rather than by a gate; one, a count, is
+fixed, and section 4 lists the other two. The owed review is the 2026-09-04
+method: lenses that run the mechanism and quote the result, each paired with a
+refuter. That pairing is not optional. The Step 8 session measured eight lenses
+claiming grounded on 45 register entries with refuters overturning 15, a 33 per
+cent over-report, and every overturn ran in one direction, toward claiming a
+decision was settled when it was not.
 
 ## 6. Session context that lives outside this repository
 
@@ -382,8 +380,8 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   carry the GitHub no-reply address.
 - **Hashes in the worklog, its archive, and every changelog entry below the
   2026-09-07 rewrite entry are pre-rewrite.** That entry translates them.
-- The gates need PyYAML and jsonschema. `make preflight` runs eight commands;
-  the hook runs seven, leaving the telemetry test to CI.
+- The gates need PyYAML and jsonschema. `make preflight` runs fourteen
+  commands, the six self-tests among them; the hook runs thirteen.
 - **The worklog is capped at ten live entries and the hygiene gate refuses an
   eleventh.** Each closeout moves the oldest live entry into
   `plainsight_worklog_archive.md` unedited before adding its own.
@@ -393,8 +391,10 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
 - Only CI on Linux checks a file mode. The Edit tool on Windows writes CRLF into
   an existing file; `.gitattributes` normalizes the index, and the working copy
   is normalized before the battery so the hook parses.
-- Three harness facts: a subagent cannot write outside the repository, so the
+- Five harness facts: a subagent cannot write outside the repository, so the
   parent persists its reports; a Bash heredoc breaks on an apostrophe, so prose
-  files are written with the Write tool; and the desktop app's session metadata
-  moved to
+  files are written with the Write tool; a worktree's `core.hooksPath` names the
+  main checkout's `.githooks`, so a commit there runs the hook on `main`; a tree
+  copied under the scratchpad passes MAX_PATH for Python; and the app's session
+  metadata moved to
   `AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude-code-sessions\`.

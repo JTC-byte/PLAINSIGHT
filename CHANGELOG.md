@@ -22,6 +22,68 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-28. Every validator self-test runs on the hook, preflight, the
+  kernel gate and CI; CI stops skipping the steps after a red one; and the two
+  ontology stubs nothing called are declared as STUB.**
+
+  **What changed.** Five of the six validator self-tests, layer-model,
+  ontology, cast, authorization and retention, ran on no automated path, and
+  hygiene's ran only inside one CI step. All six now run in
+  `.githooks/pre-commit`, in `make preflight`, as IMPLEMENTED entries in
+  `KERNEL_GATE`, and in CI, where the five gain a named step each, placed before
+  the kernel gate so a broken self-test turns its own step red. Every CI gate
+  step now carries `if: ${{ !cancelled() }}`: the kernel gate was red on the
+  runs for `4e6abda`, `38c93cc`, `132eef0` and `4a5c788`, and on all four the
+  hook step and the co-authorship trailer check were skipped. `KERNEL_GATE` also
+  gains STUB entries for `tools/validate_ontology.py --matchers` and `--corpus`,
+  which print DEFERRED and exit 0, and grows from sixteen entries to
+  twenty-four. The authorization note and the docstring of
+  `tools/validate_authorization.py` said six of the nine SS-14 item 6 paths
+  carry no dated row where the tool prints seven, and now say seven.
+
+  **A cast self-test defect the wiring would have turned into a refusal.** The
+  plainsight session's review found that two of the cast self-test's mutations
+  assumed the file is unsealed: setting `sealed` true changes nothing on a
+  sealed file, and the placeholder scan skips one. Sealing the cast, which is
+  the operator's next ratifying act, would therefore have made the self-test
+  exit 1 and the new hook refuse the sealing commit. Each mutation now
+  constructs its own seal state, and the self-test runs every mutation against
+  a sealed copy as well, so a mutation that leans on the file's current state
+  fails at once.
+
+  **Which surfaces moved.** `.github/workflows/ci.yml`, `.githooks/pre-commit`,
+  the Makefile's preflight target and its comment,
+  `tools/validate_conformance.py`, the cast self-test in
+  `tools/validate_cast.py`, one docstring line in
+  `tools/validate_authorization.py`, `AGENTS.md` section 5, `CONFORMANCE.md`
+  section 4, the worklog, its archive, and the handoff.
+
+  **What validation ran.** Before any edit, all six self-tests exited 0. After
+  the edit, two deliberate breaks were applied to the tree and to an export of
+  `4a5c788`: the 2026-09-08 `dead_code` regression in the layer-model
+  self-test, and the shred round-trip's no-canary check made unreachable. On
+  `4a5c788` the hook and preflight stayed green over both. On this tree the
+  hook, preflight, the kernel gate's entry line and a named CI step each went
+  red, and every file was restored byte for byte. A really sealed copy of the
+  cast makes the `4a5c788` cast self-test exit 1 and the fixed one exit 0, and
+  reverting the fix fails the sealed-copy pass on today's unsealed file. A
+  scratch copy with dated rows for the seven unstamped SS-14 item 6 paths and
+  the two contract stamp-target rows resolved turns the authorization self-test
+  red, because row 8 of `conformance/gate/decisions.jsonl` asserts the item 6
+  refusal from the real pin; the commit that completes item 6 edits that row
+  too. The other five stayed green. CI was replayed locally rather than run on
+  GitHub, and the worklog entry states what that replay does not cover. The
+  plainsight session reviewed the change, asked for three fixes, and
+  re-reviewed the fixed tree with the verdict commit; the worklog entry records
+  both reviews and what was applied after the second.
+
+  **What did not change.** No doctrine file, stamp, allowlist, NEVER list,
+  authorization file, schema, policy file, generated artifact, corpus or
+  fixture. No validator's checks: the edits to validators are the cast
+  self-test's two mutations and its second pass, and one docstring count. The
+  kernel gate stays red on `retention-repo-scan`, for the disclosed reason, and
+  exits 1 exactly as before. `--corpus` stays owed.
+
 - **2026-09-11. Step 8's eight artifacts are drafted, UNRATIFIED, and refuse
   until stamped; the kernel gate grows to sixteen entries and turns red on a
   live retention scan; a decision register and a patch reconciliation record

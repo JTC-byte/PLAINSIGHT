@@ -789,12 +789,38 @@ def _mut_edge_outside(m: dict) -> None:
     )
 
 
+# The two seal-dependent mutations construct their own precondition rather than
+# assuming the file is unsealed. Until 2026-09-28 both assumed it, so sealing
+# the cast would have made this self-test refuse the sealing commit: setting
+# sealed true changes nothing on a sealed file, and the placeholder scan skips a
+# sealed one. self_test runs every mutation against a sealed copy as well, so a
+# mutation that leans on the file's current state fails here first.
 def _mut_seal_without_hash(m: dict) -> None:
     m["seal"]["sealed"] = True
+    m["seal"]["sha256"] = None
 
 
 def _mut_real_handle(m: dict) -> None:
+    m["seal"]["sealed"] = False
     _personas(m)[0]["accounts"][0]["handle"] = "a_filled_in_value"
+
+
+def _sealed_copy(model: dict) -> dict:
+    """The model as it will look once sealed, for the second self-test pass.
+
+    The seal fields carry values nothing could mistake for a real seal, and the
+    placeholders stay in place, because the pass tests the mutations rather than
+    the file. check_structure never reads the file bytes, so no digest is needed.
+    """
+    m = copy.deepcopy(model)
+    # A seal block that is not a mapping is a defect the as-loaded pass reports
+    # by name; the sealed copy replaces it rather than crashing on it.
+    if not isinstance(m.get("seal"), dict):
+        m["seal"] = {}
+    m["seal"].update(
+        {"sealed": True, "sha256": "0" * 64, "sealed_on": "self-test", "sealed_by": "self-test"}
+    )
+    return m
 
 
 def _mut_confuser_takes_linked_domain(m: dict) -> None:
@@ -820,20 +846,24 @@ SELF_TESTS = (
 
 def self_test(model: dict, quiet: bool = False) -> int:
     missed: list[str] = []
-    for label, mutate, expected, which in SELF_TESTS:
-        m = copy.deepcopy(model)
-        try:
-            mutate(m)
-        except Exception as exc:
-            missed.append(f"{label}: the mutation itself failed ({exc!r})")
-            continue
-        found = check_structure(m) if which == "structure" else check_placeholders(m)
-        codes = {f.code for f in found}
-        if expected in codes:
-            if not quiet:
-                print(f"  refused as designed  {expected:38} {label}")
-        else:
-            missed.append(f"{label}: expected {expected}, got {sorted(codes) or 'nothing'}")
+    passes = (("as loaded", model), ("sealed copy", _sealed_copy(model)))
+    for state, base in passes:
+        for label, mutate, expected, which in SELF_TESTS:
+            m = copy.deepcopy(base)
+            try:
+                mutate(m)
+            except Exception as exc:
+                missed.append(f"{label} ({state}): the mutation itself failed ({exc!r})")
+                continue
+            found = check_structure(m) if which == "structure" else check_placeholders(m)
+            codes = {f.code for f in found}
+            if expected in codes:
+                if not quiet:
+                    print(f"  refused as designed  {expected:38} {label} ({state})")
+            else:
+                missed.append(
+                    f"{label} ({state}): expected {expected}, got {sorted(codes) or 'nothing'}"
+                )
 
     if missed:
         print(
@@ -850,7 +880,10 @@ def self_test(model: dict, quiet: bool = False) -> int:
         return 1
 
     if not quiet:
-        print(f"validate_cast --self-test ok: {len(SELF_TESTS)} defects refused as designed")
+        print(
+            f"validate_cast --self-test ok: {len(SELF_TESTS)} defects refused as designed, "
+            "against the file as loaded and against a sealed copy"
+        )
     return 0
 
 

@@ -14,8 +14,20 @@ measured once: the Wave 0 `tools/validate_retention.py` was wired into the
 pre-commit hook and returned 0 while checking nothing, and it stayed harmless
 only because it said so on every run. An aggregator that counted it as green
 would have converted a known gap into a silent one. Step 8 replaced that stub
-with a tool that reads the tree, so no entry carries STUB today, and the state
-stays in the list because the next stub is easier to declare than to notice.
+with a tool that reads the tree, and the state stayed in the list because the
+next stub is easier to declare than to notice. Two were recorded and never
+declared: `tools/validate_ontology.py --matchers` and `--corpus` print DEFERRED
+and exit 0, the handoff and `CONFORMANCE.md` recorded `--corpus` and
+`docs/THE-GAMEPLAN.md` recorded `--matchers`, and nothing called either until
+2026-09-28, when both joined the list as STUB.
+
+Six validator self-tests are entries of their own, IMPLEMENTED, as of
+2026-09-28, and `tools/validate.py` runs its own inside the schema entry. A
+self-test breaks the governed artifact in memory and asserts each break is
+refused, which is the test design gate 1 asks for. Before that date only the
+hygiene self-test and the one inside `tools/validate.py --kernel` ran on any
+automated path, and a layer-model self-test that exited 1 read as green for two
+sessions because no path ran it.
 
 A fourth state joined the list at Step 8, because two mechanisms landed that are
 implemented and refuse. `policy/subject-authorization.yaml`,
@@ -64,6 +76,12 @@ UNRATIFIED = "unratified"
 #: `tools/validate_retention.py` declares one token per mode and
 #: `tools/validate_authorization.py` declares one for the tool, and the entries
 #: follow each tool rather than imposing one shape on both.
+#:
+#: The self-test and stub entries are the exception, because no tool records a
+#: run under their tokens. Each takes its tool's token with the mode appended.
+#: Four of the six self-tests record nothing to telemetry. The cast and
+#: authorization self-tests record under the tool's own token, so each run of
+#: either counts in that gate's telemetry as a run of the gate.
 KERNEL_GATE = (
     (
         "doctrine",
@@ -78,6 +96,13 @@ KERNEL_GATE = (
         "voice, table structure, citations against the artifact register, caps, and the handoff's tense",
     ),
     (
+        "hygiene-self-test",
+        [PY, "tools/validate_hygiene.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Plants each pre-commit-tense word in a handoff line, asserts "
+        "each is refused, and passes one clean sample",
+    ),
+    (
         "layer-model",
         [PY, "tools/validate_layer_model.py", "--quiet"],
         IMPLEMENTED,
@@ -85,11 +110,28 @@ KERNEL_GATE = (
         "strata, and the D5 parent on RUN_START",
     ),
     (
+        "layer-model-self-test",
+        [PY, "tools/validate_layer_model.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Breaks the layer model in memory and asserts each break is "
+        "refused by its expected code, or by that code and a stated cascade. This "
+        "is the self-test that exited 1 for two sessions while every path read green",
+    ),
+    (
         "cast",
         [PY, "tools/validate_cast.py", "--placeholder-scan", "--quiet"],
         IMPLEMENTED,
         "the checkable half of SS-3, the confuser pair, the partition, the seal, "
         "and no filled value while unsealed",
+    ),
+    (
+        "cast-self-test",
+        [PY, "tools/validate_cast.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Plants each designed defect in the cast draft in memory, among "
+        "them a filled handle, a seal with no hash, and a confuser on the linked "
+        "domain, and asserts each is refused, against the file as loaded and "
+        "against a sealed copy, so sealing the cast does not turn it red",
     ),
     (
         "telemetry",
@@ -111,6 +153,15 @@ KERNEL_GATE = (
         "check. The pre-commit hook runs the same mode over the index",
     ),
     (
+        "retention-self-test",
+        [PY, "tools/validate_retention.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Breaks the retention policy, the shred round-trip fixture and "
+        "the repository scan in memory and asserts each break is refused against "
+        "the two designed refusals, including a filled selector that must refuse "
+        "and its placeholder and exempted forms that must not",
+    ),
+    (
         "schema",
         [PY, "tools/validate.py", "--kernel", "--quiet"],
         IMPLEMENTED,
@@ -128,6 +179,32 @@ KERNEL_GATE = (
         "the code vocabulary reconciled against the layer model",
     ),
     (
+        "ontology-self-test",
+        [PY, "tools/validate_ontology.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Breaks the selector registry in memory and asserts each break "
+        "is refused, among them an eighth entity type, an unscored matcher permitted "
+        "as an identity basis, and a registry that stops declaring itself closed",
+    ),
+    (
+        "ontology-matchers",
+        [PY, "tools/validate_ontology.py", "--matchers"],
+        STUB,
+        "--matchers. Deferred until the first matcher exists, because scoring needs "
+        "labelled ground truth and ground truth needs a sealed cast. It prints "
+        "DEFERRED, checks nothing and exits 0",
+    ),
+    (
+        "ontology-corpus",
+        [PY, "tools/validate_ontology.py", "--corpus"],
+        STUB,
+        "--corpus. Its deferral waits for conformance/must-pass.jsonl and "
+        "must-fail.jsonl, which Step 7 wrote, so the trigger has fired and the mode "
+        "is owed. It prints DEFERRED, checks nothing and exits 0. Rung 2 enforces "
+        "the same property meanwhile, because the generated schema inlines the "
+        "registry keys as the selector enum",
+    ),
+    (
         "authorization",
         [PY, "tools/validate_authorization.py", "--fixtures", "--quiet"],
         UNRATIFIED,
@@ -135,8 +212,20 @@ KERNEL_GATE = (
         "property set, SS-5's three differential fixtures, the gate value, "
         "basis, relation and disposition enums reconciled against rank 3, the "
         "register in both directions, and SS-14's stamp read. It refuses because "
-        "six of the nine paths SS-14 item 6 names carry no dated row, so no run "
-        "may execute. --self-test is green and is a Makefile target of its own",
+        "paths SS-14 item 6 names carry no dated row, seven of the nine on "
+        "2026-09-28, so no run may execute. Its self-test is the next entry",
+    ),
+    (
+        "authorization-self-test",
+        [PY, "tools/validate_authorization.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Breaks the gate corpus, the policy, the record shape and the "
+        "pin of record in memory and asserts each break is refused, including a "
+        "permit asserted under a stamp state missing a criterion. It is green while "
+        "--fixtures refuses, because it grades the checks rather than the stamps, "
+        "with one exception: completing SS-14 item 6 leaves row 8 of "
+        "conformance/gate/decisions.jsonl asserting a refusal that no longer "
+        "arises, so the commit that completes the set edits that row too",
     ),
     (
         "authorization-dispatch-paths",

@@ -83,14 +83,25 @@ reported here rather than edited there.
 ## 4. What the kernel gate covers today, and what it does not
 
 `tools/validate_conformance.py --kernel-gate` is the one rung that exists.
-Its `KERNEL_GATE` list carries sixteen entries in four states, and
+Its `KERNEL_GATE` list carries twenty-four entries in four states, and
 `python tools/validate_conformance.py --list` prints the live list with the
 note each entry carries.
 
-Eight entries are implemented: doctrine, hygiene, layer-model, cast, telemetry,
-retention-repo-scan, schema, and ontology. Step 8 replaced the D-001 stub with
-`tools/validate_retention.py`, so retention-repo-scan left the STUB state and no
-entry carries STUB today. That check reads every tracked file in the working
+Fourteen entries are implemented: doctrine, hygiene, layer-model, cast,
+telemetry, retention-repo-scan, schema, and ontology, plus six self-test
+entries, one each for hygiene, layer-model, cast, retention, ontology and
+authorization, which joined the list on 2026-09-28. A self-test breaks its
+governed artifact in memory and asserts each break is refused, so it grades the
+check rather than the artifact. Before that date five of the six ran on no
+automated path. `tools/validate.py` runs its own self-test inside `--kernel`, so
+the schema entry already carried it, and `tools/validate_doctrine.py` has none.
+
+Two entries are STUB: `tools/validate_ontology.py --matchers` and `--corpus`.
+Both print DEFERRED, check nothing, and exit 0, and nothing called either until
+they joined the list on 2026-09-28. The `--corpus` trigger has fired, as rung 3
+in section 3 records. Step 8 replaced the D-001 stub with
+`tools/validate_retention.py`, so retention-repo-scan left the STUB state
+before these two entered it. That check reads every tracked file in the working
 tree for a filled selector in its typed form, against thirteen shapes reconciled
 with `ontology/selectors.yaml` in both directions, and it enforces three of
 RT-15's four parts. The fourth part is out of reach for two separate reasons:
@@ -136,14 +147,14 @@ that belongs to the operator. That decision is open. The pre-commit hook is
 unaffected, because it runs the same mode over the index rather than over the
 working tree.
 
-A green kernel-gate run, once that decision is settled, would mean eight
+A green kernel-gate run, once that decision is settled, would mean fourteen
 implemented checks passed and three unratified checks refused in the way the
-list says they refuse, while five checks did not run at all because the dispatch
-paths, the credential pool, the case store, the divergence register, and every
-connector do not exist. That is a regression gate on the checks that exist. It
-is not a conformance claim about PSE's semantics beyond what the two corpora
-exercise, and it is not a conformance claim about any connector, because none
-exists.
+list says they refuse, while two stubs checked nothing and five checks did not
+run at all because the dispatch paths, the credential pool, the case store, the
+divergence register, and every connector do not exist. That is a regression
+gate on the checks that exist. It is not a conformance claim about PSE's
+semantics beyond what the two corpora exercise, and it is not a conformance
+claim about any connector, because none exists.
 
 ## 5. Two requirements on the future fixture runner
 

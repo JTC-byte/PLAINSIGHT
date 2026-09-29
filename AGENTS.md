@@ -145,11 +145,22 @@ python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
 
-`make preflight` runs the pre-commit hook's seven commands plus the telemetry
+`make preflight` runs the pre-commit hook's thirteen commands plus the telemetry
 test, which the hook leaves to CI, and `make validate-kernel` runs the
 aggregator. The gate battery is defined once, in
 `KERNEL_GATE` inside `tools/validate_conformance.py`, so a new check joins it
 there rather than in every document that quotes a command.
+
+**Every validator self-test runs on all four automated paths**: the hook,
+`make preflight`, the kernel gate, and CI, where five have a named step of their
+own and hygiene's runs in the Housekeeping step. A self-test breaks its governed
+artifact in memory and asserts each break is refused, so it is the test that
+fails when a check is removed. Until 2026-09-28 five of the six ran on no path,
+and the fires_when fix was reported green in two sessions while the layer-model
+self-test exited 1. `tools/validate.py` runs its own inside `--kernel`, and
+`tools/validate_doctrine.py` has none. The kernel gate's exit code cannot show a
+self-test failure while `retention-repo-scan` holds it red, and its entry line
+can, which is why CI also runs each self-test as a step of its own.
 
 **What these gates actually cover, stated so a green run is not read as more
 than it is.** The governed artifacts checked today are the doctrine corpus
