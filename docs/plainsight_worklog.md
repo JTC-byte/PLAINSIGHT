@@ -15,74 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-08-27, gate telemetry, injection tagging, and HYGIENE.md.
-
-**Class:** F (RT-19, SS-21) plus A (HYGIENE.md advisory) plus C (tooling).
-
-Two operator requests, and the second one has a conflict with the operator's own
-posture that is recorded rather than resolved quietly.
-
-**Gate telemetry.** `tools/gate_log.py` appends one record per gate run and
-sweeps past a 90 day TTL on every write. `doctrine/HYGIENE.md` HY-1 to HY-4 owns
-the adjudication, `RETENTION.md` RT-19 owns the lifetime, and stratum **T** was
-added to the RT-1 table for it.
-
-**The rule that makes telemetry safe: a record names the file and the line and
-never the string that matched.** A `--repo-scan` refusal fires because a
-selector-shaped value was found, and a record quoting it would turn the gate's
-own evidence into the durable surface the gate exists to prevent. The allowed
-field list in `gate_log.py` is a fixed tuple, so widening a record requires
-editing that tuple rather than passing an argument.
-
-HY-2 names both failure directions, because both are silent. A check that never
-fires is indistinguishable from a check that works, which is the measured
-`guard.py` defect. A check that always fires gets routed around rather than
-fixed. Thresholds are deliberately non-numeric: with one contributor a rate is
-not a statistic, so the telemetry informs the judgment rather than making it.
-HY-4 records the gates that were reviewed and kept, on §5.9's reasoning that
-recording only failures removes the baseline.
-
-**Injection tagging, SS-21, and the conflict.** The operator asked for accounts
-carrying injection payloads to be tagged so there is a list of actors to avoid.
-The detection half is clean and is now doctrine. The list half runs into RT-2:
-
-- The **payload family** is a finding. No subject values, stratum 3, survives
-  every shred, and it generalizes to accounts nobody has met.
-- The **account roster** is subject-derived. RT-2 forbids it in a surviving
-  stratum, so the tag lives inside the case and dies with it.
-
-**A persistent roster is a target package wearing a defensive name.** That is
-recorded in the criterion in those words, because the operator's stated posture
-is that target packages are not maintained here, and the intent behind a list
-does not change what the object is. Keeping one would need a ratified exception
-to RT-2, and SS-21 does not create it.
-
-**AR-1, the first entry in a section empty since Wave 0.** The operator raised
-publishing such a list as a possible public good and marked it a later decision.
-The argument recorded for that decision is the program's own rather than a moral
-one: SS-18 establishes that precision is not computable against an S4 subject, so
-a published roster carries a false-positive rate that is unknown by construction,
-and each false positive is a public accusation against an identifiable party with
-no way to contest it. The honest publishable form is signatures rather than
-accounts. Recorded as an assistant reading awaiting confirmation, not decided.
-
-**Two count errors the tools caught.** RT-1's prose said "Five strata" while the
-table carried seven rows, stale since the authorization row was added. And
-`gate_log.py` was refused by the hygiene gate on its first run for existing
-without a Makefile target, which is the tools-to-gates inventory reconcile
-working on a file written minutes earlier.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched.
-
-**Not done:** `EGRESS.md`, `CREDENTIAL_LIFECYCLE.md`, `HYGIENE.md`, SS-19 through
-SS-21 and RT-19 are all unreviewed. The other two rank-1 files went through
-fourteen adversarial agents and these have had none. A review pass is owed before
-building against them.
-
-
----
-
 ## 2026-09-03, the review the last entry said was owed, plus Steps 4 and 5.
 
 **Class:** A (review artifacts, worklog, handoff) plus B (`spec/layer-model.yaml`)
@@ -1893,3 +1825,91 @@ commit that completes SS-14 item 6 also edits `KERNEL_GATE`, because
 `retention-policy` then exits 0 and an UNRATIFIED entry that permits is refused
 as `GATE_LIST_UNRATIFIED_PERMITTED`. Every gate accepts a dated stamp row for a
 path that does not exist, such as `runner/dispatch_allowlist.yaml`.
+
+---
+
+## 2026-09-29, checkpoint closeout. Two defects measured outside the tree are recorded, and the handoff is corrected to match `b378cd8`.
+
+**Class:** A. Records only: this entry, the oldest live entry moved to the
+archive unedited, and the handoff. No doctrine file, stamp, schema, policy file,
+generated artifact, corpus, fixture, validator, hook, workflow or README changed,
+so `CHANGELOG.md` carries no entry.
+
+**Agent involvement.** An agent in the plainsight session wrote this entry and
+the handoff at the checkpoint closeout the operator called on 2026-09-29, which
+the parent-folder session relayed. The relay authorized nothing, and no
+instruction to commit these records had been given when they were written. Under
+`CLAUDE.md` section 5, R6, the commit waits for the operator's instruction for
+that act, and its message names that instruction.
+
+**The battery, at `b378cd8`, before these records.** All fourteen preflight
+commands exit 0, the six self-tests among them. Both forms of `git diff --check`
+are clean. The kernel gate exits 1 on `retention-repo-scan` alone, with fourteen
+implemented entries, that one failing, three unratified and refusing, two stubbed
+and five pending. That is the disclosed state, and nothing else in the battery is
+red.
+
+**CI on GitHub confirmed the wiring.** Run 36501081165 on `b378cd8` ran every
+step the workflow defines. The five named self-test steps passed, the kernel gate
+failed on `retention-repo-scan` alone, and the hook step and the co-authorship
+trailer check both ran after it and passed. That is the first run since
+2026-09-08 in which those two steps ran. The handoff's known gap saying the
+wiring had not run on GitHub is closed, and so is its instruction to read that
+run.
+
+**Two defects measured outside the repository and never recorded here.**
+
+- The public README says a schema and a policy pack do not exist.
+  `README.md:10-11` reads "No schema, no policy pack, and no collection mechanism
+  exists." `git log --diff-filter=A` dates `schema/pse-event-0.1.schema.json` and
+  `policy/semantics.yaml` to `4e6abda` on 2026-09-08, and
+  `schema/subject-authorization.schema.json`, `policy/subject-authorization.yaml`
+  and `policy/retention.yaml` to `0e0c840` on 2026-09-11. The README was last
+  edited in `ff016af` on 2026-09-11, kept the sentence, and stands unchanged at
+  `b378cd8`. Its "Next action" section also still describes Step 7 as future
+  work. The collection-mechanism and connector clauses are still true. A
+  different plainsight session first recorded the defect on 2026-09-14, in the
+  crossings reply named below, and this session dated the additions with
+  `git log` on 2026-09-15.
+- The pin of record has three independent readers, and two of them disagree.
+  `tools/validate_authorization.py` parses `doctrine/DOCTRINE_STATUS.md` with its
+  `Pin` class and `tools/validate_retention.py` with `stamped_path()`, and
+  `tools/validate_doctrine.py` checks that each criterion has a row and that its
+  marker agrees, and reads no artifact path. No parser is shared. Instantiating
+  the first two against the live file at `b378cd8` gives opposite answers for
+  `spec/pse-semantics-contract.md`. `Pin.artifact_stamped` returns false, because
+  the Pending table lists that path as a stamp target. `stamped_path` returns
+  true, because it counts only the Ratified section and never subtracts the
+  Pending table's stamp-target rows. The other paths tested all agree. The
+  disagreement is latent, because `stamped_path` has two call sites, at
+  `tools/validate_retention.py:1041` and `:1290`, and they pass the retention
+  policy and the shred fixture, never the contract. This session first measured
+  it on 2026-09-17 at `4a5c788`.
+
+**Session context kept outside this repository.** This session answered three
+fact requests from the ecosystem research sessions, on 2026-09-15, 2026-09-16 and
+2026-09-17, and reviewed and re-reviewed the self-test wiring on 2026-09-28,
+which the entry above records. The replies are kept under
+`Z-ISR/_session-artifacts/2026-09-15-plainsight-harvest-of-c45e1214/` and the
+reviews under `Z-ISR/_session-artifacts/2026-09-28-plainsight-selftest-wiring-review/`.
+The crossings classing of 2026-09-14, which a different plainsight session made
+and then corrected by erratum, is kept at
+`Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/CLASS_F_CROSSINGS_REPLY.md`.
+Its durable finding is that EG-1 defines exactly two environments, and no
+criterion defines a third environment or a holder for this repository's material
+in a shared picture. The one outside destination doctrine names is RT-18's
+disclosure export to an agency. A crossing into a shared picture is therefore
+unadjudicated until a rank-1 EGRESS decision defines one. The ecosystem register
+states its own boundary, that person-centric outputs do not enter the ISR
+picture, and that boundary appears nowhere in this tree. None of this changed a
+file here, and none of it is a ruling.
+
+**The worktree is left in place.** The branch `claude/hopeful-maxwell-69bb46`
+stands at `b378cd8`, merged into `main`, and its worktree under
+`.claude/worktrees/` is clean. It was not removed, for three reasons. The session
+working in it is still open. Removing it also deletes its ignored `.gate-log/`,
+the record of the gate runs made there, which RT-19 gives a 90-day lifetime so
+that `doctrine/HYGIENE.md` can adjudicate the checks. A delete is an act this
+closeout has no instruction for. `git worktree remove` and then `git branch -d`
+are safe once that session is archived and the telemetry is kept or its loss is
+accepted.

@@ -596,3 +596,70 @@ touched.
 
 **Not done:** the operator's decision that live execution stays an operator act
 means `AGENTS.md` section 4's first Execution Limit is unchanged and correct.
+
+---
+
+## 2026-08-27, gate telemetry, injection tagging, and HYGIENE.md.
+
+**Class:** F (RT-19, SS-21) plus A (HYGIENE.md advisory) plus C (tooling).
+
+Two operator requests, and the second one has a conflict with the operator's own
+posture that is recorded rather than resolved quietly.
+
+**Gate telemetry.** `tools/gate_log.py` appends one record per gate run and
+sweeps past a 90 day TTL on every write. `doctrine/HYGIENE.md` HY-1 to HY-4 owns
+the adjudication, `RETENTION.md` RT-19 owns the lifetime, and stratum **T** was
+added to the RT-1 table for it.
+
+**The rule that makes telemetry safe: a record names the file and the line and
+never the string that matched.** A `--repo-scan` refusal fires because a
+selector-shaped value was found, and a record quoting it would turn the gate's
+own evidence into the durable surface the gate exists to prevent. The allowed
+field list in `gate_log.py` is a fixed tuple, so widening a record requires
+editing that tuple rather than passing an argument.
+
+HY-2 names both failure directions, because both are silent. A check that never
+fires is indistinguishable from a check that works, which is the measured
+`guard.py` defect. A check that always fires gets routed around rather than
+fixed. Thresholds are deliberately non-numeric: with one contributor a rate is
+not a statistic, so the telemetry informs the judgment rather than making it.
+HY-4 records the gates that were reviewed and kept, on §5.9's reasoning that
+recording only failures removes the baseline.
+
+**Injection tagging, SS-21, and the conflict.** The operator asked for accounts
+carrying injection payloads to be tagged so there is a list of actors to avoid.
+The detection half is clean and is now doctrine. The list half runs into RT-2:
+
+- The **payload family** is a finding. No subject values, stratum 3, survives
+  every shred, and it generalizes to accounts nobody has met.
+- The **account roster** is subject-derived. RT-2 forbids it in a surviving
+  stratum, so the tag lives inside the case and dies with it.
+
+**A persistent roster is a target package wearing a defensive name.** That is
+recorded in the criterion in those words, because the operator's stated posture
+is that target packages are not maintained here, and the intent behind a list
+does not change what the object is. Keeping one would need a ratified exception
+to RT-2, and SS-21 does not create it.
+
+**AR-1, the first entry in a section empty since Wave 0.** The operator raised
+publishing such a list as a possible public good and marked it a later decision.
+The argument recorded for that decision is the program's own rather than a moral
+one: SS-18 establishes that precision is not computable against an S4 subject, so
+a published roster carries a false-positive rate that is unknown by construction,
+and each false positive is a public accusation against an identifiable party with
+no way to contest it. The honest publishable form is signatures rather than
+accounts. Recorded as an assistant reading awaiting confirmation, not decided.
+
+**Two count errors the tools caught.** RT-1's prose said "Five strata" while the
+table carried seven rows, stale since the authorization row was added. And
+`gate_log.py` was refused by the hygiene gate on its first run for existing
+without a Makefile target, which is the tools-to-gates inventory reconcile
+working on a file written minutes earlier.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched.
+
+**Not done:** `EGRESS.md`, `CREDENTIAL_LIFECYCLE.md`, `HYGIENE.md`, SS-19 through
+SS-21 and RT-19 are all unreviewed. The other two rank-1 files went through
+fourteen adversarial agents and these have had none. A review pass is owed before
+building against them.

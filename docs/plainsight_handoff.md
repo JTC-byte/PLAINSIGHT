@@ -11,12 +11,11 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-09-28. `main` and `origin/main` both stood at `4a5c788` when this
-change was cut, on the worktree branch `claude/hopeful-maxwell-69bb46`. The
-commit that carries this file wires every validator self-test into the hook,
-preflight, the kernel gate and CI, and stops CI skipping the steps after a red
-one. The operator made the commit, the merge and the push conditional on the
-plainsight session's review; its three required fixes are in this commit.
+**Date:** 2026-09-29. The commit that carries this file is that day's
+checkpoint closeout, records only, on top of `b378cd8`. `b378cd8` wired every
+validator self-test into the hook, preflight, the kernel gate and CI on
+2026-09-28, and CI run 36501081165 ran every step of it on GitHub, the steps
+after the red kernel gate included.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -27,8 +26,7 @@ pending. Red on one check, `retention-repo-scan`, for a reason that is an open
 operator decision rather than a defect in the tree. Do not describe this battery
 as green.
 
-**Resume here.** Read every step of the first CI run after this push, because
-the local replay in the worklog is not a GitHub run. Then two files:
+**Resume here.** Read two files first:
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`,
 which holds the 51 distinct decisions Step 8 surfaced and marks the 29 that are
 the operator's; and
@@ -47,43 +45,28 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Every validator self-test now runs on all four
-automated paths: the hook, `make preflight`, the kernel gate, and CI. Five of the
-six ran on none, which is the hole that let a failing layer-model self-test read
-as green for two sessions. CI also stops skipping the steps after a red one: on
-the four pushes after 2026-09-08 the hook step and the co-authorship trailer
-check never ran, because the kernel gate before them was red. The two ontology
-modes that print DEFERRED and exit 0 join the gate list as STUB. The review
-found that the cast self-test assumed an unsealed file, so the new wiring
-would have refused the operator's sealing commit; that is fixed here. An agent
-wrote and verified the change on the operator's instruction, and the worklog's
-2026-09-28 entry carries the measurements, the review and the agent involvement.
+**What changed and why.** This commit changes records only, at the 2026-09-29
+checkpoint closeout. CI run 36501081165 ran every step of `b378cd8`'s self-test
+wiring on GitHub. Two defects measured outside the repository on 2026-09-14 and
+2026-09-17 are now in section 4, with the worktree `b378cd8` was built in, and
+the worklog's 2026-09-29 entry carries the measurements.
 
-**Which surfaces moved.** `.github/workflows/ci.yml`, `.githooks/pre-commit`,
-the Makefile's preflight target, `tools/validate_conformance.py`, the cast
-self-test in `tools/validate_cast.py`, one docstring count in
-`tools/validate_authorization.py`, `AGENTS.md` section 5,
-`CONFORMANCE.md` section 4, `CHANGELOG.md`, the worklog, its archive and this
-file. No doctrine file, stamp, schema, policy file, generated artifact, corpus,
-fixture or validator check changed.
+**Which surfaces moved.** This file and the worklog, with the oldest live
+worklog entry moved to its archive unedited. No governed artifact changed, so
+`CHANGELOG.md` carries no entry.
 
-**What validation ran and what passed.** Green: all six self-tests; doctrine;
-hygiene; the hook at thirteen commands; preflight, replayed, at fourteen; and
-both forms of `git diff --check`. Red: the kernel gate, on `retention-repo-scan`
-alone, for the reason in section 3, with its other thirteen implemented entries
-green, three unratified entries refusing as designed, and two stubs. Design gate
-1 ran: two deliberate self-test breaks turned the hook, preflight, the kernel
-gate's entry line and a named CI step red, where the `4a5c788` wiring stayed
-green on the hook and preflight. A really sealed cast refuses under the
-`4a5c788` cast self-test and passes under the fixed one. CI was replayed
-locally rather than run on GitHub.
+**What validation ran and what passed.** The closeout battery ran at `b378cd8`
+before these records were written. All fourteen preflight commands passed, the
+six self-tests among them, and both forms of `git diff --check` were clean. The
+kernel gate was red on `retention-repo-scan` alone, the disclosed state in
+section 3.
 
-**Whether a release baseline changed.** No. `main` moves once this is merged.
+**Whether a release baseline changed.** No. `main` gains this one records commit.
 
-**What remains open or deferred.** Section 3 holds the 29 decisions that are the
-operator's, patch 4b and its four Class F items, and the repo-scan exemption.
-Section 4 holds every stamp, the adversarial review Step 8 is owed, the first
-GitHub run of this wiring, and the gaps this change observed and left alone.
+**What remains open or deferred.** Section 3 holds the operator's 29 decisions,
+patch 4b with its four Class F items, and the repo-scan exemption. Section 4
+holds every stamp, the 2026-09-28 follow-ups, the two defects and the worktree;
+section 5 holds the adversarial review Step 8 is owed.
 
 ---
 
@@ -152,11 +135,12 @@ applied. Nothing has touched a platform. No account exists. No connector exists.
 | `tools/generate_pse.py`, `tools/build_corpus.py` | Committed in `4e6abda`. The only writers of the five generated artifacts and the two corpora. `--check` refuses drift in either. |
 | `tools/validate.py` | Committed in `4e6abda`. Rung 2. `--kernel` runs both drift checks, grades both corpora with `expect_only` and no short-circuit, and runs its self-test. |
 | `tools/validate_layer_model.py` | Committed earlier. `38c93cc` adds L-34, `CODE_ENTRY_KEYS`, refusing a code entry with keys outside the declared five or with no `fires_when`. Its self-test reports 62 deliberate breaks, 62 refused, 50 by the expected code alone, 12 cascading, 44 distinct codes exercised. |
-| `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines. `--fixtures` refuses while nothing is stamped. This commit corrects one docstring count, six unstamped paths to seven. |
+| `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines. `--fixtures` refuses while nothing is stamped. `b378cd8` corrected one docstring count, six unstamped paths to seven. |
 | `tools/validate_retention.py` | **Replaced in `0e0c840`.** 2,105 lines, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
-| `tools/validate_doctrine.py`, `validate_hygiene.py`, `validate_ontology.py`, `validate_cast.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
-| `tools/validate_conformance.py` | **Extended in the commit that carries this file.** `KERNEL_GATE` carries twenty-four entries: fourteen implemented, six of them self-tests; three unratified; two stubs; five pending. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in the commit that carries this file.** `make preflight` runs fourteen commands and the hook thirteen, the six validator self-tests among them. CI runs five self-tests as named steps before the kernel gate, and every gate step carries `if: ${{ !cancelled() }}`, so a red step no longer skips the hook step and the trailer check. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`. |
+| `tools/validate_doctrine.py`, `validate_hygiene.py`, `validate_ontology.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
+| `tools/validate_cast.py` | Committed earlier. `b378cd8` made its self-test run every mutation against the file as loaded and against a sealed copy, so it no longer refuses the commit that seals the cast. |
+| `tools/validate_conformance.py` | **Extended in `b378cd8`.** `KERNEL_GATE` carries twenty-four entries: fourteen implemented, six of them self-tests; three unratified; two stubs; five pending. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `b378cd8`.** `make preflight` runs fourteen commands and the hook thirteen, the six validator self-tests among them. CI runs five self-tests as named steps before the kernel gate, and every gate step carries `if: ${{ !cancelled() }}`, so a red step no longer skips the hook step and the trailer check. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`. |
 | `connectors/`, `runner/`, `app/`, `conformance/connector-harness/` | Empty. Steps 10 to 13. |
 
 ## 3. What blocks
@@ -183,10 +167,10 @@ exactly this kind and `docs/PLAINSIGHT-FOUNDATION.md` does not. Adding those
 rows was proposed during Step 8 and refuted: the proposal used a rank-1
 citation above its lane, and narrowing an RT-15 scan is a reach decision. The
 pre-commit hook is unaffected, because it runs the same mode over the index
-rather than the working tree, and neither file this commit stages carries a
-selector, so the red check does not block a commit.
+rather than the working tree, and a commit that stages neither flagged file
+passes it, so the red check does not block a commit.
 
-**CI is red until that decision is made.** `.github/workflows/ci.yml` line 101
+**CI is red until that decision is made.** The Kernel gate step of `ci.yml`
 runs `python tools/validate_conformance.py --kernel-gate`, which exits 1 while
 the scan refuses, so the workflow fails on the push that carries this commit and
 keeps failing until the exemption is stamped or the two values are replaced. The
@@ -238,9 +222,23 @@ about 1,720 non-recurring and 205 a month.
 
 ## 4. Known gaps
 
-- **The self-test wiring has not run on GitHub.** CI was replayed under Git Bash
-  on Windows only, and the hook and trailer steps last ran on GitHub on 2026-09-08.
-- **Nine follow-ups from the 2026-09-28 review and re-review, none blocking**,
+- **The public README says a schema and a policy pack do not exist.**
+  `README.md:10-11` reads "No schema, no policy pack, and no collection mechanism
+  exists." The schema and policy pack landed in `4e6abda` and `0e0c840`, and the
+  last README edit, `ff016af`, kept the sentence. Its "Next action" section still
+  describes Step 7 as future work. The repository is public.
+- **The pin of record has three independent readers, and two disagree.** At
+  `b378cd8`, `tools/validate_authorization.py`'s `Pin` subtracts the Pending
+  table's stamp-target rows and calls `spec/pse-semantics-contract.md`
+  unstamped, while `tools/validate_retention.py`'s `stamped_path()` counts only
+  the Ratified section and calls it stamped. It is latent, because
+  `stamped_path()` is called only for the retention policy and the shred fixture.
+  One shared reader would close it.
+- **The worktree `b378cd8` was built in is still in place**, at
+  `.claude/worktrees/hopeful-maxwell-69bb46` on `claude/hopeful-maxwell-69bb46`,
+  merged and clean. Its session is open, and removal deletes its `.gate-log/`,
+  which RT-19 gives a 90-day lifetime, so removing it is the operator's decision.
+- **The follow-ups from the 2026-09-28 review and re-review, none blocking**,
   listed in that day's worklog entry. The one that matters most: nothing fails
   if an edit drops a self-test from one of the four paths, so the class is open.
   `tools/validate_doctrine.py` has no self-test at all.
@@ -344,6 +342,7 @@ decision was settled when it was not.
 | The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies, and the method the Step 8 review owes. Pre-rewrite hashes. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Carries the removed values; unshared. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, and the critical path to a first S1 run. |
+| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/` and `.../2026-09-28-plainsight-selftest-wiring-review/` | The corrected crossings classing, three fact replies to the ecosystem research sessions, and the two reviews of `b378cd8`. |
 | The 2026-09-09 harvest and operator checklist | `Z-ISR/_session-artifacts/2026-09-09-plainsight-harvest-and-operator-checklist/` | The verified shopping list, the identity sequence, and the pending operator acts. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The compartmentalization invariants the ISOLATED environment inherits. |
 | Measured Sherlock review, clone and image | `../Sherlock/sherlock/CAPABILITIES.md`, `../Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
@@ -376,8 +375,9 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
 - The operator's order of work, decided 2026-09-08: Step 8 onward toward a first
   run; the voice pass is parked.
 - **The public repository is `origin`, and `main` is the only branch that goes
-  there.** A push is an operator-instructed act and follows a closeout. Commits
-  carry the GitHub no-reply address.
+  there.** A push is an operator-instructed act and follows a closeout, and
+  every step conclusion of its CI run is read afterwards. Commits carry the
+  GitHub no-reply address.
 - **Hashes in the worklog, its archive, and every changelog entry below the
   2026-09-07 rewrite entry are pre-rewrite.** That entry translates them.
 - The gates need PyYAML and jsonschema. `make preflight` runs fourteen
