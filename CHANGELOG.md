@@ -22,6 +22,29 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The authorization gate compares five things it used
+  to read and leave alone.**
+
+  **What changed.** The schema's record shape against SS-4's nine fields
+  (`AUTH_SCHEMA_RECORD_SHAPE_DRIFT`); SS-14 item 6's paths, not only its counts
+  (`AUTH_RATIFY_LIST_DRIFT`); the compiled criteria against the ones
+  `doctrine/SUBJECT_SELECTION.md` defines (`AUTH_CRITERION_NOT_COMPILED`); a
+  row's render against the sentence compiled for its own value (A-07); and every
+  decided row's assertion against its stamp state, not only the item 6 rows
+  (A-18). Five findings of the Step 8 adversarial review, decided under the
+  operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
+  the worklog and the handoff.
+
+  **What validation ran.** The authorization self-test, 47 breaks, six of them
+  new; `--fixtures` refusing exactly as before; all sixteen preflight commands
+  on the staged tree; both forms of `git diff --check`. The kernel gate exited
+  0.
+
+  **What did not change.** No policy, schema, corpus row, doctrine file or
+  stamp. Every change makes the gate stricter.
+
 - **2026-10-01, overnight. The Step 8 artifacts say what their tools do.**
 
   **What changed.** Seventeen findings of the Step 8 adversarial review:

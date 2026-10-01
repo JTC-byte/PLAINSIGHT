@@ -54,9 +54,11 @@ Every check guards a specific defect:
         naming the reason. A held row asserting less is honest; an unheld one is
         a gap wearing a fixture.
   A-07  A rendered consequence that is not the sentence the policy compiles for
-        that value. CLAUDE.md section 4 renders a state as its consequence, and a
-        fixture inventing its own sentence proves the gate against prose nobody
-        ratified.
+        the row's own value, with the item 6 refusal legal only on a REFUSED row
+        whose basis is that item. CLAUDE.md section 4 renders a state as its
+        consequence, and a fixture inventing its own sentence proves the gate
+        against prose nobody ratified. Until 2026-10-01 any compiled sentence
+        was accepted for any value.
   A-08  A selector-shaped value that is not a bracketed placeholder. SS-14 item 5
         keeps a natural person's selector out of every tracked file, and a
         synthetic value is still a value. This is the rule
@@ -71,7 +73,9 @@ Every check guards a specific defect:
         partial authorization rather than half-honouring it, and the schema sets
         `additionalProperties` false, so drift in either direction gives the
         corpus records key sets that differ from the schema's. --fixtures checks
-        key sets and the subject_class enum; it does not validate a record as a
+        key sets and the subject_class enum, and refuses the schema itself as
+        AUTH_SCHEMA_RECORD_SHAPE_DRIFT when its required list or properties are
+        not the nine fields or its record is open; it does not validate a record as a
         schema instance, and every record would fail that today on SAS-U1 and
         SA-U2.
   A-11  A record naming a subject class outside the authorizable enum. S5 is in
@@ -103,11 +107,15 @@ Every check guards a specific defect:
   A-17  A criterion the policy compiles that carries no row in the pin of
         record's per-criterion table, or whose file carries no dated ratifier
         row. A criterion with no row refuses, so the table is the mechanism
-        rather than an index of one.
+        rather than an index of one. Since 2026-10-01 the compiled list is also
+        reconciled with the criteria doctrine/SUBJECT_SELECTION.md defines, in
+        both directions, as AUTH_CRITERION_NOT_COMPILED.
   A-18  A row asserting the SS-14 item 6 refusal whose declared stamp state does
-        not actually produce it. This is the SS-5 lesson applied to the stamp
-        read: a fixture asserting a refusal the predicate does not reach proves
-        the assertion rather than the mechanism.
+        not actually produce it, and, since 2026-10-01, any other decided row
+        asserting a permit or a decision past step 1 under a stamp state item 6
+        refuses. This is the SS-5 lesson applied to the stamp read: a fixture
+        asserting what the predicate does not reach proves the assertion rather
+        than the mechanism.
   A-19  **The check Step 8's done-condition names.** A criterion absent from the
         stamp table, or an artifact with no dated row, must refuse rather than
         permit. The test constructs the absence rather than finding one, and it
@@ -116,8 +124,10 @@ Every check guards a specific defect:
         direction HY-2 adjudicates.
   A-20  The compiled SS-14 counts drifting: six NEVER items, eight
         ratify-before-collection items across nine paths, and four preflight
-        checks. An absolute prohibition whose content can change by editing a
-        list is not absolute.
+        checks; and, since 2026-10-01, the eight items' paths themselves, pinned
+        in RATIFY_ITEMS and refused as AUTH_RATIFY_LIST_DRIFT. An absolute
+        prohibition whose content can change by editing a list is not
+        absolute.
   A-21  An unratified entry that is not usable as a refusal: no question, no
         options, no statement of what it blocks, or a `refuses` value that is a
         bare token rather than a rendered consequence. An operator cannot act on
@@ -273,6 +283,24 @@ DISPOSITIONS_REFUSED = ("retain",)
 NEVER_ITEM_COUNT = 6
 RATIFY_ITEM_COUNT = 8
 RATIFY_PATH_COUNT = 9
+
+#: SS-14 item 6's list, item by item, as doctrine/SUBJECT_SELECTION.md enumerates
+#: it. Until 2026-10-01 only the counts above were pinned, so swapping item 8's
+#: path for one already stamped kept both counts and cleared the refusal.
+RATIFY_ITEMS = (
+    (1, ("doctrine/SUBJECT_SELECTION.md",)),
+    (2, ("doctrine/RETENTION.md",)),
+    (3, ("policy/subject-authorization.yaml", "schema/subject-authorization.schema.json")),
+    (4, ("policy/retention.yaml",)),
+    (5, ("ontology/selectors.yaml",)),
+    (6, ("spec/pse-semantics-contract.md",)),
+    (7, ("synthetic/CAST.md",)),
+    (8, ("runner/dispatch_allowlist.yaml",)),
+)
+
+#: A criterion definition in a doctrine file: the bolded id and a period.
+DEFINITION_RE = re.compile(r"^\*\*(SS-\d+)\.", re.M)
+SUBJECT_SELECTION = ROOT / "doctrine" / "SUBJECT_SELECTION.md"
 PREFLIGHT_CHECK_COUNT = 4
 
 #: SS-8. The evaluation order is six steps and the wire enum is 1 to 6.
@@ -785,6 +813,7 @@ def load() -> dict:
         "register": list(dict.fromkeys(REGISTER_NAME_RE.findall(register_block))),
         "gf_entries": set(GF_ENTRY_RE.findall(register_text)),
         "pin_text": _read(PIN),
+        "ss_defined": DEFINITION_RE.findall(_read(SUBJECT_SELECTION)),
     }
 
 
@@ -851,6 +880,30 @@ def check_corpus(model: dict) -> list[Finding]:
     schema_required = list(schema.get("required") or [])
     schema_closed = schema.get("additionalProperties") is False
     schema_classes = _seq(schema, "properties", "subject_class", "enum")
+
+    # A-10's artifact half. Until 2026-10-01 schema.required was read into a
+    # variable nothing compared, so SS-5's three fields could leave it unrefused.
+    shape = []
+    if set(schema_required) != set(RECORD_FIELDS):
+        shape.append(f"required lists {sorted(schema_required)}")
+    if set(schema_props) != set(RECORD_FIELDS):
+        shape.append(f"properties declares {sorted(schema_props)}")
+    if not schema_closed:
+        shape.append("additionalProperties is not false")
+    if shape:
+        f.append(
+            Finding(
+                "AUTH_SCHEMA_RECORD_SHAPE_DRIFT",
+                "schema/subject-authorization.schema.json",
+                "the schema's record shape is not SS-4's nine fields, closed: "
+                + "; ".join(shape)
+                + ". SS-4 refuses a partial authorization, and the schema's own "
+                "partial_is_refused block says so",
+                "restore the nine names to required and properties and set "
+                "additionalProperties false; or ratify an SS-4 amendment and move "
+                "RECORD_FIELDS in this tool in the same commit",
+            )
+        )
 
     entry_ids = {
         e.get("id")
@@ -1037,7 +1090,14 @@ def check_corpus(model: dict) -> list[Finding]:
                 )
 
         render = dec.get("render")
-        if render and _norm(render) not in legal_renders:
+        # The sentence compiled for this row's value, and the item 6 refusal only
+        # on a REFUSED row whose basis is that item. Until 2026-10-01 any compiled
+        # sentence was accepted for any value, so a REFUSED row could render that
+        # the run proceeds.
+        allowed = {_norm(consequences[dec.get("value")])} if consequences.get(dec.get("value")) else set()
+        if dec.get("value") == "REFUSED" and dec.get("basis") == "never_item":
+            allowed.add(_norm(never_refusal))
+        if render and _norm(render) not in allowed:
             f.append(
                 Finding(
                     "AUTH_RENDER_NOT_THE_COMPILED_SENTENCE",
@@ -1084,9 +1144,8 @@ def check_corpus(model: dict) -> list[Finding]:
                         "is that no record exists, set authorization null",
                     )
                 )
-            if schema_closed:
-                for field in sorted(fields - set(schema_props)):
-                    undeclared_fields.setdefault(field, []).append(name)
+            for field in sorted(fields - set(schema_props)):
+                undeclared_fields.setdefault(field, []).append(name)
             klass = record.get("subject_class")
             if klass in NOT_AUTHORIZABLE or (
                 klass is not None and schema_classes and klass not in schema_classes
@@ -1502,8 +1561,34 @@ def _stamp_findings(model: dict, pin: Pin) -> list[Finding]:
         )
         return out
 
-    for cid in _seq(model, "policy", "compiles_criteria"):
-        cid = str(cid)
+    compiled = [str(c) for c in _seq(model, "policy", "compiles_criteria")]
+    defined = set(model.get("ss_defined") or ())
+    for cid in sorted(defined - set(compiled), key=lambda c: int(c.split("-")[1])):
+        out.append(
+            Finding(
+                "AUTH_CRITERION_NOT_COMPILED",
+                f"policy/subject-authorization.yaml compiles_criteria > {cid}",
+                f"doctrine/SUBJECT_SELECTION.md defines {cid} and the policy does not list "
+                "it as compiled, so no check here asks whether it is stamped. Until "
+                "2026-10-01 nothing compared the list with doctrine, and dropping a "
+                "criterion from both the list and the pin passed",
+                f"list {cid} in compiles_criteria; or ratify the doctrine change that "
+                "removes it",
+            )
+        )
+    for cid in compiled:
+        if not CRITERION_RE.fullmatch(cid) or (defined and cid not in defined):
+            out.append(
+                Finding(
+                    "AUTH_CRITERION_NOT_COMPILED",
+                    f"policy/subject-authorization.yaml compiles_criteria > {cid}",
+                    f"{cid!r} is not a criterion doctrine/SUBJECT_SELECTION.md defines, so "
+                    "the stamp check would read a row that cannot exist",
+                    "correct the id; or remove it from compiles_criteria",
+                )
+            )
+
+    for cid in compiled:
         if not CRITERION_RE.fullmatch(cid):
             continue
         if cid not in pin.criteria:
@@ -1594,6 +1679,33 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
                     "account, until every artifact it names is stamped",
                     "assert the refusal the stamp state produces; or complete the row's "
                     "stamp state, which is a fixture edit rather than a permission",
+                )
+            )
+
+    # A-18's second pass. Until 2026-10-01 only rows naming never_item 6 were
+    # read, and a well-formed permit row carries no never_item, so a permit, or a
+    # decision past step 1, asserted under a stamp state item 6 refuses passed.
+    for row in model.get("rows") or []:
+        dec = _decision(row)
+        if dec.get("never_item") == 6 or dec.get("value") is None:
+            continue
+        state = _d(row, "given", "stamp_state", default=None)
+        if not state:
+            continue
+        step = dec.get("decided_at_step")
+        past_step_1 = isinstance(step, int) and 2 <= step <= 6
+        reasons = item_6_reasons(state, paths, criteria, pin)
+        if reasons and (dec.get("value") == "PERMITTED" or past_step_1):
+            out.append(
+                Finding(
+                    "AUTH_UNRATIFIED_CRITERION_PERMITTED",
+                    f"{row.get('_where', row.get('name'))} > given.stamp_state",
+                    f"the row asserts {dec.get('value')} at step {step} under a stamp state "
+                    f"that is short {len(reasons)} item(s), the first being {reasons[0]}. "
+                    "SS-14 item 6 refuses at step 1 under that state, so the gate never "
+                    "reaches the decision the row asserts",
+                    "complete the row's stamp state, which is a fixture edit rather than a "
+                    "permission; or assert the item 6 refusal the state produces",
                 )
             )
 
@@ -1710,6 +1822,27 @@ def _policy_shape_findings(model: dict) -> list[Finding]:
                 f"restore the {RATIFY_ITEM_COUNT} items and {RATIFY_PATH_COUNT} paths SS-14 "
                 "item 6 names; or, to change the list, ratify the amendment with a dated "
                 "stamp and move this tool's counts in that commit",
+            )
+        )
+    found = tuple(
+        (i.get("id"), tuple(str(x) for x in _seq(i, "paths"))) for i in items
+    )
+    if len(items) == RATIFY_ITEM_COUNT and len(paths) == RATIFY_PATH_COUNT and found != RATIFY_ITEMS:
+        drift = [
+            f"item {want[0]} names {list(got[1])} where SS-14 names {list(want[1])}"
+            for want, got in zip(RATIFY_ITEMS, found)
+            if want != got
+        ]
+        out.append(
+            Finding(
+                "AUTH_RATIFY_LIST_DRIFT",
+                "policy/subject-authorization.yaml ratify_before_collection",
+                "the list keeps SS-14 item 6's counts and changes what it names: "
+                + "; ".join(drift)
+                + ". Swapping a path for one already stamped clears the refusal it holds "
+                "while every count still matches",
+                "restore the paths SS-14 item 6 names; or ratify an SS-14 amendment with "
+                "a dated stamp and move RATIFY_ITEMS in this tool in that commit",
             )
         )
     if ratify.get("resolved_by_reference") is True:
@@ -2077,6 +2210,37 @@ def _mut_permit_under_a_missing_stamp(m: dict) -> None:
     )
 
 
+def _mut_schema_drops_required(m: dict) -> None:
+    m["schema"]["required"] = [x for x in m["schema"]["required"] if x != "expires_on"]
+
+
+def _mut_schema_opens(m: dict) -> None:
+    m["schema"]["additionalProperties"] = True
+
+
+def _mut_ratify_path_swapped(m: dict) -> None:
+    for item in m["policy"]["ratify_before_collection"]["items"]:
+        if item.get("id") == 8:
+            item["paths"] = ["spec/layer-model.yaml"]
+
+
+def _mut_criterion_dropped_from_compiled(m: dict) -> None:
+    m["policy"]["compiles_criteria"] = [c for c in m["policy"]["compiles_criteria"] if c != "SS-14"]
+
+
+def _mut_refused_rendered_as_permit(m: dict) -> None:
+    permit = next(
+        x.get("consequence")
+        for x in m["policy"]["gate"]["values"]["members"]
+        if x.get("value") == "PERMITTED"
+    )
+    _row(m, "never-item-6-artifacts-unstamped")["expect_decision"]["render"] = permit
+
+
+def _mut_permit_row_under_short_state(m: dict) -> None:
+    _row(m, "seed-permitted")["given"]["stamp_state"]["criteria_absent"] = ["SS-5"]
+
+
 def _mutations() -> list[tuple[str, object, str, bool, str]]:
     """(description, mutator(model) -> None, expected code, expect_only, why).
 
@@ -2369,6 +2533,19 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             True,
             "",
         ),
+        ("drop expires_on from the schema's required list", _mut_schema_drops_required, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
+        ("open the schema's record to undeclared fields", _mut_schema_opens, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
+        (
+            "swap item 8's path for another tracked path",
+            _mut_ratify_path_swapped,
+            "AUTH_RATIFY_LIST_DRIFT",
+            False,
+            "the swapped-in path is absent from every row's fixture stamp state, so "
+            "A-18's second pass also reports each decided row as short",
+        ),
+        ("drop SS-14 from the compiled criteria", _mut_criterion_dropped_from_compiled, "AUTH_CRITERION_NOT_COMPILED", True, ""),
+        ("render a permit on the item 6 refusal row", _mut_refused_rendered_as_permit, "AUTH_RENDER_NOT_THE_COMPILED_SENTENCE", True, ""),
+        ("assert a permit on a well-formed permit row under a short stamp state", _mut_permit_row_under_short_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", True, ""),
     ]
 
 
@@ -2693,6 +2870,9 @@ def main(argv: list[str]) -> int:
             "AUTH_UNRATIFIED_ARTIFACT_PERMITTED",
             "AUTH_STAMP_PREDICATE_ALWAYS_REFUSES",
             "AUTH_PIN_SHAPE_UNREADABLE",
+            # A-19 does not run on an empty compiled list, so this one keeps the
+            # green line from claiming a check that never executed.
+            "AUTH_CRITERION_NOT_COMPILED",
         }
         if stamp_codes & {f.code for f in findings}:
             print(

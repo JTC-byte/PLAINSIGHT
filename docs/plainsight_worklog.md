@@ -1680,3 +1680,32 @@ three are closed in part.
 staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Tenth: five holes in what the authorization gate checks, Class B, decided
+under the grant.** Each was a value `tools/validate_authorization.py` read and
+never compared, and each fix adds a refusal and removes none. The schema's
+required list sat in a variable nothing used, so dropping `expires_on` from it
+let a partial SS-4 record validate; the schema's record shape is now compared
+with SS-4's nine fields, closed, as `AUTH_SCHEMA_RECORD_SHAPE_DRIFT`. SS-14 item
+6's list was pinned by count alone, so swapping item 8's absent allowlist for a
+tracked path kept both counts and cleared item 8; the eight items' paths are now
+pinned in `RATIFY_ITEMS`, as `AUTH_RATIFY_LIST_DRIFT`. The compiled criteria were
+never compared with doctrine, so dropping SS-14 from the list and its row from
+the pin passed; the list is now reconciled with the SS ids
+`doctrine/SUBJECT_SELECTION.md` defines, in both directions, as
+`AUTH_CRITERION_NOT_COMPILED`, which also keeps the "check Step 8 names is green"
+line from printing when A-19 did not run. A-07 accepted any compiled sentence for
+any value, so a REFUSED row could render that the run proceeds; it now accepts
+only the sentence compiled for the row's own value. A-18 read only rows naming
+item 6, and a well-formed permit row names none, so a permit asserted under a
+stamp state item 6 refuses passed; a second pass now reads every decided row.
+The self-test gains six breaks and refuses all 47, five of them with a stated
+cascade. Each new check was confirmed not to fire on the real corpus before it
+was written: every decided row but the two item 6 rows carries a complete
+fixture stamp state. With these, 46 of the review's 88 findings are closed and
+three are closed in part.
+
+**Battery for the tenth change.** All sixteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

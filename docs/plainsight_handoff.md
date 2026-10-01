@@ -11,12 +11,12 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file corrects 17
-statements in the Step 8 artifacts that the adversarial review found false when
-the tools run, on top of `7c3bb5c`, under the operator's overnight grant of
-2026-09-30 23:28. `7c3bb5c` and `722b367` closed robustness findings and the
-last ratification blocker, `c552d13` gave the gates one reader of the pin of
-record, and `9fb75c8` turned the kernel gate and CI green.
+**Date:** 2026-10-01, overnight. The commit that carries this file closes five
+holes in what the authorization gate checks, which the Step 8 adversarial review
+found, on top of `0cda873`, under the operator's overnight grant of 2026-09-30
+23:28. The commits before it that night gave the gates one reader of the pin of
+record, closed all three ratification blockers, and turned the kernel gate and
+CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -46,31 +46,23 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** The Step 8 artifacts described their own tools as
-they stood before Step 8 finished. The shred fixture called its validator the
-Wave 0 stub, the gate README said nothing read it and nothing enforced its
-contract, the retention policy listed its aggregator entry as PENDING and its
-repo scan as checking nothing, and three corpus rows named an entry, GF-U6, that
-does not exist. The schema and the authorization tool said `--fixtures`
-validates records as schema instances, which it does not. The policy's N0 and
-L0 definitions had a comma where doctrine has a colon, which read as a fifth
-member. Each statement now says what the tool does. No check, value, row
-assertion or refusal changed, and each gate refuses exactly as before.
+**What changed and why.** `tools/validate_authorization.py` read five things
+it never compared. The schema's required list could drop an SS-5 field, SS-14
+item 6's paths could be swapped for stamped ones while the counts held, the
+compiled criteria could lose one along with its pin row, a REFUSED row could
+render the permit's sentence, and a well-formed permit row could assert PERMITTED
+under a stamp state item 6 refuses. Each now refuses, under three new codes and
+two existing ones, and the self-test gains six breaks. No current outcome
+changed: `--fixtures` refuses exactly as before.
 
-**Which surfaces moved.** `conformance/gate/README.md` and three row
-descriptions in `conformance/gate/decisions.jsonl`;
-`conformance/retention/shred-roundtrip.yaml`; `policy/retention.yaml`;
-`policy/subject-authorization.yaml`; two descriptions in
-`schema/subject-authorization.schema.json`; docstrings and help text in the
-authorization, retention and cast validators; `CHANGELOG.md`; this file; and
-the worklog.
+**Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
+`CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed and both forms of
-`git diff --check` were clean. Every edited gate refused exactly what it
-refused before, and the parsed N0 and L0 definitions equal doctrine's. The
-kernel gate exited 0: 16 passed, 3 unratified and refusing, 2 stubbed, 5
-pending.
+before the commit. All sixteen preflight commands passed, the authorization
+self-test with 47 breaks refused, and both forms of `git diff --check` were
+clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
 pull request.
@@ -325,7 +317,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Four commits on 2026-10-01 closed 39 of them and part of three
+mechanism. Five commits on 2026-10-01 closed 46 of them and part of three
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each
