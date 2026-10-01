@@ -1024,6 +1024,45 @@ def check_policy(ctx: dict) -> list[Finding]:
         )
     )
 
+    # R-10. RT-11's halt, which nothing graded until 2026-10-01. The Step 8
+    # adversarial review found the compiled block carried a permitted override
+    # the pin of record's RT-11 row says does not exist, and no check read the
+    # block at all, so it could have been made per-case or cleared on a ledger
+    # entry without a refusal.
+    halt = dig(pol, "halt")
+    drift: list[str] = []
+    if not isinstance(halt, dict):
+        drift.append("the halt block is absent")
+    else:
+        if halt.get("scope") != "system_wide" or halt.get("per_case") is not False:
+            drift.append("the halt is not system-wide")
+        if "verify_shred" not in str(halt.get("clears_when", "")) or "five" not in str(halt.get("clears_when", "")):
+            drift.append("the halt does not clear only on verify_shred passing all five RT-9 checks")
+        if "dispatch" not in str(halt.get("blocks", "")):
+            drift.append("the halt does not block connector dispatch")
+        if not (isinstance(halt.get("override"), dict) and set(halt["override"]) == {"unratified"}):
+            drift.append("halt.override is compiled as a value rather than deferred to an unratified entry")
+    for act in as_list(dig(pol, "ledger.additional_recorded_acts")):
+        if isinstance(act, dict) and act.get("name") == "halt_override" and "unratified" not in act:
+            drift.append("the ledger records a halt override as a permitted act")
+    if drift:
+        out.append(
+            Finding(
+                "RETENTION_POLICY_HALT_DRIFT",
+                f"{POLICY_REL} :: retention.halt",
+                "RT-11's halt is compiled wider than the pin of record allows: "
+                + "; ".join(drift)
+                + ". The pin's RT-11 row reads 'Cleared only by a passing "
+                "verify_shred, logged. No override', and a retention mechanism "
+                "that can fail without stopping collection is the failure RT-11 "
+                "exists to prevent",
+                "restore the halt as system-wide, blocking connector dispatch "
+                "and clearing only on a passing verify_shred; or keep the "
+                "override deferred to its unratified entry until the operator "
+                "decides it in doctrine/DOCTRINE_STATUS.md",
+            )
+        )
+
     # R-09. The designed refusal, and the check that clears when it is stamped.
     status = ctx["status"]
     for criterion in as_list(dig(pol, "ratification.criteria_compiled_here")):
@@ -1798,6 +1837,19 @@ def _mutations():
             "| 2026-09-11 | unstamped | operator |",
         )
 
+    def let_the_override_lift_the_halt(ctx):
+        ctx["policy"]["retention"]["halt"]["override"] = {
+            "permitted_when": "the shred genuinely cannot be completed",
+            "lifts_dispatch_block": True,
+        }
+
+    def make_the_halt_per_case(ctx):
+        ctx["policy"]["retention"]["halt"]["per_case"] = True
+        ctx["policy"]["retention"]["halt"]["clears_when"] = "a ledger entry is written"
+
+    def delete_the_halt(ctx):
+        del ctx["policy"]["retention"]["halt"]
+
     def withdraw_the_retention_range_row(ctx):
         ctx["status"] = re.sub(
             r"(?m)^\| RT-1 to RT-18, all criteria[^\n]*\n", "", ctx["status"], count=1
@@ -1873,6 +1925,9 @@ def _mutations():
         ("stamp the policy in the pin of record", "policy", stamp_the_policy, "-RETENTION_POLICY_UNRATIFIED", True),
         ("stamp one policy entry in house format", "policy", stamp_the_policy_by_an_entry_row, "=RETENTION_POLICY_UNRATIFIED", True),
         ("withdraw doctrine/RETENTION.md's range row", "policy", withdraw_the_retention_range_row, "RETENTION_CRITERION_UNSTAMPED", True),
+        ("let a ledger override lift the RT-11 halt", "policy", let_the_override_lift_the_halt, "RETENTION_POLICY_HALT_DRIFT", False),
+        ("make the RT-11 halt per-case and clear it on a ledger entry", "policy", make_the_halt_per_case, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("delete the RT-11 halt", "policy", delete_the_halt, "RETENTION_POLICY_HALT_DRIFT", False),
         ("rename the fixture wrapper key", "roundtrip", rename_the_fixture_wrapper, "SHRED_ROUNDTRIP_WRAPPER_KEY", True),
         ("count one fixture check twice", "roundtrip", count_one_fixture_check_twice, "SHRED_ROUNDTRIP_CHECK_SET", False, "renumbering check 4 to 1 replaces check 1, whose passing condition is the decrypt failing on the key, so the false-pass guard fires with the set check"),
         ("let fixture check 1 pass on a not-found", "roundtrip", let_fixture_check_one_pass_on_not_found, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
@@ -2032,6 +2087,21 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--quiet", action="store_true", help="Print only on failure.")
     args = ap.parse_args(argv)
 
+    # One call grades one thing, with one exception: SS-14 item 6's preflight
+    # line names --policy --shred-roundtrip together, and both run. Until
+    # 2026-10-01 that line ran the round trip alone and dropped --policy, so a
+    # drifted or unstamped policy passed the preflight it names, and every other
+    # combination dropped a mode the same way. A combination now refuses.
+    modes = [m for m in ("policy", "shred_roundtrip", "repo_scan", "self_test", "finding", "questions") if getattr(args, m)]
+    if len(modes) > 1 and set(modes) != {"policy", "shred_roundtrip"}:
+        ap.error(
+            "REFUSED RETENTION_MODES_COMBINED: "
+            + ", ".join("--" + m.replace("_", "-") for m in modes)
+            + " grade different things, and a combined call ran one and dropped the rest "
+            "until 2026-10-01. moves: run each mode on its own; only --policy "
+            "--shred-roundtrip combine, and that call runs both"
+        )
+
     if args.questions:
         print(open_questions())
         return 0
@@ -2041,6 +2111,7 @@ def main(argv: list[str]) -> int:
             ap.error("--finding needs --case, because the selector set is per case")
         return check_finding(args.finding, args.case)
 
+    runs: list = []
     try:
         if args.repo_scan:
             ctx = {"registry": load_registry(), "codes": declared_codes()}
@@ -2052,6 +2123,10 @@ def main(argv: list[str]) -> int:
             ctx = build_context()
             findings, report = check_roundtrip(ctx), None
             gate = GATE_ROUNDTRIP
+            if args.policy:
+                policy_findings = check_policy(ctx)
+                runs.append((GATE_POLICY, policy_findings))
+                findings = policy_findings + findings
         elif args.self_test:
             return self_test(build_context())
         else:
@@ -2064,9 +2139,11 @@ def main(argv: list[str]) -> int:
 
     if gate_log:
         try:
-            gate_log.record_run(gate, "refuse" if findings else "pass", count=len(findings))
-            for fnd in findings:
-                gate_log.record_finding(gate, code=fnd.code, where=fnd.where)
+            own = [f for f in findings if all(f is not g for _, fs in runs for g in fs)]
+            for name, fs in runs + [(gate, own)]:
+                gate_log.record_run(name, "refuse" if fs else "pass", count=len(fs))
+                for fnd in fs:
+                    gate_log.record_finding(name, code=fnd.code, where=fnd.where)
         except Exception:
             pass
 

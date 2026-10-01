@@ -717,8 +717,7 @@ retention:
         written_as: the case's current state
       - name: halt_override
         cites: doctrine/RETENTION.md RT-11
-        fields: [case, author, date, reason]
-        rendered_until_resolved: true
+        unratified: U-17
       - name: freeze
         cites: doctrine/RETENTION.md RT-17
         fields: [frozen_state, freeze_expires_on]
@@ -767,20 +766,13 @@ retention:
     clearing_fields: [author, timestamp, receipt_hash]
     clearing_author_authority:
       unratified: U-03
+    # Compiled as a permitted override until 2026-10-01, when the Step 8
+    # adversarial review found the pin of record's RT-11 row reads "No override"
+    # while RT-11's body describes one, and the compilation had picked the body
+    # without recording the conflict. It refuses now, as U-17, until the
+    # operator decides which text governs.
     override:
-      permitted_when: the shred genuinely cannot be completed
-      recorded_in: doctrine/RETENTION_LEDGER.md
-      fields: [case, author, date, reason]
-      rendered_until_resolved: true
-      recorded_in_doctrine_status: false
-      why: >
-        A halt with no documented way out is a weaker control rather than a
-        stronger one, because this program's ladder terminates in one person and
-        SS-15 states the consequence: a control whose bypass is undocumented gets
-        bypassed silently, and a control whose bypass is a dated entry gets
-        bypassed visibly. doctrine/DOCTRINE_STATUS.md is the ratification pin for
-        doctrine items, and a case-level operational override entered there would
-        be the lane escape CLAUDE.md section 2 warns about.
+      unratified: U-17
 
   # -------------------------------------------------------------------------
   # RT-12. HEARTBEATS
@@ -1615,3 +1607,40 @@ retention:
             where: policy/retention.yaml retention.unratified U-16
             rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
             moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the mapping here; or refuse the second renewal until the escalation has somewhere to render
+
+      - id: U-17
+        change_class: F
+        referenced_by: [halt.override, ledger.additional_recorded_acts.halt_override]
+        question: >
+          Does a ledger override lift RT-11's system-wide block on connector
+          dispatch, or does it only render while the halt stands until
+          verify_shred passes?
+        blocks: >
+          Connector dispatch while any SHRED_FAILED is open, under every option.
+          The question is only whether an override is a way out of the halt.
+        detail: >
+          The pin of record's RT-11 row reads "Cleared only by a passing
+          verify_shred, logged. No override", and mechanisms read the pin rather
+          than the document. RT-11's body describes an override entry in the
+          ledger for a shred that genuinely cannot be completed. This file
+          compiled the body's override as permitted until 2026-10-01 and never
+          said whether it lifts the dispatch block, so an implementer reading
+          permitted_when would have built the reading in which collection resumes
+          on a shred mechanism known to be broken.
+        legal_options:
+          - The override renders and the halt stands until verify_shred passes all
+            five RT-9 checks, which is the pin row's reading and needs RT-11's body
+            amended, because a render-only entry is not the documented way out the
+            body argues for.
+          - The override lifts the halt as a dated Class F ledger entry, which
+            needs the pin row's "No override" corrected.
+          - The pin row is corrected to match the body as written, and the
+            override's effect on dispatch is stated in the same act.
+        sources: [doctrine/RETENTION.md RT-11, doctrine/DOCTRINE_STATUS.md RT-11 row, doctrine/SUBJECT_SELECTION.md SS-15]
+        refuses_as: |
+          CONNECTOR DISPATCH REMAINS BLOCKED. policy/retention.yaml does not say
+          whether a ledger override lifts an RT-11 halt, and the pin of record's
+          RT-11 row says No override.
+            where: policy/retention.yaml retention.unratified U-17
+            rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace both mappings here; or clear the halt the only way the pin allows, by a passing verify_shred

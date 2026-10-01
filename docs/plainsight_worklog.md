@@ -1586,3 +1586,32 @@ the operator's.
 staged tree, the eight self-tests among them, and both forms of
 `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
 checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Seventh: the third ratification blocker and two dropped modes, Class B,
+decided under the grant.** `policy/retention.yaml` compiled RT-11's halt
+override as permitted, with a `permitted_when`, beside a `clears_when` that names
+only a passing verify_shred. The pin of record's RT-11 row reads "Cleared only by
+a passing verify_shred, logged. No override", and RT-11's body describes an
+override entry, so the compilation had picked the body without recording the
+conflict and never said whether an override lifts the dispatch block. Both
+copies, `halt.override` and the ledger's `halt_override` act, now defer to
+U-17, a class F entry whose three legal options each need a doctrine or pin
+amendment and whose refusal renders "CONNECTOR DISPATCH REMAINS BLOCKED". Nothing
+read the halt block before, so `tools/validate_retention.py` grades it as R-10,
+`RETENTION_POLICY_HALT_DRIFT`, and its self-test gains three breaks: an override
+that lifts the halt, a per-case halt cleared on a ledger entry, and a deleted
+halt. The decision is the operator's, and U-17 joins the open entries.
+
+The same commit fixes two defects that dropped a mode. SS-14 item 6's preflight
+line, `tools/validate_retention.py --policy --shred-roundtrip`, ran the round
+trip and dropped `--policy`, so a drifted or unstamped policy passed the
+preflight it names. That pair now runs both and records each under its own
+name. `tools/validate_authorization.py --fixtures --self-test` ran the
+self-test and dropped the fixtures. Every other combination of modes in either
+tool now refuses with exit 2, except the two deferred authorization modes,
+which combine as before. With these, 17 of the review's 88 findings are closed.
+
+**Battery for the seventh change.** All sixteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

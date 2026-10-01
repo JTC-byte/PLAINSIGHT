@@ -2596,6 +2596,19 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--quiet", action="store_true", help="Print only on failure.")
     args = ap.parse_args(argv)
 
+    # One call grades one thing, except the two deferred modes, which combine.
+    # Until 2026-10-01 --fixtures --self-test ran the self-test and dropped the
+    # fixtures, and a deferred mode beside --fixtures was dropped the same way.
+    modes = [m for m in ("fixtures", "self_test", "dispatch_paths", "disjointness") if getattr(args, m)]
+    if len(modes) > 1 and set(modes) != {"dispatch_paths", "disjointness"}:
+        ap.error(
+            "REFUSED AUTH_MODES_COMBINED: "
+            + ", ".join("--" + m.replace("_", "-") for m in modes)
+            + " grade different things, and a combined call ran one and dropped the rest "
+            "until 2026-10-01. moves: run each mode on its own; only --dispatch-paths "
+            "--disjointness combine"
+        )
+
     if args.dispatch_paths and not (args.fixtures or args.self_test):
         rc = dispatch_paths()
         if args.disjointness:

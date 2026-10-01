@@ -22,6 +22,30 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. RT-11's halt override refuses as U-17, the halt is
+  graded, and no mode is dropped from a combined call.**
+
+  **What changed.** `policy/retention.yaml` compiled an RT-11 halt override as
+  permitted against the pin of record's RT-11 row, which reads "No override".
+  `halt.override` and the ledger's `halt_override` act now defer to U-17, a
+  class F entry the operator decides, and `tools/validate_retention.py` grades
+  the halt as R-10 with three new self-test breaks. `--policy
+  --shred-roundtrip` runs both modes, where it used to drop `--policy`, and
+  every other combination of modes in the retention and authorization tools
+  refuses rather than dropping one. Decided under the operator's overnight grant
+  of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `policy/retention.yaml`, `tools/validate_retention.py`,
+  `tools/validate_authorization.py`, the worklog and the handoff.
+
+  **What validation ran.** The retention self-test, 39 breaks; every mode
+  combination by hand; all sixteen preflight commands on the staged tree; both
+  forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No doctrine file, stamp, schema or corpus. The
+  question U-17 records is not decided: every option needs a doctrine or pin
+  amendment, which is the operator's.
+
 - **2026-10-01, overnight. One reader of the pin of record for every gate, and
   a self-test for it and for the doctrine gate.**
 

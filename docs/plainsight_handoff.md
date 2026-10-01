@@ -11,11 +11,11 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file gives the
-doctrine, authorization and retention gates one reader of the pin of record, on
-top of `f894db6`, under the operator's overnight grant of 2026-09-30 23:28. It
-closes the 13 findings of the Step 8 adversarial review that concern how a stamp
-is read. `9fb75c8` turned the kernel gate and CI green, and they have stayed so.
+**Date:** 2026-10-01, overnight. The commit that carries this file closes the
+last of the three ratification blockers the Step 8 adversarial review found, and
+two defects that dropped a mode, on top of `c552d13`, under the operator's
+overnight grant of 2026-09-30 23:28. `c552d13` gave the gates one reader of the
+pin of record, and `9fb75c8` turned the kernel gate and CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -45,27 +45,26 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** The Step 8 adversarial review found that the three
-gates reading `doctrine/DOCTRINE_STATUS.md` read it three ways, and that one
-dated row naming a path stamped the whole file, so the first entry the operator
-stamped in a policy would have stamped the policy. `tools/pin_of_record.py` is
-now the one reader, taking the stricter reading on every axis, so it can turn a
-permit into a refusal and never the reverse. No current outcome changed: the
-same artifacts refuse and the same doctrine files bind. `tools/validate_doctrine.py`
-reads criterion rows from the per-criterion table, which closes the SS-1 blind
-spot, and gains its first self-test. Both self-tests join all four paths.
+**What changed and why.** `policy/retention.yaml` compiled an override of
+RT-11's halt as permitted, while the pin of record's RT-11 row reads "No
+override", and no check read the halt block at all. The override now defers to
+U-17, a new class F entry that refuses until the operator decides which text
+governs, and `tools/validate_retention.py` grades the halt as R-10: system-wide,
+blocking dispatch, clearing only on a passing verify_shred. The preflight line
+`--policy --shred-roundtrip` ran the round trip and dropped `--policy`, and
+authorization's `--fixtures --self-test` dropped the fixtures. The pair now runs
+both, and any other combination of modes refuses.
 
-**Which surfaces moved.** `tools/pin_of_record.py`, new; the doctrine,
-authorization, retention and conformance validators; the hook, the Makefile and
-CI; `AGENTS.md` section 5; `CONFORMANCE.md` section 4; `CHANGELOG.md`; this
-file; and the worklog.
+**Which surfaces moved.** `policy/retention.yaml`'s halt and ledger blocks and
+its U-17 entry; `tools/validate_retention.py` and its self-test;
+`tools/validate_authorization.py`'s mode handling; `CHANGELOG.md`; this file;
+and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the eight self-tests
-among them, and both forms of `git diff --check` were clean. Each of the
-reader's rules was deleted in a scratch copy and its self-test failed every
-time. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2 stubbed,
-5 pending.
+before the commit. All sixteen preflight commands passed, the retention
+self-test with 39 breaks refused, and both forms of `git diff --check` were
+clean. Every mode combination was exercised by hand. The kernel gate exited 0:
+16 passed, 3 unratified and refusing, 2 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
 pull request.
@@ -73,7 +72,7 @@ pull request.
 **What remains open or deferred.** Section 3 holds the operator's 29 decisions,
 patch 4b with its four Class F items, and the cast seal. Section 4 holds every
 stamp, the 2026-09-28 follow-ups and the known defects; section 5 holds what the
-Step 8 review left open, one ratification blocker among it.
+Step 8 review left open.
 
 ---
 
@@ -163,6 +162,9 @@ third copies. 22 of the 51 are grounded in the stack's own documentation and an
 agent can settle them by citation; 29 are the operator's, and 25 of those 29
 arrive with at least one option foreclosed. The register is at
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`.
+The Step 8 review added one more, U-17 in `policy/retention.yaml`: whether a
+ledger override lifts RT-11's halt, which the pin and RT-11's body answer
+differently.
 
 **How the gates read a stamp, since 2026-10-01.** One reader,
 `tools/pin_of_record.py`, decides for the doctrine, authorization and retention
@@ -318,9 +320,10 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. The pin-of-record commit fixed 13 of them, two of the blockers among
-them. The third blocker is open: `policy/retention.yaml` compiles an RT-11
-override that the pin's RT-11 row says does not exist. The record, with each
+mechanism. Two commits on 2026-10-01 fixed 17 of them, all three blockers
+among them: the pin-of-record reader, and the RT-11 override, which now refuses
+as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
+record, with each
 finding's status, is
 `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/REVIEW.md`, and the
 claims, commands and outputs are beside it. The completeness critic has not run.
