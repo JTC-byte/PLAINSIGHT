@@ -1436,3 +1436,85 @@ staged tree, the ontology self-test refusing the edited break by
 `ONT_VALUE_IN_FILE` alone, and both forms of `git diff --check` were clean. The
 kernel gate exited 0, with 14 implemented checks passing, 3 unratified and
 refusing, 2 stubbed and 5 pending, the first exit 0 since `0e0c840`.
+
+**Fourth: the telemetry review, Class A for the record and Class B for the
+recording fix.** The first review under `doctrine/HYGIENE.md` HY-2 was overdue
+since 2026-09-11. The snapshot was taken at 2026-10-01T03:45:10Z over 4,078
+records, 2026-08-27T07:43:47Z to 2026-10-01T03:41:36Z, by a read-only script
+kept with the overnight records outside this repository, because the log has no
+field naming the checkout or the caller and the segments can only be cut by
+position. The segments: records 1 to 3,188 before 2026-09-03, when a refusing
+validator wrote one refuse record per finding; records 1 to 3,188 from that date;
+records 3,189 to 3,939, the 751 rows appended from the removed worktree on
+2026-09-30, many of them the self-test wiring's deliberate breaks; and the
+records written since. Audit runs made to verify claims cannot be filtered out
+and are in every segment.
+
+The adjudication, gate by gate, against HY-2's four rows:
+
+- `authorization`, 233 runs and 147 refusals over the window, 82 per cent on
+  main before the worktree and 30 per cent in it. The rate means nothing since
+  2026-09-28: the self-test, which passes, logs under the same name as
+  `--fixtures`, which refuses by design, and the self-test now runs on every
+  path. This commit gives the self-test its own name. The designed refusal is
+  HY-2's second row, accepted with its reason stated: the artifacts carry no
+  dated row, the kernel gate asserts the refusal, and a stamp clears it. Kept.
+- `retention-policy` and `retention-shred-roundtrip`, 108 and 102 runs, every
+  one refused, for the same stated reason. Kept.
+- `retention-repo-scan`, 146 runs and 101 refusals, every refusal one of the two
+  values replaced in the first change. The working-tree scan and the hook's
+  staged scan shared the name, which is why 45 runs passed. This commit gives
+  the staged scan its own name. Kept.
+- `cast`, 390 runs, and `ontology`, 279 runs, with no refusal. HY-2's first row
+  asks for a deliberate break. Both self-tests break the artifact on every hook,
+  preflight, kernel-gate and CI run since 2026-09-28 and assert each break is
+  refused, and both passed tonight. Kept.
+- `doctrine`, 348 runs and one refusal, on 2026-08-27, and no self-test, so HY-2's
+  first row applies in full. Nine deliberate breaks were made in a scratch copy.
+  Six refused: a duplicate criterion, an emptied rank-1 file, a stripped
+  conclusion marker, a dangling criterion reference, a deleted status row for
+  RT-19, and a status row for an undefined criterion. Three did not, for two
+  reasons. Deleting
+  SS-1's per-criterion row passes, because the check reads every table row that
+  opens with a criterion id, and the Ratified row "SS-1 to SS-21, all criteria"
+  stands in for it. For SS-1 the check cannot fire, which HY-2 calls no check.
+  Deleting that Ratified row, or blanking its date, also passes, because nothing reconciles
+  a doctrine file's inline conclusion marker with the Ratified table. The
+  mechanisms downstream fail closed on that one, since the authorization gate
+  reads the Ratified row. The first is a defect and the shared pin-of-record
+  reader closes it; the second is recorded as open.
+- `hygiene`, 406 runs and 40 refusals, led by `HYGIENE_TOOL_NOT_IN_ANY_GATE` at
+  19 and `HYGIENE_HANDOFF_OVER_CAP` at 18. Each was a real catch answered by a
+  fix, and neither code dominates. Kept.
+- `layer-model`, 22 refuse records, 17 of them `LM_CODE_ENTRY_KEYS`. HY-2's third
+  row would read that as two rules. It is one run: all 17 carry the timestamp
+  2026-09-09T01:32:43Z and are the 17 truncated `fires_when` sentences the Step 7
+  review found, counted once per finding because this gate never moved to the
+  run-record convention of 2026-09-03. Read per run, these are rare catches.
+  Kept.
+
+**The recording fix.** `tools/validate_layer_model.py` and
+`tools/validate_cast.py` still wrote one refuse record per finding and no run
+record, so their refusal counts were per finding against HY-1. Both now write one
+run record and one detail record per finding, as the other five validators do.
+The authorization and cast self-tests record as `authorization-self-test` and
+`cast-self-test`, and the staged repo scan as `retention-repo-scan-staged`, so
+each name carries one mode with one designed outcome. Records already written
+are left as they are, because rewriting a telemetry history to look consistent
+is what design gate 6 forbids. No check, threshold or refusal changed.
+
+**Records this session added to the log by mistake.** While exercising the
+recording fix, a scratch-copy extraction failed and the test script that
+followed it ran in the main checkout. It wrote 21 records between
+2026-10-01T03:48:18Z and 03:48:20Z, records 4,079 to 4,099, including one
+deliberate layer-model break that refused with four findings. It also rewrote
+`spec/layer-model.yaml` with CRLF line endings and identical content, which
+`git checkout` restored byte for byte before anything was staged. The records
+stay in the log and a review excludes them by that window.
+
+HY-2's basis stamp falls due at this review and stays the operator's.
+
+**Battery for the fourth change.** All fourteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 14 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

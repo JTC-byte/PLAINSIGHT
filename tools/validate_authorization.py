@@ -2580,7 +2580,7 @@ def _telemetry_where(where: str) -> str:
     return location[:200]
 
 
-def _telemetry(outcome: str, findings: list[Finding]) -> None:
+def _telemetry(outcome: str, findings: list[Finding], gate: str = GATE) -> None:
     if gate_log is None:
         return
     try:
@@ -2588,9 +2588,9 @@ def _telemetry(outcome: str, findings: list[Finding]) -> None:
         # per gate run, and one line per finding inflates both the run count and
         # the refusal rate HY-2 adjudicates against. The `where` is a path with
         # an optional line, never the string that matched.
-        gate_log.record_run(GATE, outcome, count=len(findings))
+        gate_log.record_run(gate, outcome, count=len(findings))
         for f in findings:
-            gate_log.record_finding(GATE, code=f.code, where=_telemetry_where(f.where))
+            gate_log.record_finding(gate, code=f.code, where=_telemetry_where(f.where))
     except Exception:
         pass
 
@@ -2640,7 +2640,9 @@ def main(argv: list[str]) -> int:
 
     if args.self_test:
         rc = self_test(model, quiet=args.quiet)
-        _telemetry("pass" if rc == 0 else "refuse", [])
+        # Under its own name since 2026-09-30: logged as `authorization`, the
+        # self-test's passes diluted the designed refusal rate of --fixtures.
+        _telemetry("pass" if rc == 0 else "refuse", [], gate=f"{GATE}-self-test")
         return rc
 
     findings = check_corpus(model)

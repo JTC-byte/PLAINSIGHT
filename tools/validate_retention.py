@@ -2014,7 +2014,9 @@ def main(argv: list[str]) -> int:
         if args.repo_scan:
             ctx = {"registry": load_registry(), "codes": declared_codes()}
             findings, report = check_repo_scan(ctx, args.staged)
-            gate = GATE_SCAN
+            # The index and the working tree hold different files, so the two
+            # modes record under different names and each rate means one thing.
+            gate = f"{GATE_SCAN}-staged" if args.staged else GATE_SCAN
         elif args.shred_roundtrip:
             ctx = build_context()
             findings, report = check_roundtrip(ctx), None

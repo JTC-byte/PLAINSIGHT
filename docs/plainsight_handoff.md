@@ -11,10 +11,11 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-09-30, overnight. The commit that carries this file replaces the
-two values the repo scan refused, on top of `de9e754`, under the operator's
-overnight grant of 2026-09-30 23:28. The kernel gate exits 0 on its staged tree,
-the first time since `0e0c840`.
+**Date:** 2026-10-01, overnight. The commit that carries this file records the
+first gate-telemetry review and fixes how four validators record their runs, on
+top of `9fb75c8`, under the operator's overnight grant of 2026-09-30 23:28.
+`9fb75c8` replaced the two values the repo scan refused, and the kernel gate and
+CI have run green since.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -45,26 +46,24 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Two decisions taken under the operator's overnight
-grant of 2026-09-30 23:28, relayed by the parent-folder session, each recorded
-as revertible. First, the two filled handle selectors the repo scan refused are
-replaced with placeholders in the registry's form, the scan's first legal move,
-rather than exempted, which would narrow an RT-15 scan and is the operator's
-reach decision. The kernel gate stops failing on them. Second, the two doctrine
-citations of `../ZISR COP/` keep the old path as dated measurements, as the
-`../zisr-recon/` ones do, and `README.md` translates it. The cast seal was not
-taken: it needs the operator's personas, SIMs and six decisions.
+**What changed and why.** The first review of the gate telemetry under
+`doctrine/HYGIENE.md` HY-2, overdue since 2026-09-11, ran under the operator's
+overnight grant, and the worklog's overnight entry records its outcome per HY-4.
+It kept every gate and found three things this commit fixes in how runs are
+recorded: `tools/validate_layer_model.py` and `tools/validate_cast.py` wrote one
+refuse record per finding against HY-1, and the authorization and cast
+self-tests and the staged repo scan shared a name with a mode whose designed
+outcome differs. No check, threshold or refusal changed. It also found two
+blind spots in the doctrine gate, which section 4 lists.
 
-**Which surfaces moved.** `docs/PLAINSIGHT-FOUNDATION.md` line 87,
-`tools/validate_ontology.py`'s `value_in_a_form` fixture, `README.md`,
-`AGENTS.md` section 5, `CONFORMANCE.md` section 4, `CHANGELOG.md`, this file,
-and the worklog, with its oldest live entry moved to the archive unedited.
+**Which surfaces moved.** Four validators' telemetry calls, `CHANGELOG.md`, this
+file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All fourteen preflight commands passed, the ontology
-self-test refusing the edited fixture by its expected code alone, and both forms
-of `git diff --check` were clean. The kernel gate exited 0: 14 passed, 3
-unratified and refusing, 2 stubbed, 5 pending.
+before the commit, and every changed recording path was exercised and its
+records read. All fourteen preflight commands passed and both forms of
+`git diff --check` were clean. The kernel gate exited 0: 14 passed, 3 unratified
+and refusing, 2 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
 pull request.
@@ -236,6 +235,13 @@ about 1,720 non-recurring and 205 a month.
   `doctrine/CREDENTIAL_LIFECYCLE.md:138` cite `../ZISR COP/`, now `../zisr-cop/`.
   Both are dated measurements, so they keep the old path as the `../zisr-recon/`
   ones do, and `README.md` translates it. The mechanism is open.
+- **The doctrine gate has two blind spots, found by the telemetry review's
+  deliberate breaks.** `STATUS_ROW_RE` in `tools/validate_doctrine.py` reads
+  every table row that opens with a criterion id, so the Ratified row "SS-1 to
+  SS-21, all criteria" stands in for SS-1's per-criterion row and deleting that
+  row passes. Nothing reconciles a doctrine file's inline conclusion marker with
+  the Ratified table, so deleting or undating that row passes too; the gates
+  downstream fail closed on it. `tools/validate_doctrine.py` has no self-test.
 - **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
   `schema/subject-authorization.schema.json` admits only the three pre-R4
   evidence kinds, which is what SA-U2 and SA-U11 both land on. SA-U16's current

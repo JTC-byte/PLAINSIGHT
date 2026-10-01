@@ -2265,11 +2265,16 @@ def main(argv: list[str]) -> int:
     findings = check(model, text)
 
     if gate_log:
-        if findings:
+        # One run record, then one detail record per finding, per HY-1. This
+        # gate wrote one refuse record per finding until 2026-09-30, so its
+        # older refusal counts are per finding: the 17 LM_CODE_ENTRY_KEYS
+        # records of 2026-09-09 are one run.
+        try:
+            gate_log.record_run(GATE, "refuse" if findings else "pass", count=len(findings))
             for fnd in findings:
-                gate_log.record(GATE, "refuse", code=fnd.code, where=fnd.where)
-        else:
-            gate_log.record(GATE, "pass")
+                gate_log.record_finding(GATE, code=fnd.code, where=fnd.where)
+        except Exception:
+            pass
 
     if findings:
         for fnd in findings:

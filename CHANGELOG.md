@@ -22,6 +22,32 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. Four validators record their runs the way HY-1
+  says, and the first gate-telemetry review is recorded.**
+
+  **What changed.** `tools/validate_layer_model.py` and `tools/validate_cast.py`
+  wrote one refuse record per finding and no run record, so their refusal counts
+  were per finding; both now write one run record and one detail record per
+  finding. The authorization and cast self-tests record as
+  `authorization-self-test` and `cast-self-test`, and
+  `tools/validate_retention.py --repo-scan --staged` as
+  `retention-repo-scan-staged`, so no gate name mixes a mode that refuses by
+  design with one that passes. The review that found these, the first under
+  HY-2, ran under the operator's overnight grant of 2026-09-30 23:28 and is
+  recorded in the worklog per HY-4.
+
+  **Which surfaces moved.** The four validators' telemetry calls, the worklog,
+  and the handoff.
+
+  **What validation ran.** Every changed recording path exercised and its
+  records read; `tools/tests/test_gate_log.py`; all fourteen preflight commands
+  on the staged tree; both forms of `git diff --check`. The kernel gate exited
+  0.
+
+  **What did not change.** No check, refusal, exit code, threshold, gate entry,
+  doctrine file, policy, schema or corpus. Records already in the log are left
+  as written.
+
 - **2026-09-30, overnight. The two values the repo scan refused are replaced
   with placeholders, and the kernel gate exits 0.**
 

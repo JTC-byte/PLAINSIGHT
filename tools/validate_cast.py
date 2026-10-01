@@ -887,15 +887,18 @@ def self_test(model: dict, quiet: bool = False) -> int:
     return 0
 
 
-def _telemetry(outcome: str, findings: list[Finding] | None = None) -> None:
+def _telemetry(outcome: str, findings: list[Finding] | None = None, gate: str = "cast") -> None:
     if gate_log is None:
         return
     try:
-        if findings:
-            for f in findings:
-                gate_log.record("cast", "refuse", code=f.code, where=f.where)
-        else:
-            gate_log.record("cast", outcome)
+        # One run record, then one detail record per finding, per HY-1. This
+        # gate wrote one refuse record per finding until 2026-09-30. The
+        # self-test records under its own name, so the cast gate's rate is
+        # never diluted by a mode whose designed outcome differs.
+        findings = findings or []
+        gate_log.record_run(gate, outcome, count=len(findings))
+        for f in findings:
+            gate_log.record_finding(gate, code=f.code, where=f.where)
     except Exception:
         pass
 
@@ -974,7 +977,7 @@ def main(argv: list[str]) -> int:
 
     if args.self_test:
         rc = self_test(model, quiet=args.quiet)
-        _telemetry("pass" if rc == 0 else "refuse")
+        _telemetry("pass" if rc == 0 else "refuse", gate="cast-self-test")
         return rc
 
     findings = check_structure(model)
@@ -982,7 +985,7 @@ def main(argv: list[str]) -> int:
     if args.placeholder_scan:
         findings += check_placeholders(model)
 
-    _telemetry("pass", findings)
+    _telemetry("refuse" if findings else "pass", findings)
 
     if findings:
         for f in findings:
