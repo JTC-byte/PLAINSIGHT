@@ -2032,3 +2032,25 @@ part, thirteen open and one the operator's.
 staged tree, both drift checks among them, and both forms of `git diff
 --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Fifth: the retention policy's last unpinned rules, Class B.** One review
+finding, retention-mechanism:1, closed now in full; most of it was closed
+overnight by `8bedba1`'s `STRATA_ROWS` and `INVARIANTS` and `b24ae5d`'s
+`PINNED_RULES`. Nine compiled values were still read by no tool:
+`strata.cassette_rule`'s live-subject stratum 0, persisting stratum 4, capture
+targets S2 and N0, and its statement that a cassette cannot satisfy RT-16's
+floor; `strata.permanent`; `encryption.per_case_data_key`; and
+`full_text_index`'s stratum 1, `per_case` and `shared_across_cases`. Each was
+checked against RT-1, RT-2, RT-4 and RT-7 and pinned by value in `PINNED_RULES`,
+with a generated break each. Flipping each of the nine in memory, the tool at
+`9e17ec9` refused none and this one refuses all nine. **A correction.** The
+sixteenth paragraph of the overnight entry says the review's cassette-rule path
+does not exist in the policy. It does, under `strata`; that paragraph looked for
+it at the top level. It stays as written. `--policy` output is byte-identical to
+`9e17ec9`. Recounted from the review table: 66 closed, nine in part, twelve open
+and one the operator's, and none of the twelve is work an agent can take alone.
+
+**Battery for the fifth change.** All sixteen preflight commands passed on the
+staged tree, the retention self-test with 93 breaks, and both forms of `git
+diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.

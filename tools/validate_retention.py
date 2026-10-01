@@ -246,6 +246,18 @@ PINNED_RULES = (
     ("verification.all_checks_required", True, "RT-9"),
     ("gate_telemetry.tracked", False, "RT-19"),
     ("gate_telemetry.carries_subject_derived_values", False, "RT-19"),
+    # Added 2026-10-01 for review finding retention-mechanism:1. The cassette
+    # rule sits under strata; the overnight record of b24ae5d said it did not
+    # exist in the policy, which was wrong.
+    ("strata.cassette_rule.live_subject_cassette_stratum", 0, "RT-1, RT-2"),
+    ("strata.cassette_rule.persisting_cassette_stratum", 4, "RT-1, RT-2"),
+    ("strata.cassette_rule.permitted_capture_targets", ["S2", "N0"], "RT-2, RT-15"),
+    ("strata.cassette_rule.satisfies_rt16_floor", False, "RT-2, RT-16"),
+    ("strata.permanent", [2, 3, 4], "RT-1"),
+    ("encryption.per_case_data_key", True, "RT-4"),
+    ("full_text_index.stratum", 1, "RT-7"),
+    ("full_text_index.per_case", True, "RT-7"),
+    ("full_text_index.shared_across_cases", False, "RT-7"),
 )
 
 #: RT-15. The code doctrine requires in policy/violation-codes.yaml. That file
