@@ -18,13 +18,16 @@ Every check here is named by the defect it guards:
 
   R-01  A policy file that assigns a subject-carrying field to a surviving
         stratum is the RT-2 defect, and RT-2 says this tool refuses it rather
-        than a reviewer noticing it. Enforced by
+        than a reviewer noticing it. Since 2026-10-01 it reaches strata 4 and T
+        as well, which RT-1 gives synthetic values only and none. Enforced by
         RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM.
   R-02  A strata table keyed on the integer loses one of the two stratum-1 rows.
         RT-1 states the shape as seven rows across five numbered levels plus
         telemetry, and the two stratum-1 rows carry different contents and
         different subject-value descriptions, so the stricter one disappears in
-        a six-row table. Enforced by RETENTION_POLICY_STRATA_ROW_COUNT.
+        a six-row table. Enforced by RETENTION_POLICY_STRATA_ROW_COUNT, and
+        since 2026-10-01 by RETENTION_POLICY_STRATA_ROW_DRIFT, which pins each
+        row by name with its stratum, subject values, lifetime and boundary.
   R-03  A strata set can be widened in the policy while the tools keep the
         narrow set, which passes both files' own checks. Reconciled against
         tools/validate_layer_model.py STRATA, SURVIVING_STRATA and
@@ -32,7 +35,10 @@ Every check here is named by the defect it guards:
   R-04  A duration is one number in a file that reads as configuration, and
         changing it changes how long a person's data is held. Every stamped
         number is pinned below with its criterion, and a difference refuses
-        under RETENTION_POLICY_TTL_DRIFT rather than being configured.
+        under RETENTION_POLICY_TTL_DRIFT rather than being configured, as are
+        three non-numeric rules since 2026-10-01: a case extension does not
+        extend incidental content, either way round, and the case ceiling is an
+        absolute deadline.
   R-05  RT-9's receipt of five checks can be five copies of one check. The
         model already pins SHRED_CHECKS for the wire; this pins it for the
         compiled policy and for the conformance fixture, under
@@ -53,11 +59,16 @@ Every check here is named by the defect it guards:
         mechanism that means the sweep refuses to run rather than running with
         an unratified TTL. Enforced by RETENTION_POLICY_UNRATIFIED and
         SHRED_ROUNDTRIP_UNRATIFIED, both of which clear the moment the operator
-        stamps the artifact in doctrine/DOCTRINE_STATUS.md.
+        stamps the artifact in doctrine/DOCTRINE_STATUS.md. The criteria checked
+        are pinned as RT-1 to RT-19 rather than read from the policy's own list,
+        which RETENTION_CRITERIA_LIST_DRIFT holds to the same set.
   R-10  A live selector in a tracked file survives every mechanism in
         RETENTION.md, because git history is append-only, distributed to every
         clone, and outside the per-case crypto-shred. This is RT-15 and it is
         the mode the hook calls.
+  R-18  RT-11's halt is system-wide, blocks connector dispatch, and clears only
+        on a passing verify_shred, and its override is the open question U-17.
+        Added 2026-10-01; enforced by RETENTION_POLICY_HALT_DRIFT.
   R-11  A repository scan can claim coverage it does not have. The shapes this
         tool matches on are reconciled against the rank-3 forms in
         ontology/selectors.yaml in both directions, and the types it does not
@@ -126,6 +137,31 @@ STRATA_ROW_COUNT = 7
 #: RT-1. The two strata inside the shred boundary, which is also the set that
 #: carries subject values.
 INSIDE_SHRED_BOUNDARY = {0, 1}
+#: RT-1's table, row by row: (stratum, carries subject values, lifetime token,
+#: inside the shred boundary). Until 2026-10-01 only the row count was pinned,
+#: so the authorization row could be swapped for a second skeleton row, or a
+#: lifetime set to free text, with seven rows and no refusal.
+STRATA_ROWS = {
+    "raw_capture": (0, True, "case_ttl", True),
+    "case_material": (1, True, "case_ttl", True),
+    "authorization": (1, True, "case_ttl", True),
+    "skeleton": (2, False, "permanent", False),
+    "findings": (3, False, "permanent", False),
+    "synthetic_corpus": (4, False, "permanent_in_git", False),
+    "gate_telemetry": ("T", False, "rolling_90_days", False),
+}
+#: RT-1 to RT-19, the criteria this policy compiles. Pinned here rather than read
+#: from the policy's own list, because a check that iterates the artifact's list
+#: is switched off by deleting an entry from it.
+EXPECTED_CRITERIA = tuple(f"RT-{n}" for n in range(1, 20))
+#: Non-numeric rules that bound how long a person's data is held, as (dotted
+#: path, value, criterion). No tool read them until 2026-10-01, so flipping one
+#: passed every gate.
+INVARIANTS = (
+    ("incidental.extended_by_case_extension", False, "RT-6, SS-11"),
+    ("extension.extends_incidental_content", False, "RT-6, SS-11"),
+    ("case_ttl.ceiling_is", "absolute_deadline", "RT-5, reading RET-R3"),
+)
 #: RT-9. Five checks, each once. A receipt of [1, 1, 1, 1, 1] is one check
 #: counted five times, which RT-9 says is not a check.
 SHRED_CHECKS = [1, 2, 3, 4, 5]
@@ -797,6 +833,38 @@ def check_policy(ctx: dict) -> list[Finding]:
             )
         )
 
+    # R-02, by identity. Each RT-1 row by name, with every column it pins.
+    names = [str(row.get("name")) for row in rows]
+    drift = sorted(set(STRATA_ROWS) - set(names))
+    drift_text = [f"missing {n}" for n in drift]
+    drift_text += [f"unexpected {n}" for n in sorted(set(names) - set(STRATA_ROWS))]
+    drift_text += [f"duplicate {n}" for n in sorted({n for n in names if names.count(n) > 1})]
+    for row in rows:
+        want = STRATA_ROWS.get(str(row.get("name")))
+        got = (
+            row.get("stratum"),
+            row.get("carries_subject_values"),
+            row.get("lifetime"),
+            row.get("inside_shred_boundary"),
+        )
+        if want and got != want:
+            drift_text.append(f"{row.get('name')} reads {got} where RT-1 states {want}")
+    if drift_text:
+        out.append(
+            Finding(
+                "RETENTION_POLICY_STRATA_ROW_DRIFT",
+                f"{POLICY_REL} :: retention.strata.rows",
+                "the strata table is not RT-1's table: "
+                + "; ".join(drift_text)
+                + ". Each row's stratum, subject values, lifetime and boundary are "
+                "how long a kind of material lives, and a table that keeps seven rows "
+                "can still lose the stricter one",
+                "restore the RT-1 values; or amend RT-1 under a dated Class F stamp "
+                "in doctrine/DOCTRINE_STATUS.md and move STRATA_ROWS in this tool "
+                "in the same commit",
+            )
+        )
+
     lm_strata = ctx.get("strata", layer_model_strata())
     if lm_strata is None:
         out.append(
@@ -861,8 +929,14 @@ def check_policy(ctx: dict) -> list[Finding]:
             )
             continue
 
-        # R-01. RT-2's own refusal, and the reason this mode exists.
-        if row.get("carries_subject_values") is True and stratum in model_surviving:
+        # R-01. RT-2's own refusal, and the reason this mode exists. Since
+        # 2026-10-01 it reaches every stratum outside the shred boundary: RT-1
+        # gives stratum 4 synthetic values only and stratum T none by
+        # construction, and RT-2's sentence names 2 and 3 because those are the
+        # strata a subject value could plausibly reach.
+        if row.get("carries_subject_values") is True and (
+            stratum in model_surviving or stratum not in INSIDE_SHRED_BOUNDARY
+        ):
             out.append(
                 Finding(
                     "RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM",
@@ -930,6 +1004,23 @@ def check_policy(ctx: dict) -> list[Finding]:
                     f"{sorted(pinned, key=str)}. {why}",
                     "restore the pinned set, or move both in one commit against "
                     "a dated Class F stamp in doctrine/DOCTRINE_STATUS.md",
+                )
+            )
+
+    # R-04's non-numeric half. Each rule bounds how long a person's data is held.
+    for path, value, criterion in INVARIANTS:
+        actual = dig(pol, path)
+        if actual != value:
+            out.append(
+                Finding(
+                    "RETENTION_POLICY_TTL_DRIFT",
+                    f"{POLICY_REL} :: retention.{path}",
+                    f"the policy carries {actual!r} and {criterion} fix {value!r}. "
+                    "Flipping this rule lengthens how long a person's data is held "
+                    "with every number unchanged",
+                    f"restore {value!r}; or ratify the change with a dated stamp in "
+                    "doctrine/DOCTRINE_STATUS.md and move INVARIANTS in this tool in "
+                    "the same commit",
                 )
             )
 
@@ -1053,7 +1144,7 @@ def check_policy(ctx: dict) -> list[Finding]:
         )
     )
 
-    # R-10. RT-11's halt, which nothing graded until 2026-10-01. The Step 8
+    # R-18. RT-11's halt, which nothing graded until 2026-10-01. The Step 8
     # adversarial review found the compiled block carried a permitted override
     # the pin of record's RT-11 row says does not exist, and no check read the
     # block at all, so it could have been made per-case or cleared on a ledger
@@ -1094,7 +1185,22 @@ def check_policy(ctx: dict) -> list[Finding]:
 
     # R-09. The designed refusal, and the check that clears when it is stamped.
     status = ctx["status"]
-    for criterion in as_list(dig(pol, "ratification.criteria_compiled_here")):
+    listed = [str(c) for c in as_list(dig(pol, "ratification.criteria_compiled_here"))]
+    if tuple(listed) != EXPECTED_CRITERIA:
+        out.append(
+            Finding(
+                "RETENTION_CRITERIA_LIST_DRIFT",
+                f"{POLICY_REL} :: retention.ratification.criteria_compiled_here",
+                f"the policy lists {listed} and compiles RT-1 to RT-19. The stamp "
+                "check below runs over the pinned set, so a criterion dropped from "
+                "this list is still checked, and the list itself is refused for "
+                "saying otherwise",
+                "restore RT-1 to RT-19 in order; or ratify the doctrine change that "
+                "adds or removes a criterion and move EXPECTED_CRITERIA in this tool "
+                "in the same commit",
+            )
+        )
+    for criterion in EXPECTED_CRITERIA:
         if str(criterion) not in stamped_criteria(status):
             out.append(
                 Finding(
@@ -1753,7 +1859,9 @@ def check_finding(path: str, case: str) -> int:
 #: both graded artifacts are unratified by design. The baseline guard refuses on
 #: anything outside this set, and each mutation is judged against the baseline
 #: rather than against silence, so a mutation that fires only these has not been
-#: refused. Stamping the two artifacts empties this tuple by itself.
+#: refused. Stamping the two artifacts empties the computed baseline, not this
+#: tuple, and the two unstamping cases below observe each refusal fire whether
+#: or not the live pin is stamped.
 EXPECTED_BASELINE = ("RETENTION_POLICY_UNRATIFIED", "SHRED_ROUNDTRIP_UNRATIFIED")
 
 
@@ -1795,6 +1903,46 @@ def _mutations():
         for row in ctx["policy"]["retention"]["strata"]["rows"]:
             if row.get("stratum") == 0:
                 row["inside_shred_boundary"] = False
+
+    def swap_authorization_for_a_second_skeleton(ctx):
+        rows = ctx["policy"]["retention"]["strata"]["rows"]
+        skeleton = next(r for r in rows if r.get("name") == "skeleton")
+        idx = next(i for i, r in enumerate(rows) if r.get("name") == "authorization")
+        rows[idx] = dict(skeleton)
+
+    def let_telemetry_live_forever(ctx):
+        for row in ctx["policy"]["retention"]["strata"]["rows"]:
+            if row.get("name") == "gate_telemetry":
+                row["lifetime"] = "permanent"
+
+    def give_the_corpus_a_subject_value(ctx):
+        for row in ctx["policy"]["retention"]["strata"]["rows"]:
+            if row.get("name") == "synthetic_corpus":
+                row["carries_subject_values"] = True
+
+    def let_extension_reach_incidental(ctx):
+        ctx["policy"]["retention"]["incidental"]["extended_by_case_extension"] = True
+
+    def let_the_ceiling_be_a_cap(ctx):
+        ctx["policy"]["retention"]["case_ttl"]["ceiling_is"] = "cap_on_extensions"
+
+    def drop_rt2_from_the_list(ctx):
+        lst = ctx["policy"]["retention"]["ratification"]["criteria_compiled_here"]
+        ctx["policy"]["retention"]["ratification"]["criteria_compiled_here"] = [
+            c for c in lst if c != "RT-2"
+        ]
+
+    def _unstamp(ctx, rel):
+        ctx["status"] = "\n".join(
+            ln for ln in ctx["status"].split("\n")
+            if not (ln.startswith("|") and f"`{rel}`" in ln)
+        )
+
+    def unstamp_the_policy(ctx):
+        _unstamp(ctx, POLICY_REL)
+
+    def unstamp_the_fixture(ctx):
+        _unstamp(ctx, FIXTURE_REL)
 
     def raise_the_ceiling(ctx):
         ctx["policy"]["retention"]["case_ttl"]["ceiling_days"] = 90
@@ -1961,10 +2109,12 @@ def _mutations():
 
     scan = scan_code(declared_codes())
     return [
-        ("drop a stratum row", "policy", drop_a_stratum_row, "RETENTION_POLICY_STRATA_ROW_COUNT", True),
-        ("give the skeleton a subject value", "policy", subject_value_survives, "RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM", True),
+        # Since 2026-10-01 the three rows below also trip RETENTION_POLICY_STRATA_ROW_DRIFT,
+        # because each changes a column of an RT-1 row the strata pin holds.
+        ("drop a stratum row", "policy", drop_a_stratum_row, "RETENTION_POLICY_STRATA_ROW_COUNT", False),
+        ("give the skeleton a subject value", "policy", subject_value_survives, "RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM", False),
         ("add stratum 4 to the surviving set", "policy", widen_surviving, "RETENTION_POLICY_STRATA_SET_DRIFT", True),
-        ("move raw capture outside the shred boundary", "policy", move_raw_capture_outside, "RETENTION_POLICY_SHRED_BOUNDARY_DRIFT", True),
+        ("move raw capture outside the shred boundary", "policy", move_raw_capture_outside, "RETENTION_POLICY_SHRED_BOUNDARY_DRIFT", False),
         ("raise the case ceiling to 90 days", "policy", raise_the_ceiling, "RETENTION_POLICY_TTL_DRIFT", True),
         ("count one verification check twice", "policy", count_one_check_twice, "RETENTION_POLICY_VERIFICATION_INCOMPLETE", False, "renumbering check 3 to 1 removes check 3, so the discrimination between an erroring query and an empty result set is gone as well and the false-pass check fires with the set check"),
         ("let check 1 pass on a not-found", "policy", let_check_one_pass_on_not_found, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
@@ -1980,6 +2130,14 @@ def _mutations():
         ("stamp the policy in the pin of record", "policy", stamp_the_policy, "-RETENTION_POLICY_UNRATIFIED", True),
         ("stamp one policy entry in house format", "policy", stamp_the_policy_by_an_entry_row, "=RETENTION_POLICY_UNRATIFIED", True),
         ("withdraw doctrine/RETENTION.md's range row", "policy", withdraw_the_retention_range_row, "RETENTION_CRITERION_UNSTAMPED", True),
+        ("swap the authorization row for a second skeleton row", "policy", swap_authorization_for_a_second_skeleton, "RETENTION_POLICY_STRATA_ROW_DRIFT", True),
+        ("let gate telemetry live forever", "policy", let_telemetry_live_forever, "RETENTION_POLICY_STRATA_ROW_DRIFT", False),
+        ("give the synthetic corpus a subject value", "policy", give_the_corpus_a_subject_value, "RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM", False),
+        ("let a case extension reach incidental content", "policy", let_extension_reach_incidental, "RETENTION_POLICY_TTL_DRIFT", True),
+        ("make the case ceiling a cap on extensions", "policy", let_the_ceiling_be_a_cap, "RETENTION_POLICY_TTL_DRIFT", True),
+        ("drop RT-2 from the compiled criteria", "policy", drop_rt2_from_the_list, "RETENTION_CRITERIA_LIST_DRIFT", True),
+        ("unstamp the policy in the pin of record", "policy", unstamp_the_policy, "=RETENTION_POLICY_UNRATIFIED", True),
+        ("unstamp the fixture in the pin of record", "roundtrip", unstamp_the_fixture, "=SHRED_ROUNDTRIP_UNRATIFIED", True),
         ("lose the layer model's strata", "policy", hide_the_layer_model, "RETENTION_LAYER_MODEL_UNREADABLE", False),
         ("make the policy wrapper a scalar", "policy", make_the_policy_a_scalar, "RETENTION_INPUT_MALFORMED", False),
         ("make a stratum a list", "policy", make_a_stratum_a_list, "RETENTION_INPUT_MALFORMED", False),

@@ -1709,3 +1709,39 @@ three are closed in part.
 staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Eleventh: five holes in what the retention gate checks, Class B, decided under
+the grant.** The strata table was pinned by its row count alone, so replacing
+the authorization row with a second skeleton row, or setting gate telemetry's
+lifetime to permanent, kept seven rows and passed; each of RT-1's seven rows is
+now pinned by name with its stratum, subject values, lifetime and boundary, as
+`RETENTION_POLICY_STRATA_ROW_DRIFT`, and the pin was checked against doctrine's
+RT-1 table before it was written. R-01 refused a subject value only in strata 2
+and 3, so declaring the synthetic corpus or gate telemetry to carry subject
+values passed, against RT-1's "Synthetic only" and "None, by construction"; it
+now reaches every stratum outside the shred boundary. Three rules that bound how
+long data is held were read by no tool: a case extension does not extend
+incidental content, either way round, and the case ceiling is an absolute
+deadline. They are pinned beside the durations and refuse as
+`RETENTION_POLICY_TTL_DRIFT`. The criteria check iterated the policy's own list,
+so deleting RT-2 from it removed the check; it now runs over RT-1 to RT-19
+pinned in the tool, and the list is refused as `RETENTION_CRITERIA_LIST_DRIFT`
+when it differs. The self-test only asserted that the stamp mutations cleared a
+refusal, which held trivially when the refusal never fired, so a stamp reader
+that always said stamped passed it; two cases now remove the artifact's rows
+from the pin and assert the refusal is there. The self-test refuses all 51
+breaks, three older ones now with the strata pin as a stated cascade.
+
+Two of the five are fixed in part. The undeclared-placeholder reconcile still
+filters by each file's own prefix, and the layer model's `LM_RT2_VIOLATION`
+still reaches strata 2 and 3 only, because widening it changes a second tool.
+
+A correction to the seventh change above: it called the halt check R-10, an id
+this tool's docstring already gives the repo scan. The check is R-18, and the
+docstring now carries it. With these, 49 of the review's 88 findings are closed
+and five are closed in part.
+
+**Battery for the eleventh change.** All sixteen preflight commands passed on
+the staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

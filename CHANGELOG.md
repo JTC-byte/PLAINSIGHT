@@ -22,6 +22,29 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The retention gate pins RT-1's rows, its criteria and
+  three non-numeric rules, and watches its own unratified refusal fire.**
+
+  **What changed.** Each RT-1 strata row is pinned by name
+  (`RETENTION_POLICY_STRATA_ROW_DRIFT`); R-01 refuses a subject value in any
+  stratum outside the shred boundary, strata 4 and T included; the extension
+  and ceiling rules are pinned beside the durations; the criteria check runs
+  over RT-1 to RT-19 pinned in the tool (`RETENTION_CRITERIA_LIST_DRIFT`); and
+  two self-test cases observe the unratified refusals fire. The halt check
+  added earlier the same night as R-10 is R-18, because R-10 was taken. Five
+  findings of the Step 8 adversarial review, decided under the operator's
+  overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py` and its self-test, the
+  worklog and the handoff.
+
+  **What validation ran.** The retention self-test, 51 breaks; both retention
+  modes refusing exactly as before; all sixteen preflight commands on the staged
+  tree; both forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No policy value, duration, stratum, doctrine file or
+  stamp. Every change makes the gate stricter.
+
 - **2026-10-01, overnight. The authorization gate compares five things it used
   to read and leave alone.**
 

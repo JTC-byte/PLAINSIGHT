@@ -12,8 +12,8 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, overnight. The commit that carries this file closes five
-holes in what the authorization gate checks, which the Step 8 adversarial review
-found, on top of `0cda873`, under the operator's overnight grant of 2026-09-30
+holes in what the retention gate checks, which the Step 8 adversarial review
+found, on top of `1afee89`, under the operator's overnight grant of 2026-09-30
 23:28. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
@@ -46,21 +46,22 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** `tools/validate_authorization.py` read five things
-it never compared. The schema's required list could drop an SS-5 field, SS-14
-item 6's paths could be swapped for stamped ones while the counts held, the
-compiled criteria could lose one along with its pin row, a REFUSED row could
-render the permit's sentence, and a well-formed permit row could assert PERMITTED
-under a stamp state item 6 refuses. Each now refuses, under three new codes and
-two existing ones, and the self-test gains six breaks. No current outcome
-changed: `--fixtures` refuses exactly as before.
+**What changed and why.** `tools/validate_retention.py` pinned the strata
+table by its row count, read the compiled criteria from the policy's own list,
+read none of the three non-numeric rules that bound how long data is held, and
+refused a subject value only in strata 2 and 3. A swapped stratum row, a dropped
+criterion, a flipped extension rule, or a subject value in stratum 4 or T all
+passed. Each now refuses. Its self-test also never watched the unratified
+refusal fire, so a stamp reader that always said stamped passed it; two cases
+now observe it. The halt check `722b367` called R-10 is R-18, because R-10 was
+already the repo scan. No current outcome changed.
 
-**Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
+**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
 `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the authorization
-self-test with 47 breaks refused, and both forms of `git diff --check` were
+before the commit. All sixteen preflight commands passed, the retention
+self-test with 51 breaks refused, and both forms of `git diff --check` were
 clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
@@ -317,7 +318,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Five commits on 2026-10-01 closed 46 of them and part of three
+mechanism. Six commits on 2026-10-01 closed 49 of them and part of five
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each
