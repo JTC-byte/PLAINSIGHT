@@ -22,6 +22,31 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. Every retention enforcement entry states whether it
+  exists, and the gate checks the statement.**
+
+  **What changed.** `policy/retention.yaml` cites EG-5 for the crossing table
+  and the disclosure export, marks RT-16's reconcile `present: false`, and notes
+  that RT-10's columns carry no pinned connector version. `--policy` refuses an
+  enforcement entry with no `present` flag
+  (`RETENTION_POLICY_ENFORCEMENT_UNSTATED`), and RT-16's flag or any of RT-15's
+  four flags that disagrees with the tool or the tree
+  (`RETENTION_POLICY_ENFORCEMENT_MISSTATED`). Two findings of the Step 8
+  adversarial review, decided under the operator's overnight grant of
+  2026-09-30 23:28 as resumed at 12:24, and revertible.
+
+  **Which surfaces moved.** `policy/retention.yaml`,
+  `tools/validate_retention.py`, the worklog and its archive, and the handoff.
+
+  **What validation ran.** The retention self-test, 84 breaks, with the new
+  checks shown to be what refuses their three; `--policy` output byte-identical
+  to the previous commit; all sixteen preflight commands; both forms of `git
+  diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No compiled rule, duration, unratified entry,
+  doctrine file or stamp. U-08's question is unchanged; the gap goes to the
+  operator as a queue item.
+
 - **2026-10-01, overnight. The gate register is reconciled column by column.**
 
   **What changed.** A-13 read only the name column of the register in

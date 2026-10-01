@@ -320,12 +320,14 @@ retention:
   # Sensitivity decreases as durability increases: the durable rows are durable
   # because they carry no subject-derived values.
   strata:
-    cites: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-2]
+    cites: [doctrine/RETENTION.md RT-1, doctrine/RETENTION.md RT-2, doctrine/EGRESS.md EG-5]
     declared_at: write_time
     decided_at_delete_time: false
     tokens: [0, 1, 2, 3, 4, "T"]
     surviving: [2, 3]
     permanent: [2, 3, 4]
+    # crossing_to_local is EG-5's table, and RT-18's disclosure export is the one
+    # exception EG-5 names; it goes to an agency rather than to LOCAL.
     crossing_to_local: [2, 3, 4]
     # The three sets above are pinned identically in tools/validate_layer_model.py
     # as STRATA, SURVIVING_STRATA and CROSSING_STRATA, and --policy reconciles
@@ -740,6 +742,10 @@ retention:
         One-directional reconciliation finds only the first. The schedule rests on
         something that runs rather than on someone remembering what to compare.
     pinned_connector_versions_read_from_here: true
+    pinned_connector_versions_note: >
+      RT-16 reads pinned connector versions from the ledger, and RT-10's six
+      required columns above carry none, so the column the reconcile would read is
+      declared nowhere yet. Which file declares it is the operator's, with U-08.
 
   # -------------------------------------------------------------------------
   # RT-11. THE HALT
@@ -904,6 +910,7 @@ retention:
       - clause: a Class C clause in AGENTS.md stating the rule
         present: false
       - check: a bidirectional reconcile in tools/validate_retention.py
+        present: false
         reconciles: doctrine/RETENTION_LEDGER.md pinned versions against connectors/<id>/
         findings:
           - a pinned version with missing artifacts
@@ -975,7 +982,7 @@ retention:
   # RT-18. THE DISCLOSURE EXPORT
   # -------------------------------------------------------------------------
   disclosure_export:
-    cites: [doctrine/RETENTION.md RT-18]
+    cites: [doctrine/RETENTION.md RT-18, doctrine/EGRESS.md EG-5]
     available_only_under_an_active_freeze: true
     available_on_an_ordinary_case: false
     exports: the complete case

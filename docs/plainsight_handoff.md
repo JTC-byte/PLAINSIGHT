@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file is the
-checkpoint closeout of the overnight session, on top of `3e54101`, under the
-operator's overnight grant of 2026-09-30 23:28, as renewed at the handover of
-2026-10-01 01:26. It stops at a natural point, not a tactical pause. The commits before it that night gave the gates one reader of the pin of
+**Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
+file makes every retention enforcement entry state whether it exists, on top of
+`6decf30`, under the overnight grant of 2026-09-30 23:28 as renewed at 01:26,
+resumed by the maintainer at 12:24 after the hold of 01:56. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,17 +46,18 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Records only. The review count in these records
-ran one high: the review table carries 59 findings closed and eight in part,
-and section 5 now says so and names what the twenty still open wait on. The
-worklog records the closeout and the correction.
+**What changed and why.** `policy/retention.yaml` cited RT-1 and RT-2 for
+EG-5's crossing table and now cites EG-5. RT-16's reconcile entry read as
+implemented and now says `present: false`. `--policy` refuses an enforcement
+entry that does not state its presence, and a flag that disagrees with the tool
+or, for RT-15, with the tree.
 
-**Which surfaces moved.** This file and the worklog. No governed artifact
-moved, so `CHANGELOG.md` carries no entry for this commit.
+**Which surfaces moved.** `policy/retention.yaml`, `tools/validate_retention.py`
+and its self-test, `CHANGELOG.md`, this file, the worklog and its archive.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, and both forms of
-`git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, the retention
+self-test with 84 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -314,7 +315,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Commits made on 2026-10-01 closed 59 of them and part of eight
+mechanism. Commits made on 2026-10-01 closed 61 of them and part of eight
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each
@@ -325,12 +326,11 @@ against `8bedba1` and found 11 more, none refuted. Two are ratification
 blockers: the shared reader's whole-artifact test is a substring match, so an
 Item cell saying "not the whole artifact" stamped the file, and nothing reads
 SS-14's seal condition for the cast. All eleven are closed, three of them in
-part, and the review record lists what remains of each. Of the twenty review
+part, and the review record lists what remains of each. Of the eighteen review
 findings still open, three wait on the operator's queue, nine on the evaluator
 VA-U1 holds until Step 10 or on fixture semantics a ratified entry decides, and
-eight are agent work: retention-mechanism:1, schema:2, 4 and 6,
-authorization-mechanism:12, self-description:11, and
-doctrine-fidelity-retention:10 and 11.
+six are agent work: retention-mechanism:1, schema:2, 4 and 6,
+authorization-mechanism:12, and self-description:11.
 
 ## 6. Session context that lives outside this repository
 

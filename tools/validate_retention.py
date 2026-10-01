@@ -226,6 +226,12 @@ FIXTURE_CHECK_PASSES = {
 #: Compiled rules that bound what is held and where, by value, each with its
 #: criterion. No tool read them until 2026-10-01, so each could be flipped to
 #: its permissive value with every gate green.
+#: Whether the RT-16 reconcile of pinned connector versions against connectors/
+#: exists in this tool. It does not: there is neither a ledger nor a connector to
+#: read. The policy's enforcement entry for it must say so, and when it lands this
+#: flag and that entry move in the same commit.
+RT16_RECONCILE_WRITTEN = False
+
 PINNED_RULES = (
     ("full_text_index.inside_shred_boundary", True, "RT-7"),
     ("blob_policy.text.case_level_value_legal", False, "RT-8"),
@@ -1208,6 +1214,64 @@ def check_policy(ctx: dict) -> list[Finding]:
                     "the same commit",
                 )
             )
+
+    # Every enforcement entry states whether it exists, and the state is measured
+    # where it can be. Until 2026-10-01 RT-16's reconcile entry carried no present
+    # flag and read as implemented, while this tool printed on every run that it
+    # does not exist, and RT-15's flags were compared with the tree only inside
+    # the self-test.
+    for block in ("repo_scan.enforcement_parts_all_required", "connector_floor.enforcement"):
+        for index, entry in enumerate(as_list(dig(pol, block))):
+            if not isinstance(entry, dict):
+                continue
+            if any(isinstance(v, dict) and "unratified" in v for v in entry.values()):
+                continue
+            if not isinstance(entry.get("present"), bool):
+                out.append(
+                    Finding(
+                        "RETENTION_POLICY_ENFORCEMENT_UNSTATED",
+                        f"{POLICY_REL} :: retention.{block}[{index}]",
+                        "the enforcement entry does not say whether it exists, so it "
+                        "reads as implemented whether or not anything runs",
+                        "add present: true or present: false; or replace the entry with "
+                        "an unratified mapping naming the open question",
+                    )
+                )
+    measured = rt15_parts(ctx.get("codes") or set())
+    stated = [
+        r.get("present")
+        for r in as_list(dig(pol, "repo_scan.enforcement_parts_all_required"))
+        if isinstance(r, dict)
+    ]
+    if len(stated) == len(measured):
+        for (name, present), claim in zip(measured, stated):
+            if isinstance(claim, bool) and claim != present:
+                out.append(
+                    Finding(
+                        "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
+                        f"{POLICY_REL} :: retention.repo_scan.enforcement_parts_all_required",
+                        f"the policy says {name} is {'in place' if claim else 'absent'} "
+                        f"and the tree shows it {'in place' if present else 'absent'}. RT-15 "
+                        "requires all four parts, so a part claimed and not present is "
+                        "an enforcement nobody gets",
+                        "correct the present flag to what the tree shows; or put the part "
+                        "in place and change the flag in the same commit",
+                    )
+                )
+    for index, entry in enumerate(as_list(dig(pol, "connector_floor.enforcement"))):
+        if isinstance(entry, dict) and "reconcile" in str(entry.get("check", "")):
+            if entry.get("present") is not RT16_RECONCILE_WRITTEN and isinstance(entry.get("present"), bool):
+                out.append(
+                    Finding(
+                        "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
+                        f"{POLICY_REL} :: retention.connector_floor.enforcement[{index}]",
+                        f"the policy says RT-16's reconcile is "
+                        f"{'written' if entry.get('present') else 'absent'} and this tool "
+                        f"{'carries it' if RT16_RECONCILE_WRITTEN else 'does not carry it'}",
+                        "correct the present flag; or write the reconcile and set "
+                        "RT16_RECONCILE_WRITTEN in the same commit",
+                    )
+                )
 
     # R-09's write-path half: RT-9 sends the witness mechanics to the fixture
     # and keeps three properties the store has to know at first write.
@@ -2491,8 +2555,21 @@ def _mutations():
         for path, value, criterion in PINNED_RULES
     ]
 
+    def reconcile_unstated(ctx):
+        entry = ctx["policy"]["retention"]["connector_floor"]["enforcement"][1]
+        entry.pop("present", None)
+
+    def reconcile_claimed(ctx):
+        ctx["policy"]["retention"]["connector_floor"]["enforcement"][1]["present"] = True
+
+    def canary_claimed(ctx):
+        ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"][1]["present"] = True
+
     return flips + [
         ("let check 1 pass when the decrypt succeeds", "policy", check1_passes_on_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
+        ("leave RT-16's reconcile entry silent on whether it exists", "policy", reconcile_unstated, "RETENTION_POLICY_ENFORCEMENT_UNSTATED", True),
+        ("claim RT-16's reconcile is written", "policy", reconcile_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("claim canary_subject_class is required on manifests", "policy", canary_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("stop failing check 1 on a successful decrypt", "policy", check1_forgets_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("hold the witness inside the delete path", "policy", witness_inside_the_delete_path, "RETENTION_POLICY_WITNESS_UNDESIGNATED", True),
         ("let check 4 pass always", "policy", check4_passes_always, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
