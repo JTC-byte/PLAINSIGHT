@@ -192,7 +192,8 @@ CI installs both and a local checkout must have both.
 
 `tools/validate_retention.py --repo-scan` is implemented as of Step 8, which
 closed D-001. It reads every tracked file in the working tree for a filled
-selector in its typed form, against thirteen shapes reconciled with
+selector in its typed form, or written as a type beside a value in a JSON line,
+a .json file or a .yaml file, against thirteen shapes reconciled with
 `ontology/selectors.yaml` in both directions, and the pre-commit hook runs the
 same mode over the index. Two of RT-15's four enforcement parts are in place,
 this file's Execution Limits clause and the scan in the hook. The other two are

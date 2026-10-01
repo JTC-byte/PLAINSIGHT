@@ -11,9 +11,9 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file runs A-19,
-the check Step 8's done-condition names, through the pin reader, on top of
-`7802659`, under the operator's overnight grant of 2026-09-30 23:28, as renewed
+**Date:** 2026-10-01, overnight. The commit that carries this file makes the
+repo scan read a selector written as a type beside a value, on top of
+`4ec9132`, under the operator's overnight grant of 2026-09-30 23:28, as renewed
 at the handover of 2026-10-01 01:26. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
@@ -46,19 +46,19 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Every case A-19 built carried a fixture-supplied
-stamp list, so the reader's criterion_stamped and artifact_stamped could answer
-True for everything with both modes green. A-19 now also runs each case on
-copies of the pin of record: one without a Step 3 row, one without an item 6
-path's row, and one with every item 6 path stamped, which must permit apart
-from refusals the reader is right to make on this tree.
+**What changed and why.** The repo scan matched a selector only in its typed
+string, while the corpora, the records and every CLAIM payload write one as a
+`selector_type` beside a `value`. It now pairs them within one mapping in JSON
+lines, .json files and .yaml files, matches a typed domain in any case, and
+names the forms it still does not reach. The tree stays clean over 482 pairs.
 
-**Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
+**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
+`AGENTS.md` section 5, `CONFORMANCE.md` section 4, the kernel gate's note,
 `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the authorization
-self-test with 63 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, the retention
+self-test with 81 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -316,7 +316,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Commits made on 2026-10-01 closed 58 of them and part of seven
+mechanism. Commits made on 2026-10-01 closed 59 of them and part of seven
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each

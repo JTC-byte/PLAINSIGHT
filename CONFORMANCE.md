@@ -104,8 +104,9 @@ they joined the list on 2026-09-28. The `--corpus` trigger has fired, as rung 3
 in section 3 records. Step 8 replaced the D-001 stub with
 `tools/validate_retention.py`, so retention-repo-scan left the STUB state
 before these two entered it. That check reads every tracked file in the working
-tree for a filled selector in its typed form, against thirteen shapes reconciled
-with `ontology/selectors.yaml` in both directions. Two of RT-15's four
+tree for a filled selector in its typed form, or written as a type beside a
+value in a JSON line, a .json file or a .yaml file, against thirteen shapes
+reconciled with `ontology/selectors.yaml` in both directions. Two of RT-15's four
 enforcement parts are in place, the AGENTS.md clause and this scan in the hook;
 `canary_subject_class` on a connector manifest and the violation code are not,
 and git history cannot be read by a check that runs at commit time.

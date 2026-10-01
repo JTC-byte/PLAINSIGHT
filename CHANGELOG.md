@@ -22,6 +22,31 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The repo scan reads a selector written as a type
+  beside a value.**
+
+  **What changed.** RT-15's scan matched the typed string form only. It now
+  pairs `selector_type` with `value`, and `target_selector_type` with
+  `target_selector`, within one mapping in JSON lines, .json files and .yaml
+  files, reads a mapping key that names a shape-detectable type, and matches a
+  typed domain in any case. Its notice names the forms it still does not reach,
+  and its summary reports the pairs read. One finding of the Step 8 adversarial
+  review, decided under the operator's overnight grant of 2026-09-30 23:28, and
+  revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py`,
+  `tools/validate_conformance.py`, `AGENTS.md` section 5, `CONFORMANCE.md`
+  section 4, the worklog and the handoff.
+
+  **What validation ran.** The retention self-test, 81 breaks, with the new code
+  shown to be what refuses its three; the scan over the tree, clean across 482
+  pairs; all sixteen preflight commands; both forms of `git diff --check`. The
+  kernel gate exited 0.
+
+  **What did not change.** No registry entry, policy value, doctrine file or
+  stamp, and no allowlist: a pair is compared with the allowlist in its typed
+  form, as the typed pass is, so the sealed cast's question stays plainsight-6.
+
 - **2026-10-01, overnight. A-19 runs through the pin reader.**
 
   **What changed.** A-19, the check Step 8's done-condition names, built every

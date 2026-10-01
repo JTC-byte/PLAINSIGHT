@@ -86,6 +86,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import json
 import re
 import subprocess
 import sys
@@ -285,7 +286,8 @@ SEGMENT_SHAPES = {
     "string": r"[A-Za-z0-9][A-Za-z0-9_.]{1,63}",
     "addr": r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}",
     "e164": r"\+[1-9]\d{7,14}",
-    "fqdn": r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}",
+    # Case-insensitive since 2026-10-01: a domain is the same selector in any case.
+    "fqdn": r"(?i:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,})",
     "hex64": r"[0-9a-fA-F]{16,64}",
     "mask": r"[A-Za-z0-9._%+-]*[*•]{2,}[A-Za-z0-9._%+@*.•-]*",
     "registry": r"[a-z][a-z0-9_.-]{1,31}",
@@ -323,6 +325,10 @@ SCAN_DOES_NOT_REACH = (
     "a bare value carrying no selector type, such as an address pasted into a "
     "stack trace or a handle written into a worklog entry. VR-U1 carries the "
     "question and the measurement behind it",
+    "a selector_type and value pair outside a JSON line, a .json file or a "
+    ".yaml file that parses, such as one quoted in a markdown code block, and a "
+    "typed value written with spaces, quotes or URL encoding inside it, or one "
+    "character long",
     "git history, which no commit-time check reaches and no later act clears; "
     "it is a reach limit of any such check, not one of RT-15's four parts",
     "compressed and binary containers such as xlsx, docx, zip, pdf and images, "
@@ -1767,6 +1773,75 @@ def synthetic_allowlist(registry: dict) -> tuple[set[str], str]:
     )
 
 
+#: The key pairs that write a selector as a type beside a value: the CLAIM
+#: payloads, the subject-authorization records and the gate fixtures' dispatch.
+PAIR_KEYS = (("selector_type", "value"), ("target_selector_type", "target_selector"))
+
+
+def _mappings(node):
+    if isinstance(node, dict):
+        yield node
+        for value in node.values():
+            yield from _mappings(value)
+    elif isinstance(node, list):
+        for value in node:
+            yield from _mappings(value)
+
+
+def _pairs_in(node, types: set[str]):
+    """(type, value) for every pair in one parsed document, within one mapping.
+
+    Pairing within a mapping rather than within a line matters: a gate fixture's
+    line also carries expect_decision.value, and pairing that with a
+    selector_type elsewhere on the line would refuse an ordinary word.
+    """
+    for mapping in _mappings(node):
+        for type_key, value_key in PAIR_KEYS:
+            selector, value = mapping.get(type_key), mapping.get(value_key)
+            if isinstance(selector, str) and isinstance(value, str):
+                yield selector, value
+        for key, value in mapping.items():
+            if key in types and isinstance(value, str):
+                yield key, value
+
+
+def selector_pairs(rel: str, text: str, types: set[str]) -> list[tuple[int, str, str]]:
+    """(line, type, value) for each selector written as a pair, never quoted out.
+
+    A JSON line is parsed on its own line; a .json file and a .yaml file are
+    parsed whole and a pair is placed on the first line carrying its value. A
+    file that does not parse yields nothing here, which SCAN_DOES_NOT_REACH says.
+    """
+    out: list[tuple[int, str, str]] = []
+    lines = text.splitlines()
+    suffix = Path(rel).suffix.lower()
+    if suffix in (".json", ".yaml", ".yml"):
+        try:
+            if suffix == ".json":
+                docs = [json.loads(text)]
+            elif yaml is not None:
+                docs = list(yaml.safe_load_all(text))
+            else:
+                docs = []
+        except (ValueError, yaml.YAMLError if yaml is not None else ValueError):
+            docs = []
+        for doc in docs:
+            for selector, value in _pairs_in(doc, types):
+                number = next((n for n, line in enumerate(lines, 1) if value in line), 1)
+                out.append((number, selector, value))
+        return out
+    for number, line in enumerate(lines, 1):
+        stripped = line.strip().rstrip(",")
+        if not stripped.startswith(("{", "[")):
+            continue
+        try:
+            doc = json.loads(stripped)
+        except ValueError:
+            continue
+        out.extend((number, selector, value) for selector, value in _pairs_in(doc, types))
+    return out
+
+
 def scan_text(
     rel: str,
     text: str,
@@ -1810,6 +1885,36 @@ def scan_text(
                 )
             )
             break
+    # The pair form. Until 2026-10-01 only the typed string was matched, while
+    # the corpora, the records and every CLAIM payload write a selector as a
+    # selector_type beside a value, so a live record in that shape carried its
+    # type and was not found.
+    reported = {f.where for f in out}
+    for number, selector, value in selector_pairs(rel, text, set(patterns)):
+        where = f"{rel}:{number}"
+        if selector in exempt or selector not in patterns or where in reported:
+            continue
+        typed = f"{selector}:{value}"
+        match = patterns[selector].search(typed)
+        if not match or match.group(0) != typed or typed in allowlist:
+            continue
+        reported.add(where)
+        out.append(
+            Finding(
+                code,
+                where,
+                f"the file carries a filled {selector} selector written as a type "
+                "beside a value. Git history is append-only, distributed to every "
+                "clone, and survives git rm, so a selector committed here is "
+                "outside every mechanism doctrine/RETENTION.md describes. This "
+                "refusal does not quote what matched, per RT-19",
+                "replace the value with a placeholder in the registry's form, such "
+                "as <addr> for an email, replace it with a synthetic value once the "
+                "cast is sealed, or add the file to repo_scan.document_exemptions "
+                "in ontology/selectors.yaml with the selector types it covers and "
+                "the reason",
+            )
+        )
     return out
 
 
@@ -1933,11 +2038,14 @@ def check_repo_scan(ctx: dict, staged: bool) -> tuple[list[Finding], dict]:
     allowlist, cast_state = synthetic_allowlist(registry)
     code = scan_code(ctx["codes"])
     files = scan_paths(staged)
+    pairs = 0
     for rel, text in files:
         findings.extend(scan_text(rel, text, patterns, exemptions, allowlist, code))
+        pairs += sum(1 for _, t, _ in selector_pairs(rel, text, set(patterns)) if t in patterns)
     return findings, {
         "files": len(files),
         "types": len(patterns),
+        "pairs": pairs,
         "cast_state": cast_state,
         "code": code,
         "staged": staged,
@@ -2055,6 +2163,30 @@ def _sample(rel: str, filled: bool) -> tuple[str, str]:
     """
     token = "handle" + ":" + "acmegram" + "/"
     return rel, "note: " + token + ("examplename" if filled else "<string>")
+
+
+def _pair_line(ctx) -> tuple[str, str]:
+    """A selector written as a type beside a value, on a JSON line."""
+    value = "examplename" + "@" + "example" + ".org"
+    return "conformance/x.jsonl", json.dumps({"selector_type": "email", "value": value, "expect": {"value": "PERMITTED"}})
+
+
+def _pair_yaml(ctx) -> tuple[str, str]:
+    """The same pair in a YAML file, across two lines."""
+    value = "examplename" + "@" + "example" + ".org"
+    return "policy/x.yaml", "selectors:\n  - selector_type: email\n    value: " + value + "\n"
+
+
+def _pair_placeholder(ctx) -> tuple[str, str]:
+    """The pair with a placeholder value, and an ordinary word paired elsewhere."""
+    return "conformance/x.jsonl", json.dumps(
+        {"selector_type": "username_string", "value": "<string>", "expect_decision": {"value": "PERMITTED"}}
+    )
+
+
+def _upper_domain(ctx) -> tuple[str, str]:
+    """A typed domain in capitals."""
+    return "notes/x.md", "note: " + "domain" + ":" + "EXAMPLE" + ".ORG"
 
 
 def _two_on_a_line(ctx) -> tuple[str, str]:
@@ -2426,6 +2558,10 @@ def _mutations():
         ("commit the same selector in placeholder form", "scan", lambda ctx: _sample("notes/x.md", False), "-" + scan, True),
         ("commit a filled selector in an exempted document", "scan", lambda ctx: _sample("docs/PLAINSIGHT-design.md", True), "-" + scan, True),
         ("hide a live selector behind an allowlisted one on the same line", "scan", _two_on_a_line, scan, True),
+        ("commit a selector as a type beside a value on a JSON line", "scan", _pair_line, scan, True),
+        ("commit the same pair in a YAML file", "scan", _pair_yaml, scan, True),
+        ("commit the pair with a placeholder, beside an ordinary word", "scan", _pair_placeholder, "-" + scan, True),
+        ("commit a typed domain in capitals", "scan", _upper_domain, scan, True),
     ]
 
 
@@ -2701,7 +2837,8 @@ def main(argv: list[str]) -> int:
             print(
                 f"validate_retention --repo-scan ok: {report['files']} file(s) "
                 f"read from {scope}, {report['types']} selector types matched in "
-                "their typed form, no filled selector found."
+                f"their typed form and in {report['pairs']} type-and-value pair(s), "
+                "no filled selector found."
             )
             print(
                 "  this result is not a claim that the repository is clean. It "

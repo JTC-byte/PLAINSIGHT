@@ -166,7 +166,8 @@ KERNEL_GATE = (
         [PY, "tools/validate_retention.py", "--repo-scan", "--quiet"],
         IMPLEMENTED,
         "RT-15, and D-001 closed at Step 8. Every tracked file in the working "
-        "tree read for a filled selector in its typed form, against thirteen "
+        "tree read for a filled selector in its typed form, or as a type beside "
+        "a value in a JSON line, a .json file or a .yaml file, against thirteen "
         "shapes reconciled with ontology/selectors.yaml in both directions. "
         "Two of RT-15's four enforcement parts are in place: canary_subject_class "
         "on a connector manifest and the code the criterion names are not, and git "

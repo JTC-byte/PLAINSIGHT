@@ -1959,3 +1959,29 @@ review's 88 findings are closed and seven in part.
 on the staged tree, the authorization self-test with 63 breaks, and both forms
 of `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
 checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Twentieth: the repo scan reads the pair form, Class B, decided under the
+grant as renewed at 01:26.** One review finding. RT-15's scan compiled one
+pattern per type in the registry's typed string form, while every CLAIM
+payload, every subject-authorization record and the gate fixtures' dispatch
+write a selector as a `selector_type` beside a `value`, or a
+`target_selector_type` beside a `target_selector`. A live record committed in
+that shape carried its type and was not found, and the scan's own "did not
+reach" notice did not say so. The scan now parses each JSON line, each .json
+file and each .yaml file and pairs the two keys within one mapping, never
+across a line, because a gate fixture's line also carries
+`expect_decision.value` and pairing that with a type elsewhere on the line
+would refuse an ordinary word. A mapping key that names a shape-detectable type
+is read the same way. The fqdn shape is case-insensitive. The notice names what
+the scan still does not reach: a pair quoted in a markdown block or in a file
+that does not parse, and a typed value with spaces, quotes or URL encoding
+inside it, or one character long. Over the tree the scan reads 482 pairs and
+finds nothing, and its summary line now reports the pair count. Four self-test
+breaks are new; emptying the pair pass and reverting the fqdn shape lets the
+three that refuse pass. With this, 59 of the review's 88 findings are closed and
+seven in part.
+
+**Battery for the twentieth change.** All sixteen preflight commands passed on
+the staged tree, the retention self-test with 81 breaks, and both forms of `git
+diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.
