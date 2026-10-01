@@ -2099,3 +2099,42 @@ are new. `--policy` and `--repo-scan` output are byte-identical to `78131d7`.
 staged tree, the retention self-test with 105 breaks, and both forms of `git
 diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Seventh: the rest of the second review's retention findings, and this
+session's records corrected, Class B.** Second-review findings rm2:5, rm2:6,
+sd2:3 and sd2:10, and the handoff halves of sd2:1, 2, 6, 7, 12 and 14. **A
+correction to the fifth paragraph above.** It and its CHANGELOG entry say the
+retention policy's last nine unpinned rules were pinned, and that
+retention-mechanism:1 closed in full. Both statements were false: the second
+review flipped twenty more compiled rules with `--policy` green. Those
+statements stay as written, and this paragraph and the handoff carry the
+correction. Twenty-three more rules are now pinned, each checked against RT-1,
+RT-2, RT-4, RT-5, RT-8, RT-9, RT-10, RT-13, RT-14, RT-17, RT-18 or the pin of
+record. These include RT-17's seven freeze booleans and the ledger's stratum
+and subject-value flag. More to the point, "the last" is now a fact a check
+holds. `UNPINNED_BY_NAME` names the twenty-eight booleans and strata that remain
+unpinned, each because it has not been checked against doctrine by value or
+because it states a fact about the tree. `--policy` refuses any compiled boolean
+or stratum that is neither pinned nor named, and any named one that no longer
+exists, as `RETENTION_POLICY_RULE_UNCLASSIFIED`. The pair reader now:
+- reads YAML with every scalar a string, so a phone written by hand is no
+  longer an int;
+- keeps every value of a repeated key;
+- drops a UTF-8 byte-order mark;
+- reads the strings in a list;
+- reads a `.json` file of JSON lines line by line;
+- reads keys in any case.
+
+The handoff's Step 8 sizes are labelled at `0e0c840`, its case count reads 31,
+two doctrine items are stated as stamped, its review heading and row are in
+the right tense, and its hash note and SAS-U1 sentence are exact. The
+second-review findings the refuters refuted or downgraded on the README, the
+kernel-gate note and the layer-model comment are left as they stand. The
+contract's stale sentence is the operator's (rank 2), and the schema's citation
+waits on plainsight-22. Thirty self-test breaks are new. `--policy` and
+`--repo-scan` output are byte-identical to `c82ed28`.
+
+**Battery for the seventh change.** All sixteen preflight commands passed on
+the staged tree, the retention self-test with 135 breaks, and both forms of
+`git diff --check` were clean. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.

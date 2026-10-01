@@ -8,12 +8,12 @@ ZMeta's handoff reached 2,080 lines carrying eleven superseded state sections,
 which is the failure mode this cap prevents.
 
 **Wave:** 0 committed, Step 7 committed in `4e6abda`, and Step 8 built in
-`0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
+`0e0c840`. Eight Step 8 artifacts, 9,342 lines at `0e0c840`, are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file fixes what the second review found in the retention gate's enforcement
-checks, on top of `78131d7`, under the overnight grant of 2026-09-30 23:28,
+file closes the rest of the second review's retention findings and corrects
+this file, on top of `c82ed28`, under the overnight grant of 2026-09-30 23:28,
 resumed at 12:24 and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
@@ -46,18 +46,18 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** A second adversarial pass over PRs 13 to 24 found
-the enforcement checks added today defeatable: RT-15's flags were compared by
-position, RT-16's entries could be reworded past the check, and the measure of
-RT-15's parts counted a comment. They are now keyed and measured, RT-9 checks 2
-and 3 are pinned, pins compare type as well as value, and two crashes are gone.
+**What changed and why.** "The last nine unpinned rules" was false. Every
+boolean and stratum the retention policy compiles is now pinned or named as
+unpinned, and a new one refuses until classified; twenty-three more rules are
+pinned. The pair reader reads a hand-written YAML phone, a repeated key, a
+byte-order mark, a list and keys in capitals. Stale statements here are fixed.
 
 **Which surfaces moved.** `tools/validate_retention.py` and its self-test,
 `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
 before the commit. All sixteen preflight commands passed, the retention
-self-test with 105 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+self-test with 135 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -96,8 +96,8 @@ never run. Section 5 says what the review found and what it left open.
 The operator's goal, stated 2026-09-08, is a first full investigation against
 consenting subjects who will confirm the findings, who are S1 CONSENTING. The
 gate is SS-14 item 6: eight artifacts stamped and a four-check preflight passing
-in the runner process. Seven of the eight exist and
-none is stamped. `runner/dispatch_allowlist.yaml` is the one absent, and
+in the runner process. Seven of the eight exist; only the two doctrine files
+are stamped. `runner/dispatch_allowlist.yaml` is the one absent, and
 `synthetic/CAST.md` is present but unsealed, so its clause is unmet either way.
 Three landed in `0e0c840`: the two authorization artifacts and
 `policy/retention.yaml`. The operator provisions ISOLATED, the personas, the
@@ -123,21 +123,21 @@ applied. Nothing has touched a platform. No account exists. No connector exists.
 | `spec/pse-semantics-contract.md` | Committed in `4e6abda`. **UNRATIFIED.** `pse-event-0.1`, Unlocked. Thirteen sections, every rule labelled. Sections 5 and 12 are SS-14 item 6 stamp targets. |
 | `spec/divergence-register.yaml` | Empty. Step 9. The contract's section 13.2 lists eleven divergences plus three that surfaced in generation. |
 | `schema/pse-event-0.1.schema.json` | Committed in `4e6abda`. **Generated.** Draft 2020-12, one closed payload per subtype, registry keys inlined as the selector enum, confidence refused as `false`. |
-| `schema/subject-authorization.schema.json` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 393 lines, compiled from SS-4's required-field table. |
+| `schema/subject-authorization.schema.json` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 393 lines at `0e0c840`, compiled from SS-4's required-field table. |
 | `policy/semantics.yaml`, `policy/lineage.yaml`, `policy/producer-authority.yaml`, `policy/violation-codes.yaml` | Committed in `4e6abda`. **Generated.** `policy/violation-codes.yaml` was regenerated in `38c93cc`; the other three are byte-identical across that fix. 57 codes, each naming its emitter. |
-| `policy/subject-authorization.yaml` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 1,403 lines. Its header says the generator does not own it. |
-| `policy/retention.yaml` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 1,617 lines. Same header. |
+| `policy/subject-authorization.yaml` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 1,403 lines at `0e0c840`. Its header says the generator does not own it. |
+| `policy/retention.yaml` | **Committed in `0e0c840`. Hand-authored, UNRATIFIED.** 1,617 lines at `0e0c840`. Same header. |
 | `conformance/must-pass.jsonl`, `conformance/must-fail.jsonl` | Committed in `4e6abda`. **Generated.** 44 events covering all 37 subtypes; 98 fixtures, one break each, 52 of 57 codes covered. No value appears in either. |
-| `conformance/gate/decisions.jsonl`, `conformance/gate/README.md` | **Committed in `0e0c840`.** The gate decision corpus at 21 lines, and its 548-line README. |
-| `conformance/retention/shred-roundtrip.yaml` | **Committed in `0e0c840`. UNRATIFIED.** 542 lines. |
+| `conformance/gate/decisions.jsonl`, `conformance/gate/README.md` | **Committed in `0e0c840`.** The gate decision corpus at 21 lines, and its README, 548 lines at `0e0c840`. |
+| `conformance/retention/shred-roundtrip.yaml` | **Committed in `0e0c840`. UNRATIFIED.** 542 lines at `0e0c840`. |
 | `ontology/selectors.yaml` | Committed in `f4e00e1`. 19 selectors, 5 proposed and unstamped. Ten readings await confirmation. |
 | `synthetic/CAST.md`, `synthetic/GROUND_TRUTH.yaml` | Committed in `f4e00e1`. DRAFT, UNSEALED, placeholders only. Six decisions for the operator in CAST.md section 9. |
 | `tools/generate_pse.py`, `tools/build_corpus.py` | Committed in `4e6abda`. The only writers of the five generated artifacts and the two corpora. `--check` refuses drift in either. |
 | `tools/validate.py` | Committed in `4e6abda`. Rung 2. `--kernel` runs both drift checks, grades both corpora with `expect_only` and no short-circuit, and runs its self-test. |
 | `tools/validate_layer_model.py` | Committed earlier. `38c93cc` adds L-34, `CODE_ENTRY_KEYS`, refusing a code entry with keys outside the declared five or with no `fires_when`. Its self-test reports 62 deliberate breaks, 62 refused, 50 by the expected code alone, 12 cascading, 44 distinct codes exercised. |
-| `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines. `--fixtures` refuses while nothing is stamped. `b378cd8` corrected one docstring count, six unstamped paths to seven. |
-| `tools/validate_retention.py` | **Replaced in `0e0c840`.** 2,105 lines, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
-| `tools/pin_of_record.py` | **New on 2026-10-01.** The one reader of the pin of record the doctrine, authorization and retention gates import. `READINGS` states its eight predicates, PIN-R1 to PIN-R8, each an assistant reading awaiting the operator; its self-test plants 21 cases. |
+| `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines at `0e0c840`. `--fixtures` refuses while nothing is stamped. `b378cd8` corrected one docstring count, six unstamped paths to seven. |
+| `tools/validate_retention.py` | **Replaced in `0e0c840`.** 2,105 lines at `0e0c840`, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
+| `tools/pin_of_record.py` | **New on 2026-10-01.** The one reader of the pin of record the doctrine, authorization and retention gates import. `READINGS` states its eight predicates, PIN-R1 to PIN-R8, each an assistant reading awaiting the operator; its self-test plants 31 cases. |
 | `tools/validate_doctrine.py` | Committed earlier. Since 2026-10-01 it reads criterion rows through the shared reader and has a self-test planting ten defects. |
 | `tools/validate_hygiene.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
 | `tools/validate_ontology.py` | Committed earlier. The overnight commit keeps the `value_in_a_form` fixture's platform segment a placeholder, so the file carries no complete typed handle; its self-test still refuses the break by `ONT_VALUE_IN_FILE` alone. |
@@ -184,7 +184,8 @@ a step: SUBJECT_SELECTION.md and RETENTION.md per criterion, stamped;
 stamped; the contract's sections 5 and 12; `synthetic/CAST.md` sealed and
 hash-pinned with a confuser pair; `runner/dispatch_allowlist.yaml`; and the
 four-check preflight passing in the runner process. Seven of the eight artifacts
-now exist and none is stamped. **The commit that completes item 6 also edits row
+now exist; only the two doctrine files are stamped. **The commit that completes
+item 6 also edits row
 8 of `conformance/gate/decisions.jsonl`**, which asserts the item 6 refusal from
 the real pin, or the authorization self-test and so the hook refuse it. The
 re-review measured two edits that work: a fixture stamp state on the row, which
@@ -246,8 +247,9 @@ about 1,720 non-recurring and 205 a month.
   that range row, which the shared reader closed.
 - **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
   `schema/subject-authorization.schema.json` admits no value at all, because its
-  subschema is `"not": {}`, so no authorization record validates; SA-U2, SA-U11
-  and SAS-U1 all land on it, and changing it widens what authorizes a subject,
+  subschema is `"not": {}`, so no authorization record validates; SA-U2 and
+  SA-U11 land on it, SAS-U1 on `selector_type`'s empty enum, and changing either
+  widens what authorizes a subject,
   which is class F. SA-U16's current
   `decided_at_step` placement is not wire-legal, because
   `spec/layer-model.yaml:607` requires the field on every REFUSED.
@@ -295,7 +297,7 @@ about 1,720 non-recurring and 205 a month.
   documented. **The compatibility-claim check reads one file, not the tree**,
   and Step 9 closes it.
 
-## 5. What Step 7's verification covered, and the review Step 8 is owed
+## 5. What Step 7's verification covered, and the Step 8 reviews
 
 Step 7's generated artifacts are checked three ways: the two `--check` modes
 prove the files on disk are what the model and the fixture tables generate, and
@@ -338,7 +340,7 @@ pass over PRs 13 to 24 is recorded beside the first, in `REVIEW2.md`.
 |---|---|---|
 | The Step 8 decision register | `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md` | The 51 distinct decisions, the 22 an agent can settle by citation, and the 29 that are the operator's. |
 | Both doctrine review records and the patches | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | DECISIONS.md's 2026-09-08 amendment states what landed. Patch 4b lives here and no longer applies cleanly. |
-| The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies, and the method the Step 8 review owes. Pre-rewrite hashes. |
+| The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies, and the method the Step 8 reviews used. Pre-rewrite hashes. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Carries the removed values; unshared. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, and the critical path to a first S1 run. |
 | The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/` and `.../2026-09-30-plainsight-harvest-and-archive/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, and the record of the worktree's 751 gate-log rows merged into this checkout's log. |
@@ -377,8 +379,9 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   there.** A push is an operator-instructed act and follows a closeout, and
   every step conclusion of its CI run is read afterwards. Commits carry the
   GitHub no-reply address.
-- **Hashes in the worklog, its archive, and every changelog entry below the
-  2026-09-07 rewrite entry are pre-rewrite.** That entry translates them.
+- **Hashes in worklog entries dated before the 2026-09-07 rewrite, in the
+  archive, and in every changelog entry below the rewrite entry are
+  pre-rewrite.** That entry translates them.
 - The gates need PyYAML and jsonschema. `make preflight` runs sixteen
   commands, the eight self-tests among them; the hook runs fifteen.
 - **The worklog is capped at ten live entries and the hygiene gate refuses an

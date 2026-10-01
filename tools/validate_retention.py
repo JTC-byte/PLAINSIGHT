@@ -238,9 +238,6 @@ FIXTURE_CHECK_PASSES = {
     5: "the canary case is still fully readable and its blob count is unchanged",
 }
 
-#: Compiled rules that bound what is held and where, by value, each with its
-#: criterion. No tool read them until 2026-10-01, so each could be flipped to
-#: its permissive value with every gate green.
 #: Whether the RT-16 reconcile of pinned connector versions against connectors/
 #: exists in this tool. It does not: there is neither a ledger nor a connector to
 #: read. The policy's enforcement entry for it must say so, and when it lands this
@@ -279,6 +276,9 @@ RT15_CLAUSE_SENTENCE = (
     "name into a tracked file."
 )
 
+#: Compiled rules that bound what is held and where, by value, each with its
+#: criterion. No tool read them until 2026-10-01, so each could be flipped to
+#: its permissive value with every gate green.
 PINNED_RULES = (
     ("full_text_index.inside_shred_boundary", True, "RT-7"),
     ("blob_policy.text.case_level_value_legal", False, "RT-8"),
@@ -301,11 +301,85 @@ PINNED_RULES = (
     ("strata.cassette_rule.permitted_capture_targets", ["S2", "N0"], "RT-1, EG-5, RT-15"),
     ("strata.cassette_rule.satisfies_rt16_floor", False, "RT-1, RT-16"),
     ("strata.permanent", [2, 3, 4], "RT-1"),
+    # Added after the second review of 2026-10-01, finding rm2:6, which flipped
+    # each of these with --policy green after 78131d7 said the last nine were
+    # pinned.
+    ("strata.declared_at", "write_time", "RT-1"),
+    ("strata.decided_at_delete_time", False, "RT-1"),
+    ("export_boundary.draft_and_return_brief_stratum", 1, "RT-1, RT-14"),
+    ("cross_case_persistence.exception_register_present", False, "RT-2, SS-21"),
+    ("extension.inaction_is_deletion", True, "RT-5"),
+    ("case_ttl.applies_to_every_subject_class", True, "RT-5, which names no subject class"),
+    ("blob_policy.text.scoped_by", "retain_until", "RT-8"),
+    ("verification.runs_outside_the_shredding_tool", True, "RT-9"),
+    ("ledger.carries_subject_derived_values", False, "RT-10"),
+    ("ledger.stratum", 2, "RT-10"),
+    ("ledger.reconcile.directions", "both", "RT-10"),
+    ("ledger.reconcile.cached_read_path_permitted", False, "RT-9, RT-10"),
+    ("finding_check.output_stratum", 3, "RT-1, RT-13"),
+    ("disclosure_export.projection_or_summary_permitted", False, "RT-18"),
     ("encryption.per_case_data_key", True, "RT-4"),
     ("full_text_index.stratum", 1, "RT-7"),
     ("full_text_index.per_case", True, "RT-7"),
     ("full_text_index.shared_across_cases", False, "RT-7"),
+    ("encryption.retrofittable", False, "RT-4"),
+    ("freeze.stops_the_run", True, "RT-17"),
+    ("freeze.stops_queued_pivots", True, "RT-17"),
+    ("freeze.stops_the_sweep_for_one_case", True, "RT-17"),
+    ("freeze.collects_nothing_further", True, "RT-17"),
+    ("freeze.notifies_the_operator", True, "RT-17"),
+    ("freeze.is_a_logged_act", True, "RT-17"),
+    ("freeze.crosses_the_case_ceiling", True, "RT-17"),
+    ("unratified.refuses_rather_than_permits", True, "the pin of record, doctrine/DOCTRINE_STATUS.md"),
 )
+
+#: Every boolean or stratum value the policy compiles that is not pinned above,
+#: named so that "the last unpinned rule" is a fact a check can hold. Until the
+#: second review of 2026-10-01 two records claimed the last rules were pinned
+#: while twenty more were read by no tool. Each one here is unpinned because it
+#: has not yet been checked against doctrine by value, or because it states a
+#: fact about the tree that moves when the tree does. A new boolean or stratum
+#: in the policy refuses until it is pinned or named here.
+UNPINNED_BY_NAME = (
+    "ratification.refuses_rather_than_permits",
+    "case_ttl.retain_until.is_a_column",
+    "case_ttl.ceiling_refusal.required",
+    "incidental.subject_relation_is_computed",
+    "verification.witness.digest_recorded",
+    "ledger.present_in_tree",
+    "ledger.survives_the_shred",
+    "ledger.reconcile.scheduled",
+    "ledger.reconcile.writes_heartbeat_on_every_run",
+    "ledger.pinned_connector_versions_read_from_here",
+    "heartbeats.written_on_every_run_including_empty_ones",
+    "heartbeats.threshold_is_per_job",
+    "heartbeats.scheduled_from_day_one",
+    "export_boundary.technical_control_available",
+    "connector_floor.forbids_a_deletion_act",
+    "connector_floor.carries_subject_values",
+    "freeze.renewal.escalation.second_renewal_renders_a_distinct_state",
+    "disclosure_export.minimization_applied",
+    "disclosure_export.minimization_inverted_here_deliberately",
+    "disclosure_export.is_a_logged_act",
+    "disclosure_export.outside_every_mechanism_once_it_leaves",
+    "disclosure_export.interface_states_that_at_the_moment_of_export",
+    "disclosure_export.alters_the_freeze_or_the_shred_path",
+    "gate_telemetry.stratum",
+    "gate_telemetry.rolling",
+    "gate_telemetry.swept_on_write",
+    "gate_telemetry.swept_on_read",
+    "gate_telemetry.swept_by_a_scheduled_job",
+)
+
+
+def _rule_leaves(node, path: str = ""):
+    """Every boolean, and every value under a key naming a stratum, outside lists."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield from _rule_leaves(value, f"{path}.{key}" if path else str(key))
+    elif not isinstance(node, list):
+        if isinstance(node, bool) or path.endswith("stratum"):
+            yield path
 
 #: RT-15. The code doctrine requires in policy/violation-codes.yaml. That file
 #: is generated from spec/layer-model.yaml and cannot be hand-edited, and the
@@ -1272,6 +1346,38 @@ def check_policy(ctx: dict) -> list[Finding]:
                 )
             )
 
+    # Every boolean and stratum the policy compiles is pinned or named as not.
+    known = (
+        {path for path, _, _ in PINNED_RULES}
+        | {path for path, _, _ in INVARIANTS}
+        | {path for path, _, _ in DURATIONS}
+        | {f"halt.{key}" for key in HALT_PIN}
+        | set(UNPINNED_BY_NAME)
+    )
+    leaves = set(_rule_leaves(pol))
+    for path in sorted(leaves - known):
+        out.append(
+            Finding(
+                "RETENTION_POLICY_RULE_UNCLASSIFIED",
+                f"{POLICY_REL} :: retention.{path}",
+                "the policy compiles a boolean or stratum that this tool neither pins "
+                "nor names as unpinned, so it can be flipped with every gate green and "
+                "no record can say which rules are left",
+                "pin it in PINNED_RULES with the criterion that fixes it; or name it in "
+                "UNPINNED_BY_NAME with why it is not pinned",
+            )
+        )
+    for path in sorted(set(UNPINNED_BY_NAME) - leaves):
+        out.append(
+            Finding(
+                "RETENTION_POLICY_RULE_UNCLASSIFIED",
+                f"{POLICY_REL} :: retention.{path}",
+                "UNPINNED_BY_NAME names a rule the policy no longer compiles, so the list "
+                "no longer says which rules are left",
+                "remove it from UNPINNED_BY_NAME; or restore the rule",
+            )
+        )
+
     # Compiled rules that bound what is held and where.
     for path, value, criterion in PINNED_RULES:
         actual = dig(pol, path)
@@ -1907,21 +2013,68 @@ def _mappings(node, seen: set | None = None):
             yield from _mappings(value, seen)
 
 
+class _Repeated(list):
+    """Every value a key was given in one mapping, where the key was repeated.
+
+    A parser keeps the last value of a repeated key, so until the second review
+    of 2026-10-01 a live value followed by a placeholder under the same key was
+    read as the placeholder alone.
+    """
+
+
+def _keep_repeats(pairs):
+    mapping: dict = {}
+    for key, value in pairs:
+        if key in mapping:
+            held = mapping[key]
+            mapping[key] = held + [value] if isinstance(held, _Repeated) else _Repeated([held, value])
+        else:
+            mapping[key] = value
+    return mapping
+
+
+if yaml is not None:
+
+    class _ScanLoader(yaml.BaseLoader):
+        """Every scalar a string, every repeated key kept. An unquoted E.164 number
+        was an int under safe_load and was dropped until 2026-10-01."""
+
+    def _construct_scan_mapping(loader, node, deep=False):
+        return _keep_repeats(
+            (loader.construct_object(k, deep=True), loader.construct_object(v, deep=True))
+            for k, v in node.value
+        )
+
+    _ScanLoader.add_constructor("tag:yaml.org,2002:map", _construct_scan_mapping)
+
+
+def _strings(value) -> list[str]:
+    """The strings a value carries: itself, or the strings in a list of them."""
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, list):
+        return [v for v in value if isinstance(v, str)]
+    return []
+
+
 def _pairs_in(node, types: set[str]):
     """(type, value) for every pair in one parsed document, within one mapping.
 
     Pairing within a mapping rather than within a line matters: a gate fixture's
     line also carries expect_decision.value, and pairing that with a
-    selector_type elsewhere on the line would refuse an ordinary word.
+    selector_type elsewhere on the line would refuse an ordinary word. Keys are
+    read in any case, and a list or a repeated key yields every string it holds.
     """
     for mapping in _mappings(node):
+        folded = {str(k).lower(): v for k, v in mapping.items()}
         for type_key, value_key in PAIR_KEYS:
-            selector, value = mapping.get(type_key), mapping.get(value_key)
-            if isinstance(selector, str) and isinstance(value, str):
-                yield selector, value
-        for key, value in mapping.items():
-            if key in types and isinstance(value, str):
-                yield key, value
+            for selector in _strings(folded.get(type_key)):
+                for value in _strings(folded.get(value_key)):
+                    yield selector.lower(), value
+        for key, value in folded.items():
+            if key in types:
+                for item in _strings(value):
+                    yield key, item
 
 
 def selector_pairs(rel: str, text: str, types: set[str]) -> list[tuple[int, str, str]]:
@@ -1932,30 +2085,36 @@ def selector_pairs(rel: str, text: str, types: set[str]) -> list[tuple[int, str,
     file that does not parse yields nothing here, which SCAN_DOES_NOT_REACH says.
     """
     out: list[tuple[int, str, str]] = []
+    text = text.lstrip("﻿")
     lines = text.splitlines()
     suffix = Path(rel).suffix.lower()
-    if suffix in (".json", ".yaml", ".yml"):
+    if suffix in (".yaml", ".yml") or suffix == ".json":
         try:
             if suffix == ".json":
-                docs = [json.loads(text)]
+                docs = [json.loads(text, object_pairs_hook=_keep_repeats)]
             elif yaml is not None:
-                docs = list(yaml.safe_load_all(text))
+                docs = list(yaml.load_all(text, Loader=_ScanLoader))
             else:
                 docs = []
-        except (ValueError, yaml.YAMLError if yaml is not None else ValueError):
-            docs = []
-        for doc in docs:
-            for selector, value in _pairs_in(doc, types):
-                number = next((n for n, line in enumerate(lines, 1) if value in line), 1)
-                out.append((number, selector, value))
-        return out
+        except (ValueError, RecursionError, yaml.YAMLError if yaml is not None else ValueError):
+            docs = None
+        if docs is not None:
+            for doc in docs:
+                for selector, value in _pairs_in(doc, types):
+                    number = next((n for n, line in enumerate(lines, 1) if value in line), 1)
+                    out.append((number, selector, value))
+            return out
+        if suffix != ".json":
+            return out
+        # A .json file that does not parse whole is read line by line, as JSON
+        # lines; until 2026-10-01 such a file yielded nothing.
     for number, line in enumerate(lines, 1):
-        stripped = line.strip().rstrip(",")
+        stripped = line.strip().lstrip("﻿").rstrip(",")
         if not stripped.startswith(("{", "[")):
             continue
         try:
-            doc = json.loads(stripped)
-        except ValueError:
+            doc = json.loads(stripped, object_pairs_hook=_keep_repeats)
+        except (ValueError, RecursionError):
             continue
         out.extend((number, selector, value) for selector, value in _pairs_in(doc, types))
     return out
@@ -2094,7 +2253,9 @@ def decode_for_scan(name: str, data: bytes) -> str:
             "re-save it as UTF-8; or remove or unstage it; or keep binary files out "
             "of the tracked tree",
         )
-    return data.decode("utf-8", errors="replace")
+    # A UTF-8 byte-order mark is dropped here, so the pair reader parses the
+    # file; until 2026-10-01 a .json file PowerShell wrote was read as nothing.
+    return data.decode("utf-8", errors="replace").lstrip("﻿")
 
 
 def scan_paths(staged: bool) -> list[tuple[str, str]]:
@@ -2411,6 +2572,38 @@ def _pair_placeholder(ctx) -> tuple[str, str]:
     return "conformance/x.jsonl", json.dumps(
         {"selector_type": "username_string", "value": "<string>", "expect_decision": {"value": "PERMITTED"}}
     )
+
+
+def _email_value() -> str:
+    return "examplename" + "@" + "example" + ".org"
+
+
+def _pair_unquoted_phone(ctx) -> tuple[str, str]:
+    """A phone written by hand in YAML, which a safe loader reads as a number."""
+    return "policy/x.yaml", "selectors:\n  - selector_type: phone\n    value: " + "+1" + "5550100" + "999" + "\n"
+
+
+def _pair_repeated_value(ctx) -> tuple[str, str]:
+    """A live value hidden behind a placeholder under the same key."""
+    return "conformance/x.jsonl", '{"selector_type": "email", "value": "' + _email_value() + '", "value": "<addr>"}'
+
+
+def _pair_json_with_bom(ctx) -> tuple[str, str]:
+    """A .json file opening with a byte-order mark, as PowerShell 5.1 writes it."""
+    return "conformance/x.json", "﻿" + json.dumps({"selector_type": "email", "value": _email_value()})
+
+
+def _pair_value_in_a_list(ctx) -> tuple[str, str]:
+    return "conformance/x.jsonl", json.dumps({"selector_type": "email", "value": [_email_value()]})
+
+
+def _pair_json_holding_lines(ctx) -> tuple[str, str]:
+    one = json.dumps({"selector_type": "email", "value": _email_value()})
+    return "conformance/x.json", one + "\n" + one + "\n"
+
+
+def _pair_keys_in_capitals(ctx) -> tuple[str, str]:
+    return "conformance/x.jsonl", json.dumps({"Selector_Type": "email", "Value": _email_value()})
 
 
 def _upper_domain(ctx) -> tuple[str, str]:
@@ -2770,6 +2963,9 @@ def _mutations():
     def fixture_check3_passes_always(ctx):
         ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][2]["passes_when"] = "always"
 
+    def rule_nobody_classified(ctx):
+        ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = True
+
     def stratum_written_as_true(ctx):
         ctx["policy"]["retention"]["full_text_index"]["stratum"] = True
 
@@ -2789,6 +2985,7 @@ def _mutations():
         ("let the fixture's check 2 pass always", "roundtrip", fixture_check2_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
         ("let the fixture's check 3 pass always", "roundtrip", fixture_check3_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
         ("write the index's stratum as true", "policy", stratum_written_as_true, "RETENTION_POLICY_RULE_DRIFT", True),
+        ("compile a rule nobody pinned or named", "policy", rule_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
         ("claim canary_subject_class is required on manifests", "policy", canary_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("stop failing check 1 on a successful decrypt", "policy", check1_forgets_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("hold the witness inside the delete path", "policy", witness_inside_the_delete_path, "RETENTION_POLICY_WITNESS_UNDESIGNATED", True),
@@ -2859,6 +3056,12 @@ def _mutations():
         ("commit the same pair in a YAML file", "scan", _pair_yaml, scan, True),
         ("commit the pair with a placeholder, beside an ordinary word", "scan", _pair_placeholder, "-" + scan, True),
         ("commit a typed domain in capitals", "scan", _upper_domain, scan, True),
+        ("commit a phone pair written by hand in YAML", "scan", _pair_unquoted_phone, scan, True),
+        ("hide a live value behind a repeated key", "scan", _pair_repeated_value, scan, True),
+        ("commit a .json pair behind a byte-order mark", "scan", _pair_json_with_bom, scan, True),
+        ("commit a pair whose value is a list", "scan", _pair_value_in_a_list, scan, True),
+        ("commit JSON lines in a .json file", "scan", _pair_json_holding_lines, scan, True),
+        ("commit a pair with its keys in capitals", "scan", _pair_keys_in_capitals, scan, True),
     ]
 
 
