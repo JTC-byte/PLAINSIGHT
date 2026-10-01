@@ -133,22 +133,23 @@ nothing, and it stayed honest only because it said so on every run. Counting a
 stub, a pending entry, or an unratified refusal as green would turn a known gap
 into a silent one.
 
-The gate does not run green today. `--kernel-gate` refuses on
-retention-repo-scan, and on that check alone. The scan finds two filled
+The gate runs green as of the commit that replaced two values. Until then
+`--kernel-gate` refused on retention-repo-scan alone, which found two filled
 selectors that predate Step 8: one in `docs/PLAINSIGHT-FOUNDATION.md` at line
 87, introduced in `1abb354`, a worked example inside a rank-7 record of intent,
 and one in `tools/validate_ontology.py` at line 894, introduced in `f4e00e1`,
-inside that validator's own negative fixture. Both are true on shape and false in
-substance. `docs/PLAINSIGHT-design.md` and `docs/THE-GAMEPLAN.md` already carry
-`repo_scan.document_exemptions` rows of exactly this kind, and
-`docs/PLAINSIGHT-FOUNDATION.md` does not. Adding the two rows was proposed
+inside that validator's own negative fixture. Both were true on shape and false
+in substance. Adding `repo_scan.document_exemptions` rows for them was proposed
 during Step 8 and refuted, because narrowing an RT-15 scan is a reach decision
-that belongs to the operator. That decision is open. The pre-commit hook is
-unaffected, because it runs the same mode over the index rather than over the
-working tree.
+that belongs to the operator, and that route stays closed. Under the operator's
+overnight grant of 2026-09-30 the scan's first legal move was taken instead. The
+worked example now reads in the registry's placeholder form, and the fixture
+keeps its platform segment a placeholder, so the line no longer carries a
+complete typed handle while the ontology check it exercises still fires. Neither
+change narrows the scan. Both values remain in git history, which is RT-15's
+fourth part and out of reach of this check.
 
-A green kernel-gate run, once that decision is settled, would mean fourteen
-implemented checks passed and three unratified checks refused in the way the
+A green kernel-gate run means fourteen implemented checks passed and three unratified checks refused in the way the
 list says they refuse, while two stubs checked nothing and five checks did not
 run at all because the dispatch paths, the credential pool, the case store, the
 divergence register, and every connector do not exist. That is a regression

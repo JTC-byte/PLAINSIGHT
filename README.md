@@ -115,7 +115,10 @@ This repository reads from its siblings and writes to none of them.
   `../zisr-recon/` when that precedent was measured, and moved on 2026-09-10
   when four producer repositories were consolidated.
 - `../zisr-cop/`: the operational client, and the source of several interface
-  patterns. PLAINSIGHT is a sibling application, not a mode within it.
+  patterns. PLAINSIGHT is a sibling application, not a mode within it. It stood
+  at `../ZISR COP/` when `doctrine/RETENTION.md` and
+  `doctrine/CREDENTIAL_LIFECYCLE.md` cited its operational contract, and those
+  dated citations keep that path.
 
 ## License and repository model
 

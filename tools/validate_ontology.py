@@ -891,7 +891,11 @@ def _mutations():
         r["matchers"]["library"]["shape.orphan.v1"] = {"purpose": "argv_shape_gate", "note": "nothing calls it"}
 
     def value_in_a_form(r):
-        r["selectors"]["handle"]["form"] = "handle:acmegram/examplename"
+        # One filled segment is enough for ONT_VALUE_IN_FILE to fire. The
+        # platform segment stays a placeholder so this line never carries a
+        # complete typed handle, which RT-15's repo scan refuses in any tracked
+        # file, fixtures included.
+        r["selectors"]["handle"]["form"] = "handle:<platform>/examplename"
 
     def prohibition_removed(r):
         r["prohibitions"] = [p for p in r["prohibitions"] if p.get("selector") != "email_generated_permutation"]

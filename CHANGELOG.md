@@ -22,6 +22,37 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-09-30, overnight. The two values the repo scan refused are replaced
+  with placeholders, and the kernel gate exits 0.**
+
+  **What changed.** `tools/validate_retention.py --repo-scan` refused two
+  filled handle selectors that predate Step 8, which held the kernel gate and CI
+  red on every push since `0e0c840`. The worked example in
+  `docs/PLAINSIGHT-FOUNDATION.md` now reads in the registry's form,
+  `handle:<platform>/<string>`, and the `value_in_a_form` fixture in
+  `tools/validate_ontology.py` keeps its platform segment a placeholder, so the
+  line carries no complete typed handle while the check it exercises still
+  fires. This is the first of the three moves the scan's refusal names. It was
+  taken under the operator's overnight grant of 2026-09-30 23:28, relayed by the
+  parent-folder session, and is revertible. `README.md` also translates the old
+  `../ZISR COP/` path that two dated doctrine citations keep.
+
+  **Which surfaces moved.** `docs/PLAINSIGHT-FOUNDATION.md` line 87,
+  `tools/validate_ontology.py`, `README.md`, `AGENTS.md` section 5,
+  `CONFORMANCE.md` section 4, the worklog, its archive, and the handoff.
+
+  **What validation ran.** All fourteen preflight commands on the staged tree,
+  with the ontology self-test refusing the edited break by `ONT_VALUE_IN_FILE`
+  alone, and both forms of `git diff --check`. The kernel gate exited 0 with 14
+  implemented checks passing, 3 unratified and refusing, 2 stubbed and 5
+  pending.
+
+  **What did not change.** No doctrine file, stamp, schema, policy file,
+  generated artifact, corpus, or registry entry. `ontology/selectors.yaml` is
+  untouched and no `repo_scan.document_exemptions` row was added, so the scan's
+  reach is what it was. Both values remain in git history, which RT-15's fourth
+  part names and no commit-time check reaches.
+
 - **2026-09-28. Every validator self-test runs on the hook, preflight, the
   kernel gate and CI; CI stops skipping the steps after a red one; and the two
   ontology stubs nothing called are declared as STUB.**

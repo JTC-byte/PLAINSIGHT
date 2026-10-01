@@ -158,9 +158,9 @@ artifact in memory and asserts each break is refused, so it is the test that
 fails when a check is removed. Until 2026-09-28 five of the six ran on no path,
 and the fires_when fix was reported green in two sessions while the layer-model
 self-test exited 1. `tools/validate.py` runs its own inside `--kernel`, and
-`tools/validate_doctrine.py` has none. The kernel gate's exit code cannot show a
-self-test failure while `retention-repo-scan` holds it red, and its entry line
-can, which is why CI also runs each self-test as a step of its own.
+`tools/validate_doctrine.py` has none. The kernel gate's exit code shows a
+self-test failure only while no other entry holds it red, and its entry line
+always shows it, which is why CI also runs each self-test as a step of its own.
 
 **What these gates actually cover, stated so a green run is not read as more
 than it is.** The governed artifacts checked today are the doctrine corpus
@@ -197,9 +197,10 @@ reach the fourth, for two reasons that are worth stating separately. The
 violation code RT-15 names is not in the wire vocabulary, so the scan has no
 legal token to emit for it. Git history is out of reach of any check that runs
 at commit time, so a selector deleted from the working tree and still present in
-an earlier commit is not found. The check refuses today on two values that
-predate Step 8, and `CONFORMANCE.md` section 4 records what they are and what
-the open decision about them is.
+an earlier commit is not found. It refused on two values that predate Step 8
+until both were replaced with placeholders under the operator's overnight grant
+of 2026-09-30, and `CONFORMANCE.md` section 4 records what they were and why no
+exemption was added.
 
 If a required check cannot be run, document the reason in the handoff.
 

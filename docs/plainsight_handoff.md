@@ -11,21 +11,18 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-09-30. The commit that carries this file is the documentation
-correction the 2026-09-30 harvest listed, explanatory text and records only, on
-top of `c9109f9`. `b378cd8` wired every validator self-test into the hook,
-preflight, the kernel gate and CI on 2026-09-28, and CI runs 36501081165 and
-36766930669 ran every step of it on GitHub, the steps after the red kernel gate
-included.
+**Date:** 2026-09-30, overnight. The commit that carries this file replaces the
+two values the repo scan refused, on top of `de9e754`, under the operator's
+overnight grant of 2026-09-30 23:28. The kernel gate exits 0 on its staged tree,
+the first time since `0e0c840`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
 this tree; section 4 says what that costs and section 3 says whose decision it
 is.
-**Kernel gate:** 24 entries: 14 implemented, 3 unratified, 2 stubbed, 5
-pending. Red on one check, `retention-repo-scan`, for a reason that is an open
-operator decision rather than a defect in the tree. Do not describe this battery
-as green.
+**Kernel gate:** 24 entries: 14 implemented and passing, 3 unratified and
+refusing as designed, 2 stubbed, 5 pending. Green means that and no more;
+`CONFORMANCE.md` section 4 states what a green run does not claim.
 
 **Resume here.** Read two files first:
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`,
@@ -34,8 +31,9 @@ the operator's; and
 `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
 which is what the operator is buying and standing up in parallel. The next work
 is the adversarial review Step 8 is owed, described in section 5. It has not
-happened, and no session should treat Step 8 as reviewed. On 2026-09-30 the
-operator held all further work for a priorities discussion.
+happened, and no session should treat Step 8 as reviewed. The operator's
+overnight grant of 2026-09-30 23:28 covers it, and the worklog's overnight entry
+records what that night reached.
 
 ---
 
@@ -47,34 +45,34 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** This commit corrects the README gap the 2026-09-29
-handoff listed and the three stale lines the 2026-09-30 harvest recorded, under
-the operator's concurrence of 2026-09-30 to bring every repository clean and up
-to date before a priorities discussion. `README.md` stops saying no schema and
-no policy pack exist and stops describing Step 7 as future work; its stub-scan
-sentence and its ZISR COP pointer, found stale while correcting it, go too.
-`docs/THE-GAMEPLAN.md` stops tagging Step 8 blocked. This file drops a machine
-path, gains the prefix its second Resume path lacked, repoints its Sherlock row,
-and loses the two section 4 gaps that this commit and the 2026-09-30 worktree
-removal closed.
+**What changed and why.** Two decisions taken under the operator's overnight
+grant of 2026-09-30 23:28, relayed by the parent-folder session, each recorded
+as revertible. First, the two filled handle selectors the repo scan refused are
+replaced with placeholders in the registry's form, the scan's first legal move,
+rather than exempted, which would narrow an RT-15 scan and is the operator's
+reach decision. The kernel gate stops failing on them. Second, the two doctrine
+citations of `../ZISR COP/` keep the old path as dated measurements, as the
+`../zisr-recon/` ones do, and `README.md` translates it. The cast seal was not
+taken: it needs the operator's personas, SIMs and six decisions.
 
-**Which surfaces moved.** `README.md`, `docs/THE-GAMEPLAN.md`, this file and the
-worklog, with the oldest live worklog entry moved to its archive unedited. No
-governed artifact changed, so `CHANGELOG.md` carries no entry.
+**Which surfaces moved.** `docs/PLAINSIGHT-FOUNDATION.md` line 87,
+`tools/validate_ontology.py`'s `value_in_a_form` fixture, `README.md`,
+`AGENTS.md` section 5, `CONFORMANCE.md` section 4, `CHANGELOG.md`, this file,
+and the worklog, with its oldest live entry moved to the archive unedited.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All fourteen preflight commands passed, the six self-tests
-among them, and both forms of `git diff --check` were clean. The kernel gate was
-red on `retention-repo-scan` alone, the disclosed state in section 3.
+before the commit. All fourteen preflight commands passed, the ontology
+self-test refusing the edited fixture by its expected code alone, and both forms
+of `git diff --check` were clean. The kernel gate exited 0: 14 passed, 3
+unratified and refusing, 2 stubbed, 5 pending.
 
-**Whether a release baseline changed.** No. `main` gains this one documentation
-commit.
+**Whether a release baseline changed.** No. `main` gains this commit through a
+pull request.
 
 **What remains open or deferred.** Section 3 holds the operator's 29 decisions,
-patch 4b with its four Class F items, the repo-scan exemption and the cast seal.
-Section 4 holds every stamp, the 2026-09-28 follow-ups and the known defects;
-section 5 holds the adversarial review Step 8 is owed. The operator held all of
-it on 2026-09-30 for a priorities discussion.
+patch 4b with its four Class F items, and the cast seal. Section 4 holds every
+stamp, the 2026-09-28 follow-ups and the known defects; section 5 holds the
+adversarial review Step 8 is owed.
 
 ---
 
@@ -145,7 +143,8 @@ applied. Nothing has touched a platform. No account exists. No connector exists.
 | `tools/validate_layer_model.py` | Committed earlier. `38c93cc` adds L-34, `CODE_ENTRY_KEYS`, refusing a code entry with keys outside the declared five or with no `fires_when`. Its self-test reports 62 deliberate breaks, 62 refused, 50 by the expected code alone, 12 cascading, 44 distinct codes exercised. |
 | `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines. `--fixtures` refuses while nothing is stamped. `b378cd8` corrected one docstring count, six unstamped paths to seven. |
 | `tools/validate_retention.py` | **Replaced in `0e0c840`.** 2,105 lines, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
-| `tools/validate_doctrine.py`, `validate_hygiene.py`, `validate_ontology.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
+| `tools/validate_doctrine.py`, `validate_hygiene.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
+| `tools/validate_ontology.py` | Committed earlier. The overnight commit keeps the `value_in_a_form` fixture's platform segment a placeholder, so the file carries no complete typed handle; its self-test still refuses the break by `ONT_VALUE_IN_FILE` alone. |
 | `tools/validate_cast.py` | Committed earlier. `b378cd8` made its self-test run every mutation against the file as loaded and against a sealed copy, so it no longer refuses the commit that seals the cast. |
 | `tools/validate_conformance.py` | **Extended in `b378cd8`.** `KERNEL_GATE` carries twenty-four entries: fourteen implemented, six of them self-tests; three unratified; two stubs; five pending. |
 | `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `b378cd8`.** `make preflight` runs fourteen commands and the hook thirteen, the six validator self-tests among them. CI runs five self-tests as named steps before the kernel gate, and every gate step carries `if: ${{ !cancelled() }}`, so a red step no longer skips the hook step and the trailer check. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`. |
@@ -161,29 +160,6 @@ third copies. 22 of the 51 are grounded in the stack's own documentation and an
 agent can settle them by citation; 29 are the operator's, and 25 of those 29
 arrive with at least one option foreclosed. The register is at
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`.
-
-**The repo-scan exemption.** `tools/validate_retention.py --repo-scan` refuses
-on two filled handle selectors that predate Step 8:
-`docs/PLAINSIGHT-FOUNDATION.md:87`, introduced in `1abb354`, a worked example in
-a rank-7 record of intent, and `tools/validate_ontology.py:894`, introduced in
-`f4e00e1`, a designed value in that validator's own negative fixture. Neither
-value is reproduced here, because AGENTS.md section 4 refuses a selector value
-in a tracked file and the scan reads this file too. Both are
-true on shape and false in substance. `docs/PLAINSIGHT-design.md` and
-`docs/THE-GAMEPLAN.md` already carry `repo_scan.document_exemptions` rows of
-exactly this kind and `docs/PLAINSIGHT-FOUNDATION.md` does not. Adding those
-rows was proposed during Step 8 and refuted: the proposal used a rank-1
-citation above its lane, and narrowing an RT-15 scan is a reach decision. The
-pre-commit hook is unaffected, because it runs the same mode over the index
-rather than the working tree, and a commit that stages neither flagged file
-passes it, so the red check does not block a commit.
-
-**CI is red until that decision is made.** The Kernel gate step of `ci.yml`
-runs `python tools/validate_conformance.py --kernel-gate`, which exits 1 while
-the scan refuses, so the workflow fails on the push that carries this commit and
-keeps failing until the exemption is stamped or the two values are replaced. The
-gate is reporting a true finding. Leaving the scan a stub, or pointing it at an
-empty index to get a green run, would turn a true positive into a silent one.
 
 **Patch 4b.** Four Class F items: EG-7 third-party host declaration, CR-3's
 environment-variable item, CR-6's clearing act, EG-2's vault-key custody
@@ -209,7 +185,9 @@ section 8 does not yet say. The sealed cast is a precondition for every run,
 consenting subjects included. The operator has been told the fork: provision the
 cast alongside the collection pool, or decide a Class F amendment to SS-14
 item 6. Neither is decided, and the choice is worth about 1,040 dollars in year
-one.
+one. The overnight grant of 2026-09-30 did not reach the seal: filling the cast
+needs personas, SIMs and `synthetic/CAST.md` section 9's six decisions, and an
+agent filling it would fabricate the ground truth the seal exists to fix.
 
 **Three constraints on ordering rather than blocks.** EG-2 and RT-4 have no
 later date: the ISOLATED environment exists before the first blob. Live execution
@@ -254,9 +232,10 @@ about 1,720 non-recurring and 205 a month.
   repositories were consolidated into `../zisr-producers/`, nineteen citations
   across eight files named the old path, and no gate noticed. `ff016af` repointed
   the three live pointers and left the dated measurements alone. The 2026-09-14
-  move broke two more, in rank-1 files: `doctrine/RETENTION.md:381` and
-  `doctrine/CREDENTIAL_LIFECYCLE.md:138` cite `../ZISR COP/`, which is now
-  `../zisr-cop/`, and repointing them is a doctrine edit. The mechanism is open.
+  move left two more, in rank-1 files: `doctrine/RETENTION.md:381` and
+  `doctrine/CREDENTIAL_LIFECYCLE.md:138` cite `../ZISR COP/`, now `../zisr-cop/`.
+  Both are dated measurements, so they keep the old path as the `../zisr-recon/`
+  ones do, and `README.md` translates it. The mechanism is open.
 - **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
   `schema/subject-authorization.schema.json` admits only the three pre-R4
   evidence kinds, which is what SA-U2 and SA-U11 both land on. SA-U16's current
@@ -264,7 +243,9 @@ about 1,720 non-recurring and 205 a month.
   `spec/layer-model.yaml:607` requires the field on every REFUSED.
 - **`retention-repo-scan` enforces three of RT-15's four parts.** The code RT-15
   names, `FIXTURE_CONTAINS_LIVE_SELECTOR`, is not in the wire vocabulary, and git
-  history is out of reach of any commit-time check.
+  history is out of reach of any commit-time check. The two values it refused
+  until the overnight commit were replaced, not exempted, and both remain in git
+  history.
 - **Seven generation readings await confirmation, S7-R1 to S7-R7.** S7-R1 is the
   consequential one: which optional payload fields a subtype may carry, decided
   by a stated rule because the model is silent. Its cost is visible in
