@@ -1067,6 +1067,23 @@ def check_corpus(model: dict) -> list[Finding]:
             )
         )
 
+    for path, want, owner in SCHEMA_PINS:
+        have = _schema_value(schema, path)
+        if have != want:
+            f.append(
+                Finding(
+                    "AUTH_SCHEMA_BOUND_DRIFT",
+                    "schema/subject-authorization.schema.json > " + ".".join(path),
+                    f"the schema carries {have!r} where {owner} fixes {want!r}. A "
+                    "widened bound or an opened refusal admits records the stamped "
+                    "doctrine refuses, and the schema names this tool as what refuses "
+                    "its drift",
+                    f"restore {want!r}; or ratify {owner} with a dated stamp in "
+                    "doctrine/DOCTRINE_STATUS.md and move SCHEMA_PINS in this tool in "
+                    "the same commit",
+                )
+            )
+
     entry_ids = {
         e.get("id")
         for e in _seq(policy, "unratified", "entries")
@@ -1548,6 +1565,52 @@ def _renamed(x, names: dict):
     if isinstance(x, str):
         return UUID_RE.sub(lambda m: names.get(m.group(0), m.group(0)), x)
     return x
+
+
+#: The schema's bounds and refusing forms, pinned by value. Until 2026-10-01 the
+#: self-lint the schema names checked its required list, its property names and
+#: its closure, so an emptied enum could be opened, evidence_ref's refusal turned
+#: into "any value", and minItems or minimum dropped with every gate green.
+#: Opening selector_type answers SAS-U1 by edit, and evidence_ref answers SA-U2
+#: and SA-U11, which are class F. Each pin moves only with its entry's stamp.
+SCHEMA_PINS = (
+    (("properties", "selectors", "type"), "array", "SS-4"),
+    (("properties", "selectors", "minItems"), 1, "SAS-R4"),
+    (("properties", "selectors", "items"), {"$ref": "#/$defs/selector"}, "SAS-R5"),
+    (("properties", "pivot_depth_max", "type"), "integer", "SS-4"),
+    (("properties", "pivot_depth_max", "minimum"), 0, "SS-4"),
+    (("properties", "purpose", "minLength"), 1, "SAS-R4"),
+    (("properties", "purpose", "pattern"), "\\S", "SAS-R4"),
+    (("properties", "authorized_by", "minLength"), 1, "SAS-R4"),
+    (("properties", "authorized_by", "pattern"), "\\S", "SAS-R4"),
+    (("properties", "evidence_ref"), {"not": {}}, "SA-U2 and SA-U11"),
+    (("$defs", "selector", "required"), ["selector_type", "value"], "SAS-R5"),
+    (("$defs", "selector", "additionalProperties"), False, "SAS-R5"),
+    (("$defs", "selector", "properties", "selector_type", "enum"), [], "SAS-U1"),
+    (("$defs", "selector", "properties", "value", "minLength"), 1, "SAS-R4"),
+    (("$defs", "selector", "properties", "value", "pattern"), "\\S", "SAS-R4"),
+    (
+        ("$defs", "utcDate", "pattern"),
+        "^(19[7-9][0-9]|2[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+        "SS-4",
+    ),
+    (
+        ("$defs", "uuid", "pattern"),
+        "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+        "SS-4",
+    ),
+)
+
+
+def _schema_value(schema: dict, path: tuple):
+    node = schema
+    for part in path:
+        if not isinstance(node, dict) or part not in node:
+            return None
+        node = node[part]
+    if isinstance(node, dict):
+        return {k: v for k, v in node.items() if k != "$comment"}
+    return node
 
 
 def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
@@ -2770,6 +2833,22 @@ def _mut_schema_drops_required(m: dict) -> None:
     m["schema"]["required"] = [x for x in m["schema"]["required"] if x != "expires_on"]
 
 
+def _mut_schema_bound(path: tuple):
+    def mutate(m: dict) -> None:
+        node = m["schema"]
+        for part in path[:-1]:
+            node = node[part]
+        value = node[path[-1]]
+        if isinstance(value, dict):
+            node[path[-1]] = {k: v for k, v in value.items() if k == "$comment"}
+        elif isinstance(value, list) and not value:
+            node[path[-1]] = ["handle"]
+        else:
+            node.pop(path[-1])
+
+    return mutate
+
+
 def _mut_schema_opens(m: dict) -> None:
     m["schema"]["additionalProperties"] = True
 
@@ -3176,6 +3255,10 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ),
         ("drop expires_on from the schema's required list", _mut_schema_drops_required, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
         ("open the schema's record to undeclared fields", _mut_schema_opens, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
+    ] + [
+        (f"widen the schema at {'.'.join(path)}", _mut_schema_bound(path), "AUTH_SCHEMA_BOUND_DRIFT", True, "")
+        for path, _, _ in SCHEMA_PINS
+    ] + [
         (
             "swap item 8's path for another tracked path",
             _mut_ratify_path_swapped,

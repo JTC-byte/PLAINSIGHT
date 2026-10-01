@@ -22,6 +22,30 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. The authorization schema's bounds and refusing forms
+  are pinned, and a string of spaces is blank.**
+
+  **What changed.** `tools/validate_authorization.py` pins seventeen of the
+  schema's bounds and refusing forms by value, among them `selector_type`'s
+  empty enum (SAS-U1), `evidence_ref`'s refusal (SA-U2, SA-U11), `minItems` and
+  `minimum`, and refuses a difference as `AUTH_SCHEMA_BOUND_DRIFT`. Purpose,
+  authorized_by and the selector value require one character that is not white
+  space, and SAS-R4's reading and cost sentence say what is true. Three findings
+  of the Step 8 adversarial review, decided under the operator's overnight grant
+  of 2026-09-30 23:28 as resumed at 12:24, and revertible.
+
+  **Which surfaces moved.** `schema/subject-authorization.schema.json`,
+  `tools/validate_authorization.py`, the worklog and the handoff.
+
+  **What validation ran.** The authorization self-test, 84 breaks, with the pin
+  check shown to be what refuses its seventeen; `--fixtures` output
+  byte-identical to the previous commit; all sixteen preflight commands; both
+  forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No unratified entry is answered: the empty enum and
+  the refusing `evidence_ref` stay as they were and are now held there. No
+  policy value, corpus row, doctrine file or stamp.
+
 - **2026-10-01, afternoon. Every retention enforcement entry states whether it
   exists, and the gate checks the statement.**
 

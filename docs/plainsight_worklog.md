@@ -1965,3 +1965,30 @@ table.
 staged tree, the retention self-test with 84 breaks, and both forms of `git
 diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Second: the authorization schema's bounds and refusing forms are pinned,
+Class B.** Three review findings, schema:2, 4 and 6. The schema's governance
+block names `tools/validate_authorization.py` as the self-lint that refuses its
+drift, and the tool compared the required list, the property names and the
+closure and nothing else. Opening `selector_type`'s empty enum would answer
+SAS-U1 by edit, replacing `evidence_ref`'s `not {}` with any value would answer
+SA-U2 and SA-U11, and dropping `minItems` or `minimum` would admit what SAS-R4
+and SS-4 refuse, each with every gate green and, once stamped, still stamped.
+`SCHEMA_PINS` now holds seventeen of them by value and refuses a difference as
+`AUTH_SCHEMA_BOUND_DRIFT`, each with a generated break; disabling the check lets
+all seventeen pass. SAS-R4 reads "Blank is a refusal", and `minLength 1` admitted
+a string of spaces, so purpose, authorized_by and the selector value carry a
+pattern requiring one character that is not white space, and SAS-R4's reading
+says so. SAS-R4's cost sentence said a corpus row carries the empty-selectors
+refusal; none does, and it now says what holds instead, that the bound is pinned
+in the tool and no row exercises it until something validates a record against
+the schema. That validation is schema:1, held with the evaluator, and the
+calendar half of schema:6, a date such as the 31st of February, waits on it, so
+schema:6 is closed in part. `--fixtures` output is byte-identical to `559ef06`.
+Recounted from the review table: 63 closed, nine in part, fifteen open and one
+the operator's.
+
+**Battery for the second change.** All sixteen preflight commands passed on the
+staged tree, the authorization self-test with 84 breaks, and both forms of `git
+diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.

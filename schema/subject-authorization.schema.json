@@ -32,7 +32,7 @@
     "read_by": [
       {
         "path": "tools/validate_authorization.py",
-        "how": "--fixtures checks each synthetic record's key set in conformance/gate/*.jsonl against this file's closed property set (A-10), checks its subject_class against the enum here, and reconciles that enum against policy/subject-authorization.yaml and the rank 3 mirror (A-11). It does not validate field types or values. Step 8."
+        "how": "--fixtures checks each synthetic record's key set in conformance/gate/*.jsonl against this file's closed property set (A-10), checks its subject_class against the enum here, and reconciles that enum against policy/subject-authorization.yaml and the rank 3 mirror (A-11). Since 2026-10-01 it also pins this file's bounds and its two refusing forms by value, so a widening refuses. It does not validate a record's field types or values. Step 8."
       },
       {
         "path": "runner/subject_guard.py",
@@ -146,9 +146,9 @@
         {
           "id": "SAS-R4",
           "change_class": "B",
-          "reading": "Blank is a refusal rather than an absence, so every string field carries minLength 1 and selectors carries minItems 1.",
+          "reading": "Blank is a refusal rather than an absence, so every string field carries minLength 1 and a pattern requiring one character that is not white space, and selectors carries minItems 1.",
           "sources": "SS-12 states the principle for a different field: a blank field is a refusal. SS-4 says selectors holds the exact seed selectors authorized and states no count, and an empty array that a gate reads as no constraint is the measured guard.py defect SS-5 exists for.",
-          "cost": "The empty-selectors bound is not a sentence doctrine wrote. conformance/gate/*.jsonl carries the empty-array refusal as a fixture so the bound is testable, and reversing the reading is a stamp plus a one-line edit."
+          "cost": "The empty-selectors bound is not a sentence doctrine wrote. tools/validate_authorization.py pins it by value, so removing it refuses. No row in conformance/gate/*.jsonl carries an empty array yet, because nothing validates a record against this file at Step 8; until 2026-10-01 this sentence said one did. Reversing the reading is a stamp plus a one-line edit."
         },
         {
           "id": "SAS-R5",
@@ -337,6 +337,7 @@
     "purpose": {
       "type": "string",
       "minLength": 1,
+      "pattern": "\\S",
       "$comment": "SS-4: why this case exists, in one sentence, bound to the case at creation, stated without naming or describing the subject, on the same rule as case_id. RETENTION_LEDGER.md carries a copy of this sentence in a tracked file that survives every shred, which is why the constraint exists. This file checks a non-empty string. The one-sentence and no-subject halves have no mechanism here, their wire-side code is CASE_PURPOSE_UNBOUND, and x-plainsight.unenforced_here says so rather than leaving the constraint to read as enforced."
     },
     "evidence_ref": {
@@ -346,6 +347,7 @@
     "authorized_by": {
       "type": "string",
       "minLength": 1,
+      "pattern": "\\S",
       "$comment": "SS-4: the ratifier. Typed as the rank 3 analogue, which is a string, and rank 3 adds that the value is the ratifier's identity from the session and never free text. This file cannot tell one string from another, so the never-free-text half belongs to the runner and is listed under x-plainsight.unenforced_here."
     },
     "authorized_on": {
@@ -385,7 +387,8 @@
         "value": {
           "type": "string",
           "minLength": 1,
-          "$comment": "The selector's value, which is why an instance of this record is stratum 1 and is never in a tracked file. Typed as a non-empty string under readings SAS-R4 and SAS-R5. No pattern is asserted, because the matcher that would check a value against its registered shape is in ontology/selectors.yaml and SS-19 puts that refusal at argv construction in the runner rather than here."
+          "pattern": "\\S",
+          "$comment": "The selector's value, which is why an instance of this record is stratum 1 and is never in a tracked file. Typed as a non-empty string under readings SAS-R4 and SAS-R5, with one pattern, a character that is not white space, which makes a value of spaces blank under SAS-R4. No shape is asserted, because the matcher that would check a value against its registered shape is in ontology/selectors.yaml and SS-19 puts that refusal at argv construction in the runner rather than here."
         }
       }
     }
