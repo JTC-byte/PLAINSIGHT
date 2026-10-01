@@ -298,6 +298,21 @@ RATIFY_ITEMS = (
     (8, ("runner/dispatch_allowlist.yaml",)),
 )
 
+#: The artifacts SS-14 item 6 stamps by section rather than whole, as doctrine
+#: states them. Until 2026-10-01 the reader took this from the policy's own
+#: granularity text, so the policy under ratification decided how finely it was
+#: stamped.
+RATIFY_SECTIONS = {"spec/pse-semantics-contract.md": frozenset({"§5", "§12"})}
+
+#: SS-14 item 6's four preflight checks, by value. Pinned by count alone until
+#: 2026-10-01, so one could be swapped for a mode that always exits 0.
+PREFLIGHT_CHECKS = (
+    "tools/validate_authorization.py --dispatch-paths",
+    "tools/validate_authorization.py --fixtures",
+    "tools/validate_retention.py --policy --shred-roundtrip",
+    "tools/validate_retention.py --repo-scan",
+)
+
 #: A criterion definition in a doctrine file: the bolded id and a period.
 DEFINITION_RE = re.compile(r"^\*\*(SS-\d+)\.", re.M)
 SUBJECT_SELECTION = ROOT / "doctrine" / "SUBJECT_SELECTION.md"
@@ -329,6 +344,7 @@ DECISION_KEYS = (
     "basis_field",
     "basis",
     "never_item",
+    "render",
 )
 GIVEN_KEYS = (
     "stamp_state",
@@ -818,15 +834,7 @@ def load() -> dict:
 
 
 def _pin(model: dict) -> Pin:
-    sections: dict[str, set[str]] = {}
-    for item in _seq(model.get("policy") or {}, "ratify_before_collection", "items"):
-        if not isinstance(item, dict):
-            continue
-        need = pin_of_record.required_sections(str(item.get("granularity", "")))
-        for path in _seq(item, "paths"):
-            if need:
-                sections[str(path)] = need
-    return Pin(model.get("pin_text", ""), ROOT, sections)
+    return Pin(model.get("pin_text", ""), ROOT, {k: set(v) for k, v in RATIFY_SECTIONS.items()})
 
 
 # ---------------------------------------------------------------------------
@@ -940,6 +948,44 @@ def check_corpus(model: dict) -> list[Finding]:
                     "restore the twelve keys in conformance/gate/README.md section 3; or, "
                     "for a new input the gate reads, add it to the contract, to every row, "
                     "and to ROW_KEYS in tools/validate_authorization.py in one commit",
+                )
+            )
+
+        # A-01 inside the two blocks. Until 2026-10-01 DECISION_KEYS and
+        # GIVEN_KEYS were declared and read by nothing, so an input the gate
+        # reads could be deleted from `given` with the output unchanged.
+        for block, keys, code in (
+            ("expect_decision", DECISION_KEYS, "AUTH_DECISION_KEYS_UNEXPECTED"),
+            ("given", GIVEN_KEYS, "AUTH_GIVEN_KEYS_UNEXPECTED"),
+        ):
+            value = row.get(block)
+            have = set(value) if isinstance(value, dict) else set()
+            if not isinstance(value, dict) or have != set(keys):
+                f.append(
+                    Finding(
+                        code,
+                        f"{where} > {block}",
+                        f"the row's {block} is not the {len(keys)} keys the row contract "
+                        "fixes"
+                        + (f", missing {sorted(set(keys) - have)}" if set(keys) - have else "")
+                        + (f", carrying {sorted(have - set(keys))}" if have - set(keys) else "")
+                        + ". A missing key is an input or an assertion the fixture never "
+                        "supplied, and an extra one is something nothing grades",
+                        f"restore the keys in conformance/gate/README.md section 3; or add "
+                        f"a new one to the contract, to every row and to {'DECISION_KEYS' if block == 'expect_decision' else 'GIVEN_KEYS'} "
+                        "in tools/validate_authorization.py in one commit",
+                    )
+                )
+        content = (row.get("given") or {}).get("collected_content") if isinstance(row.get("given"), dict) else None
+        if isinstance(content, dict) and content.get("string_in_this_file") is not False:
+            f.append(
+                Finding(
+                    "AUTH_PAYLOAD_STRING_CLAIMED",
+                    f"{where} > given.collected_content.string_in_this_file",
+                    "the row claims the collected content's string sits in this file. No "
+                    "collected string enters a tracked file: the corpus describes the "
+                    "content by family and never carries it, per AGENTS.md section 4",
+                    "set string_in_this_file false and describe the content by its family",
                 )
             )
 
@@ -1298,10 +1344,13 @@ def _ss5_findings(rows: list[dict]) -> list[Finding]:
     by_name = {r.get("name"): r for r in rows}
 
     for field in SS5_FIELDS:
+        # Since 2026-10-01 a candidate names both SS-5 and the field as tokens.
+        # A substring test let an SS-12 row that merely mentions the field
+        # stand in for SS-5's fixture.
         candidates = [
             r
             for r in rows
-            if field in str(r.get("criterion", ""))
+            if {"SS-5", field} <= set(re.split(r"[\s,;]+", str(r.get("criterion", ""))))
             and _decision(r).get("value") in ("REFUSED", "REQUIRES_EXTENSION")
         ]
         if not candidates:
@@ -1323,6 +1372,17 @@ def _ss5_findings(rows: list[dict]) -> list[Finding]:
         for row in candidates:
             record = row.get("authorization")
             if not isinstance(record, dict):
+                out.append(
+                    Finding(
+                        "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+                        f"{row.get('_where', row.get('name'))} > authorization",
+                        f"the fixture for {field} carries no authorization record, so it "
+                        f"cannot differ from a permitted row in {field}. Until 2026-10-01 "
+                        "such a row was skipped and still counted as the fixture",
+                        f"give the row the permitted row's record with {field} changed; or "
+                        "name a different row as SS-5's fixture for the field",
+                    )
+                )
                 continue
             differs = []
             for other in rows:
@@ -1335,6 +1395,16 @@ def _ss5_findings(rows: list[dict]) -> list[Finding]:
                 delta = sorted(k for k in keys if base.get(k) != record.get(k))
                 differs.append((len(delta), delta, other.get("name")))
             if not differs:
+                out.append(
+                    Finding(
+                        "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+                        f"{row.get('_where', row.get('name'))} > authorization",
+                        f"the fixture for {field} has no permitted row with a record to "
+                        "differ from, so the one-field difference SS-5 requires cannot be "
+                        "shown",
+                        "restore a permitted baseline row with an authorization record",
+                    )
+                )
                 continue
             size, delta, base_name = min(differs)
             if delta != [field]:
@@ -1689,9 +1759,10 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
         dec = _decision(row)
         if dec.get("never_item") == 6 or dec.get("value") is None:
             continue
-        state = _d(row, "given", "stamp_state", default=None)
-        if not state:
-            continue
+        # A missing, null or empty state reads the live pin, as the first pass
+        # does. Until the critic of 2026-10-01 this pass skipped it, which was
+        # the case the pass was written to catch.
+        state = _d(row, "given", "stamp_state", default={}) or {}
         step = dec.get("decided_at_step")
         past_step_1 = isinstance(step, int) and 2 <= step <= 6
         reasons = item_6_reasons(state, paths, criteria, pin)
@@ -1827,6 +1898,21 @@ def _policy_shape_findings(model: dict) -> list[Finding]:
     found = tuple(
         (i.get("id"), tuple(str(x) for x in _seq(i, "paths"))) for i in items
     )
+    for item in items:
+        need = pin_of_record.required_sections(str(item.get("granularity", "")))
+        pinned = set().union(*(RATIFY_SECTIONS.get(str(x), set()) for x in _seq(item, "paths")))
+        if need != pinned:
+            out.append(
+                Finding(
+                    "AUTH_RATIFY_LIST_DRIFT",
+                    f"policy/subject-authorization.yaml ratify_before_collection item {item.get('id')}",
+                    f"the item's granularity names sections {sorted(need) or 'none'} and SS-14 "
+                    f"item 6 stamps it by {sorted(pinned) or 'the whole artifact'}. The "
+                    "artifact under ratification may not decide how finely it is stamped",
+                    "restore the granularity SS-14 item 6 states; or ratify an SS-14 "
+                    "amendment and move RATIFY_SECTIONS in this tool in that commit",
+                )
+            )
     if len(items) == RATIFY_ITEM_COUNT and len(paths) == RATIFY_PATH_COUNT and found != RATIFY_ITEMS:
         drift = [
             f"item {want[0]} names {list(got[1])} where SS-14 names {list(want[1])}"
@@ -1872,6 +1958,18 @@ def _policy_shape_findings(model: dict) -> list[Finding]:
                 "the runner rather than a warning",
                 f"restore the {PREFLIGHT_CHECK_COUNT} checks SS-14 item 6 names; or ratify "
                 "the change and move this tool's PREFLIGHT_CHECK_COUNT in the same commit",
+            )
+        )
+    if len(checks) == PREFLIGHT_CHECK_COUNT and tuple(str(c) for c in checks) != PREFLIGHT_CHECKS:
+        out.append(
+            Finding(
+                "AUTH_PREFLIGHT_LIST_DRIFT",
+                "policy/subject-authorization.yaml ratify_before_collection.preflight.checks",
+                f"the preflight set names {list(checks)} and SS-14 item 6 names "
+                f"{list(PREFLIGHT_CHECKS)}. Swapping a check for a mode that always exits 0 "
+                "keeps the count and empties the condition",
+                "restore the four checks SS-14 item 6 names; or ratify the change and move "
+                "PREFLIGHT_CHECKS in this tool in the same commit",
             )
         )
     if _d(ratify, "preflight", "stampable") is True:
@@ -2210,6 +2308,41 @@ def _mut_permit_under_a_missing_stamp(m: dict) -> None:
     )
 
 
+def _mut_permit_row_with_no_state(m: dict) -> None:
+    _row(m, "seed-permitted")["given"]["stamp_state"] = None
+
+
+def _mut_preflight_check_swapped(m: dict) -> None:
+    checks = m["policy"]["ratify_before_collection"]["preflight"]["checks"]
+    checks[1] = "tools/validate_authorization.py --self-test"
+
+
+def _mut_contract_granularity_coarsened(m: dict) -> None:
+    for item in m["policy"]["ratify_before_collection"]["items"]:
+        if item.get("id") == 6:
+            item["granularity"] = "section 5"
+
+
+def _mut_given_drops_environment(m: dict) -> None:
+    del _row(m, "runner-started-on-local")["given"]["environment"]
+
+
+def _mut_decision_gains_a_key(m: dict) -> None:
+    _row(m, "seed-permitted")["expect_decision"]["confidence"] = "high"
+
+
+def _mut_payload_string_claimed(m: dict) -> None:
+    _row(m, "injected-instruction-in-collected-bio")["given"]["collected_content"]["string_in_this_file"] = True
+
+
+def _mut_ss5_criterion_without_ss5(m: dict) -> None:
+    _row(m, "seed-expires-on-mutated")["criterion"] = "SS-12, expires_on"
+
+
+def _mut_ss5_fixture_without_record(m: dict) -> None:
+    _row(m, "seed-expires-on-mutated")["authorization"] = None
+
+
 def _mut_schema_drops_required(m: dict) -> None:
     m["schema"]["required"] = [x for x in m["schema"]["required"] if x != "expires_on"]
 
@@ -2546,6 +2679,14 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ("drop SS-14 from the compiled criteria", _mut_criterion_dropped_from_compiled, "AUTH_CRITERION_NOT_COMPILED", True, ""),
         ("render a permit on the item 6 refusal row", _mut_refused_rendered_as_permit, "AUTH_RENDER_NOT_THE_COMPILED_SENTENCE", True, ""),
         ("assert a permit on a well-formed permit row under a short stamp state", _mut_permit_row_under_short_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", True, ""),
+        ("delete the environment input from the row that tests it", _mut_given_drops_environment, "AUTH_GIVEN_KEYS_UNEXPECTED", True, ""),
+        ("add an ungraded key to a decision", _mut_decision_gains_a_key, "AUTH_DECISION_KEYS_UNEXPECTED", True, ""),
+        ("claim a collected string sits in the corpus", _mut_payload_string_claimed, "AUTH_PAYLOAD_STRING_CLAIMED", True, ""),
+        ("let an SS-12 row stand in for SS-5's expires_on fixture", _mut_ss5_criterion_without_ss5, "AUTH_SS5_FIXTURE_MISSING", True, ""),
+        ("take the record off SS-5's expires_on fixture", _mut_ss5_fixture_without_record, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("assert a permit with no stamp state at all", _mut_permit_row_with_no_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", True, ""),
+        ("swap a preflight check for a mode that always passes", _mut_preflight_check_swapped, "AUTH_PREFLIGHT_LIST_DRIFT", True, ""),
+        ("let the policy stamp the contract by section 5 alone", _mut_contract_granularity_coarsened, "AUTH_RATIFY_LIST_DRIFT", True, ""),
     ]
 
 

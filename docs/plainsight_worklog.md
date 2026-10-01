@@ -1745,3 +1745,40 @@ and five are closed in part.
 the staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Twelfth: the completeness critic, and a batch of row-contract and scan
+holes, Class B, decided under the grant.** The review's completeness critic,
+stopped earlier under the machine-load rule, ran as one Opus 5.5 agent against
+`8bedba1` with its refuters three at a time, and found 11 more findings, none
+refuted. Most are holes in the night's own fixes, and two are ratification
+blockers. The shared reader's whole-artifact test is a substring match on the
+Item cell, so an entry row worded "not the whole artifact", or a struck or
+withdrawn whole-artifact row, stamps the whole file and clears both retention
+refusals end to end, which brings back the blocker `c552d13` closed. And
+nothing reads SS-14 item 6's seal condition for the cast, so stamping
+`synthetic/CAST.md` would clear item 7 while the cast is unsealed. Both are
+next. The record is `critic_result.json` beside `REVIEW.md`.
+
+This commit closes three of the critic's findings and three of the review's.
+The new A-18 pass skipped a row with no stamp state, which is the case it was
+written for; a missing or empty state now reads the live pin, as the first pass
+does. The reader took the contract's section granularity from the policy's own
+text, so the policy under ratification decided how finely it was stamped; the
+sections are now pinned in the tool as `RATIFY_SECTIONS`, and a policy
+granularity that differs refuses. SS-14 item 6's four preflight checks were
+pinned by count only, so one could be swapped for a mode that always exits 0;
+they are pinned by value as `PREFLIGHT_CHECKS`. From the review: the decision
+and input keys of every row are now checked, and a row that claims a collected
+string sits in the corpus refuses; SS-5's fixture for a field must name both
+SS-5 and the field as tokens, and a candidate with no record, or no permitted
+baseline to differ from, refuses rather than being skipped; and the repo scan
+tests every match on a line, so an allowlisted match no longer hides a live one.
+The self-tests gain eleven breaks and refuse 55 and 52. The SS-5 whole-row
+comparison and A-10's handling of a null record are left open, because the
+first needs a corpus edit and the second an exemption for the rows that have no
+record by design.
+
+**Battery for the twelfth change.** All sixteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

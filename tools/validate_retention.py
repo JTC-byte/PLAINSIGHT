@@ -1676,8 +1676,9 @@ def scan_text(
         for selector, pattern in patterns.items():
             if selector in exempt:
                 continue
-            match = pattern.search(line)
-            if not match or match.group(0) in allowlist:
+            # Every match on the line, not the first. Until 2026-10-01 a first
+            # match on the allowlist hid a second, live one after it.
+            if all(m.group(0) in allowlist for m in pattern.finditer(line)):
                 continue
             out.append(
                 Finding(
@@ -1875,6 +1876,13 @@ def _sample(rel: str, filled: bool) -> tuple[str, str]:
     """
     token = "handle" + ":" + "acmegram" + "/"
     return rel, "note: " + token + ("examplename" if filled else "<string>")
+
+
+def _two_on_a_line(ctx) -> tuple[str, str]:
+    """An allowlisted selector followed by a live one on the same line."""
+    token = "handle" + ":" + "acmegram" + "/"
+    ctx["_allowlisted"] = {token + "examplename"}
+    return "notes/x.md", "note: " + token + "examplename and " + token + "othername"
 
 
 def _mutations():
@@ -2162,6 +2170,7 @@ def _mutations():
         ("commit a filled account selector", "scan", lambda ctx: _sample("notes/x.md", True), scan, True),
         ("commit the same selector in placeholder form", "scan", lambda ctx: _sample("notes/x.md", False), "-" + scan, True),
         ("commit a filled selector in an exempted document", "scan", lambda ctx: _sample("docs/PLAINSIGHT-design.md", True), "-" + scan, True),
+        ("hide a live selector behind an allowlisted one on the same line", "scan", _two_on_a_line, scan, True),
     ]
 
 
@@ -2184,6 +2193,9 @@ def _run_check(which: str, ctx: dict, sample) -> set[str]:
     }
     rel, text = sample
     allowlist, _ = synthetic_allowlist(registry)
+    # A self-test seam: a mutation may name values to treat as allowlisted,
+    # because the real allowlist is empty until the cast is sealed.
+    allowlist = set(allowlist) | set(ctx.get("_allowlisted", ()))
     code = scan_code(ctx["codes"])
     return {
         f.code

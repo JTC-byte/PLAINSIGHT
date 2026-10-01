@@ -22,6 +22,30 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The authorization gate checks the whole row contract
+  and pins its preflight and section stamps; the repo scan tests every match.**
+
+  **What changed.** Every corpus row's decision and input keys are checked
+  (`AUTH_DECISION_KEYS_UNEXPECTED`, `AUTH_GIVEN_KEYS_UNEXPECTED`) and a claimed
+  collected string refuses (`AUTH_PAYLOAD_STRING_CLAIMED`). SS-5's fixtures must
+  name SS-5 and the field and carry a record. A-18's second pass reads a row with
+  no stamp state against the live pin. The contract's stamping sections and the
+  four preflight checks are pinned in the tool (`RATIFY_SECTIONS`,
+  `AUTH_PREFLIGHT_LIST_DRIFT`). The repo scan tests every match on a line. From
+  the Step 8 review and its completeness critic, decided under the operator's
+  overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`,
+  `tools/validate_retention.py`, their self-tests, the worklog and the handoff.
+
+  **What validation ran.** The authorization self-test, 55 breaks; the
+  retention self-test, 52; `--fixtures` refusing exactly as before; all sixteen
+  preflight commands on the staged tree; both forms of `git diff --check`. The
+  kernel gate exited 0.
+
+  **What did not change.** No policy, schema, corpus row, doctrine file or stamp.
+  Every change makes a gate stricter.
+
 - **2026-10-01, overnight. The retention gate pins RT-1's rows, its criteria and
   three non-numeric rules, and watches its own unratified refusal fire.**
 

@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file closes five
-holes in what the retention gate checks, which the Step 8 adversarial review
-found, on top of `1afee89`, under the operator's overnight grant of 2026-09-30
-23:28. The commits before it that night gave the gates one reader of the pin of
+**Date:** 2026-10-01, overnight. The commit that carries this file closes
+holes in the authorization gate's row contract, in the repo scan, and in three
+of the night's own fixes that the review's completeness critic found, on top of
+`8bedba1`, under the operator's overnight grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,23 +46,24 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** `tools/validate_retention.py` pinned the strata
-table by its row count, read the compiled criteria from the policy's own list,
-read none of the three non-numeric rules that bound how long data is held, and
-refused a subject value only in strata 2 and 3. A swapped stratum row, a dropped
-criterion, a flipped extension rule, or a subject value in stratum 4 or T all
-passed. Each now refuses. Its self-test also never watched the unratified
-refusal fire, so a stamp reader that always said stamped passed it; two cases
-now observe it. The halt check `722b367` called R-10 is R-18, because R-10 was
-already the repo scan. No current outcome changed.
+**What changed and why.** The authorization gate declared the keys of a row's
+decision and inputs and read neither, counted an SS-12 row that mentions a
+field as SS-5's fixture for it, and skipped a fixture with no record. The repo
+scan tested only the first match per selector type on a line, so an allowlisted
+match hid a live one. The critic also found three holes in the night's own
+fixes: the new A-18 pass skipped a row with no stamp state, the case it was
+written for; the policy under ratification set how finely the contract is
+stamped; and the four preflight checks were pinned by count only. Each now
+refuses, and no current outcome changed.
 
-**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
-`CHANGELOG.md`, this file, and the worklog.
+**Which surfaces moved.** `tools/validate_authorization.py` and
+`tools/validate_retention.py` with their self-tests, `CHANGELOG.md`, this file,
+and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the retention
-self-test with 51 breaks refused, and both forms of `git diff --check` were
-clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, the authorization
+self-test with 55 breaks refused and the retention self-test with 52, and both
+forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -318,13 +319,18 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Six commits on 2026-10-01 closed 49 of them and part of five
+mechanism. Seven commits on 2026-10-01 closed 50 of them and part of seven
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each
 finding's status, is
 `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/REVIEW.md`, and the
-claims, commands and outputs are beside it. The completeness critic has not run.
+claims, commands and outputs are beside it. The completeness critic then ran
+against `8bedba1` and found 11 more, none refuted. Two are ratification
+blockers: the shared reader's whole-artifact test is a substring match, so an
+Item cell saying "not the whole artifact" stamps the file, and nothing reads
+SS-14's seal condition for the cast. Three are closed by the commit carrying
+this file, and the rest are listed in the review record.
 
 ## 6. Session context that lives outside this repository
 
