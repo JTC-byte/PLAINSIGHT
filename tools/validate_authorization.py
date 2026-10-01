@@ -313,6 +313,13 @@ PREFLIGHT_CHECKS = (
     "tools/validate_retention.py --repo-scan",
 )
 
+#: SS-14 item 6's item 2, "RETENTION.md per criterion". The subject policy
+#: compiles SS criteria only, so until 2026-10-01 item 6 read RETENTION.md at
+#: file granularity and a deleted RT row went unnoticed by this gate. Pinned here
+#: rather than parsed from the pin, because a deleted row disappears from the
+#: source being parsed.
+ITEM_6_RT_CRITERIA = tuple(f"RT-{n}" for n in range(1, 20))
+
 #: A criterion definition in a doctrine file: the bolded id and a period.
 DEFINITION_RE = re.compile(r"^\*\*(SS-\d+)\.", re.M)
 SUBJECT_SELECTION = ROOT / "doctrine" / "SUBJECT_SELECTION.md"
@@ -1695,7 +1702,7 @@ def _stamp_findings(model: dict, pin: Pin) -> list[Finding]:
                 )
             )
 
-    for cid in compiled:
+    for cid in list(dict.fromkeys(compiled + list(ITEM_6_RT_CRITERIA))):
         if not CRITERION_RE.fullmatch(cid):
             continue
         if cid not in pin.criteria:
@@ -1750,7 +1757,9 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
         if isinstance(item, dict)
         for p in _seq(item, "paths")
     ]
-    criteria = [str(c) for c in _seq(policy, "compiles_criteria")]
+    criteria = list(
+        dict.fromkeys([str(c) for c in _seq(policy, "compiles_criteria")] + list(ITEM_6_RT_CRITERIA))
+    )
 
     # A-18. A row that asserts the item 6 refusal must actually produce it.
     for row in model.get("rows") or []:
@@ -2283,6 +2292,10 @@ def _mut_criterion_row_removed(m: dict) -> None:
     m["pin_text"] = re.sub(r"^\| SS-5 .*$", "", m["pin_text"], flags=re.M)
 
 
+def _mut_rt_row_removed(m: dict) -> None:
+    m["pin_text"] = re.sub(r"^\| RT-6 .*$", "", m["pin_text"], flags=re.M)
+
+
 def _mut_pin_tables_gone(m: dict) -> None:
     m["pin_text"] = "# Doctrine status: the pin of record\n\nnothing here\n"
 
@@ -2601,6 +2614,13 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         (
             "remove a criterion's row from the pin of record",
             _mut_criterion_row_removed,
+            "AUTH_CRITERION_NOT_STAMPED",
+            True,
+            "",
+        ),
+        (
+            "remove an RT criterion's row from the pin of record",
+            _mut_rt_row_removed,
             "AUTH_CRITERION_NOT_STAMPED",
             True,
             "",
@@ -3070,7 +3090,7 @@ def main(argv: list[str]) -> int:
             f"{len(rows)} rows read, "
             f"{len(rows) - held} determinate, {held} held on an unratified entry; "
             f"{len(model.get('register') or [])} register names reconciled in both "
-            f"directions; {len(_seq(model, 'policy', 'compiles_criteria'))} criteria "
+            f"directions; {len(dict.fromkeys([str(c) for c in _seq(model, 'policy', 'compiles_criteria')] + list(ITEM_6_RT_CRITERIA)))} criteria "
             "checked against the pin of record"
         )
         stamp_codes = {

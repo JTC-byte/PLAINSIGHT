@@ -22,6 +22,29 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. Thirteen compiled retention rules and RT-9's guards
+  are pinned by value, and item 6 reads RETENTION.md per criterion.**
+
+  **What changed.** `PINNED_RULES` pins thirteen rules from RT-3 to RT-19
+  (`RETENTION_POLICY_RULE_DRIFT`). RT-9's check 1, its required failures, the
+  witness's place, and checks 4 and 5 are pinned by value in both artifacts,
+  where they were substring tests, and the fixture's shred step must spare the
+  canary. The authorization gate checks RT-1 to RT-19 per criterion for SS-14
+  item 6. Three findings of the Step 8 adversarial review, decided under the
+  operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py`,
+  `tools/validate_authorization.py`, their self-tests, the worklog and the
+  handoff.
+
+  **What validation ran.** The retention self-test, 77 breaks; the
+  authorization self-test, 56; every mode refusing exactly as before; all
+  sixteen preflight commands; both forms of `git diff --check`. The kernel gate
+  exited 0.
+
+  **What did not change.** No policy value, fixture value, doctrine file or
+  stamp. Every change makes a gate stricter.
+
 - **2026-10-01, overnight. The RT-11 halt is pinned by value, and the repo scan
   reads UTF-16 and refuses binary bytes.**
 

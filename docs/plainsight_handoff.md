@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file closes three
-holes the review's completeness critic found in the retention gate, two of them
-in the night's own fixes, on top of `6bda505`, under the operator's overnight
-grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
+**Date:** 2026-10-01, overnight. The commit that carries this file pins the
+retention policy's compiled rules and RT-9's guards by value and reads item 6
+per criterion for RETENTION.md, on top of `13cfd54`, under the operator's
+overnight grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,22 +46,23 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** The RT-11 halt check, R-18, matched substrings, so a
-halt that "blocks nothing; connector dispatch continues", one that also clears
-on a ledger entry, an exempted dispatch runner, a narrowed trigger and an answer
-written into U-17's deferral all passed; the halt is now pinned by value. The
-repo scan decoded a UTF-16 file as UTF-8 and counted it read and clean; a file
-with a byte-order mark is now decoded by it, and NUL-bearing bytes without one
-refuse. A clean combined `--policy --shred-roundtrip` run now reports both
-modes. No current outcome changed.
+**What changed and why.** Thirteen compiled rules from RT-3 to RT-19 that
+bound what is held, where and how long were read by no tool, so each could be
+flipped to its permissive value with every gate green; they are pinned by value.
+RT-9's guards were substring tests, so check 1 could pass on a successful
+decrypt, the witness could sit inside the delete path, and checks 4 and 5 could
+pass "always"; each is pinned. The authorization gate read SS-14 item 6's
+"RETENTION.md per criterion" at file granularity; it now checks RT-1 to RT-19
+per criterion. No current outcome changed.
 
-**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
-`CHANGELOG.md`, this file, and the worklog.
+**Which surfaces moved.** `tools/validate_retention.py`,
+`tools/validate_authorization.py`, their self-tests, `CHANGELOG.md`, this file,
+and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
 before the commit. All sixteen preflight commands passed, the retention
-self-test with 58 breaks and two decode cases, and both forms of `git diff
---check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+self-test with 77 breaks and the authorization self-test with 56, and both
+forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -319,7 +320,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Seven commits on 2026-10-01 closed 50 of them and part of seven
+mechanism. Commits made on 2026-10-01 closed 53 of them and part of seven
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each

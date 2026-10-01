@@ -1860,3 +1860,31 @@ reports both. With these the critic's eleven are closed, three in part.
 the staged tree and both forms of `git diff --check` were clean. The kernel
 gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
 2 stubbed and 5 pending.
+
+**Sixteenth: compiled rules and RT-9's guards by value, and item 6 per
+criterion, Class B, decided under the grant.** Three review findings.
+`tools/validate_retention.py` pinned eight durations and nothing else the policy
+compiles, so RT-7's index inside the boundary, RT-8's case-level text rule,
+RT-4's encryption from first write and its plaintext prohibition, RT-3's two
+shred mechanisms, RT-13's pre-shred finding check, RT-17's renewal fields and
+refusal, RT-18's freeze-only disclosure, RT-9's all-checks rule and RT-19's
+untracked, value-free telemetry could each be flipped with `--policy` still
+green once stamped. Thirteen are now pinned by value in `PINNED_RULES` and
+refuse as `RETENTION_POLICY_RULE_DRIFT`, each with a generated break that flips
+it; the review's cassette-rule path does not exist in the policy and is left
+out. RT-9's guards were substring tests in both artifacts: check 1 needed only
+the word "key", the witness needed only "enumerable delete path" somewhere in
+its text, and checks 4 and 5 had no guard. Check 1's passing condition, its
+required failures including a successful decrypt, the witness's place, and
+checks 4 and 5's passing conditions are now pinned per artifact, and the
+fixture's shred step must act on the target and leave the canary. The
+authorization gate read SS-14 item 6's "RETENTION.md per criterion" at file
+granularity, because the subject policy compiles SS criteria only; RT-1 to
+RT-19 are pinned in the tool as `ITEM_6_RT_CRITERIA` and checked per criterion,
+and the summary now counts 40. The self-tests refuse 77 and 56 breaks. With
+these, 53 of the review's 88 findings are closed and seven in part.
+
+**Battery for the sixteenth change.** All sixteen preflight commands passed on
+the staged tree and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
+2 stubbed and 5 pending.

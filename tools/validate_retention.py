@@ -206,6 +206,41 @@ DURATIONS = (
 #: malformed-input has not proven the key was destroyed.
 FALSE_PASS_ON_KEY = ("not_found", "permission_denied", "malformed_input")
 
+#: RT-9's passing conditions and the witness's place, by value in each artifact.
+#: Until 2026-10-01 these were substring tests, so check 1 could pass "when the
+#: decrypt succeeds with the key", a witness could sit "inside the enumerable
+#: delete path", and checks 4 and 5 could pass "always".
+CHECK1_PASSES_WHEN = "the decrypt fails on the key"
+CHECK1_FAILS_WHEN_REQUIRED = frozenset(FALSE_PASS_ON_KEY) | {"decrypt_succeeds"}
+WITNESS_HELD_OUTSIDE = "the enumerable delete path"
+POLICY_CHECK_PASSES = {
+    4: "stratum 2 is intact and carries the tombstone and the receipt hash",
+    5: "the adjacent case is still fully readable and its blob count is unchanged",
+}
+FIXTURE_CHECK_PASSES = {
+    4: "stratum 2 is intact and carries the tombstone and the receipt hash",
+    5: "the canary case is still fully readable and its blob count is unchanged",
+}
+
+#: Compiled rules that bound what is held and where, by value, each with its
+#: criterion. No tool read them until 2026-10-01, so each could be flipped to
+#: its permissive value with every gate green.
+PINNED_RULES = (
+    ("full_text_index.inside_shred_boundary", True, "RT-7"),
+    ("blob_policy.text.case_level_value_legal", False, "RT-8"),
+    ("encryption.plaintext_blob_legal", False, "RT-4"),
+    ("encryption.encrypted_from", "first_write", "RT-4"),
+    ("shred.mechanisms_both_required", True, "RT-3"),
+    ("finding_check.post_shred_run_possible", False, "RT-13"),
+    ("freeze.renewal.required_fields", ["obligation", "expected_resolution_on"], "RT-17"),
+    ("freeze.renewal.refused_when_either_is_absent", True, "RT-17"),
+    ("disclosure_export.available_only_under_an_active_freeze", True, "RT-18"),
+    ("disclosure_export.available_on_an_ordinary_case", False, "RT-18"),
+    ("verification.all_checks_required", True, "RT-9"),
+    ("gate_telemetry.tracked", False, "RT-19"),
+    ("gate_telemetry.carries_subject_derived_values", False, "RT-19"),
+)
+
 #: RT-15. The code doctrine requires in policy/violation-codes.yaml. That file
 #: is generated from spec/layer-model.yaml and cannot be hand-edited, and the
 #: code is declared in neither. VR-U3 carries the question.
@@ -1089,9 +1124,9 @@ def check_policy(ctx: dict) -> list[Finding]:
     by_id = {c.get("id"): c for c in checks}
     first = by_id.get(1) or {}
     fails = {str(x) for x in as_list(first.get("fails_when"))}
-    if "key" not in str(first.get("passes_when") or "") or not set(
-        FALSE_PASS_ON_KEY
-    ) <= fails:
+    if str(first.get("passes_when") or "") != CHECK1_PASSES_WHEN or not (
+        CHECK1_FAILS_WHEN_REQUIRED <= fails
+    ):
         out.append(
             Finding(
                 "RETENTION_POLICY_FALSE_PASS_UNGUARDED",
@@ -1137,13 +1172,43 @@ def check_policy(ctx: dict) -> list[Finding]:
             )
         )
 
+    for cid, want in POLICY_CHECK_PASSES.items():
+        if str((by_id.get(cid) or {}).get("passes_when") or "") != want:
+            out.append(
+                Finding(
+                    "RETENTION_POLICY_FALSE_PASS_UNGUARDED",
+                    f"{POLICY_REL} :: retention.verification.checks.{cid}",
+                    f"check {cid}'s passing condition is not RT-9's: it must pass only "
+                    f"when {want}. A check that can pass for another reason is not a check",
+                    f"restore the passing condition to {want!r}; or ratify RT-9's "
+                    "change and move POLICY_CHECK_PASSES in this tool in the same commit",
+                )
+            )
+
+    # Compiled rules that bound what is held and where.
+    for path, value, criterion in PINNED_RULES:
+        actual = dig(pol, path)
+        if actual != value:
+            out.append(
+                Finding(
+                    "RETENTION_POLICY_RULE_DRIFT",
+                    f"{POLICY_REL} :: retention.{path}",
+                    f"the policy carries {actual!r} and {criterion} fixes {value!r}. "
+                    "Flipping this rule changes what is held, where, or for how long "
+                    "with every duration unchanged",
+                    f"restore {value!r}; or ratify the change with a dated stamp in "
+                    "doctrine/DOCTRINE_STATUS.md and move PINNED_RULES in this tool in "
+                    "the same commit",
+                )
+            )
+
     # R-09's write-path half: RT-9 sends the witness mechanics to the fixture
     # and keeps three properties the store has to know at first write.
     witness = verification.get("witness") or {}
     if (
         witness.get("count_per_case") != 1
         or witness.get("designated_at") != "first_write"
-        or "enumerable delete path" not in str(witness.get("held_outside") or "")
+        or witness.get("held_outside") != WITNESS_HELD_OUTSIDE
     ):
         out.append(
             Finding(
@@ -1317,9 +1382,9 @@ def check_roundtrip(ctx: dict) -> list[Finding]:
 
     first = by_id.get(1) or {}
     fails = {str(x) for x in as_list(first.get("fails_when"))}
-    if "key" not in str(first.get("passes_when") or "") or not set(
-        FALSE_PASS_ON_KEY
-    ) <= fails:
+    if str(first.get("passes_when") or "") != CHECK1_PASSES_WHEN or not (
+        CHECK1_FAILS_WHEN_REQUIRED <= fails
+    ):
         out.append(
             Finding(
                 "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED",
@@ -1358,6 +1423,29 @@ def check_roundtrip(ctx: dict) -> list[Finding]:
                 "failure, so the fixture accepts an empty result as proof that "
                 "the table is gone",
                 "restore query_returns_zero_rows to the check's failure list",
+            )
+        )
+
+    for cid, want in FIXTURE_CHECK_PASSES.items():
+        if str((by_id.get(cid) or {}).get("passes_when") or "") != want:
+            out.append(
+                Finding(
+                    "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED",
+                    f"{FIXTURE_REL} :: verify_step.checks.{cid}",
+                    f"check {cid}'s passing condition is not RT-9's: it must pass only "
+                    f"when {want}",
+                    f"restore the passing condition to {want!r}",
+                )
+            )
+    shred = fx.get("shred_step") or {}
+    if shred.get("acts_on") != "target" or shred.get("does_not_act_on") != "canary":
+        out.append(
+            Finding(
+                "SHRED_ROUNDTRIP_NO_CANARY",
+                f"{FIXTURE_REL} :: shred_roundtrip.shred_step",
+                "the shred step does not act on the target alone and leave the canary "
+                "untouched, so check 5 has no untouched case to read",
+                "set acts_on to target and does_not_act_on to canary",
             )
         )
 
@@ -1404,7 +1492,7 @@ def check_roundtrip(ctx: dict) -> list[Finding]:
             break
     if witness is None or (
         witness.get("designated_at") != "first_write"
-        or "enumerable delete path" not in str(witness.get("held_outside") or "")
+        or witness.get("held_outside") != WITNESS_HELD_OUTSIDE
         or witness.get("count_per_case") != 1
     ):
         out.append(
@@ -2155,6 +2243,29 @@ def _mutations():
     def count_one_fixture_check_twice(ctx):
         ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][3]["id"] = 1
 
+    def check1_passes_on_success(ctx):
+        ctx["policy"]["retention"]["verification"]["checks"][0]["passes_when"] = (
+            "the decrypt succeeds with the key"
+        )
+
+    def check1_forgets_success(ctx):
+        c = ctx["policy"]["retention"]["verification"]["checks"][0]
+        c["fails_when"] = [f for f in c["fails_when"] if f != "decrypt_succeeds"]
+
+    def witness_inside_the_delete_path(ctx):
+        ctx["policy"]["retention"]["verification"]["witness"]["held_outside"] = (
+            "inside the enumerable delete path"
+        )
+
+    def check4_passes_always(ctx):
+        ctx["policy"]["retention"]["verification"]["checks"][3]["passes_when"] = "always"
+
+    def fixture_check5_passes_always(ctx):
+        ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][4]["passes_when"] = "always"
+
+    def shred_the_canary_too(ctx):
+        ctx["fixture"]["shred_roundtrip"]["shred_step"]["acts_on"] = "target and canary"
+
     def let_fixture_check_one_pass_on_not_found(ctx):
         check = ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][0]
         check["fails_when"] = [f for f in check["fails_when"] if f != "not_found"]
@@ -2199,7 +2310,32 @@ def _mutations():
         ctx["registry"]["selectors"]["handle"]["form"] = "handle:<platform>"
 
     scan = scan_code(declared_codes())
-    return [
+    def _flip(path, value):
+        def mutate(ctx):
+            node = ctx["policy"]["retention"]
+            *parents, last = path.split(".")
+            for part in parents:
+                node = node[part]
+            if isinstance(value, bool):
+                node[last] = not value
+            elif isinstance(value, list):
+                node[last] = value[:1]
+            else:
+                node[last] = "on request"
+        return mutate
+
+    flips = [
+        (f"flip {path} away from {criterion}", "policy", _flip(path, value), "RETENTION_POLICY_RULE_DRIFT", True)
+        for path, value, criterion in PINNED_RULES
+    ]
+
+    return flips + [
+        ("let check 1 pass when the decrypt succeeds", "policy", check1_passes_on_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
+        ("stop failing check 1 on a successful decrypt", "policy", check1_forgets_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
+        ("hold the witness inside the delete path", "policy", witness_inside_the_delete_path, "RETENTION_POLICY_WITNESS_UNDESIGNATED", True),
+        ("let check 4 pass always", "policy", check4_passes_always, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
+        ("let the fixture's check 5 pass always", "roundtrip", fixture_check5_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
+        ("shred the canary along with the target", "roundtrip", shred_the_canary_too, "SHRED_ROUNDTRIP_NO_CANARY", True),
         # Since 2026-10-01 the three rows below also trip RETENTION_POLICY_STRATA_ROW_DRIFT,
         # because each changes a column of an RT-1 row the strata pin holds.
         ("drop a stratum row", "policy", drop_a_stratum_row, "RETENTION_POLICY_STRATA_ROW_COUNT", False),
