@@ -22,6 +22,30 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. The retention gate's enforcement checks are keyed and
+  measured, after a second adversarial pass.**
+
+  **What changed.** RT-15's table is compared with the tree by clause, four parts
+  each once (`RT15_PART_CLAUSES`); RT-16's three entries are pinned by key
+  (`RT16_ENFORCEMENT`, `RT16_CLAUSE_WRITTEN`); `rt15_parts` reads the section 4
+  sentence, an uncommented hook command and parsed manifests, and measures an
+  unreadable file as absent rather than crashing. RT-9 checks 2 and 3 are pinned
+  in both artifacts, pins compare type, the pair walk survives a
+  self-referential anchor, and two refusals name the right criterion. Nine
+  findings of the second adversarial pass, decided under the operator's grant
+  of 2026-09-30 23:28 as resumed at 12:24 and confirmed for merges at 12:37, and
+  revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py`, the worklog and the
+  handoff.
+
+  **What validation ran.** The retention self-test, 105 breaks and two measured
+  cases; `--policy` and `--repo-scan` output byte-identical to the previous
+  commit; all sixteen preflight commands; both forms of `git diff --check`. The
+  kernel gate exited 0.
+
+  **What did not change.** No policy value, fixture, doctrine file or stamp.
+
 - **2026-10-01, afternoon. The retention policy's last nine unpinned rules are
   pinned.**
 

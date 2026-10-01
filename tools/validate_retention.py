@@ -185,6 +185,17 @@ HALT_PIN = {
     "clearing_author_authority": {"unratified": "U-03"},
     "override": {"unratified": "U-17"},
 }
+#: Where each HALT_PIN key comes from. RT-11 fixes the trigger, the scope and
+#: the clearing; which jobs run during a halt is reading RET-R5, which the
+#: operator has not confirmed, and the two deferrals are open entries. Until
+#: 2026-10-01 every mismatch said "where RT-11 fixes".
+HALT_SOURCE = {
+    "blocks": "reading RET-R5, unconfirmed,",
+    "does_not_block": "reading RET-R5, unconfirmed,",
+    "clearing_author_authority": "the open entry U-03",
+    "override": "the open entry U-17",
+}
+
 #: RT-9. Five checks, each once. A receipt of [1, 1, 1, 1, 1] is one check
 #: counted five times, which RT-9 says is not a check.
 SHRED_CHECKS = [1, 2, 3, 4, 5]
@@ -215,10 +226,14 @@ CHECK1_PASSES_WHEN = "the decrypt fails on the key"
 CHECK1_FAILS_WHEN_REQUIRED = frozenset(FALSE_PASS_ON_KEY) | {"decrypt_succeeds"}
 WITNESS_HELD_OUTSIDE = "the enumerable delete path"
 POLICY_CHECK_PASSES = {
+    2: "the objects are gone",
+    3: "the query errors",
     4: "stratum 2 is intact and carries the tombstone and the receipt hash",
     5: "the adjacent case is still fully readable and its blob count is unchanged",
 }
 FIXTURE_CHECK_PASSES = {
+    2: "the objects are gone, read through the S3 API",
+    3: "the query errors",
     4: "stratum 2 is intact and carries the tombstone and the receipt hash",
     5: "the canary case is still fully readable and its blob count is unchanged",
 }
@@ -231,6 +246,38 @@ FIXTURE_CHECK_PASSES = {
 #: read. The policy's enforcement entry for it must say so, and when it lands this
 #: flag and that entry move in the same commit.
 RT16_RECONCILE_WRITTEN = False
+
+#: Whether AGENTS.md carries the Class C clause RT-16 names. It does not; this
+#: flag and the policy's entry move together when it lands.
+RT16_CLAUSE_WRITTEN = False
+
+#: RT-16's three enforcement entries, keyed by what each one is.
+RT16_ENFORCEMENT = (
+    ("clause", "a Class C clause in AGENTS.md stating the rule", RT16_CLAUSE_WRITTEN),
+    ("check", "a bidirectional reconcile in tools/validate_retention.py", RT16_RECONCILE_WRITTEN),
+    ("code", {"unratified": "U-07"}, None),
+)
+
+#: RT-15's four enforcement parts as the policy names them, in rt15_parts order.
+#: Until 2026-10-01 the flags were compared by position, so the canary entry
+#: moved to the first slot could claim the clause's measurement.
+RT15_PART_CLAUSES = (
+    "an Execution Limits clause in AGENTS.md",
+    "canary_subject_class as a required connector manifest field",
+    "violation code FIXTURE_CONTAINS_LIVE_SELECTOR in policy/violation-codes.yaml",
+    "tools/validate_retention.py --repo-scan wired into .githooks/pre-commit",
+)
+
+#: Whether a connector-manifest validator refuses a manifest without
+#: canary_subject_class, which is the "required" half of RT-15's second part.
+#: None exists, so that part is absent whatever the manifests carry.
+MANIFEST_VALIDATOR_REQUIRES_CANARY = False
+
+#: The Execution Limits sentence RT-15's first part is, read from section 4.
+RT15_CLAUSE_SENTENCE = (
+    "No agent writes a selector value, handle, email, phone number, or case subject "
+    "name into a tracked file."
+)
 
 PINNED_RULES = (
     ("full_text_index.inside_shred_boundary", True, "RT-7"),
@@ -251,8 +298,8 @@ PINNED_RULES = (
     # exist in the policy, which was wrong.
     ("strata.cassette_rule.live_subject_cassette_stratum", 0, "RT-1, RT-2"),
     ("strata.cassette_rule.persisting_cassette_stratum", 4, "RT-1, RT-2"),
-    ("strata.cassette_rule.permitted_capture_targets", ["S2", "N0"], "RT-2, RT-15"),
-    ("strata.cassette_rule.satisfies_rt16_floor", False, "RT-2, RT-16"),
+    ("strata.cassette_rule.permitted_capture_targets", ["S2", "N0"], "RT-1, EG-5, RT-15"),
+    ("strata.cassette_rule.satisfies_rt16_floor", False, "RT-1, RT-16"),
     ("strata.permanent", [2, 3, 4], "RT-1"),
     ("encryption.per_case_data_key", True, "RT-4"),
     ("full_text_index.stratum", 1, "RT-7"),
@@ -507,6 +554,21 @@ class Finding:
 def refuse(code: str, where: str, detail: str, moves: str) -> None:
     """Print a four-line refusal before there are findings to collect."""
     print(Finding(code, where, detail, moves).render(), file=sys.stderr)
+
+
+def _same(actual, want) -> bool:
+    """Equal in value and in type, elementwise for lists and mappings.
+
+    Until 2026-10-01 the pins compared with ==, so true and 1, or false and 0,
+    were interchangeable, and a stratum of true passed.
+    """
+    if type(actual) is not type(want):
+        return False
+    if isinstance(want, list):
+        return len(actual) == len(want) and all(_same(a, w) for a, w in zip(actual, want))
+    if isinstance(want, dict):
+        return set(actual) == set(want) and all(_same(actual[k], want[k]) for k in want)
+    return actual == want
 
 
 def dig(node, dotted: str):
@@ -1094,7 +1156,7 @@ def check_policy(ctx: dict) -> list[Finding]:
     # R-04's non-numeric half. Each rule bounds how long a person's data is held.
     for path, value, criterion in INVARIANTS:
         actual = dig(pol, path)
-        if actual != value:
+        if not _same(actual, value):
             out.append(
                 Finding(
                     "RETENTION_POLICY_TTL_DRIFT",
@@ -1213,7 +1275,7 @@ def check_policy(ctx: dict) -> list[Finding]:
     # Compiled rules that bound what is held and where.
     for path, value, criterion in PINNED_RULES:
         actual = dig(pol, path)
-        if actual != value:
+        if not _same(actual, value):
             out.append(
                 Finding(
                     "RETENTION_POLICY_RULE_DRIFT",
@@ -1236,7 +1298,11 @@ def check_policy(ctx: dict) -> list[Finding]:
         for index, entry in enumerate(as_list(dig(pol, block))):
             if not isinstance(entry, dict):
                 continue
-            if any(isinstance(v, dict) and "unratified" in v for v in entry.values()):
+            # Skipped only when the entry is nothing but a deferral. Until
+            # 2026-10-01 any unratified mapping anywhere in it excused it.
+            if len(entry) == 1 and all(
+                isinstance(v, dict) and set(v) == {"unratified"} for v in entry.values()
+            ):
                 continue
             if not isinstance(entry.get("present"), bool):
                 out.append(
@@ -1249,41 +1315,8 @@ def check_policy(ctx: dict) -> list[Finding]:
                         "an unratified mapping naming the open question",
                     )
                 )
-    measured = rt15_parts(ctx.get("codes") or set())
-    stated = [
-        r.get("present")
-        for r in as_list(dig(pol, "repo_scan.enforcement_parts_all_required"))
-        if isinstance(r, dict)
-    ]
-    if len(stated) == len(measured):
-        for (name, present), claim in zip(measured, stated):
-            if isinstance(claim, bool) and claim != present:
-                out.append(
-                    Finding(
-                        "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
-                        f"{POLICY_REL} :: retention.repo_scan.enforcement_parts_all_required",
-                        f"the policy says {name} is {'in place' if claim else 'absent'} "
-                        f"and the tree shows it {'in place' if present else 'absent'}. RT-15 "
-                        "requires all four parts, so a part claimed and not present is "
-                        "an enforcement nobody gets",
-                        "correct the present flag to what the tree shows; or put the part "
-                        "in place and change the flag in the same commit",
-                    )
-                )
-    for index, entry in enumerate(as_list(dig(pol, "connector_floor.enforcement"))):
-        if isinstance(entry, dict) and "reconcile" in str(entry.get("check", "")):
-            if entry.get("present") is not RT16_RECONCILE_WRITTEN and isinstance(entry.get("present"), bool):
-                out.append(
-                    Finding(
-                        "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
-                        f"{POLICY_REL} :: retention.connector_floor.enforcement[{index}]",
-                        f"the policy says RT-16's reconcile is "
-                        f"{'written' if entry.get('present') else 'absent'} and this tool "
-                        f"{'carries it' if RT16_RECONCILE_WRITTEN else 'does not carry it'}",
-                        "correct the present flag; or write the reconcile and set "
-                        "RT16_RECONCILE_WRITTEN in the same commit",
-                    )
-                )
+    out += rt15_table_findings(pol, ctx.get("codes") or set())
+    out += rt16_table_findings(pol)
 
     # R-09's write-path half: RT-9 sends the witness mechanics to the fixture
     # and keeps three properties the store has to know at first write.
@@ -1327,8 +1360,11 @@ def check_policy(ctx: dict) -> list[Finding]:
         drift.append("the halt block is absent")
     else:
         for key, want in HALT_PIN.items():
-            if halt.get(key) != want:
-                drift.append(f"halt.{key} reads {halt.get(key)!r} where RT-11 fixes {want!r}")
+            if not _same(halt.get(key), want):
+                drift.append(
+                    f"halt.{key} reads {halt.get(key)!r} where "
+                    f"{HALT_SOURCE.get(key, 'RT-11')} fixes {want!r}"
+                )
     acts = [a for a in as_list(dig(pol, "ledger.additional_recorded_acts")) if isinstance(a, dict)]
     overrides = [a for a in acts if a.get("name") == "halt_override"]
     if len(overrides) != 1 or overrides[0].get("unratified") != "U-17":
@@ -1854,14 +1890,21 @@ def synthetic_allowlist(registry: dict) -> tuple[set[str], str]:
 PAIR_KEYS = (("selector_type", "value"), ("target_selector_type", "target_selector"))
 
 
-def _mappings(node):
+def _mappings(node, seen: set | None = None):
+    # Each node once: a YAML anchor can refer to itself, which recursed without
+    # end until 2026-10-01.
+    seen = set() if seen is None else seen
+    if id(node) in seen:
+        return
+    if isinstance(node, (dict, list)):
+        seen.add(id(node))
     if isinstance(node, dict):
         yield node
         for value in node.values():
-            yield from _mappings(value)
+            yield from _mappings(value, seen)
     elif isinstance(node, list):
         for value in node:
-            yield from _mappings(value)
+            yield from _mappings(value, seen)
 
 
 def _pairs_in(node, types: set[str]):
@@ -2128,25 +2171,135 @@ def check_repo_scan(ctx: dict, staged: bool) -> tuple[list[Finding], dict]:
     }
 
 
-def rt15_parts(codes: set[str]) -> list[tuple[str, bool]]:
+def _read_for_measure(path: Path) -> str:
+    """A file's text for a measurement, or "" when it cannot be read.
+
+    A crash must never stand in for a measurement, and an unreadable file
+    measures as absent. Until 2026-10-01 a manifests/ directory or a non-UTF-8
+    AGENTS.md ended --policy, --repo-scan and the hook in a traceback.
+    """
+    try:
+        return path.read_text(encoding="utf-8", errors="replace") if path.is_file() else ""
+    except OSError:
+        return ""
+
+
+def _hook_runs(text: str, command: str) -> bool:
+    """True when an uncommented line runs `command` and does not swallow it."""
+    for line in text.splitlines():
+        bare = line.strip()
+        if bare.startswith("#") or command not in bare:
+            continue
+        if re.search(r"\|\|\s*(true\b|:(\s|$)|exit\s+0\b)", bare):
+            continue
+        return True
+    return False
+
+
+def rt15_parts(codes: set[str], root: Path | None = None) -> list[tuple[str, bool]]:
     """RT-15's four enforcement parts, each measured rather than asserted.
 
     Until 2026-10-01 every run printed that RT-15 was enforced in three of its
     four parts, counting git history as the fourth. RT-15 lists four parts and
-    git history is not one of them; two were in place.
+    git history is not one of them; two were in place. Until the second review
+    of 2026-10-01 the clause, the field and the hook were substring tests a
+    comment satisfied, so a deleted section 4 still measured as in place.
     """
-    agents = ROOT / "AGENTS.md"
-    hook = ROOT / ".githooks" / "pre-commit"
-    manifests = list((ROOT / "connectors").glob("*/manifest*")) if (ROOT / "connectors").is_dir() else []
+    base = ROOT if root is None else root
+    agents = _read_for_measure(base / "AGENTS.md")
+    section = agents.split("## 4. Execution Limits", 1)[1].split("\n## ", 1)[0] if "## 4. Execution Limits" in agents else ""
+    clause = RT15_CLAUSE_SENTENCE in " ".join(section.split())
+    manifests = []
+    connectors = base / "connectors"
+    try:
+        if connectors.is_dir():
+            manifests = [m for m in connectors.glob("*/manifest*") if m.is_file()]
+    except OSError:
+        manifests = []
+    declared = bool(manifests)
+    for m in manifests:
+        try:
+            doc = yaml.safe_load(_read_for_measure(m)) if yaml is not None else None
+        except yaml.YAMLError:
+            doc = None
+        if not (isinstance(doc, dict) and doc.get("canary_subject_class") in ("synthetic", "institutional")):
+            declared = False
+    hook = _read_for_measure(base / ".githooks" / "pre-commit")
     return [
-        ("the Execution Limits clause in AGENTS.md",
-         agents.is_file() and "Execution Limits" in agents.read_text(encoding="utf-8")),
+        ("the Execution Limits clause in AGENTS.md", clause),
         ("canary_subject_class required on connector manifests",
-         bool(manifests) and all("canary_subject_class" in m.read_text(encoding="utf-8", errors="replace") for m in manifests)),
+         declared and MANIFEST_VALIDATOR_REQUIRES_CANARY),
         (f"the violation code {DOCTRINE_SCAN_CODE} in policy/violation-codes.yaml",
          DOCTRINE_SCAN_CODE in codes),
         ("this scan wired into .githooks/pre-commit",
-         hook.is_file() and "validate_retention.py --repo-scan" in hook.read_text(encoding="utf-8")),
+         _hook_runs(hook, "tools/validate_retention.py --repo-scan")),
+    ]
+
+
+def rt15_table_findings(pol: dict, codes: set[str]) -> list[Finding]:
+    """RT-15's table, keyed by clause: four parts, each once, each as measured."""
+    where = f"{POLICY_REL} :: retention.repo_scan.enforcement_parts_all_required"
+    entries = [e for e in as_list(dig(pol, "repo_scan.enforcement_parts_all_required")) if isinstance(e, dict)]
+    clauses = [e.get("clause") for e in entries]
+    if sorted(map(str, clauses)) != sorted(RT15_PART_CLAUSES):
+        return [
+            Finding(
+                "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
+                where,
+                f"the table lists {len(entries)} part(s), {clauses}, where RT-15 has four, "
+                "each once. A missing, extra or renamed part makes the table say something "
+                "about an enforcement RT-15 does not name",
+                "restore the four clauses as RT15_PART_CLAUSES in this tool names them; or "
+                "ratify an RT-15 amendment and move RT15_PART_CLAUSES in the same commit",
+            )
+        ]
+    out: list[Finding] = []
+    measured = dict(zip(RT15_PART_CLAUSES, (present for _, present in rt15_parts(codes))))
+    for entry in entries:
+        claim, present = entry.get("present"), measured[entry["clause"]]
+        if isinstance(claim, bool) and claim is not present:
+            out.append(
+                Finding(
+                    "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
+                    where,
+                    f"the policy says {entry['clause']} is {'in place' if claim else 'absent'} "
+                    f"and the tree shows it {'in place' if present else 'absent'}. RT-15 "
+                    "requires all four parts, so a part claimed and not present is an "
+                    "enforcement nobody gets",
+                    "correct the present flag to what the tree shows; or put the part in "
+                    "place and change the flag in the same commit",
+                )
+            )
+    return out
+
+
+def rt16_table_findings(pol: dict) -> list[Finding]:
+    """RT-16's three entries, keyed by what each is, each with its pinned state."""
+    where = f"{POLICY_REL} :: retention.connector_floor.enforcement"
+    entries = [e for e in as_list(dig(pol, "connector_floor.enforcement")) if isinstance(e, dict)]
+    problems = []
+    if len(entries) != len(RT16_ENFORCEMENT):
+        problems.append(f"{len(entries)} entries where RT-16 names {len(RT16_ENFORCEMENT)}")
+    for (key, text, present), entry in zip(RT16_ENFORCEMENT, entries):
+        if not _same(entry.get(key), text):
+            problems.append(f"an entry reads {key}: {entry.get(key)!r} where RT-16's is {text!r}")
+        elif present is not None and isinstance(entry.get("present"), bool) and entry.get("present") is not present:
+            problems.append(
+                f"{text} is stated {'in place' if entry.get('present') else 'absent'} "
+                f"and this tool {'carries it' if present else 'does not carry it'}"
+            )
+    if not problems:
+        return []
+    return [
+        Finding(
+            "RETENTION_POLICY_ENFORCEMENT_MISSTATED",
+            where,
+            "RT-16's enforcement entries do not say what exists: " + "; ".join(problems)
+            + ". RT-16 names the clause, the check and a code so that it is not a rule "
+            "that states itself and stops",
+            "restore the three entries as RT16_ENFORCEMENT in this tool names them; or "
+            "write the clause or the reconcile and set its flag in the same commit",
+        )
     ]
 
 
@@ -2577,10 +2730,65 @@ def _mutations():
     def canary_claimed(ctx):
         ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"][1]["present"] = True
 
+    def canary_moved_first(ctx):
+        parts = ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"]
+        parts[0], parts[1] = parts[1], parts[0]
+        parts[0]["present"], parts[1]["present"] = True, False
+
+    def rt15_fifth_part(ctx):
+        parts = ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"]
+        parts.append({"clause": "git history", "present": True})
+
+    def rt15_table_gone(ctx):
+        del ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"]
+
+    def reconcile_reworded_and_claimed(ctx):
+        entry = ctx["policy"]["retention"]["connector_floor"]["enforcement"][1]
+        entry["check"] = "a bidirectional diff of pinned versions in tools/validate_retention.py"
+        entry["present"] = True
+
+    def reconcile_hidden_by_a_decoy(ctx):
+        entry = ctx["policy"]["retention"]["connector_floor"]["enforcement"][1]
+        entry.pop("present", None)
+        entry["code"] = {"unratified": "U-07"}
+
+    def rt16_clause_claimed(ctx):
+        ctx["policy"]["retention"]["connector_floor"]["enforcement"][0]["present"] = True
+
+    def rt16_table_gone(ctx):
+        del ctx["policy"]["retention"]["connector_floor"]["enforcement"]
+
+    def check2_passes_always(ctx):
+        ctx["policy"]["retention"]["verification"]["checks"][1]["passes_when"] = "always"
+
+    def check3_passes_always(ctx):
+        ctx["policy"]["retention"]["verification"]["checks"][2]["passes_when"] = "always"
+
+    def fixture_check2_passes_always(ctx):
+        ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][1]["passes_when"] = "always"
+
+    def fixture_check3_passes_always(ctx):
+        ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][2]["passes_when"] = "always"
+
+    def stratum_written_as_true(ctx):
+        ctx["policy"]["retention"]["full_text_index"]["stratum"] = True
+
     return flips + [
         ("let check 1 pass when the decrypt succeeds", "policy", check1_passes_on_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("leave RT-16's reconcile entry silent on whether it exists", "policy", reconcile_unstated, "RETENTION_POLICY_ENFORCEMENT_UNSTATED", True),
         ("claim RT-16's reconcile is written", "policy", reconcile_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("move the canary part first and claim it", "policy", canary_moved_first, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("add a fifth part to RT-15's table", "policy", rt15_fifth_part, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("delete RT-15's enforcement table", "policy", rt15_table_gone, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("reword RT-16's reconcile and claim it", "policy", reconcile_reworded_and_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("hide RT-16's reconcile flag behind a decoy deferral", "policy", reconcile_hidden_by_a_decoy, "RETENTION_POLICY_ENFORCEMENT_UNSTATED", True),
+        ("claim RT-16's AGENTS.md clause is written", "policy", rt16_clause_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("delete RT-16's enforcement entries", "policy", rt16_table_gone, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("let check 2 pass always", "policy", check2_passes_always, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
+        ("let check 3 pass always", "policy", check3_passes_always, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
+        ("let the fixture's check 2 pass always", "roundtrip", fixture_check2_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
+        ("let the fixture's check 3 pass always", "roundtrip", fixture_check3_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
+        ("write the index's stratum as true", "policy", stratum_written_as_true, "RETENTION_POLICY_RULE_DRIFT", True),
         ("claim canary_subject_class is required on manifests", "policy", canary_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("stop failing check 1 on a successful decrypt", "policy", check1_forgets_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("hold the witness inside the delete path", "policy", witness_inside_the_delete_path, "RETENTION_POLICY_WITNESS_UNDESIGNATED", True),
@@ -2767,18 +2975,53 @@ def self_test(ctx: dict) -> int:
     failures += 0 if ok else 1
     print(f"  {'refused' if ok else 'PASSED  '}  {'refuse NUL-bearing bytes with no byte-order mark':56} expected RETENTION_REPO_SCAN_SOURCE_UNREADABLE")
 
-    measured = [present for _, present in rt15_parts(ctx["codes"])]
-    table = [
-        r.get("present")
+    measured = dict(zip(RT15_PART_CLAUSES, (present for _, present in rt15_parts(ctx["codes"]))))
+    table = {
+        r.get("clause"): r.get("present")
         for r in as_list(dig(ctx["policy"].get("retention") or {}, "repo_scan.enforcement_parts_all_required"))
         if isinstance(r, dict)
-    ]
+    }
     ok = measured == table
     failures += 0 if ok else 1
     print(
         f"  {'refused' if ok else 'PASSED  '}  {'measure RT-15s four parts against the policy table':56} "
         f"expected {table}, measured {measured}"
     )
+
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        (base / ".githooks").mkdir()
+        (base / "connectors" / "acme" / "manifests").mkdir(parents=True)
+        (base / "AGENTS.md").write_bytes(b"The Execution Limits clause was removed \x96 on purpose.\n")
+        (base / ".githooks" / "pre-commit").write_text(
+            "# python tools/validate_retention.py --repo-scan --staged\n"
+            "python tools/validate_retention.py --repo-scan --staged || true\n",
+            encoding="utf-8",
+        )
+        (base / "connectors" / "acme" / "manifest.yaml").write_text(
+            "# canary_subject_class: synthetic\nid: acme\n", encoding="utf-8"
+        )
+        try:
+            got = [present for _, present in rt15_parts(set(), base)]
+            ok = got == [False, False, False, False]
+            note = f"measured {got}"
+        except Exception as exc:  # noqa: BLE001, a crash is the defect under test
+            ok, note = False, f"raised {type(exc).__name__}"
+    failures += 0 if ok else 1
+    print(
+        f"  {'refused' if ok else 'PASSED  '}  {'measure no RT-15 part from comments or bad bytes':56} "
+        f"expected four absent parts, {note}"
+    )
+
+    try:
+        selector_pairs("policy/x.yaml", "node: &n\n  child: *n\n", {"email"})
+        ok = True
+    except RecursionError:
+        ok = False
+    failures += 0 if ok else 1
+    print(f"  {'refused' if ok else 'PASSED  '}  {'walk a self-referential YAML anchor':56} expected no crash")
 
     print()
     if failures:

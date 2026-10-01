@@ -2054,3 +2054,48 @@ and one the operator's, and none of the twelve is work an agent can take alone.
 staged tree, the retention self-test with 93 breaks, and both forms of `git
 diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**The maintainer's word at 12:37.** Relayed by the parent session and recorded
+verbatim in its dispatch record of 2026-09-30, line 58: "you have my grant on
+the merges. Demo is 1630 EDT so lets do as much as we possibly can up to it".
+The parent's limit with it: from 16:15 local until the demo is over, no test
+runs, builds or agents on this workstation. A commit runs the hook's validators,
+so the last commit lands before 16:15.
+
+**The second adversarial pass.** The closeout said nothing reviewed PRs 13 to
+19. Four lenses ran over PRs 13 to 24, each paired with an Opus 5.5 refuter that
+defaults to refuted and must reproduce: retention mechanism on Opus 5.5 in
+memory, doctrine fidelity of every pinned value on Fable 5.1 read-only, and
+self-description on Sonnet 5.5 read-only, with authorization mechanism to
+follow. The record is `REVIEW2.md` in the overnight artifacts folder. Doctrine
+fidelity found no pinned value that disagrees with rank 1 and three refusals
+that name the wrong criterion, all confirmed. The retention lens found eleven
+defects, nine confirmed and two downgraded, none refuted, most of them in this
+session's own work of today. The lens created four temporary directories in the
+repository root and removed them at once; they were never staged.
+
+**Sixth: the retention enforcement checks keyed and measured, Class B.** RT-15's
+table was compared with the measured parts by position and only at length four,
+so the canary entry moved first could claim the clause's measurement, and a
+fifth entry or a deleted table turned the comparison off; it is now keyed by the
+four clauses in `RT15_PART_CLAUSES`, each once. RT-16's reconcile could be
+reworded past a substring test, hidden behind a decoy deferral, or deleted with
+its block, and the AGENTS.md clause entry was never read; the three entries are
+now pinned by key in `RT16_ENFORCEMENT`, with `RT16_CLAUSE_WRITTEN` false, and a
+deferral excuses an entry only when it is the whole entry. `rt15_parts` counted
+the words "Execution Limits" anywhere, a commented hook line and a commented
+manifest field; it now reads the section 4 sentence, an uncommented hook command
+not swallowed by `|| true`, and parsed manifests, and the canary part also
+needs a manifest validator that requires the field, which does not exist. It
+read a manifests/ directory and a non-UTF-8 file into an uncaught traceback, and
+now measures them as absent. RT-9 checks 2 and 3 are pinned in both artifacts.
+The pins compare type as well as value, so a stratum of `true` refuses. The pair
+walk visits each node once, so a self-referential YAML anchor no longer recurses
+without end. The halt refusal names RET-R5, U-03 and U-17 where it said RT-11,
+and the cassette pins cite RT-1. Twelve self-test breaks and two measured cases
+are new. `--policy` and `--repo-scan` output are byte-identical to `78131d7`.
+
+**Battery for the sixth change.** All sixteen preflight commands passed on the
+staged tree, the retention self-test with 105 breaks, and both forms of `git
+diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.

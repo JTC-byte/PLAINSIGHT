@@ -12,9 +12,9 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file pins the retention policy's last unpinned rules, on top of `9e17ec9`,
-under the overnight grant of 2026-09-30 23:28 as renewed at 01:26, resumed by
-the maintainer at 12:24 after the hold of 01:56. The commits before it that night gave the gates one reader of the pin of
+file fixes what the second review found in the retention gate's enforcement
+checks, on top of `78131d7`, under the overnight grant of 2026-09-30 23:28,
+resumed at 12:24 and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,18 +46,18 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Nine compiled retention rules were read by no
-tool: the cassette rule's four fields, the permanent strata, the per-case data
-key, and the index's stratum, per-case scope and sharing. Each could be flipped
-with `--policy` green; each is now pinned by value, and the previous tool
-refused none of the nine flips.
+**What changed and why.** A second adversarial pass over PRs 13 to 24 found
+the enforcement checks added today defeatable: RT-15's flags were compared by
+position, RT-16's entries could be reworded past the check, and the measure of
+RT-15's parts counted a comment. They are now keyed and measured, RT-9 checks 2
+and 3 are pinned, pins compare type as well as value, and two crashes are gone.
 
 **Which surfaces moved.** `tools/validate_retention.py` and its self-test,
 `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
 before the commit. All sixteen preflight commands passed, the retention
-self-test with 93 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+self-test with 105 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -329,7 +329,8 @@ SS-14's seal condition for the cast. All eleven are closed, three of them in
 part, and the review record lists what remains of each. Of the twelve review
 findings still open, three wait on the operator's queue and nine on the
 evaluator VA-U1 holds until Step 10 or on fixture semantics a ratified entry
-decides. None is left that an agent can take alone.
+decides. None is left that an agent can take alone. A second adversarial
+pass over PRs 13 to 24 is recorded beside the first, in `REVIEW2.md`.
 
 ## 6. Session context that lives outside this repository
 
