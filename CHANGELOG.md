@@ -22,6 +22,29 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The pin-of-record reader reads the stamp wording as
+  a closed grammar and binds a criterion only inside a stated range.**
+
+  **What changed.** The whole-artifact Item cell is exactly "<what>, whole
+  artifact" or a doctrine range "<NS>-1 to <NS>-<n>, all criteria"; a substring
+  test let a row saying "not the whole artifact", or a struck or withdrawn row,
+  stamp the whole file. A struck or withdrawn row stamps nothing. A criterion
+  binds only inside a stated range or a row that names it. The 19xx or 20xx
+  year bound is restored, and PIN-R6 states its limit. From the Step 8 review's
+  completeness critic, decided under the operator's overnight grant of
+  2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/pin_of_record.py`, the retention self-test,
+  `AGENTS.md` section 7, the worklog and the handoff.
+
+  **What validation ran.** The reader's self-test, 31 cases; the retention
+  self-test, 53 breaks; the real pin binding the same five files and 58
+  criteria; all sixteen preflight commands on the staged tree; both forms of
+  `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No doctrine file, stamp, policy, schema or corpus.
+  Every change makes the reader stricter.
+
 - **2026-10-01, overnight. The authorization gate checks the whole row contract
   and pins its preflight and section stamps; the repo scan tests every match.**
 

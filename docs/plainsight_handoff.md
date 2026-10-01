@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file closes
-holes in the authorization gate's row contract, in the repo scan, and in three
-of the night's own fixes that the review's completeness critic found, on top of
-`8bedba1`, under the operator's overnight grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
+**Date:** 2026-10-01, overnight. The commit that carries this file closes the
+ratification blocker the review's completeness critic found in the shared
+pin-of-record reader, and three neighbouring holes in it, on top of `2720a9a`,
+under the operator's overnight grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,23 +46,23 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** The authorization gate declared the keys of a row's
-decision and inputs and read neither, counted an SS-12 row that mentions a
-field as SS-5's fixture for it, and skipped a fixture with no record. The repo
-scan tested only the first match per selector type on a line, so an allowlisted
-match hid a live one. The critic also found three holes in the night's own
-fixes: the new A-18 pass skipped a row with no stamp state, the case it was
-written for; the policy under ratification set how finely the contract is
-stamped; and the four preflight checks were pinned by count only. Each now
-refuses, and no current outcome changed.
+**What changed and why.** `tools/pin_of_record.py` tested its whole-artifact
+wording as a substring, so an entry row saying "not the whole artifact", or a
+struck or withdrawn row, stamped the whole file: the blocker `c552d13` closed,
+back through the pin's own wording. The Item cell is now a closed grammar, and a
+struck or withdrawn row stamps nothing. A range row stamped every criterion of
+its file, including RT-19 and any criterion added later; a criterion now binds
+only inside a stated range or a row that names it. The year bound the old
+reader had is restored, and PIN-R6 now states its limit rather than claiming a
+file written after its stamp arrives unratified. On the real pin, the same five
+files and 58 criteria bind.
 
-**Which surfaces moved.** `tools/validate_authorization.py` and
-`tools/validate_retention.py` with their self-tests, `CHANGELOG.md`, this file,
-and the worklog.
+**Which surfaces moved.** `tools/pin_of_record.py`, the retention self-test,
+`AGENTS.md` section 7, `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the authorization
-self-test with 55 breaks refused and the retention self-test with 52, and both
+before the commit. All sixteen preflight commands passed, the reader's
+self-test with 31 cases and the retention self-test with 53 breaks, and both
 forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
@@ -168,12 +168,14 @@ differently.
 
 **How the gates read a stamp, since 2026-10-01.** One reader,
 `tools/pin_of_record.py`, decides for the doctrine, authorization and retention
-gates. A row stamps a whole artifact only when its Item cell says "whole
-artifact" or "all criteria", its File cell is the backticked path alone, its
-Conclusion stamped cell is the date alone, and its Ratifier cell is "operator".
-A row naming an entry, a section or a criterion stamps that item and not the
-file, and the contract is stamped by its §5 and §12 rows together. Each
-predicate is an assistant reading in the module's `READINGS` awaiting the
+gates. A row stamps a whole artifact only when its Item cell is exactly
+"<what>, whole artifact" or a doctrine range such as "RT-1 to RT-18, all
+criteria", its File cell is the backticked path alone, its Conclusion stamped
+cell is a 19xx or 20xx date alone, and its Ratifier cell is "operator". A row
+naming an entry, a section or a criterion stamps that item and not the file;
+the contract is stamped by its §5 and §12 rows together; a criterion binds only
+inside a stated range or a row naming it; a struck or withdrawn row stamps
+nothing. Each predicate is an assistant reading in `READINGS` awaiting the
 operator's confirmation.
 
 **Patch 4b.** Four Class F items: EG-7 third-party host declaration, CR-3's
@@ -328,9 +330,9 @@ finding's status, is
 claims, commands and outputs are beside it. The completeness critic then ran
 against `8bedba1` and found 11 more, none refuted. Two are ratification
 blockers: the shared reader's whole-artifact test is a substring match, so an
-Item cell saying "not the whole artifact" stamps the file, and nothing reads
-SS-14's seal condition for the cast. Three are closed by the commit carrying
-this file, and the rest are listed in the review record.
+Item cell saying "not the whole artifact" stamped the file, and nothing reads
+SS-14's seal condition for the cast. Seven are closed, the first blocker among
+them, and the rest are listed in the review record.
 
 ## 6. Session context that lives outside this repository
 

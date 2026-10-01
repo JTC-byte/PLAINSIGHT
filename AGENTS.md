@@ -248,9 +248,12 @@ One partially stamped item does not stamp its file.
 **The gates read the pin through one reader.** `tools/pin_of_record.py` decides
 for the doctrine, authorization and retention gates whether an artifact or a
 criterion is stamped, and its `READINGS` state the predicates. A row stamps a
-whole artifact only when its Item cell says "whole artifact" or "all criteria"
-and its File cell names the path alone, which is how the sentence above becomes
-a mechanism rather than a convention.
+whole artifact only when its File cell names the path alone and its Item cell is
+exactly "<what>, whole artifact" or a doctrine range such as "RT-1 to RT-18, all
+criteria", which is how the sentence above becomes a mechanism rather than a
+convention. A criterion binds only inside a stated range or a row that names
+it. A struck or withdrawn row stamps nothing, and a row is withdrawn by a later
+dated row rather than by editing it.
 
 ## 8. Handoff standard, and the closeout
 

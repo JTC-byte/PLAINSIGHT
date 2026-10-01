@@ -2061,6 +2061,11 @@ def _mutations():
     def make_the_fixture_a_scalar(ctx):
         ctx["fixture"]["shred_roundtrip"] = 7
 
+    def drop_rt19s_own_row(ctx):
+        ctx["status"] = re.sub(
+            r"(?m)^\| Gate telemetry with a 90 day TTL[^\n]*\n", "", ctx["status"], count=1
+        )
+
     def withdraw_the_retention_range_row(ctx):
         ctx["status"] = re.sub(
             r"(?m)^\| RT-1 to RT-18, all criteria[^\n]*\n", "", ctx["status"], count=1
@@ -2138,6 +2143,7 @@ def _mutations():
         ("stamp the policy in the pin of record", "policy", stamp_the_policy, "-RETENTION_POLICY_UNRATIFIED", True),
         ("stamp one policy entry in house format", "policy", stamp_the_policy_by_an_entry_row, "=RETENTION_POLICY_UNRATIFIED", True),
         ("withdraw doctrine/RETENTION.md's range row", "policy", withdraw_the_retention_range_row, "RETENTION_CRITERION_UNSTAMPED", True),
+        ("drop the only row that stamps RT-19", "policy", drop_rt19s_own_row, "RETENTION_CRITERION_UNSTAMPED", True),
         ("swap the authorization row for a second skeleton row", "policy", swap_authorization_for_a_second_skeleton, "RETENTION_POLICY_STRATA_ROW_DRIFT", True),
         ("let gate telemetry live forever", "policy", let_telemetry_live_forever, "RETENTION_POLICY_STRATA_ROW_DRIFT", False),
         ("give the synthetic corpus a subject value", "policy", give_the_corpus_a_subject_value, "RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM", False),

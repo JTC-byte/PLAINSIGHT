@@ -1782,3 +1782,31 @@ record by design.
 staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Thirteenth: the blocker the critic found in the shared reader, Class B,
+decided under the grant.** `tools/pin_of_record.py` tested the whole-artifact
+wording as a substring of the Item cell. The critic showed an entry row worded
+"SA-U4 only, not the whole artifact", a struck whole-artifact row, and one marked
+WITHDRAWN each stamping the whole policy, and three such rows clearing both
+retention refusals end to end. This is the blocker `c552d13` closed, back
+through the pin's own sentence, which invites exactly that wording. The Item
+cell is now a closed grammar: exactly "<what>, whole artifact" with no "not" in
+<what>, or a doctrine range "<NS>-1 to <NS>-<n>, all criteria". Any cell carrying
+a strike or the word withdrawn, struck, superseded or revoked makes the row
+stamp nothing, so a row is withdrawn by a later dated row. Three neighbouring
+holes closed with it. A range row stamped every criterion of its file, so RT-19
+bound with no dated row covering it and any criterion added later bound under
+the old range; a criterion now binds only inside a stated range or a row naming
+it after the file's path. The reader had dropped the 19xx or 20xx year bound the
+old authorization reader held, so a year-2199 stamp counted; the bound is back.
+PIN-R6 claimed a file written after its stamp arrives unratified, which the
+reader does not enforce; PIN-R6 now states the limit, and a case keeps it
+visible until the operator decides content binding. On the real pin the same
+five files and all 58 criteria bind. The reader's self-test gains ten cases and
+holds 31, and the retention self-test gains a case where deleting RT-19's own
+row refuses.
+
+**Battery for the thirteenth change.** All sixteen preflight commands passed on
+the staged tree and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
+2 stubbed and 5 pending.

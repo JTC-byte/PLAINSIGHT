@@ -42,9 +42,15 @@ CRITERIA_END = "## Assistant readings"
 #: Who may ratify. The program has one ratifier, and every stamped row names it.
 RATIFIERS = ("operator",)
 
-#: The words an Item cell uses to say a row stamps a whole artifact rather than
-#: one item in it. The doctrine rows already say "all criteria".
-WHOLE_ARTIFACT_WORDS = ("all criteria", "whole artifact")
+#: The two Item-cell forms that stamp a whole artifact, as a closed grammar. A
+#: substring test accepted "not the whole artifact" and a struck row until the
+#: completeness critic of 2026-10-01 found it, which brought back the blocker
+#: this module exists to close. Anything else is an item stamp.
+WHOLE_RE = re.compile(r"^([^,~]+), whole artifact$")
+RANGE_RE = re.compile(r"^(SS|RT|EG|CR|HY)-1 to \1-(\d+), all criteria$")
+#: A row carrying any of these marks is withdrawn and stamps nothing at all. A
+#: row is withdrawn by a later dated row, never by editing or striking it.
+WITHDRAWN_RE = re.compile(r"~~|\b(withdrawn|struck|superseded|revoked)\b", re.I)
 
 #: Criterion namespaces and the file whose whole-artifact stamp they need.
 NAMESPACE_FILE = {
@@ -57,14 +63,16 @@ NAMESPACE_FILE = {
 
 PATH_RE = re.compile(r"`([A-Za-z0-9_./-]+\.(?:md|ya?ml|json|py|jsonl))`")
 CRITERION_RE = re.compile(r"((?:SS|RT|EG|CR|HY)-\d+)\b")
-CONCLUSION_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})(?:, amended (\d{4}-\d{2}-\d{2}))?$")
+CONCLUSION_RE = re.compile(
+    r"^((?:19|20)\d{2}-\d{2}-\d{2})(?:, amended ((?:19|20)\d{2}-\d{2}-\d{2}))?$"
+)
 SECTION_RE = re.compile(r"§\s*(\d+)")
 
 #: How a whole-artifact stamp row is written, quoted in refusal moves.
 ROW_FORMAT = (
-    "a row in the Ratified table of doctrine/DOCTRINE_STATUS.md whose Item cell says "
-    "'whole artifact', whose File cell is the backticked path alone, whose Conclusion "
-    "stamped cell is the date alone, and whose Ratifier cell is 'operator'"
+    "a row in the Ratified table of doctrine/DOCTRINE_STATUS.md whose Item cell ends "
+    "in ', whole artifact', whose File cell is the backticked path alone, whose "
+    "Conclusion stamped cell is the date alone, and whose Ratifier cell is 'operator'"
 )
 
 READINGS = {
@@ -72,24 +80,33 @@ READINGS = {
     "'### What each decision was'. A dated line in the prose under it, in the Pending "
     "table, or in either readings table is not a stamp.",
     "PIN-R2": "A stamp row has the table's six cells, a Conclusion stamped cell that is "
-    "a calendar date and nothing else, optionally followed by ', amended <date>', and "
-    "a Ratifier cell naming a declared ratifier. A date inside other words, such as a "
-    "review date, is not a stamp, and neither is an impossible date.",
+    "a calendar date in 19xx or 20xx and nothing else, optionally followed by ', "
+    "amended <date>', and a Ratifier cell naming a declared ratifier. A date inside "
+    "other words, such as a review date, is not a stamp, and neither is an impossible "
+    "date.",
     "PIN-R3": "A row stamps a whole artifact only when its File cell names backticked "
-    "paths and nothing else and its Item cell says 'all criteria' or 'whole artifact'. "
-    "Every other dated row is an item stamp, recorded against each path it names with "
-    "the qualifier that follows the path, and it does not stamp the file.",
+    "paths and nothing else and its Item cell is exactly '<what>, whole artifact', "
+    "with no 'not' in <what>, or a doctrine range '<NS>-1 to <NS>-<n>, all criteria'. "
+    "A row carrying a strike or the word withdrawn, struck, superseded or revoked "
+    "stamps nothing; a row is withdrawn by a later dated row. Every other dated row is "
+    "an item stamp, recorded against each path it names with the qualifier that "
+    "follows the path, and it does not stamp the file.",
     "PIN-R4": "An artifact stamped by sections, the contract's sections 5 and 12 under "
     "SS-14 item 6, is stamped when its item stamps name every required section, or when "
     "a whole-artifact row stamps it.",
     "PIN-R5": "A path the Pending table names as a stamp target is unstamped whatever "
     "the Ratified table says. This is VA-R2, kept.",
-    "PIN-R6": "A stamp for a path with no file behind it stamps nothing, so a file "
-    "written there later does not arrive already ratified.",
+    "PIN-R6": "A stamp for a path with no file behind it stamps nothing while the path "
+    "is absent. The stamp is not bound to content, so a file written there later reads "
+    "as stamped by the same row, as an edit to a stamped file does. Binding a stamp to "
+    "content is a pin-format change and is the operator's.",
     "PIN-R7": "A criterion has a row only in the per-criterion table, between "
     "'### Step 3 criteria' and '## Assistant readings', and binds only when its "
-    "namespace file carries a whole-artifact stamp. A Ratified row that opens with a "
-    "criterion id, such as 'SS-1 to SS-21, all criteria', is not that criterion's row.",
+    "namespace file carries a whole-artifact stamp and a dated row covers it: a range "
+    "row whose range includes it, or an item row that names it after the file's path. "
+    "A Ratified row that opens with a criterion id, such as 'SS-1 to SS-21, all "
+    "criteria', is not that criterion's row, and a criterion added later is not "
+    "covered by an older range.",
     "PIN-R8": "A Ratified row whose Item cell begins with 'Item' is read as the table "
     "header, as validate_authorization.py read it before this module. Reading such a "
     "row as a stamp would accept rows this reader now refuses, which is class F, so "
@@ -149,6 +166,8 @@ class Pin:
         self.sections = {k: set(v) for k, v in (sections or {}).items()}
         self.whole: dict[str, str] = {}
         self.qualified: dict[str, set[str]] = {}
+        self.ranges: dict[str, list[tuple[str, int]]] = {}
+        self.named: dict[str, set[str]] = {}
         self.stamp_targets: set[str] = set()
         self.criteria: dict[str, str] = {}
         self.parsed = False
@@ -163,6 +182,8 @@ class Pin:
             if len(cells) != 6 or cells[0].lower().startswith("item"):
                 continue
             item, file_cell, _, conclusion, _, ratifier = cells
+            if any(WITHDRAWN_RE.search(c) for c in cells):
+                continue
             date = _conclusion_date(conclusion)
             if not date or ratifier.strip().lower() not in RATIFIERS:
                 continue
@@ -171,9 +192,14 @@ class Pin:
                 continue
             rest = PATH_RE.sub("", file_cell)
             pure = not re.sub(r"[\s,]|\band\b", "", rest)
-            if pure and any(w in item.lower() for w in WHOLE_ARTIFACT_WORDS):
+            label = item.strip()
+            whole = WHOLE_RE.match(label)
+            span = RANGE_RE.match(label)
+            if pure and ((whole and not re.search(r"\bnot\b", whole.group(1), re.I)) or span):
                 for p in paths:
                     self.whole.setdefault(p, date)
+                    if span and NAMESPACE_FILE.get(span.group(1)) == p:
+                        self.ranges.setdefault(p, []).append((span.group(1), int(span.group(2))))
                 continue
             # An item stamp. Each path takes the qualifier written after it.
             pieces = PATH_RE.split(file_cell)
@@ -182,6 +208,7 @@ class Pin:
                 self.qualified.setdefault(pieces[k], set()).update(
                     f"§{n}" for n in SECTION_RE.findall(after)
                 )
+                self.named.setdefault(pieces[k], set()).update(CRITERION_RE.findall(after))
 
         for cells in _table_rows(pending):
             if len(cells) != 4 or "stamp target" not in cells[1].lower():
@@ -230,7 +257,12 @@ class Pin:
     def criterion_stamped(self, cid: str) -> bool:
         if cid not in self.criteria:
             return False
-        return self.artifact_stamped(NAMESPACE_FILE.get(cid.split("-")[0], ""))
+        ns, n = cid.split("-")[0], int(cid.split("-")[1])
+        path = NAMESPACE_FILE.get(ns, "")
+        if not self.artifact_stamped(path):
+            return False
+        in_range = any(r_ns == ns and 1 <= n <= top for r_ns, top in self.ranges.get(path, []))
+        return in_range or cid in self.named.get(path, set())
 
 
 def read(root: Path = ROOT, sections: dict[str, set[str]] | None = None) -> Pin:
@@ -297,7 +329,7 @@ def _cases():
         ("a stamp row in the prose under the table is not a stamp",
          lambda t: t.replace(RATIFIED_END, RATIFIED_END + "\n\n" + whole + "\n", 1),
          lambda p: not p.artifact_stamped(POLICY)),
-        ("a stamp for an absent file stamps nothing",
+        ("a stamp for an absent file stamps nothing while it is absent",
          lambda t: _add(t, _row("the dispatch allowlist, whole artifact", "`runner/dispatch_allowlist.yaml`")),
          lambda p: not p.artifact_stamped("runner/dispatch_allowlist.yaml")),
         ("a Pending stamp-target row holds a whole-artifact stamp",
@@ -326,14 +358,63 @@ def _cases():
         ("a row labelled Item is read as the header (PIN-R8)",
          lambda t: _add(t, _row("Item 3 of SS-14 item 6, whole artifact", f"`{POLICY}`")),
          lambda p: not p.artifact_stamped(POLICY)),
+        ("an entry row saying it is not the whole artifact does not stamp",
+         lambda t: _add(t, _row("SA-U4 only, not the whole artifact", f"`{POLICY}`")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("a negation before the comma does not stamp",
+         lambda t: _add(t, _row("not the compiled policy, whole artifact", f"`{POLICY}`")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("a row saying not all criteria does not stamp",
+         lambda t: _add(t, _row("SA-U4 resolved, other criteria open (not all criteria)", f"`{POLICY}`")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("a struck whole-artifact row stamps nothing",
+         lambda t: _add(t, _row("~~the compiled policy, whole artifact~~", f"`{POLICY}`")),
+         lambda p: not p.artifact_stamped(POLICY) and POLICY not in p.qualified),
+        ("a withdrawn whole-artifact row stamps nothing",
+         lambda t: _add(t, _row("the compiled policy, whole artifact (WITHDRAWN 2026-10-02)", f"`{POLICY}`")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("whole artifact mid-cell does not stamp",
+         lambda t: _add(t, _row("whole artifact review of the compiled policy", f"`{POLICY}`")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("a year-2199 conclusion is not a stamp",
+         lambda t: _add(t, _row("the compiled policy, whole artifact", f"`{POLICY}`", "2199-01-01")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("a year-0001 conclusion is not a stamp",
+         lambda t: _add(t, _row("the compiled policy, whole artifact", f"`{POLICY}`", "0001-01-01")),
+         lambda p: not p.artifact_stamped(POLICY)),
+        ("RT-19 binds only through the row that names it",
+         lambda t: re.sub(r"(?m)^\| Gate telemetry with a 90 day TTL[^\n]*\n", "", t, count=1),
+         lambda p: not p.criterion_stamped("RT-19") and p.criterion_stamped("RT-18")),
+        ("a criterion added later is not covered by an older range",
+         lambda t: re.sub(r"(?m)^(\| RT-19 [^\n]*\n)", r"\1| RT-20 a planted criterion | same | x | x |\n", t, count=1),
+         lambda p: "RT-20" in p.criteria and not p.criterion_stamped("RT-20")),
         ("a pin without its Ratified heading stamps nothing",
          lambda t: t.replace(RATIFIED_START + "\n", "## Ratifed\n", 1),
          lambda p: not p.parsed and not p.artifact_stamped("doctrine/SUBJECT_SELECTION.md")),
     ]
 
 
+def _written_later(text: str) -> bool:
+    """PIN-R6's limit, kept visible: a file written after its stamp reads stamped."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        target = Path(tmp) / "runner" / "dispatch_allowlist.yaml"
+        target.parent.mkdir(parents=True)
+        target.write_text("written after the stamp\n", encoding="utf-8")
+        row = _row("the dispatch allowlist, whole artifact", "`runner/dispatch_allowlist.yaml`")
+        return Pin(_add(text, row), Path(tmp)).whole.get("runner/dispatch_allowlist.yaml") is not None
+
+
 def self_test(text: str, quiet: bool = False) -> int:
     failures = 0
+    # PIN-R6 states this limit rather than claiming the reader closes it: a stamp
+    # is not bound to content until the operator decides the pin's format.
+    if not _written_later(text):
+        failures += 1
+        print("  BROKEN   PIN-R6's stated limit no longer holds; restate PIN-R6")
+    elif not quiet:
+        print("  held     a file written after its stamp reads stamped (PIN-R6's stated limit)")
     for desc, mutate, holds in _cases():
         try:
             ok = bool(holds(Pin(mutate(text), ROOT, CONTRACT_SECTIONS)))
