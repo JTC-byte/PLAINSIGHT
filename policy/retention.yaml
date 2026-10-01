@@ -130,8 +130,8 @@ retention:
         field assigned to a surviving stratum. RT-2 names this as the check.
     - path: tools/validate_retention.py
       how: >
-        --repo-scan reads ontology/selectors.yaml repo_scan and the exemptions
-        there, and reads repo_scan below only for the criterion pointer. RT-15.
+        --repo-scan reads ontology/selectors.yaml repo_scan and its exemptions
+        and policy/violation-codes.yaml, and reads nothing in this file. RT-15.
     - path: tools/validate_retention.py
       how: >
         --finding scans a candidate writeup against the case's selector set
@@ -139,7 +139,7 @@ retention:
     - path: runner/retention_sweep.py
       how: >
         reads case_ttl, incidental, blob_policy and freeze, skips cases in the
-        frozen state, refuses a renewal carrying no obligation and no expected
+        frozen state, refuses a renewal carrying no obligation or no expected
         resolution date, and writes a heartbeat on every run. RT-5, RT-6, RT-12,
         RT-17.
     - path: runner/verify_shred.py
@@ -154,8 +154,10 @@ retention:
         here rather than restating them.
     - path: tools/validate_conformance.py
       how: >
-        the KERNEL_GATE aggregator's retention-policy entry, PENDING until this
-        file has a stamp row.
+        the KERNEL_GATE aggregator's retention-policy entry, listed UNRATIFIED:
+        the command runs on every gate pass, and the gate refuses
+        GATE_LIST_UNRATIFIED_PERMITTED if it exits 0 before this file has a
+        dated Ratified row.
 
   # What this file does not decide, said plainly so a reader does not go looking.
   not_here:
@@ -854,7 +856,7 @@ retention:
     shapes_and_exemptions_source: ontology/selectors.yaml repo_scan
     implemented_by: tools/validate_retention.py --repo-scan
     wired_into: .githooks/pre-commit
-    tracked_as: D-001
+    closed_by: tools/validate_retention.py --repo-scan, Step 8 (0e0c840)
     enforcement_parts_all_required:
       - clause: an Execution Limits clause in AGENTS.md
         present: true
@@ -881,7 +883,12 @@ retention:
           not name.
       - clause: tools/validate_retention.py --repo-scan wired into .githooks/pre-commit
         present: true
-        checks_anything: false
+        checks_anything: true
+        note: >
+          The hook runs --repo-scan --staged over the index and refuses a filled
+          selector of the thirteen registry shapes. It runs on shape alone while
+          the cast is unsealed, and its refusal carries the tool-local code
+          RETENTION_LIVE_SELECTOR_IN_TRACKED_FILE, which U-07 records as open.
 
   connector_floor:
     cites: [doctrine/RETENTION.md RT-16]
@@ -957,7 +964,7 @@ retention:
       job: runner/retention_sweep.py
       behaviours:
         - skips cases in the frozen state
-        - refuses a renewal that carries no obligation and no expected resolution date
+        - refuses a renewal that carries no obligation or no expected resolution date
         - shreds on the normal path the moment a freeze lapses
         - carries RT-5's 60 day ceiling refusal in the same check
       conformance:
@@ -1273,7 +1280,7 @@ retention:
           freeze's length is undecided.
             where: policy/retention.yaml retention.unratified U-05
             rule:  doctrine/DOCTRINE_STATUS.md, an unratified criterion refuses rather than permits
-            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the four mappings here; or apply a freeze at the stated 30 day default and renew it as a logged act
+            moves: stamp one of the three options above in doctrine/DOCTRINE_STATUS.md and replace the three mappings here; or apply a freeze at the stated 30 day default and renew it as a logged act
 
       - id: U-06
         change_class: F

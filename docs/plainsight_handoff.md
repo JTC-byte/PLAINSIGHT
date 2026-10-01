@@ -11,11 +11,12 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file closes five
-robustness findings of the Step 8 adversarial review, on top of `722b367`, under
-the operator's overnight grant of 2026-09-30 23:28. `722b367` closed the last
-ratification blocker, `c552d13` gave the gates one reader of the pin of record,
-and `9fb75c8` turned the kernel gate and CI green.
+**Date:** 2026-10-01, overnight. The commit that carries this file corrects 17
+statements in the Step 8 artifacts that the adversarial review found false when
+the tools run, on top of `7c3bb5c`, under the operator's overnight grant of
+2026-09-30 23:28. `7c3bb5c` and `722b367` closed robustness findings and the
+last ratification blocker, `c552d13` gave the gates one reader of the pin of
+record, and `9fb75c8` turned the kernel gate and CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -45,26 +46,31 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Two gates could pass or crash where they should
-refuse. The repo scan skipped a file whose path carries a non-ASCII character,
-because git quoted the name, and the working-tree mode skipped any file that is
-not valid UTF-8; both modes now read every tracked or staged file. When the
-layer model's strata could not be read, the retention policy check fell back to
-empty sets and RT-2's own refusal passed; it now refuses. A malformed policy or
-fixture, and a non-UTF-8 governed input to the authorization gate, ended in a
-traceback and exit 1; each is now a named refusal with exit 2.
+**What changed and why.** The Step 8 artifacts described their own tools as
+they stood before Step 8 finished. The shred fixture called its validator the
+Wave 0 stub, the gate README said nothing read it and nothing enforced its
+contract, the retention policy listed its aggregator entry as PENDING and its
+repo scan as checking nothing, and three corpus rows named an entry, GF-U6, that
+does not exist. The schema and the authorization tool said `--fixtures`
+validates records as schema instances, which it does not. The policy's N0 and
+L0 definitions had a comma where doctrine has a colon, which read as a fifth
+member. Each statement now says what the tool does. No check, value, row
+assertion or refusal changed, and each gate refuses exactly as before.
 
-**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
-`tools/validate_authorization.py`'s reader, `CHANGELOG.md`, this file, and the
-worklog.
+**Which surfaces moved.** `conformance/gate/README.md` and three row
+descriptions in `conformance/gate/decisions.jsonl`;
+`conformance/retention/shred-roundtrip.yaml`; `policy/retention.yaml`;
+`policy/subject-authorization.yaml`; two descriptions in
+`schema/subject-authorization.schema.json`; docstrings and help text in the
+authorization, retention and cast validators; `CHANGELOG.md`; this file; and
+the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the retention
-self-test with 43 breaks refused, and both forms of `git diff --check` were
-clean. A planted handle in a non-ASCII-named file and in a non-UTF-8 file was
-found by both scan modes in a scratch repository, and a malformed policy and a
-non-UTF-8 pin each exited 2 with a named refusal. The kernel gate exited 0: 16
-passed, 3 unratified and refusing, 2 stubbed, 5 pending.
+before the commit. All sixteen preflight commands passed and both forms of
+`git diff --check` were clean. Every edited gate refused exactly what it
+refused before, and the parsed N0 and L0 definitions equal doctrine's. The
+kernel gate exited 0: 16 passed, 3 unratified and refusing, 2 stubbed, 5
+pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
 pull request.
@@ -249,8 +255,10 @@ about 1,720 non-recurring and 205 a month.
   deliberate breaks found this and a second blind spot, SS-1's row shadowed by
   that range row, which the shared reader closed.
 - **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
-  `schema/subject-authorization.schema.json` admits only the three pre-R4
-  evidence kinds, which is what SA-U2 and SA-U11 both land on. SA-U16's current
+  `schema/subject-authorization.schema.json` admits no value at all, because its
+  subschema is `"not": {}`, so no authorization record validates; SA-U2, SA-U11
+  and SAS-U1 all land on it, and changing it widens what authorizes a subject,
+  which is class F. SA-U16's current
   `decided_at_step` placement is not wire-legal, because
   `spec/layer-model.yaml:607` requires the field on every REFUSED.
 - **`retention-repo-scan` enforces three of RT-15's four parts.** The code RT-15
@@ -317,8 +325,8 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Three commits on 2026-10-01 fixed 22 of them, all three blockers
-among them: the pin-of-record reader, and the RT-11 override, which now refuses
+mechanism. Four commits on 2026-10-01 closed 39 of them and part of three
+more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each
 finding's status, is

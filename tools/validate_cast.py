@@ -1019,8 +1019,9 @@ def main(argv: list[str]) -> int:
             "  not covered by this gate: whether a persona accrued a real follower "
             "on a live platform (SS-3, operator act); disjointness from the "
             "credential pool (SS-20, CR-1), which is "
-            "tools/validate_authorization.py at Step 8 because the pool lives only "
-            "in ISOLATED per EG-4"
+            "tools/validate_authorization.py --disjointness, DEFERRED until the first "
+            "credential is provisioned under CR-2, because the pool lives only in "
+            "ISOLATED per EG-4"
         )
     return 0
 

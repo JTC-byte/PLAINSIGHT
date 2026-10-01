@@ -22,6 +22,32 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The Step 8 artifacts say what their tools do.**
+
+  **What changed.** Seventeen findings of the Step 8 adversarial review:
+  statements in the shred fixture, the gate README and corpus descriptions, both
+  compiled policies, the authorization schema and three validators that were
+  false when the tools run, mostly written before the tools were finished. The
+  policy's N0 and L0 definitions are restored to doctrine's wording. Decided
+  under the operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `conformance/gate/README.md`,
+  `conformance/gate/decisions.jsonl` (three description strings),
+  `conformance/retention/shred-roundtrip.yaml`, `policy/retention.yaml`,
+  `policy/subject-authorization.yaml`, `schema/subject-authorization.schema.json`
+  (two descriptions), docstrings and help text in
+  `tools/validate_authorization.py`, `tools/validate_retention.py` and
+  `tools/validate_cast.py`, the worklog and the handoff.
+
+  **What validation ran.** Each edited gate re-run to confirm it refuses exactly
+  what it refused before; the parsed N0 and L0 definitions compared with
+  doctrine's; all sixteen preflight commands on the staged tree; both forms of
+  `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No check, value, duration, stratum, row assertion,
+  pending list, unratified entry or refusal. No doctrine file, and no generated
+  artifact.
+
 - **2026-10-01, overnight. The repo scan reads every file, and a malformed or
   unreadable input refuses rather than passing or crashing.**
 

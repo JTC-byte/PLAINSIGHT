@@ -117,9 +117,10 @@ subject_authorization:
       how: evaluate() reads the class set, the record rules, the three values and
         the six-step order. Step 10.
     - path: tools/validate_authorization.py
-      how: --fixtures grades conformance/gate/*.jsonl against this file, and
-        --dispatch-paths proves nothing reaches argv, a subscription or the
-        credential pool around the gate. Step 8.
+      how: --fixtures grades conformance/gate/*.jsonl against this file. Step 8.
+        --dispatch-paths is DEFERRED at Step 8 and proves nothing reaches argv,
+        a subscription or the credential pool around the gate from Step 10,
+        which delivers runner/subject_guard.py and the dispatch path.
     - path: schema/subject-authorization.schema.json
       how: refuses a subject_class outside the authorizable enum below, and
         refuses a partial record. SS-1 and SS-4.
@@ -286,9 +287,11 @@ subject_authorization:
         # collection was incidental.
       - id: N0
         name: NON-PERSON
-        definition: A selector that does not belong to a natural person, an
+        # Quoted because doctrine's colon is a YAML separator in a plain scalar.
+        # Until 2026-10-01 the colon was a comma, which read as a fifth member.
+        definition: "A selector that does not belong to a natural person: an
           organization, a company, an institutional or role account, a published
-          corporate domain
+          corporate domain"
         v0_1: available
         authorizable: true
         evidence_required: A written statement that the selector is
@@ -298,8 +301,8 @@ subject_authorization:
         unratified_dependencies: [SA-U2]
       - id: L0
         name: LOCATION
-        definition: A place that is not a person's home, a venue, campus, office,
-          public space, or a coordinate box
+        definition: "A place that is not a person's home: a venue, campus,
+          office, public space, or a coordinate box"
         v0_1: available
         authorizable: true
         evidence_required: A written statement that the location is not a
@@ -463,7 +466,7 @@ subject_authorization:
       why: A credential drawn is heat spent whether or not the request goes out,
         and a gate the analyst consults rather than passes through is reassurance
         without protection.
-      proven_by: tools/validate_authorization.py --dispatch-paths
+      proven_by: tools/validate_authorization.py --dispatch-paths, deferred until Step 10
       covers: [argv construction, opening a subscription, drawing from the
         credential pool]
       exemptions: runner/dispatch_allowlist.yaml, each with a written reason
@@ -805,6 +808,9 @@ subject_authorization:
       per-selector never-collect list would be a permanent register of real
       people's selectors in a tracked file, which SS-14 item 5 and RETENTION.md
       RT-15 forbid.
+    # The items SS-8 nominates for the NEVER fixture, transcribed from its
+    # sentence. The corpus carries an item 6 row only: item 1 is not
+    # gate-evaluable and no mechanism for it exists, as the item says below.
     fixture_items: [6, 1]
     items:
       - item: 1

@@ -1639,3 +1639,44 @@ findings are closed.
 staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Ninth: 17 statements the Step 8 artifacts made about themselves, Class A and
+B, decided under the grant.** The review's self-description, gate-corpus and
+doctrine-fidelity lenses found statements in the Step 8 artifacts that are false
+when the tools run, nearly all because the artifacts were written before the
+tools they describe were finished. `conformance/retention/shred-roundtrip.yaml`
+called `tools/validate_retention.py` the Wave 0 stub that ignores its
+arguments, in four places, and listed RT-13 among the criteria it exercises
+while its own reading SR-R2 puts RT-13 out of scope. `conformance/gate/README.md`
+said no gate reads it, that nothing enforces its six-part contract, that a held
+row asserts nothing, and that the reconcile GF-R2 relies on does not exist.
+`policy/retention.yaml` listed its aggregator entry as PENDING, its repo scan as
+tracked under D-001 and as checking nothing, its renewal refusal under "and"
+where the machine field says "either", and U-05's refusal as replacing four
+mappings where it has three. Three rows of `conformance/gate/decisions.jsonl`
+named GF-U6, which does not exist, in their descriptions, where their pending
+lists say GF-U4. The schema and the authorization tool said `--fixtures`
+validates each record as a schema instance; it checks key sets and the class
+enum, and every record would fail full validation today on SAS-U1 and SA-U2. The
+schema cited SA-U4 where its own list says SAS-U4. `policy/subject-authorization.yaml`
+had a comma where doctrine's N0 and L0 definitions have a colon, which read as
+one more member of each class; both are now quoted scalars equal to doctrine's
+text. The deferred authorization modes now say that their exit 0 is not clean,
+and the cast gate names `--disjointness` as deferred rather than built.
+
+Three findings are fixed in part. The VA-U2 option that a deferred mode exit
+with a distinct code is not added, because adding an option to an open entry
+shapes a decision that is the operator's; `credentials.disjointness` does not
+gain the `mechanism_exists: false` key the review proposed, because that adds a
+field to the compiled policy rather than correcting a sentence, and this batch
+changes text only; and the item 6 row's own description is unchanged. Left alone and
+recorded in the review record: `doctrine/SUBJECT_SELECTION.md`'s enforcement-state
+paragraph, which is rank 1, and the generated lineage policy's `evaluated_by`
+text, which changes only through the generator. No check, value, row assertion
+or refusal changed. With these, 39 of the review's 88 findings are closed and
+three are closed in part.
+
+**Battery for the ninth change.** All sixteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

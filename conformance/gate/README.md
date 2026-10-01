@@ -5,13 +5,16 @@
 Nothing in this directory certifies anything until the operator stamps it in
 `doctrine/DOCTRINE_STATUS.md`. Nineteen of the twenty-one rows in
 `conformance/gate/decisions.jsonl` are held on a question rank 1 doctrine does
-not answer, and a held row asserts nothing and refuses rather than grading.
+not answer, and a held row is not graded and refuses rather than grading.
 Two rows are determinate today. That ratio is the state of the gate, not a
 defect in the corpus.
 
-This file is hand-authored prose and no gate reads it. `tools/validate_hygiene.py`
-holds `conformance/*.md` to Register 1 and its glob does not reach one level
-down, so the voice here was checked by hand against `CLAUDE.md` section 4.
+This file is hand-authored prose, and a gate reads it:
+`tools/validate_authorization.py --fixtures` reads the section 4 register, and
+A-09 and A-13 reconcile the corpus against it, so editing a section 4 row changes
+what the gate decides. `tools/validate_hygiene.py` holds `conformance/*.md` to
+Register 1 and its glob does not reach one level down, so the voice here was
+checked by hand against `CLAUDE.md` section 4.
 
 ## 1. What the corpus is for
 
@@ -111,9 +114,13 @@ is checkable rather than implied.
   above it, and a runner started on LOCAL, which `preflight` refuses before the
   gate sees the dispatch. Naming a gate value on either would claim the gate
   decided something it never saw.
-- **A held row** sets both to `null` and lists the entries that hold it. A row
-  with both `null` and an empty `pending` list asserts nothing and is refused by
-  the grader as malformed.
+- **A held row** lists the entries that hold it in `pending`. Whatever it
+  asserts in `expect_decision` and `expect_code` is the drafted answer, and it is
+  not graded until those entries are stamped. Two rows,
+  `expiry-boundary-same-day` and `depth-at-the-limit`, leave both assertions
+  `null` because no drafted answer exists. A row with both assertions `null` and
+  an empty `pending` list asserts nothing and is refused as
+  `AUTH_ROW_ASSERTS_NOTHING`.
 
 ### 3.2 What the grader has to do
 
@@ -140,9 +147,14 @@ corpus is written against has six parts.
    rule `tools/validate_cast.py --placeholder-scan` already applies to
    `synthetic/GROUND_TRUTH.yaml`.
 
-Nothing enforces any of the six today. The tool is the other half of Step 8 and
-`tools/validate_conformance.py` carries the `authorization` gate as PENDING
-until it lands, which is the honest state rather than a passing stub.
+`tools/validate_authorization.py --fixtures` enforces parts 1
+(`AUTH_CERTIFICATION_HELD`), 3 (A-13, in both directions), 4 (A-12), 5 (A-15,
+A-16 and the code check) and 6 (A-08), and its `--self-test` breaks each. Part
+2, grading the rows that are not held, does not run: `AUTH_EVALUATOR_UNRATIFIED`
+holds it on VA-U1 until the evaluator lands, with `runner/subject_guard.py` at
+Step 10. `tools/validate_conformance.py` carries the `authorization` gate as
+UNRATIFIED and asserts its refusal. This paragraph said none of the six was
+enforced until 2026-10-01, when the Step 8 review found it stale.
 
 ## 4. The fixtures
 
@@ -274,7 +286,8 @@ indirectly or that rank 3 has already settled. Confirming one is a stamp in
   "less the three the map assigns to `conformance/gate/`, which are Step 8's."
   Hand-writing this file breaks no contract of that tool, and it leaves this
   corpus the only fixture set in the tree a person can edit into passing. The
-  reconcile in section 3.2 is what closes that, and it does not exist yet. The
+  reconcile in section 3.2 is what closes that. A-13 is that reconcile, and
+  until part 2 runs every row can still be edited into passing. The
   rows were composed by hand and every identifier is a uuid5 of its label on
   `build_corpus.py`'s rule, so the file is deterministic and no line carries a
   random value. Class B.
@@ -329,7 +342,7 @@ indirectly or that rank 3 has already settled. Confirming one is a stamp in
 
 Five questions this corpus does not answer. Each one is a place where writing a
 value would decide what the gate returns, how far a chain may walk, or what a
-refusal means. None carries a default. A row held on an entry asserts nothing,
+refusal means. None carries a default. A row held on an entry is not graded,
 and the grader renders the entry's sentence rather than grading the row.
 
 An entry is resolved when `doctrine/DOCTRINE_STATUS.md` carries a dated row

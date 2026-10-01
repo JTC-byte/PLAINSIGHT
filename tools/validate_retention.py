@@ -2146,7 +2146,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--case", metavar="ID", help="With --finding, the case whose selector set is read.")
     ap.add_argument("--self-test", action="store_true", help="Break each artifact in memory and assert each break is refused.")
     ap.add_argument("--questions", action="store_true", help="Print the open questions and the readings taken, and exit.")
-    ap.add_argument("--quiet", action="store_true", help="Print only on failure.")
+    ap.add_argument("--quiet", action="store_true", help="Print only on failure, for --policy, --shred-roundtrip and --repo-scan. --self-test prints its mutation table regardless.")
     args = ap.parse_args(argv)
 
     # One call grades one thing, with one exception: SS-14 item 6's preflight

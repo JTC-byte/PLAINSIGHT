@@ -16,9 +16,9 @@ Three artifacts landed at Step 8 and none of them can check itself.
 `policy/subject-authorization.yaml` is the compiled subject doctrine,
 `schema/subject-authorization.schema.json` refuses a record outside it, and
 `conformance/gate/*.jsonl` asserts what the gate returns. Each names this file as
-its self-lint. Two of the three are hand-authored Class F artifacts with no
-generator and therefore no byte-for-byte drift check, so the reconciles below are
-what stands in for one.
+its self-lint. All three are hand-authored with no generator, the corpus by
+GF-R2, and therefore have no byte-for-byte drift check, so the reconciles below
+are what stands in for one.
 
 WHAT THIS GATE REFUSES TODAY, AND WHY THAT IS THE FEATURE. `--fixtures` refuses.
 `doctrine/DOCTRINE_STATUS.md` is the pin of record: mechanisms read it rather
@@ -69,8 +69,11 @@ Every check guards a specific defect:
   A-10  An authorization record missing one of SS-4's nine fields, or carrying a
         field the schema's closed property set does not declare. SS-4 refuses a
         partial authorization rather than half-honouring it, and the schema sets
-        `additionalProperties` false, so drift in either direction makes the
-        corpus records not instances of the schema they are graded against.
+        `additionalProperties` false, so drift in either direction gives the
+        corpus records key sets that differ from the schema's. --fixtures checks
+        key sets and the subject_class enum; it does not validate a record as a
+        schema instance, and every record would fail that today on SAS-U1 and
+        SA-U2.
   A-11  A record naming a subject class outside the authorizable enum. S5 is in
         SS-1's class set and is not in this one, because SS-1 marks it not
         authorizable and SS-4 excludes it from the field.
@@ -123,7 +126,8 @@ Every check guards a specific defect:
 Modes:
 
   --fixtures  Grade `conformance/gate/*.jsonl` against the compiled policy, the
-        schema, the rank 3 mirror and the pin of record, then refuse the
+        schema's required fields, closed property set and subject_class enum,
+        the rank 3 mirror and the pin of record, then refuse the
         certification while any row is held or any artifact is unstamped. The
         A-19 result is reported separately from the certification, because the
         mechanism being green and the corpus being certifiable are two different
@@ -146,7 +150,10 @@ Modes:
 
 WHAT --self-test DOES NOT COVER, SAID HERE RATHER THAN LEFT TO BE NOTICED. Ten
 codes are not reachable by mutating the loaded artifacts, and each one is in one
-of three groups. Five are loader refusals that fire before a model exists:
+of three groups, and the harness's own two refusals,
+AUTH_SELF_TEST_BASELINE_NOT_CLEAN and AUTH_SELF_TEST_FAILED, are outside the
+count because they report on the self-test rather than on an artifact. Five are
+loader refusals that fire before a model exists:
 AUTH_YAML_READER_MISSING, AUTH_INPUT_UNREADABLE, AUTH_INPUT_UNPARSEABLE,
 AUTH_POLICY_WRAPPER_KEY_MISSING and AUTH_CORPUS_EMPTY, each exercised by pointing
 the module's paths at a file that is not there. Three are the certification
@@ -158,7 +165,10 @@ they are constructed rather than mutated: their inputs are built inside the chec
 from the policy's own path list, so no artifact edit can reach them and running
 them is the whole of their evidence.
 
-Exit codes: 0 clean, 1 violations found, 2 a governed input could not be read.
+Exit codes: 0 clean, or a DEFERRED mode that checked nothing (--dispatch-paths,
+--disjointness), which is not a pass and must not satisfy SS-14 item 6's
+preflight; 1 violations found; 2 a governed input could not be read, or modes
+combined that run one at a time.
 
 One deliberate departure from --quiet, on the `tools/validate_cast.py`
 precedent. The unratified state prints even under --quiet, because it is neither
@@ -2479,7 +2489,8 @@ def _deferred(
         f"  undecided:  {entry}, whose question and options are in this tool's UNRATIFIED\n"
         f"  meanwhile:  {consequence}\n"
         "  A deferred check is never counted as a pass, and its entry in\n"
-        "  tools/validate_conformance.py stays PENDING while this notice prints."
+        "  tools/validate_conformance.py stays PENDING while this notice prints.\n"
+        "  Exit 0 here is not clean: VA-U2 records how a deferred mode should exit."
     )
     return 0
 
@@ -2585,8 +2596,9 @@ def main(argv: list[str]) -> int:
     ap.add_argument(
         "--fixtures",
         action="store_true",
-        help="Grade conformance/gate/*.jsonl against the compiled policy, the schema, the "
-        "rank 3 mirror and the pin of record. This is also what a bare invocation runs.",
+        help="Grade conformance/gate/*.jsonl against the compiled policy, the schema's "
+        "required fields, closed property set and subject_class enum, the rank 3 mirror "
+        "and the pin of record. This is also what a bare invocation runs.",
     )
     ap.add_argument(
         "--dispatch-paths",

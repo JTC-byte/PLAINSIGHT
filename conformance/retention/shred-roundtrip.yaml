@@ -8,8 +8,9 @@
 # HAND-AUTHORED. This file is a description, not a program. It states what the
 # four-phase round trip must build, what the shred must destroy, what the five
 # RT-9 checks must each prove, and what a check must remain unable to do after
-# the shred. It is read by a person before it is read by any tool, because no
-# tool reads it yet. See `step_boundary` below, which is the most important
+# the shred. It is read by a person before it is read by any tool, and
+# `tools/validate_retention.py --shred-roundtrip` reads it as a document. See
+# `step_boundary` below, which is the most important
 # section in this file: it says plainly what a green run of this document can
 # and cannot mean at Step 8, so a reader ten files downstream does not credit it
 # with more than it does.
@@ -40,9 +41,9 @@
 #
 # WHAT REFUSES ITS DRIFT FROM DOCTRINE. `tools/validate_retention.py
 # --shred-roundtrip` is the named self-lint, in docs/THE-GAMEPLAN.md's Step 8
-# done-when line. It does not exist as an implemented mode today; see
-# `step_boundary.reader_today`. Until it exists, this file is unread by any
-# mechanism, which is stated here rather than left silent.
+# done-when line, written in Step 8 in commit 0e0c840 beside this file. It
+# checks this document's internal consistency and refuses until the pin of
+# record stamps this path; see `step_boundary.reader_today`.
 #
 # NO VALUE APPEARS IN THIS FILE. No case in this document is real. No selector,
 # handle, address, or case id below names anything that exists. `case_<id>` is
@@ -70,12 +71,12 @@ shred_roundtrip:
     Where this file and policy/retention.yaml appear to disagree, doctrine
     governs and this file is wrong.
   register_entry: docs/THE-GAMEPLAN.md, artifact register, "conformance/retention/shred-roundtrip.yaml"
-  exercises: [doctrine/RETENTION.md RT-1, RT-3, RT-4, RT-9, RT-10, RT-13, "section 9"]
+  exercises: [doctrine/RETENTION.md RT-1, RT-3, RT-4, RT-9, RT-10, "section 9"]
   asserts_against: policy/retention.yaml
   self_lint: tools/validate_retention.py --shred-roundtrip
   self_lint_state: >
-    Unimplemented. tools/validate_retention.py is a STUB at the time this file
-    is drafted; see step_boundary.reader_today.
+    Implemented in Step 8, and refusing until stamped; see
+    step_boundary.reader_today.
   ratification:
     pin_of_record: doctrine/DOCTRINE_STATUS.md
     row_for_this_path: absent
@@ -103,14 +104,16 @@ shred_roundtrip:
       real S3 endpoint first exist. Nothing in this file opens a case, writes
       a blob, or destroys a key.
     reader_today: >
-      tools/validate_retention.py is a STUB. Its own docstring says so: "STUB.
-      Wired into .githooks/pre-commit at Step 1 so the mechanism exists and is
-      called." It takes no --shred-roundtrip argument, ignores every argument
-      it is given, prints a fixed notice, and exits 0 regardless of what this
-      file contains. Running `python tools/validate_retention.py
-      --shred-roundtrip` today reads nothing in this file. That is a known,
-      stated gap: the argument is unimplemented, not the check passing
-      vacuously.
+      tools/validate_retention.py --shred-roundtrip parses this file, refusing
+      SHRED_ROUNDTRIP_UNREADABLE with exit 2 on malformed YAML, and grades it as
+      a document: the single wrapper key, the five RT-9 checks each named once,
+      the create, receipt and step_boundary sections, and the unratified ids
+      reconciled against policy/retention.yaml. It refuses
+      SHRED_ROUNDTRIP_UNRATIFIED with exit 1 until doctrine/DOCTRINE_STATUS.md
+      carries a dated Ratified row for this path. A clean run proves this file
+      is internally honest and proves nothing about a shred, per VR-R2. Until
+      2026-10-01 this field described the tool as the Wave 0 stub that ignored
+      its arguments, which it stopped being in 0e0c840.
     what_green_will_mean_once_the_mode_exists: >
       That this document is internally consistent: five checks, each named
       once, each carrying the one pass condition RT-9 states, each paired with

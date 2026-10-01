@@ -32,7 +32,7 @@
     "read_by": [
       {
         "path": "tools/validate_authorization.py",
-        "how": "--fixtures validates each synthetic record in conformance/gate/*.jsonl against this file, and reconciles the subject_class enum here against policy/subject-authorization.yaml and the rank 3 mirror. Step 8."
+        "how": "--fixtures checks each synthetic record's key set in conformance/gate/*.jsonl against this file's closed property set (A-10), checks its subject_class against the enum here, and reconciles that enum against policy/subject-authorization.yaml and the rank 3 mirror (A-11). It does not validate field types or values. Step 8."
       },
       {
         "path": "runner/subject_guard.py",
@@ -40,7 +40,7 @@
       },
       {
         "path": "conformance/gate/*.jsonl",
-        "how": "every fixture's authorization record is an instance of this shape. Synthetic records only, per SS-4."
+        "how": "every fixture's authorization record carries exactly this shape's nine keys. The records fail full schema validation on purpose until SAS-U1 and SA-U2 resolve. Synthetic records only, per SS-4."
       }
     ],
     "not_here": [
@@ -277,7 +277,7 @@
             "owner": "policy/subject-authorization.yaml",
             "question": "When the S1 consent record's own expiry and the authorization record's expires_on disagree, which binds, and is a mismatch refused at schema validation?",
             "decides": "whether this file carries a cross-record check",
-            "encoded_as": "no cross-record check. The mismatch is not refused here, and SA-U4 in this schema's own list records that the consent record has no schema to be checked against"
+            "encoded_as": "no cross-record check. The mismatch is not refused here, and SAS-U4 in this schema's own list records that the consent record has no schema to be checked against"
           },
           {
             "id": "SA-U7",
