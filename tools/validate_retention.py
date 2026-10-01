@@ -296,11 +296,15 @@ PINNED_RULES = (
     # Added 2026-10-01 for review finding retention-mechanism:1. The cassette
     # rule sits under strata; the overnight record of b24ae5d said it did not
     # exist in the policy, which was wrong.
-    ("strata.cassette_rule.live_subject_cassette_stratum", 0, "RT-1, RT-2"),
-    ("strata.cassette_rule.persisting_cassette_stratum", 4, "RT-1, RT-2"),
+    ("strata.cassette_rule.live_subject_cassette_stratum", 0, "RT-1"),
+    ("strata.cassette_rule.persisting_cassette_stratum", 4, "RT-1"),
     ("strata.cassette_rule.permitted_capture_targets", ["S2", "N0"], "RT-1, EG-5, RT-15"),
     ("strata.cassette_rule.satisfies_rt16_floor", False, "RT-1, RT-16"),
     ("strata.permanent", [2, 3, 4], "RT-1"),
+    ("encryption.per_case_data_key", True, "RT-4"),
+    ("full_text_index.stratum", 1, "RT-7"),
+    ("full_text_index.per_case", True, "RT-7"),
+    ("full_text_index.shared_across_cases", False, "RT-7"),
     # Added after the second review of 2026-10-01, finding rm2:6, which flipped
     # each of these with --policy green after 78131d7 said the last nine were
     # pinned.
@@ -318,10 +322,8 @@ PINNED_RULES = (
     ("ledger.reconcile.cached_read_path_permitted", False, "RT-9, RT-10"),
     ("finding_check.output_stratum", 3, "RT-1, RT-13"),
     ("disclosure_export.projection_or_summary_permitted", False, "RT-18"),
-    ("encryption.per_case_data_key", True, "RT-4"),
-    ("full_text_index.stratum", 1, "RT-7"),
-    ("full_text_index.per_case", True, "RT-7"),
-    ("full_text_index.shared_across_cases", False, "RT-7"),
+    # Added after the second review's records lens (sd2:3) found these read by no
+    # tool either.
     ("encryption.retrofittable", False, "RT-4"),
     ("freeze.stops_the_run", True, "RT-17"),
     ("freeze.stops_queued_pivots", True, "RT-17"),
@@ -346,7 +348,8 @@ PINNED_RULES = (
 #: Every boolean or stratum value the policy compiles that is not pinned above,
 #: named so that "the last unpinned rule" is a fact a check can hold. Until the
 #: second review of 2026-10-01 two records claimed the last rules were pinned
-#: while twenty more were read by no tool. Each one here is unpinned because it
+#: while forty-eight more were read by no pin, and until the third review the
+#: walk skipped lists. Each one here is unpinned because it
 #: has not yet been checked against doctrine by value, or because it states a
 #: fact about the tree that moves when the tree does. A new boolean or stratum
 #: in the policy refuses until it is pinned or named here.
@@ -2174,7 +2177,8 @@ def selector_pairs(rel: str, text: str, types: set[str]) -> list[tuple[int, str,
 
     A JSON line is parsed on its own line; a .json file and a .yaml file are
     parsed whole and a pair is placed on the first line carrying its value. A
-    file that does not parse yields nothing here, which SCAN_DOES_NOT_REACH says.
+    .yaml file that does not parse yields nothing here, which SCAN_DOES_NOT_REACH
+    says; a .json file that does not parse whole is read line by line.
     """
     out: list[tuple[int, str, str]] = []
     text = text.lstrip("﻿")

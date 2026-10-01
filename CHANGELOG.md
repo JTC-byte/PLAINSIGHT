@@ -22,6 +22,33 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. A third pass over the authorization fixes and the
+  records.**
+
+  **What changed.** Every Finding masks an email or phone shape at
+  construction, and the self-test fails any refusal that prints one.
+  `SCHEMA_NODE_PINS` holds the two selector nodes whole, so `prefixItems`
+  refuses. A record selector must be the contract's object, a selector value a
+  typed placeholder, and the phone and address shapes read more forms. Two
+  crashes are named refusals, and the register breaks go through the parser.
+  Prose and comments are corrected in both tools. **This corrects the entry
+  below for `9fad18e`**: seventeen findings were decided, not fourteen. Ten
+  third-pass authorization findings and fifteen records findings, decided
+  under the operator's grant of 2026-09-30 23:28 as resumed at 12:24 and
+  confirmed for merges at 12:37, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`,
+  `tools/validate_retention.py` (comments and a docstring),
+  `conformance/gate/README.md` section 5, the worklog and the handoff.
+
+  **What validation ran.** The authorization self-test, 124 breaks, with the
+  masking shown to be what the leak breaks need; `--fixtures` output
+  byte-identical to the previous commit; all sixteen preflight commands; both
+  forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No corpus row, schema, policy value, doctrine file or
+  stamp.
+
 - **2026-10-01, afternoon. A third pass over the retention fixes.**
 
   **What changed.** The rule classification reads lists and string booleans,

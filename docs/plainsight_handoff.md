@@ -12,9 +12,9 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file closes the third review's retention findings, on top of `9fad18e`,
-under the overnight grant of 2026-09-30 23:28, resumed at 12:24 and confirmed
-for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
+file closes the third review's authorization and records findings, on top
+of `23d041a`, under the overnight grant of 2026-09-30 23:28, resumed at 12:24
+and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,18 +46,18 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** A third pass found holes in this afternoon's own
-fixes. The rule classification now reads lists and booleans spelled as strings.
-The YAML reader handles anchors, merge keys, tags and complex keys again. The
-clause and the hook are measured by shape. STRATA_ROWS and DURATIONS compare
-type, and RT-16's code entry is pinned whole.
+**What changed and why.** Every Finding masks an address or phone shape, and
+the self-test fails any refusal that prints one. Whole selector nodes are
+pinned, record selectors and values are held to the contract's form, two
+crashes are named refusals, and this afternoon's records are corrected.
 
-**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
-`CHANGELOG.md`, this file, and the worklog.
+**Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
+comments in `tools/validate_retention.py`, `conformance/gate/README.md`
+section 5, `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the retention
-self-test with 155 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, the authorization
+self-test with 124 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -379,9 +379,9 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   there.** A push is an operator-instructed act and follows a closeout, and
   every step conclusion of its CI run is read afterwards. Commits carry the
   GitHub no-reply address.
-- **Hashes in worklog entries dated before the 2026-09-07 rewrite, in the
-  archive, and in every changelog entry below the rewrite entry are
-  pre-rewrite.** That entry translates them.
+- **Hashes in worklog entries above the 2026-09-07 rewrite entry, the persona
+  entry of that day included, in the archive, and in every changelog entry
+  below the rewrite entry are pre-rewrite.** That entry translates them.
 - The gates need PyYAML and jsonschema. `make preflight` runs sixteen
   commands, the eight self-tests among them; the hook runs fifteen.
 - **The worklog is capped at ten live entries and the hygiene gate refuses an

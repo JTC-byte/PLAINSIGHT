@@ -242,8 +242,10 @@ sentence is why an authorization record may sit on a row here at all.
 A synthetic value is still a value. `AGENTS.md` section 4 keeps an agent from
 writing a selector value, handle, email, phone number or case subject name into
 a tracked file, and `tools/build_corpus.py` states the same rule as an absolute
-over the other two corpora. Every selector-shaped value in
-`decisions.jsonl` is a bracketed placeholder matching `^<[^<>]+>$`. Six of the
+over the other two corpora. Every value under a selector key in
+`decisions.jsonl` is a typed placeholder matching `^<[a-z_]+:[^<>]+>$`, which
+`tools/validate_authorization.py` has required since 2026-10-01; before then
+any bracketed text passed. Six of the
 eight tokens in the file are copied from `synthetic/GROUND_TRUTH.yaml`, so the
 corpus becomes reproducible in one step when the operator fills the cast. The
 seventh is `<handle>` inside an `argv_template`, which names a selector type

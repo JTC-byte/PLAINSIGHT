@@ -62,9 +62,12 @@ Every check guards a specific defect:
   A-08  A selector-shaped value that is not a bracketed placeholder. SS-14 item 5
         keeps a natural person's selector out of every tracked file, and a
         synthetic value is still a value. Two passes: every value under a
-        selector key, and, since 2026-10-01, an email or E.164 phone shape in any
-        string of a row, outside a placeholder. Before then a selector-shaped
-        string under any other key passed. This is the rule
+        selector key, and, since 2026-10-01, an email or phone shape in any
+        string or mapping key of a row, inside a bracketed placeholder as well.
+        Before then a selector-shaped string under any other key passed. A
+        number written with a 00 prefix is not read. A value under a selector key
+        is a typed placeholder, <type:label>, and a record selector is an object
+        of exactly selector_type and value. This is the rule
         `tools/validate_cast.py --placeholder-scan` already applies to the truth
         file, applied to the one corpus that carries authorization records.
   A-09  A `pending` entry naming no unratified entry in
@@ -170,9 +173,9 @@ Modes:
         refused. A gate nobody has watched fail is an assumption
         (doctrine/HYGIENE.md section 2).
 
-WHAT --self-test DOES NOT COVER, SAID HERE RATHER THAN LEFT TO BE NOTICED. Nine
+WHAT --self-test DOES NOT COVER, SAID HERE RATHER THAN LEFT TO BE NOTICED. Ten
 codes are not reachable by mutating the loaded artifacts, and each one is in one
-of three groups, and the harness's own two refusals,
+of four groups, and the harness's own two refusals,
 AUTH_SELF_TEST_BASELINE_NOT_CLEAN and AUTH_SELF_TEST_FAILED, are outside the
 count because they report on the self-test rather than on an artifact. Five are
 loader refusals that fire before a model exists:
@@ -181,7 +184,8 @@ AUTH_POLICY_WRAPPER_KEY_MISSING and AUTH_CORPUS_EMPTY, each exercised by pointin
 the module's paths at a file that is not there. Three are the certification
 refusals, AUTH_CERTIFICATION_HELD, AUTH_ARTIFACT_UNSTAMPED and
 AUTH_EVALUATOR_UNRATIFIED, which fire on the real tree today and are the designed
-state rather than a defect. One, AUTH_CAST_SEAL_UNREAD, guards item 7's seal
+state rather than a defect. One, AUTH_MODES_COMBINED, refuses a command line
+that combines modes, before any artifact is read. One, AUTH_CAST_SEAL_UNREAD, guards item 7's seal
 condition and fires only if the condition is removed from the code. Until the
 second review of 2026-10-01 this paragraph counted ten and named the two
 stamp-predicate guards here; since 4ec9132 the pin_overrides breaks reach both.
@@ -391,6 +395,20 @@ SELECTOR_KEYS = (
     "selector_value",
 )
 PLACEHOLDER_RE = re.compile(r"^<[^<>]+>$")
+#: A value under a selector key names its type and a label, as every corpus
+#: value does. Until the third review of 2026-10-01 any bracketed text passed.
+TYPED_PLACEHOLDER_RE = re.compile(r"^<[a-z_]+:[^<>]+>$")
+
+
+def _masked_text(text) -> str:
+    """Text with every email or phone shape replaced. Every Finding passes its
+    where, what and moves through this, so no refusal and no telemetry record
+    can print one. Until the third review of 2026-10-01 only A-01's key lists
+    were masked, and four other refusals printed a shaped key or value."""
+    text = str(text)
+    for _, pattern in VALUE_SHAPES:
+        text = pattern.sub("<an email or phone shape>", text)
+    return text
 
 
 def _masked(keys) -> list:
@@ -411,7 +429,10 @@ VALUE_SHAPES = (
     ("an email address", re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
     # Grouped with spaces or hyphens as well as compact, since the second review
     # of 2026-10-01; a number with a 00 prefix is not read, which is stated.
-    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9](?:[ \-]?\d){7,14}(?!\d)")),
+    # Grouped with spaces, hyphens, dots, slashes or parentheses since the third
+    # review of 2026-10-01.
+    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9](?:[ .\-()/]*\d){7,14}(?!\d)")),
+    ("a percent-encoded email address", re.compile(r"[A-Za-z0-9._%+-]+%40[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
 )
 
 #: Criterion namespaces and the file whose dated ratifier row stamps them.
@@ -425,7 +446,7 @@ NAMESPACE_FILE = {
 
 CRITERION_RE = re.compile(r"\b((?:SS|RT|EG|CR|HY)-\d+)\b")
 PENDING_ID_RE = re.compile(r"^(?:SA|SAS|GF|VA)-U\d+$")
-REGISTER_NAME_RE = re.compile(r"^\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|", re.M)
+REGISTER_NAME_RE = re.compile(r"^ {0,3}\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|", re.M)
 GF_ENTRY_RE = re.compile(r"^### (GF-U\d+)\.", re.M)
 
 
@@ -658,9 +679,9 @@ class Finding:
 
     def __init__(self, code: str, where: str, detail: str, moves: str):
         self.code = code
-        self.where = where
-        self.detail = detail
-        self.moves = moves
+        self.where = _masked_text(where)
+        self.detail = _masked_text(detail)
+        self.moves = _masked_text(moves)
 
     def render(self) -> str:
         return (
@@ -794,7 +815,7 @@ def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin
     reasons = [_why(p) for p in paths if p not in stamped]
     rows = getattr(pin, "criteria", {}) if source != "fixture" else {}
     reasons += [
-        f"criterion {c} has a Step 3 row and no dated range or row naming it covers it"
+        f"criterion {c} has a Step 3 row, and no dated range or Ratified row covers it"
         if c in rows
         else f"criterion {c} has no row in the stamp table"
         for c in absent
@@ -961,6 +982,7 @@ def load() -> dict:
         "model": _yaml(LAYER_MODEL),
         "register": list(dict.fromkeys(REGISTER_NAME_RE.findall(register_block))),
         "register_rows": _register_rows(register_block),
+        "register_block": register_block,
         "gf_entries": set(GF_ENTRY_RE.findall(register_text)),
         "pin_text": _read(PIN),
         "ss_defined": DEFINITION_RE.findall(_read(SUBJECT_SELECTION)),
@@ -1104,7 +1126,8 @@ def check_corpus(model: dict) -> list[Finding]:
             )
         )
 
-    selector_fields = sorted(_d(schema, "$defs", "selector", "properties", default={}) or {})
+    selector_props = _d(schema, "$defs", "selector", "properties", default={})
+    selector_fields = sorted(map(str, selector_props)) if isinstance(selector_props, dict) else [repr(selector_props)]
     if selector_fields != ["selector_type", "value"]:
         f.append(
             Finding(
@@ -1117,6 +1140,22 @@ def check_corpus(model: dict) -> list[Finding]:
                 "the same commit",
             )
         )
+    for path, want, owner in SCHEMA_NODE_PINS:
+        node = schema
+        for part in path:
+            node = node.get(part) if isinstance(node, dict) else None
+        if json.dumps(_without_comments(node), sort_keys=True) != json.dumps(want, sort_keys=True):
+            f.append(
+                Finding(
+                    "AUTH_SCHEMA_BOUND_DRIFT",
+                    "schema/subject-authorization.schema.json > " + ".".join(path),
+                    f"the node differs from what {owner} fixes, with its comments set aside. "
+                    "A keyword added beside the pinned ones can widen it as surely as a "
+                    "pinned one changed",
+                    f"restore the node; or ratify {owner} with a dated stamp in "
+                    "doctrine/DOCTRINE_STATUS.md and move SCHEMA_NODE_PINS in the same commit",
+                )
+            )
     for path, want, owner in SCHEMA_PINS:
         have = _schema_value(schema, path)
         if json.dumps(have, sort_keys=True) != json.dumps(want, sort_keys=True):
@@ -1124,12 +1163,21 @@ def check_corpus(model: dict) -> list[Finding]:
                 Finding(
                     "AUTH_SCHEMA_BOUND_DRIFT",
                     "schema/subject-authorization.schema.json > " + ".".join(path),
-                    f"the schema carries {have!r} where {owner} fixes {want!r}. A "
-                    "widened bound or an opened refusal admits records the stamped "
-                    "doctrine refuses, and the schema names this tool as what refuses "
-                    "its drift",
-                    f"restore {want!r}; or ratify {owner} with a dated stamp in "
-                    "doctrine/DOCTRINE_STATUS.md and move SCHEMA_PINS in this tool in "
+                    (
+                        f"the schema carries {have!r} at that path, where {owner} requires "
+                        "the key to be absent"
+                        if want is None
+                        else f"the schema carries {have!r} where {owner} fixes {want!r}"
+                    )
+                    + ". A widened bound or an opened refusal admits records the stamped "
+                    "doctrine refuses, and the schema names this tool as what refuses its drift",
+                    (
+                        f"remove {'.'.join(path)}"
+                        if want is None
+                        else f"restore {want!r}"
+                    )
+                    + f"; or ratify {owner} with a dated stamp in doctrine/DOCTRINE_STATUS.md "
+                    "and move SCHEMA_PINS in this tool in "
                     "the same commit",
                 )
             )
@@ -1575,7 +1623,7 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
             if key == "value" and not typed:
                 return
             shaped = any(pattern.search(node) for _, pattern in VALUE_SHAPES)
-            if (shaped or not PLACEHOLDER_RE.match(node)) and path not in seen:
+            if (shaped or not TYPED_PLACEHOLDER_RE.match(node)) and path not in seen:
                 seen.append(path)
         elif isinstance(node, (int, float)) and not isinstance(node, bool) and key in SELECTOR_KEYS:
             # A selector written as a number, such as a phone without quotes.
@@ -1583,6 +1631,30 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
                 seen.append(path)
 
     walk({k: v for k, v in row.items() if k != "_where"}, "", None, False)
+
+    # A record selector is an object of exactly selector_type and value, and a
+    # selector key holds a string. Until the third review of 2026-10-01 a bare
+    # string, a pair as a list, a "type" key or a mapping under value passed.
+    record = row.get("authorization")
+    for i, entry in enumerate(_seq(record, "selectors") if isinstance(record, dict) else []):
+        if not (isinstance(entry, dict) and set(entry) == {"selector_type", "value"} and isinstance(entry.get("value"), str)):
+            if f".authorization.selectors[{i}]" not in seen:
+                seen.append(f".authorization.selectors[{i}]")
+
+    def nested(node, path: str, key, typed: bool):
+        if isinstance(node, dict):
+            pair = "selector_type" in node
+            for k, v in node.items():
+                if k in SELECTOR_KEYS and (k != "value" or pair):
+                    if isinstance(v, dict) or (isinstance(v, list) and not all(isinstance(x, str) for x in v)):
+                        if f"{path}.{k}" not in seen:
+                            seen.append(f"{path}.{k}")
+                nested(v, f"{path}.{k}", k, pair)
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                nested(v, f"{path}[{i}]", key, typed)
+
+    nested({k: v for k, v in row.items() if k != "_where"}, "", None, False)
 
     # The second pass: a shape under any key.
     def shapes(node, path: str):
@@ -1678,9 +1750,10 @@ def _renamed(x, names: dict):
 #: Opening selector_type answers SAS-U1 by edit, and evidence_ref answers SA-U2
 #: and SA-U11, which are class F. Each pin moves only with its entry's stamp.
 SCHEMA_PINS = (
-    (("type",), "object", "SAS-R6"),
-    (("patternProperties",), None, "SS-4's closed record, read with A-10"),
-    (("unevaluatedProperties",), None, "SS-4's closed record, read with A-10"),
+    (("type",), "object", "the closed record of SS-4 and A-10"),
+    (("patternProperties",), None, "the closed record of SS-4 and A-10"),
+    (("unevaluatedProperties",), None, "the closed record of SS-4 and A-10"),
+    (("properties", "selectors", "prefixItems"), None, "SAS-R5"),
     (("properties", "case_id"), {"$ref": "#/$defs/uuid"}, "SAS-R6"),
     (("properties", "authorized_on"), {"$ref": "#/$defs/utcDate"}, "SAS-R6"),
     (("properties", "expires_on"), {"$ref": "#/$defs/utcDate"}, "SAS-R6"),
@@ -1718,6 +1791,40 @@ SCHEMA_PINS = (
         "SAS-R6",
     ),
 )
+
+
+#: The two selector nodes whole, comments stripped at every depth. Pinning
+#: their keywords one by one missed prefixItems, which in draft 2020-12 takes
+#: the leading positions from items and so removes the closure and SAS-U1's
+#: empty enum for selectors[0] without touching any pinned keyword.
+SCHEMA_NODE_PINS = (
+    (
+        ("properties", "selectors"),
+        {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/selector"}},
+        "SAS-R4 and SAS-R5",
+    ),
+    (
+        ("$defs", "selector"),
+        {
+            "type": "object",
+            "required": ["selector_type", "value"],
+            "additionalProperties": False,
+            "properties": {
+                "selector_type": {"type": "string", "enum": []},
+                "value": {"type": "string", "minLength": 1, "pattern": "\\S"},
+            },
+        },
+        "SAS-R4, SAS-R5 and SAS-U1",
+    ),
+)
+
+
+def _without_comments(node):
+    if isinstance(node, dict):
+        return {k: _without_comments(v) for k, v in node.items() if k != "$comment"}
+    if isinstance(node, list):
+        return [_without_comments(v) for v in node]
+    return node
 
 
 def _schema_value(schema: dict, path: tuple):
@@ -1765,6 +1872,11 @@ def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
                     out.append(f"{_path_text(path)} (refers to the baseline's identifier)")
                     break
     a = _renamed(a, fwd)
+    for name, side in (("fixture", a), ("baseline", b)):
+        if not isinstance(side.get("chain"), (list, type(None))):
+            out.append(f"chain (the {name}'s chain is not a list)")
+            side["chain"] = []
+
     def payload_at(side, i):
         chain = side.get("chain") or []
         event = chain[i] if i < len(chain) else None
@@ -2895,14 +3007,71 @@ def _mut_address_as_a_key(m: dict) -> None:
     row["given"]["examplename" + "@" + "example" + ".org"] = "seen"
 
 
+def _register_with(m: dict, edit) -> None:
+    """Edit the register's text and parse it again, so a break goes through the
+    parser it tests rather than around it."""
+    lines = m["register_block"].splitlines()
+    i = next(n for n, line in enumerate(lines) if line.startswith("| `seed-permitted`"))
+    lines.insert(i + 1, edit(lines[i]))
+    block = "\n".join(lines)
+    m["register_block"] = block
+    m["register_rows"] = _register_rows(block)
+    m["register"] = list(dict.fromkeys(REGISTER_NAME_RE.findall(block)))
+
+
 def _mut_register_row_repeated(m: dict) -> None:
-    m["register_rows"]["seed-permitted"].append(list(m["register_rows"]["seed-permitted"][0]))
+    _register_with(m, lambda line: line)
 
 
 def _mut_register_row_contradicted(m: dict) -> None:
-    second = list(m["register_rows"]["seed-permitted"][0])
-    second[1] = "REFUSED"
-    m["register_rows"]["seed-permitted"].append(second)
+    def contradict(line):
+        cells = line.split("|")
+        cells[3] = " REFUSED "
+        return "|".join(cells)
+
+    _register_with(m, contradict)
+
+
+def _mut_register_row_indented(m: dict) -> None:
+    _register_with(m, lambda line: " " + line)
+
+
+def _mut_address_as_a_record_field(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"]["examplename" + "@" + "example" + ".org"] = "<x:y>"
+
+
+def _mut_address_as_a_pending_id(m: dict) -> None:
+    _row(m, "runner-started-on-local")["pending"] = ["examplename" + "@" + "example" + ".org"]
+
+
+def _mut_selectors_prefixed(m: dict) -> None:
+    m["schema"]["properties"]["selectors"]["prefixItems"] = [True]
+
+
+def _mut_baseline_chain_as_a_mapping(m: dict) -> None:
+    _row(m, "one-hop-permitted")["chain"] = {"events": []}
+
+
+def _mut_selector_properties_as_a_number(m: dict) -> None:
+    m["schema"]["$defs"]["selector"]["properties"] = 2
+
+
+def _mut_record_selector_as_a_string(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"]["selectors"][0] = "<handle:untyped>"
+
+
+def _mut_handle_in_brackets(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"]["selectors"][0]["value"] = "<" + "jdoe" + "1987" + ">"
+
+
+def _mut_phone_with_parentheses(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call " + "+44 (20)" + " 7946 0958."
+
+
+def _mut_address_percent_encoded(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " GET /lookup?e=" + "examplename" + "%40" + "example" + ".org"
 
 
 def _mut_fixture_not_in_register(m: dict) -> None:
@@ -3268,6 +3437,16 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ("write a phone grouped with spaces", _mut_phone_grouped, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
         ("use an address as a mapping key", _mut_address_as_a_key, "AUTH_VALUE_NOT_PLACEHOLDER", False, "a key directly under given is also outside the row contract, so A-01 fires too, and it now masks the key rather than quoting it"),
         ("list a register row twice", _mut_register_row_repeated, "AUTH_REGISTER_NAME_DUPLICATE", True, ""),
+        ("list a register row again, indented one space", _mut_register_row_indented, "AUTH_REGISTER_NAME_DUPLICATE", True, ""),
+        ("open selectors[0] with prefixItems", _mut_selectors_prefixed, "AUTH_SCHEMA_BOUND_DRIFT", True, ""),
+        ("give a record a field named as an address", _mut_address_as_a_record_field, "AUTH_RECORD_FIELD_UNDECLARED", False, "the key also carries an email shape, so A-08 refuses it too; the self-test also fails if any refusal prints it"),
+        ("hold a row on an id written as an address", _mut_address_as_a_pending_id, "AUTH_PENDING_ENTRY_UNKNOWN", False, "the register row and A-08 also refuse the id; the self-test also fails if any refusal prints it"),
+        ("write the baseline's chain as a mapping", _mut_baseline_chain_as_a_mapping, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("write a selector's properties as a number", _mut_selector_properties_as_a_number, "AUTH_SCHEMA_BOUND_DRIFT", True, ""),
+        ("write a record selector as a bare string", _mut_record_selector_as_a_string, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a handle in brackets as a selector value", _mut_handle_in_brackets, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a phone with its area code in parentheses", _mut_phone_with_parentheses, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write an address percent-encoded", _mut_address_percent_encoded, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
         ("list a register row a second time, contradicting the first", _mut_register_row_contradicted, "AUTH_REGISTER_ROW_DRIFT", False, "a second row for a name is also a duplicate, so the duplicate check fires too"),
         (
             "state another decision in a register row",
@@ -3589,9 +3768,15 @@ def self_test(model: dict, quiet: bool = False) -> int:
             failures += 1
             print(f"  PASSED    {desc:62} the mutation itself failed ({exc!r})")
             continue
-        fired = {f.code for f in check_corpus(m) if (f.code, f.where) not in baseline_pairs}
+        found = check_corpus(m)
+        fired = {f.code for f in found if (f.code, f.where) not in baseline_pairs}
+        # A refusal must never print the value it guards. Removing the mask in
+        # Finding turns this red, which the third review found nothing did.
+        printed = any(p.search(f.render()) for f in found for _, p in VALUE_SHAPES)
         exercised |= fired
-        if expected not in fired:
+        if printed:
+            ok, note = False, ", and a refusal printed an email or phone shape"
+        elif expected not in fired:
             ok, note = False, f", fired {sorted(fired)}"
         elif only and fired != {expected}:
             ok, note = False, f", also fired {sorted(fired - {expected})} and claims expect_only"
