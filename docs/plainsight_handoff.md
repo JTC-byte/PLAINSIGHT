@@ -11,11 +11,12 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-09-29. The commit that carries this file is that day's
-checkpoint closeout, records only, on top of `b378cd8`. `b378cd8` wired every
-validator self-test into the hook, preflight, the kernel gate and CI on
-2026-09-28, and CI run 36501081165 ran every step of it on GitHub, the steps
-after the red kernel gate included.
+**Date:** 2026-09-30. The commit that carries this file is the documentation
+correction the 2026-09-30 harvest listed, explanatory text and records only, on
+top of `c9109f9`. `b378cd8` wired every validator self-test into the hook,
+preflight, the kernel gate and CI on 2026-09-28, and CI runs 36501081165 and
+36766930669 ran every step of it on GitHub, the steps after the red kernel gate
+included.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -30,10 +31,11 @@ as green.
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`,
 which holds the 51 distinct decisions Step 8 surfaced and marks the 29 that are
 the operator's; and
-`_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
+`Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
 which is what the operator is buying and standing up in parallel. The next work
 is the adversarial review Step 8 is owed, described in section 5. It has not
-happened, and no session should treat Step 8 as reviewed.
+happened, and no session should treat Step 8 as reviewed. On 2026-09-30 the
+operator held all further work for a priorities discussion.
 
 ---
 
@@ -45,28 +47,34 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** This commit changes records only, at the 2026-09-29
-checkpoint closeout. CI run 36501081165 ran every step of `b378cd8`'s self-test
-wiring on GitHub. Two defects measured outside the repository on 2026-09-14 and
-2026-09-17 are now in section 4, with the worktree `b378cd8` was built in, and
-the worklog's 2026-09-29 entry carries the measurements.
+**What changed and why.** This commit corrects the README gap the 2026-09-29
+handoff listed and the three stale lines the 2026-09-30 harvest recorded, under
+the operator's concurrence of 2026-09-30 to bring every repository clean and up
+to date before a priorities discussion. `README.md` stops saying no schema and
+no policy pack exist and stops describing Step 7 as future work; its stub-scan
+sentence and its ZISR COP pointer, found stale while correcting it, go too.
+`docs/THE-GAMEPLAN.md` stops tagging Step 8 blocked. This file drops a machine
+path, gains the prefix its second Resume path lacked, repoints its Sherlock row,
+and loses the two section 4 gaps that this commit and the 2026-09-30 worktree
+removal closed.
 
-**Which surfaces moved.** This file and the worklog, with the oldest live
-worklog entry moved to its archive unedited. No governed artifact changed, so
-`CHANGELOG.md` carries no entry.
+**Which surfaces moved.** `README.md`, `docs/THE-GAMEPLAN.md`, this file and the
+worklog, with the oldest live worklog entry moved to its archive unedited. No
+governed artifact changed, so `CHANGELOG.md` carries no entry.
 
-**What validation ran and what passed.** The closeout battery ran at `b378cd8`
-before these records were written. All fourteen preflight commands passed, the
-six self-tests among them, and both forms of `git diff --check` were clean. The
-kernel gate was red on `retention-repo-scan` alone, the disclosed state in
-section 3.
+**What validation ran and what passed.** The battery ran on the staged tree
+before the commit. All fourteen preflight commands passed, the six self-tests
+among them, and both forms of `git diff --check` were clean. The kernel gate was
+red on `retention-repo-scan` alone, the disclosed state in section 3.
 
-**Whether a release baseline changed.** No. `main` gains this one records commit.
+**Whether a release baseline changed.** No. `main` gains this one documentation
+commit.
 
 **What remains open or deferred.** Section 3 holds the operator's 29 decisions,
-patch 4b with its four Class F items, and the repo-scan exemption. Section 4
-holds every stamp, the 2026-09-28 follow-ups, the two defects and the worktree;
-section 5 holds the adversarial review Step 8 is owed.
+patch 4b with its four Class F items, the repo-scan exemption and the cast seal.
+Section 4 holds every stamp, the 2026-09-28 follow-ups and the known defects;
+section 5 holds the adversarial review Step 8 is owed. The operator held all of
+it on 2026-09-30 for a priorities discussion.
 
 ---
 
@@ -222,11 +230,6 @@ about 1,720 non-recurring and 205 a month.
 
 ## 4. Known gaps
 
-- **The public README says a schema and a policy pack do not exist.**
-  `README.md:10-11` reads "No schema, no policy pack, and no collection mechanism
-  exists." The schema and policy pack landed in `4e6abda` and `0e0c840`, and the
-  last README edit, `ff016af`, kept the sentence. Its "Next action" section still
-  describes Step 7 as future work. The repository is public.
 - **The pin of record has three independent readers, and two disagree.** At
   `b378cd8`, `tools/validate_authorization.py`'s `Pin` subtracts the Pending
   table's stamp-target rows and calls `spec/pse-semantics-contract.md`
@@ -234,10 +237,6 @@ about 1,720 non-recurring and 205 a month.
   the Ratified section and calls it stamped. It is latent, because
   `stamped_path()` is called only for the retention policy and the shred fixture.
   One shared reader would close it.
-- **The worktree `b378cd8` was built in is still in place**, at
-  `.claude/worktrees/hopeful-maxwell-69bb46` on `claude/hopeful-maxwell-69bb46`,
-  merged and clean. Its session is open, and removal deletes its `.gate-log/`,
-  which RT-19 gives a 90-day lifetime, so removing it is the operator's decision.
 - **The follow-ups from the 2026-09-28 review and re-review, none blocking**,
   listed in that day's worklog entry. The one that matters most: nothing fails
   if an edit drops a self-test from one of the four paths, so the class is open.
@@ -254,8 +253,10 @@ about 1,720 non-recurring and 205 a month.
   design. `../zisr-recon/` ceased to exist on 2026-09-10 when four producer
   repositories were consolidated into `../zisr-producers/`, nineteen citations
   across eight files named the old path, and no gate noticed. `ff016af` repointed
-  the three live pointers and left the dated measurements alone. The missing
-  mechanism is open.
+  the three live pointers and left the dated measurements alone. The 2026-09-14
+  move broke two more, in rank-1 files: `doctrine/RETENTION.md:381` and
+  `doctrine/CREDENTIAL_LIFECYCLE.md:138` cite `../ZISR COP/`, which is now
+  `../zisr-cop/`, and repointing them is a doctrine edit. The mechanism is open.
 - **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
   `schema/subject-authorization.schema.json` admits only the three pre-R4
   evidence kinds, which is what SA-U2 and SA-U11 both land on. SA-U16's current
@@ -342,10 +343,10 @@ decision was settled when it was not.
 | The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies, and the method the Step 8 review owes. Pre-rewrite hashes. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Carries the removed values; unshared. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, and the critical path to a first S1 run. |
-| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/` and `.../2026-09-28-plainsight-selftest-wiring-review/` | The corrected crossings classing, three fact replies to the ecosystem research sessions, and the two reviews of `b378cd8`. |
+| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/` and `.../2026-09-30-plainsight-harvest-and-archive/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, and the record of the worktree's 751 gate-log rows merged into this checkout's log. |
 | The 2026-09-09 harvest and operator checklist | `Z-ISR/_session-artifacts/2026-09-09-plainsight-harvest-and-operator-checklist/` | The verified shopping list, the identity sequence, and the pending operator acts. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The compartmentalization invariants the ISOLATED environment inherits. |
-| Measured Sherlock review, clone and image | `../Sherlock/sherlock/CAPABILITIES.md`, `../Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
+| Measured Sherlock review, clone and image | `Z-ISR/Sherlock/sherlock/CAPABILITIES.md`, `Z-ISR/Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
 | Tool clones and workflow journals | The Wave 0 session scratchpad | Fifteen clones with history and 202 agent transcripts. Temp; copy before relying on them. |
 
 **Worth re-running rather than trusting.** Tool liveness in
@@ -391,10 +392,8 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
 - Only CI on Linux checks a file mode. The Edit tool on Windows writes CRLF into
   an existing file; `.gitattributes` normalizes the index, and the working copy
   is normalized before the battery so the hook parses.
-- Five harness facts: a subagent cannot write outside the repository, so the
+- Four harness facts: a subagent cannot write outside the repository, so the
   parent persists its reports; a Bash heredoc breaks on an apostrophe, so prose
   files are written with the Write tool; a worktree's `core.hooksPath` names the
-  main checkout's `.githooks`, so a commit there runs the hook on `main`; a tree
-  copied under the scratchpad passes MAX_PATH for Python; and the app's session
-  metadata moved to
-  `AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude-code-sessions\`.
+  main checkout's `.githooks`, so a commit there runs the hook on `main`; and a
+  tree copied under the scratchpad passes MAX_PATH for Python.

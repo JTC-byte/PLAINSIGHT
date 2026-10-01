@@ -3,12 +3,16 @@
 An OSINT common operating plane, and PSE, the ZMeta-derived semantic dialect it
 runs on.
 
-**Status: Wave 0 committed, and the first build artifacts are committed with
-the gates that check them.** Every doctrine conclusion has been recorded since
-2026-08-27 and every basis is deliberately unstamped. The layer model, the
-selector registry, the unsealed cast draft, and the validators that read them
-landed in `f4e00e1`. No schema, no policy pack, and no collection mechanism
-exists. No connector exists. Nothing here has touched a platform.
+**Status: Wave 0 committed, and Steps 4 through 8 are committed with the gates
+that check them.** Every doctrine conclusion has been recorded since 2026-08-27
+and every basis is deliberately unstamped. The layer model, the selector
+registry, the unsealed cast draft, and the validators that read them landed in
+`f4e00e1`. The event schema and the four generated policy files landed in
+`4e6abda`. The subject-authorization schema, the compiled subject-authorization
+and retention policies, their conformance artifacts and their validators landed
+in `0e0c840`, every one unratified and refusing until it is stamped. No
+collection mechanism exists. No connector exists. Nothing here has touched a
+platform.
 
 ## What this is
 
@@ -89,17 +93,15 @@ One lane rule is enforced: nothing under `spec/`, `schema/`, `ontology/`,
 
 ## Next action
 
-**The operator decides four Class F items.** They are drafted as patch 4 in
-`Z-ISR/_session-artifacts/2026-09-03-plainsight-doctrine-review-2/`, with
-`DECISIONS.md` beside them, and each lands unratified and refuses until
-stamped. Patch 2 in the same directory restores to SS-4's required-field table
-the reach R4 decided on 2026-08-26, and the authorization schema Step 8 compiles
-from that table, so patch 2 lands before Step 8. Step 7 does not wait on it.
-
-Then Step 7: `schema/pse-event-0.1.schema.json` generated from
-`spec/layer-model.yaml`, the four policy files, and
-`spec/pse-semantics-contract.md` written last, because the contract explains
-rules that already exist rather than inventing rules nothing enforces.
+`docs/plainsight_handoff.md` carries the current next action and is rewritten
+at every closeout, so this section names it in outline and points there. As of
+2026-09-30 the next work is the adversarial review Step 8 is owed, which the
+handoff's section 5 describes. A first live run waits on SS-14 item 6, which
+the handoff's section 3 lists in full: the doctrine, the Step 8 artifacts, the
+selector registry's proposed rows and the contract's sections 5 and 12 stamped
+on the operator's decisions, the cast filled and sealed, and a dispatch
+allowlist and preflight in a runner that Steps 10 to 13 have not yet built. The
+four Class F items drafted as patch 4b wait on the operator separately.
 
 ## Relationship to the rest of Z-ISR
 
@@ -112,7 +114,7 @@ This repository reads from its siblings and writes to none of them.
 - `../zisr-producers/recon/`: the permission-gate precedent. It stood at
   `../zisr-recon/` when that precedent was measured, and moved on 2026-09-10
   when four producer repositories were consolidated.
-- `../ZISR COP/`: the operational client, and the source of several interface
+- `../zisr-cop/`: the operational client, and the source of several interface
   patterns. PLAINSIGHT is a sibling application, not a mode within it.
 
 ## License and repository model
@@ -126,6 +128,7 @@ through the closeout in `AGENTS.md` section 8: the battery, the records, and
 the commit. Case material never enters git, per `doctrine/RETENTION.md`, and no
 selector enters a tracked file, per `AGENTS.md` section 4, so the history is
 publishable by rule and the local instance keeps its private material on the
-filesystem rather than in git. The commit-time scan that would enforce the
-retention rule is a stub until Step 8; `docs/plainsight_handoff.md` tracks it
-as D-001.
+filesystem rather than in git. The commit-time scan that enforces the selector
+rule, `tools/validate_retention.py --repo-scan`, replaced its stub at Step 8 and
+runs in the pre-commit hook over the index. It enforces three of RT-15's four
+parts, and `AGENTS.md` section 5 states which part it does not reach.
