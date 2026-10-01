@@ -170,7 +170,7 @@ Modes:
         refused. A gate nobody has watched fail is an assumption
         (doctrine/HYGIENE.md section 2).
 
-WHAT --self-test DOES NOT COVER, SAID HERE RATHER THAN LEFT TO BE NOTICED. Ten
+WHAT --self-test DOES NOT COVER, SAID HERE RATHER THAN LEFT TO BE NOTICED. Nine
 codes are not reachable by mutating the loaded artifacts, and each one is in one
 of three groups, and the harness's own two refusals,
 AUTH_SELF_TEST_BASELINE_NOT_CLEAN and AUTH_SELF_TEST_FAILED, are outside the
@@ -181,11 +181,13 @@ AUTH_POLICY_WRAPPER_KEY_MISSING and AUTH_CORPUS_EMPTY, each exercised by pointin
 the module's paths at a file that is not there. Three are the certification
 refusals, AUTH_CERTIFICATION_HELD, AUTH_ARTIFACT_UNSTAMPED and
 AUTH_EVALUATOR_UNRATIFIED, which fire on the real tree today and are the designed
-state rather than a defect. Two guard the stamp predicate against itself,
-AUTH_UNRATIFIED_ARTIFACT_PERMITTED and AUTH_STAMP_PREDICATE_ALWAYS_REFUSES, and
-they are constructed rather than mutated: their inputs are built inside the check
-from the policy's own path list, so no artifact edit can reach them and running
-them is the whole of their evidence.
+state rather than a defect. One, AUTH_CAST_SEAL_UNREAD, guards item 7's seal
+condition and fires only if the condition is removed from the code. Until the
+second review of 2026-10-01 this paragraph counted ten and named the two
+stamp-predicate guards here; since 4ec9132 the pin_overrides breaks reach both.
+Reader defects in the permit direction, a range ignored or a doctrine path read
+as stamped with no row, are refused by tools/pin_of_record.py --self-test, which
+runs on every path, rather than by this tool.
 
 Exit codes: 0 clean, or a DEFERRED mode that checked nothing (--dispatch-paths,
 --disjointness), which is not a pass and must not satisfy SS-14 item 6's
@@ -389,14 +391,27 @@ SELECTOR_KEYS = (
     "selector_value",
 )
 PLACEHOLDER_RE = re.compile(r"^<[^<>]+>$")
-PLACEHOLDER_SPAN_RE = re.compile(r"<[^<>]+>")
+
+
+def _masked(keys) -> list:
+    # A refusal names an unexpected key, and a key can carry an address.
+    # Until the second review of 2026-10-01 A-01 quoted it, which made the gate
+    # its own durable surface, against HY-1 and RT-19.
+    return [
+        "<a key carrying an email or phone shape>"
+        if isinstance(k, str) and any(p.search(k) for _, p in VALUE_SHAPES)
+        else k
+        for k in keys
+    ]
 
 #: The shapes A-08's second pass finds under any key. Email and E.164 phone are
 #: the two that cannot occur by accident in a fixture's prose; a handle or an id
 #: is an ordinary word and is found only under a selector key.
 VALUE_SHAPES = (
     ("an email address", re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
-    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9]\d{7,14}(?!\d)")),
+    # Grouped with spaces or hyphens as well as compact, since the second review
+    # of 2026-10-01; a number with a 00 prefix is not read, which is stated.
+    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9](?:[ \-]?\d){7,14}(?!\d)")),
 )
 
 #: Criterion namespaces and the file whose dated ratifier row stamps them.
@@ -414,14 +429,18 @@ REGISTER_NAME_RE = re.compile(r"^\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|", re.M)
 GF_ENTRY_RE = re.compile(r"^### (GF-U\d+)\.", re.M)
 
 
-def _register_rows(block: str) -> dict[str, list[str]]:
-    """Each register row's six cells after the name, keyed on the name."""
-    out: dict[str, list[str]] = {}
+def _register_rows(block: str) -> dict[str, list[list[str]]]:
+    """Every register row's six cells after the name, keyed on the name.
+
+    Every row, not the first: until the second review of 2026-10-01 a
+    contradictory second row for a name was never read.
+    """
+    out: dict[str, list[list[str]]] = {}
     for line in block.splitlines():
         match = REGISTER_NAME_RE.match(line)
         if match:
             cells = [c.strip() for c in line.strip().strip("|").split("|")]
-            out.setdefault(match.group(1), cells[1:])
+            out.setdefault(match.group(1), []).append(cells[1:])
     return out
 
 
@@ -773,7 +792,13 @@ def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin
         return f"{p} is unstamped in the pin of record: {pin.reason_unstamped(p) or 'the stamp state omits it'}"
 
     reasons = [_why(p) for p in paths if p not in stamped]
-    reasons += [f"criterion {c} has no row in the stamp table" for c in absent]
+    rows = getattr(pin, "criteria", {}) if source != "fixture" else {}
+    reasons += [
+        f"criterion {c} has a Step 3 row and no dated range or row naming it covers it"
+        if c in rows
+        else f"criterion {c} has no row in the stamp table"
+        for c in absent
+    ]
     return reasons
 
 
@@ -1079,9 +1104,22 @@ def check_corpus(model: dict) -> list[Finding]:
             )
         )
 
+    selector_fields = sorted(_d(schema, "$defs", "selector", "properties", default={}) or {})
+    if selector_fields != ["selector_type", "value"]:
+        f.append(
+            Finding(
+                "AUTH_SCHEMA_BOUND_DRIFT",
+                "schema/subject-authorization.schema.json > $defs.selector.properties",
+                f"a selector declares {selector_fields} where SAS-R5 fixes selector_type and "
+                "value. A third field is a new place for a selector value to sit, and the "
+                "closure check reads only additionalProperties",
+                "restore the two fields; or ratify SAS-R5's change and move this check in "
+                "the same commit",
+            )
+        )
     for path, want, owner in SCHEMA_PINS:
         have = _schema_value(schema, path)
-        if have != want:
+        if json.dumps(have, sort_keys=True) != json.dumps(want, sort_keys=True):
             f.append(
                 Finding(
                     "AUTH_SCHEMA_BOUND_DRIFT",
@@ -1118,7 +1156,7 @@ def check_corpus(model: dict) -> list[Finding]:
         present = {k for k in row if k != "_where"}
         if present != set(ROW_KEYS):
             missing = sorted(set(ROW_KEYS) - present)
-            extra = sorted(present - set(ROW_KEYS))
+            extra = _masked(sorted(present - set(ROW_KEYS)))
             f.append(
                 Finding(
                     "AUTH_ROW_KEYS_UNEXPECTED",
@@ -1151,7 +1189,7 @@ def check_corpus(model: dict) -> list[Finding]:
                         f"the row's {block} is not the {len(keys)} keys the row contract "
                         "fixes"
                         + (f", missing {sorted(set(keys) - have)}" if set(keys) - have else "")
-                        + (f", carrying {sorted(have - set(keys))}" if have - set(keys) else "")
+                        + (f", carrying {_masked(sorted(have - set(keys)))}" if have - set(keys) else "")
                         + ". A missing key is an input or an assertion the fixture never "
                         "supplied, and an extra one is something nothing grades",
                         f"restore the keys in conformance/gate/README.md section 3; or add "
@@ -1447,10 +1485,21 @@ def check_corpus(model: dict) -> list[Finding]:
     # register row could state another criterion, decision, step, basis, code
     # or hold than its fixture and the summary still said reconciled.
     by_name = {r.get("name"): r for r in rows}
-    for name, cells in sorted((model.get("register_rows") or {}).items()):
+    for name, rows_for_name in sorted((model.get("register_rows") or {}).items()):
+        if len(rows_for_name) > 1:
+            f.append(
+                Finding(
+                    "AUTH_REGISTER_NAME_DUPLICATE",
+                    f"conformance/gate/README.md section 4 > {name}",
+                    f"the register lists {name} {len(rows_for_name)} times, so a reader "
+                    "checking a fixture against it finds two statements of one row",
+                    "keep one row for the name; a matched pair is two names, as the SS-17 "
+                    "baseline pair is",
+                )
+            )
         if name not in by_name:
             continue
-        drift = _register_drift(cells, by_name[name])
+        drift = [d for cells in rows_for_name for d in _register_drift(cells, by_name[name])]
         if drift:
             f.append(
                 Finding(
@@ -1497,7 +1546,12 @@ def check_corpus(model: dict) -> list[Finding]:
 
 
 def _placeholder_findings(row: dict, where: str) -> list[Finding]:
-    """A-08. Every selector-keyed value is a bracketed placeholder.
+    """A-08. Every selector-keyed value is a bracketed placeholder, and no string
+    or key anywhere in a row carries an email or phone shape.
+
+    Until the second review of 2026-10-01 the second pass removed bracketed
+    spans before it looked, so an address written "Name <address>" passed, and a
+    bracketed address under a selector key counted as a placeholder.
 
     `argv_template` is the one exemption and it is named rather than inferred: it
     carries a selector type such as `<handle>` rather than a selector, which is
@@ -1520,7 +1574,12 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
         elif isinstance(node, str) and key in SELECTOR_KEYS:
             if key == "value" and not typed:
                 return
-            if not PLACEHOLDER_RE.match(node) and path not in seen:
+            shaped = any(pattern.search(node) for _, pattern in VALUE_SHAPES)
+            if (shaped or not PLACEHOLDER_RE.match(node)) and path not in seen:
+                seen.append(path)
+        elif isinstance(node, (int, float)) and not isinstance(node, bool) and key in SELECTOR_KEYS:
+            # A selector written as a number, such as a phone without quotes.
+            if (key != "value" or typed) and path not in seen:
                 seen.append(path)
 
     walk({k: v for k, v in row.items() if k != "_where"}, "", None, False)
@@ -1529,13 +1588,14 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
     def shapes(node, path: str):
         if isinstance(node, dict):
             for k, v in node.items():
+                if isinstance(k, str) and any(p.search(k) for _, p in VALUE_SHAPES) and f"{path} key" not in seen:
+                    seen.append(f"{path} key")
                 shapes(v, f"{path}.{k}")
         elif isinstance(node, list):
             for i, v in enumerate(node):
                 shapes(v, f"{path}[{i}]")
         elif isinstance(node, str):
-            bare = PLACEHOLDER_SPAN_RE.sub(" ", node)
-            if any(pattern.search(bare) for _, pattern in VALUE_SHAPES) and path not in seen:
+            if any(pattern.search(node) for _, pattern in VALUE_SHAPES) and path not in seen:
                 seen.append(path)
 
     shapes({k: v for k, v in row.items() if k != "_where"}, "")
@@ -1544,7 +1604,8 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
             Finding(
                 "AUTH_VALUE_NOT_PLACEHOLDER",
                 f"{where} > {path.lstrip('.')}",
-                "a selector-keyed value is not a bracketed placeholder. SS-14 item 5 keeps "
+                "a selector-keyed value, or an email or phone shape under any key, is not "
+                "a bracketed placeholder. SS-14 item 5 keeps "
                 "a natural person's selector out of every tracked file, and a synthetic "
                 "value is still a value while the cast is unsealed. The value itself is not "
                 "quoted here, on the HY-1 rule that a gate's own evidence must not become "
@@ -1569,15 +1630,31 @@ SS5_ID_KEYS = ("event_id", "run_id", "item_id")
 UUID_RE = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 
 
+#: What an empty container reads as, so its presence and type are compared.
+#: Until the second review of 2026-10-01 an empty list or mapping yielded no
+#: leaf, and a key holding one could be added or removed unseen.
+EMPTY_MAP = ("<empty>", "map")
+EMPTY_LIST = ("<empty>", "list")
+
+
 def _leaves(x, path: tuple = ()):
     if isinstance(x, dict):
+        if not x:
+            yield path, EMPTY_MAP
         for k, v in x.items():
             yield from _leaves(v, path + (k,))
     elif isinstance(x, list):
+        if not x:
+            yield path, EMPTY_LIST
         for i, v in enumerate(x):
             yield from _leaves(v, path + (i,))
     else:
         yield path, x
+
+
+def _typed(value):
+    """A leaf as its type and value, so true and 1, or false and 0, differ."""
+    return (type(value).__name__, value)
 
 
 def _path_text(path: tuple) -> str:
@@ -1601,11 +1678,25 @@ def _renamed(x, names: dict):
 #: Opening selector_type answers SAS-U1 by edit, and evidence_ref answers SA-U2
 #: and SA-U11, which are class F. Each pin moves only with its entry's stamp.
 SCHEMA_PINS = (
-    (("properties", "selectors", "type"), "array", "SS-4"),
+    (("type",), "object", "SAS-R6"),
+    (("patternProperties",), None, "SS-4's closed record, read with A-10"),
+    (("unevaluatedProperties",), None, "SS-4's closed record, read with A-10"),
+    (("properties", "case_id"), {"$ref": "#/$defs/uuid"}, "SAS-R6"),
+    (("properties", "authorized_on"), {"$ref": "#/$defs/utcDate"}, "SAS-R6"),
+    (("properties", "expires_on"), {"$ref": "#/$defs/utcDate"}, "SAS-R6"),
+    (("properties", "purpose", "type"), "string", "SAS-R4"),
+    (("properties", "authorized_by", "type"), "string", "SAS-R4"),
+    (("$defs", "selector", "type"), "object", "SAS-R5"),
+    (("$defs", "selector", "patternProperties"), None, "SAS-R5"),
+    (("$defs", "selector", "unevaluatedProperties"), None, "SAS-R5"),
+    (("$defs", "selector", "properties", "value", "type"), "string", "SAS-R5"),
+    (("$defs", "uuid", "type"), "string", "SAS-R6"),
+    (("$defs", "utcDate", "type"), "string", "SAS-R6"),
+    (("properties", "selectors", "type"), "array", "SAS-R5"),
     (("properties", "selectors", "minItems"), 1, "SAS-R4"),
     (("properties", "selectors", "items"), {"$ref": "#/$defs/selector"}, "SAS-R5"),
-    (("properties", "pivot_depth_max", "type"), "integer", "SS-4"),
-    (("properties", "pivot_depth_max", "minimum"), 0, "SS-4"),
+    (("properties", "pivot_depth_max", "type"), "integer", "SAS-R6"),
+    (("properties", "pivot_depth_max", "minimum"), 0, "SAS-R6"),
     (("properties", "purpose", "minLength"), 1, "SAS-R4"),
     (("properties", "purpose", "pattern"), "\\S", "SAS-R4"),
     (("properties", "authorized_by", "minLength"), 1, "SAS-R4"),
@@ -1619,12 +1710,12 @@ SCHEMA_PINS = (
     (
         ("$defs", "utcDate", "pattern"),
         "^(19[7-9][0-9]|2[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
-        "SS-4",
+        "SAS-R6",
     ),
     (
         ("$defs", "uuid", "pattern"),
         "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-        "SS-4",
+        "SAS-R6",
     ),
 )
 
@@ -1662,23 +1753,58 @@ def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
         if path and path[-1] in SS5_ID_KEYS and isinstance(va, str) and isinstance(vb, str):
             if fwd.setdefault(va, vb) != vb or back.setdefault(vb, va) != va:
                 out.append(f"{_path_text(path)} (its identifiers do not pair one to one)")
+    # A reference copied from the baseline names an event the fixture's own
+    # chain does not carry. Until the second review of 2026-10-01 it compared
+    # equal to the baseline and passed.
+    own = {v for p, v in _leaves(a) if p and p[-1] in SS5_ID_KEYS and isinstance(v, str)}
+    theirs = {v for p, v in lb.items() if p and p[-1] in SS5_ID_KEYS and isinstance(v, str)}
+    for path, va in _leaves(a):
+        if isinstance(va, str):
+            for found in UUID_RE.findall(va):
+                if found in theirs and found not in own:
+                    out.append(f"{_path_text(path)} (refers to the baseline's identifier)")
+                    break
     a = _renamed(a, fwd)
+    def payload_at(side, i):
+        chain = side.get("chain") or []
+        event = chain[i] if i < len(chain) else None
+        payload = event.get("payload") if isinstance(event, dict) else None
+        return payload if isinstance(payload, dict) else None
+
+    record_a = a.get("authorization")
+    value = record_a.get(field) if isinstance(record_a, dict) else None
+    length = max(len(a.get("chain") or []), len(b.get("chain") or []))
+    for i in range(length):
+        pa, pb = payload_at(a, i), payload_at(b, i)
+        has_a = pa is not None and field in pa
+        has_b = pb is not None and field in pb
+        if has_a and not _same_typed(pa[field], value):
+            out.append(f"chain[{i}].payload.{field} (disagrees with the record)")
+        if has_a != has_b:
+            # Until the second review of 2026-10-01 a copy deleted from one side
+            # or added to the other was stripped on both and passed.
+            out.append(f"chain[{i}].payload.{field} (present on one side)")
+            continue
+        if has_a:
+            for side in (a, b):
+                event = side["chain"][i]
+                side["chain"] = list(side["chain"])
+                side["chain"][i] = {**event, "payload": {k: v for k, v in event["payload"].items() if k != field}}
     for side in (a, b):
         record = side.get("authorization")
-        value = record.get(field) if isinstance(record, dict) else None
-        for i, event in enumerate(side.get("chain") or []):
-            payload = event.get("payload") if isinstance(event, dict) else None
-            if isinstance(payload, dict) and field in payload:
-                if side is a and payload[field] != value:
-                    out.append(f"chain[{i}].payload.{field} (disagrees with the record)")
-                payload = {k: v for k, v in payload.items() if k != field}
-                side["chain"] = list(side["chain"])
-                side["chain"][i] = {**event, "payload": payload}
         if isinstance(record, dict):
             side["authorization"] = {k: v for k, v in record.items() if k != field}
     la, lb = dict(_leaves(a)), dict(_leaves(b))
-    out += sorted(_path_text(p) for p in set(la) | set(lb) if la.get(p, ...) != lb.get(p, ...))
+    out += sorted(
+        _path_text(p)
+        for p in set(la) | set(lb)
+        if p not in la or p not in lb or _typed(la[p]) != _typed(lb[p])
+    )
     return out
+
+
+def _same_typed(x, y) -> bool:
+    return json.dumps(x, sort_keys=True) == json.dumps(y, sort_keys=True)
 
 
 def _ss5_findings(rows: list[dict]) -> list[Finding]:
@@ -2009,19 +2135,28 @@ def _stamp_findings(model: dict, pin: Pin) -> list[Finding]:
     for cid in list(dict.fromkeys(compiled + list(ITEM_6_RT_CRITERIA))):
         if not CRITERION_RE.fullmatch(cid):
             continue
+        compiled_here = cid in compiled
         if cid not in pin.criteria:
             out.append(
                 Finding(
                     "AUTH_CRITERION_NOT_STAMPED",
                     f"doctrine/DOCTRINE_STATUS.md > {cid}",
-                    f"policy/subject-authorization.yaml compiles {cid} and the pin of "
-                    "record's per-criterion table carries no row for it. A criterion with "
-                    "no row refuses, so this table is the mechanism rather than an index of "
-                    "one, and a compiled criterion nothing stamps is a rule the policy "
-                    "asserts on its own authority",
-                    f"add the {cid} row to the Step 3 table with its conclusion recorded; "
-                    "or remove the criterion from compiles_criteria and record what compiles "
-                    "it instead",
+                    (
+                        f"policy/subject-authorization.yaml compiles {cid}"
+                        if compiled_here
+                        else f"SS-14 item 6 requires {cid} per criterion"
+                    )
+                    + " and the pin of record's per-criterion table carries no row for it. "
+                    "A criterion with no row refuses, so this table is the mechanism rather "
+                    "than an index of one, and a criterion nothing stamps is a rule asserted "
+                    "on no one's authority",
+                    f"add the {cid} row to the Step 3 table with its conclusion recorded"
+                    + (
+                        "; or remove the criterion from compiles_criteria and record what "
+                        "compiles it instead"
+                        if compiled_here
+                        else ""
+                    ),
                 )
             )
             continue
@@ -2038,6 +2173,20 @@ def _stamp_findings(model: dict, pin: Pin) -> list[Finding]:
                     f"stamp {source} with {pin_of_record.ROW_FORMAT}, or with the 'all "
                     "criteria' wording its range row uses; or resolve the Pending row that "
                     "names it as a stamp target by stamping it",
+                )
+            )
+        elif not pin.criterion_stamped(cid):
+            # Until the second review of 2026-10-01 a criterion with a Step 3 row
+            # and no dated range or row naming it, RT-19 once its item row is
+            # gone, passed both modes.
+            out.append(
+                Finding(
+                    "AUTH_CRITERION_NOT_STAMPED",
+                    f"doctrine/DOCTRINE_STATUS.md > {cid}",
+                    f"{cid} has a Step 3 row and no dated range or Ratified row naming it, so "
+                    "the reader reads it as unstamped and it binds nothing (PIN-R7)",
+                    f"add a dated Ratified row naming {cid}, or a range row covering it; or "
+                    "restore the row that covered it",
                 )
             )
     return out
@@ -2681,19 +2830,79 @@ def _mut_reader_stamps_nothing(m: dict) -> None:
 
 
 def _mut_register_decision_drifts(m: dict) -> None:
-    m["register_rows"]["seed-permitted"][1] = "REFUSED"
+    m["register_rows"]["seed-permitted"][0][1] = "REFUSED"
 
 
 def _mut_register_holds_a_determinate_row(m: dict) -> None:
-    m["register_rows"]["runner-started-on-local"][5] = "GF-U1"
+    m["register_rows"]["runner-started-on-local"][0][5] = "GF-U1"
 
 
 def _mut_register_held_without_a_hold(m: dict) -> None:
-    m["register_rows"]["runner-started-on-local"][1] = "held"
+    m["register_rows"]["runner-started-on-local"][0][1] = "held"
 
 
 def _mut_register_criterion_drifts(m: dict) -> None:
-    m["register_rows"]["seed-expires-on-mutated"][0] = "SS-5, `selectors`"
+    m["register_rows"]["seed-expires-on-mutated"][0][0] = "SS-5, `selectors`"
+
+
+def _mut_ss5_reference_copied(m: dict) -> None:
+    row = _row(m, "one-hop-pivot-depth-max-mutated")
+    row["dispatch"]["motivated_by"] = _row(m, "one-hop-permitted")["dispatch"]["motivated_by"]
+
+
+def _mut_ss5_grant_copy_deleted(m: dict) -> None:
+    del _row(m, "seed-expires-on-mutated")["chain"][0]["payload"]["expires_on"]
+
+
+def _mut_ss5_copy_added_elsewhere(m: dict) -> None:
+    row = _row(m, "one-hop-pivot-depth-max-mutated")
+    row["chain"][1]["payload"]["pivot_depth_max"] = row["authorization"]["pivot_depth_max"]
+
+
+def _mut_ss5_true_written_as_one(m: dict) -> None:
+    _row(m, "seed-expires-on-mutated")["given"]["manifest"]["declares_bystanders"] = 1
+
+
+def _mut_ss5_empty_key_added(m: dict) -> None:
+    _row(m, "seed-expires-on-mutated")["dispatch"]["scope_override"] = []
+
+
+def _mut_rt19_row_removed(m: dict) -> None:
+    m["pin_text"] = re.sub(r"(?m)^\| Gate telemetry with a 90 day TTL[^\n]*\n", "", m["pin_text"], count=1)
+
+
+def _mut_reader_stamps_no_criterion(m: dict) -> None:
+    m["pin_overrides"] = {"criterion_stamped": lambda cid: False}
+
+
+def _mut_selector_gains_a_field(m: dict) -> None:
+    m["schema"]["$defs"]["selector"]["properties"]["note"] = {"type": "string"}
+
+
+def _mut_address_in_brackets(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Contact <" + "examplename" + "@" + "example" + ".org>."
+
+
+def _mut_phone_grouped(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call " + "+1 555" + " 0100 999."
+
+
+def _mut_address_as_a_key(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["given"] = dict(row["given"])
+    row["given"]["examplename" + "@" + "example" + ".org"] = "seen"
+
+
+def _mut_register_row_repeated(m: dict) -> None:
+    m["register_rows"]["seed-permitted"].append(list(m["register_rows"]["seed-permitted"][0]))
+
+
+def _mut_register_row_contradicted(m: dict) -> None:
+    second = list(m["register_rows"]["seed-permitted"][0])
+    second[1] = "REFUSED"
+    m["register_rows"]["seed-permitted"].append(second)
 
 
 def _mut_fixture_not_in_register(m: dict) -> None:
@@ -2876,6 +3085,10 @@ def _mut_schema_bound(path: tuple):
         node = m["schema"]
         for part in path[:-1]:
             node = node[part]
+        if path[-1] not in node:
+            # A pin on an absent key: the break adds it, empty.
+            node[path[-1]] = {}
+            return
         value = node[path[-1]]
         if isinstance(value, dict):
             node[path[-1]] = {k: v for k, v in value.items() if k == "$comment"}
@@ -3043,6 +3256,19 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             True,
             "",
         ),
+        ("copy the baseline's reference into an SS-5 fixture", _mut_ss5_reference_copied, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("delete the GRANT's copy of expires_on", _mut_ss5_grant_copy_deleted, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("add a copy of pivot_depth_max to another event", _mut_ss5_copy_added_elsewhere, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("write an SS-5 fixture's true as 1", _mut_ss5_true_written_as_one, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("add an empty key to an SS-5 fixture's dispatch", _mut_ss5_empty_key_added, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
+        ("remove the row that alone stamps RT-19", _mut_rt19_row_removed, "AUTH_CRITERION_NOT_STAMPED", True, ""),
+        ("let the pin reader stamp no criterion", _mut_reader_stamps_no_criterion, "AUTH_CRITERION_NOT_STAMPED", True, ""),
+        ("give a selector a third field", _mut_selector_gains_a_field, "AUTH_SCHEMA_BOUND_DRIFT", True, ""),
+        ("write an address in angle brackets", _mut_address_in_brackets, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a phone grouped with spaces", _mut_phone_grouped, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("use an address as a mapping key", _mut_address_as_a_key, "AUTH_VALUE_NOT_PLACEHOLDER", False, "a key directly under given is also outside the row contract, so A-01 fires too, and it now masks the key rather than quoting it"),
+        ("list a register row twice", _mut_register_row_repeated, "AUTH_REGISTER_NAME_DUPLICATE", True, ""),
+        ("list a register row a second time, contradicting the first", _mut_register_row_contradicted, "AUTH_REGISTER_ROW_DRIFT", False, "a second row for a name is also a duplicate, so the duplicate check fires too"),
         (
             "state another decision in a register row",
             _mut_register_decision_drifts,

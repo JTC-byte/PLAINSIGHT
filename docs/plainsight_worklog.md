@@ -2138,3 +2138,43 @@ waits on plainsight-22. Thirty self-test breaks are new. `--policy` and
 the staged tree, the retention self-test with 135 breaks, and both forms of
 `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
 checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Eighth: the second review's authorization findings, Class B.** The
+authorization lens on Opus 5.5 found thirteen, and its refuter confirmed all
+thirteen and found one more. The changes, by check:
+- **A-12.** It flags a reference copied from the baseline that names no event
+  in the fixture's own chain. It flags a field copy present in one chain payload
+  and absent from the other. It compares each leaf with its type, so true and 1
+  differ. It reads an empty list or mapping as a value, so a key holding one
+  cannot be added or removed unseen.
+- **A-17.** It now refuses a criterion that has a Step 3 row and no dated range
+  or row naming it. RT-19 was that case once its item row was removed, and both
+  modes passed. That also closes the matched-pair gap: a reader that stamps no
+  criterion refuses here. The item 6 reason names the cause.
+- **SCHEMA_PINS.** It holds the root type, the three references, the string
+  types, and the absence of patternProperties and unevaluatedProperties at the
+  root and in a selector. A separate check refuses a selector field beyond
+  selector_type and value. Five owners now name SAS-R5 and SAS-R6, not SS-4.
+- **A-08.** It reads the raw string, so an address in angle brackets refuses. A
+  bracketed placeholder that carries a shape refuses too. The pass also reads
+  mapping keys, a phone grouped with spaces or hyphens, and a selector written as
+  a number. A number with a 00 prefix is not read, and the docstring says so.
+- **A-13.** It keeps every register row and refuses a repeated name as
+  `AUTH_REGISTER_NAME_DUPLICATE`.
+- **The refuter's extra finding.** A-01's refusals quoted an unexpected key,
+  which could print an address in the gate's own output. They now mask a key
+  that carries a shape.
+- **Docstrings and messages.** The docstring counts nine unreachable codes and
+  says that reader defects in the permit direction rest on
+  `tools/pin_of_record.py --self-test`. The criterion refusal no longer tells an
+  RT id's author that the subject policy compiles it.
+
+Two findings go to the maintainer: the register notation (am2:13) and the
+contract's stale evaluator sentence (sd2:11). Thirteen self-test breaks are new,
+each one a mutation the refuter showed passed the previous tool. `--fixtures`
+output is byte-identical to `53da6ce`.
+
+**Battery for the eighth change.** All sixteen preflight commands passed on the
+staged tree, the authorization self-test with 113 breaks, and both forms of
+`git diff --check` were clean. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.

@@ -22,6 +22,27 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. The second review's authorization findings.**
+
+  **What changed.** A-12 catches a reference copied from its baseline, a field
+  copy on one side only, a type change and an empty key. A-17 refuses a
+  criterion no dated row covers. `SCHEMA_PINS` holds the types, references and
+  closure. A-08 reads the raw string, keys, grouped phones and numbers. A-13
+  refuses a repeated register row (`AUTH_REGISTER_NAME_DUPLICATE`). A-01 masks a
+  shaped key rather than quoting it. Fourteen findings of the second
+  adversarial pass, decided under the operator's grant of 2026-09-30 23:28 as
+  resumed at 12:24 and confirmed for merges at 12:37, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`, the worklog and
+  the handoff.
+
+  **What validation ran.** The authorization self-test, 113 breaks; `--fixtures`
+  output byte-identical to the previous commit; all sixteen preflight commands;
+  both forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No corpus row, schema, policy value, doctrine file or
+  stamp.
+
 - **2026-10-01, afternoon. Every compiled retention boolean and stratum is
   pinned or named, and the pair reader reads the forms people write.**
 

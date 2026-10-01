@@ -12,9 +12,9 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file closes the rest of the second review's retention findings and corrects
-this file, on top of `c82ed28`, under the overnight grant of 2026-09-30 23:28,
-resumed at 12:24 and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
+file closes the second review's authorization findings, on top of
+`53da6ce`, under the overnight grant of 2026-09-30 23:28, resumed at 12:24 and
+confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,18 +46,18 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** "The last nine unpinned rules" was false. Every
-boolean and stratum the retention policy compiles is now pinned or named as
-unpinned, and a new one refuses until classified; twenty-three more rules are
-pinned. The pair reader reads a hand-written YAML phone, a repeated key, a
-byte-order mark, a list and keys in capitals. Stale statements here are fixed.
+**What changed and why.** A-12 now catches a copied reference, a field copy on
+one side only, a type change and an empty key. A criterion no row stamps refuses
+in both modes. The schema's types, refs and closure are pinned. A-08 reads
+bracketed and grouped forms and keys, and a refusal no longer echoes a shaped
+key. A repeated register row refuses.
 
-**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
+**Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
 `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the retention
-self-test with 135 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, the authorization
+self-test with 113 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
