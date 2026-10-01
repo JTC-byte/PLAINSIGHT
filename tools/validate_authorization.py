@@ -123,7 +123,11 @@ Every check guards a specific defect:
         permit. The test constructs the absence rather than finding one, and it
         carries its own matched pair: a fully stamped state must permit, because
         a predicate that refuses everything proves nothing and is the failure
-        direction HY-2 adjudicates.
+        direction HY-2 adjudicates. Since 2026-10-01 each case also runs through
+        the pin reader, on copies of the pin of record with one Step 3 row or
+        one item 6 path's row removed, and on a copy with every item 6 path
+        stamped; before then every case was a fixture-supplied list, and a reader
+        that stamped everything left both modes green.
   A-20  The compiled SS-14 counts drifting: six NEVER items, eight
         ratify-before-collection items across nine paths, and four preflight
         checks; and, since 2026-10-01, the eight items' paths themselves, pinned
@@ -879,8 +883,65 @@ def load() -> dict:
     }
 
 
-def _pin(model: dict) -> Pin:
-    return Pin(model.get("pin_text", ""), ROOT, {k: set(v) for k, v in RATIFY_SECTIONS.items()})
+def _pin(model: dict, text: str | None = None) -> Pin:
+    """The pin of record, or a constructed copy of it when `text` is given.
+
+    `pin_overrides` is the self-test's seam: it replaces a reader method on the
+    instance so a break can show which check notices a reader that answers
+    wrongly. `load()` never sets it.
+    """
+    pin = Pin(
+        model.get("pin_text", "") if text is None else text,
+        ROOT,
+        {k: set(v) for k, v in RATIFY_SECTIONS.items()},
+    )
+    for name, fn in (model.get("pin_overrides") or {}).items():
+        setattr(pin, name, fn)
+    return pin
+
+
+def _in_slice(text: str, start: str, end: str, edit) -> str:
+    i = text.find(start)
+    if i < 0:
+        return text
+    j = text.find(end, i + len(start))
+    j = len(text) if j < 0 else j
+    return text[:i] + edit(text[i:j]) + text[j:]
+
+
+def _constructed_pin_text(text: str, stamp: list[str], clear: list[str], drop_criterion: str = "") -> str:
+    """A copy of the pin of record for A-19's cases read through the pin.
+
+    Rows naming a path in `clear` are removed from the Ratified and Pending
+    tables, one whole-artifact row is added for each path in `stamp`, and the
+    Step 3 row of `drop_criterion` is removed. Nothing is written to disk.
+    """
+
+    def _without(block: str) -> str:
+        return "\n".join(
+            line for line in block.split("\n") if not any(f"`{c}`" in line for c in clear)
+        )
+
+    rows = "".join(
+        f"| the constructed control, whole artifact | `{p}` | v0.1 | 2026-10-01 | unstamped | operator |\n"
+        for p in stamp
+    )
+    text = _in_slice(
+        text,
+        pin_of_record.RATIFIED_START,
+        pin_of_record.RATIFIED_END,
+        lambda block: _without(block).rstrip("\n") + "\n" + rows + "\n",
+    )
+    text = _in_slice(text, pin_of_record.PENDING_START, pin_of_record.PENDING_END, _without)
+    if drop_criterion:
+        row = re.compile(rf"^\|\s*{re.escape(drop_criterion)}(?![0-9])[^\n]*\n?", re.M)
+        text = _in_slice(
+            text,
+            pin_of_record.CRITERIA_START,
+            pin_of_record.CRITERIA_END,
+            lambda block: row.sub("", block),
+        )
+    return text
 
 
 # ---------------------------------------------------------------------------
@@ -1998,6 +2059,80 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
                     "control built from the wrong lists can never be satisfied",
                 )
             )
+
+    # A-19, read through the pin. Until 2026-10-01 every state above carried
+    # source "fixture", so item_6_reasons echoed the lists it was handed and the
+    # reader's criterion_stamped and artifact_stamped could answer True for
+    # everything with both modes green. These pins are copies of the pin of
+    # record with the item 6 paths' rows replaced, so the reader decides. A
+    # doctrine file keeps its own rows, which stamp its criteria too. The control
+    # allows two refusals the reader is right to make on this tree: a path with
+    # no file on disk (PIN-R6) and a stamped cast that is unsealed.
+    text = model.get("pin_text", "")
+    if paths and criteria and _pin(model).parsed:
+        own = [p for p in paths if not p.startswith("doctrine/")]
+        target = next((p for p in own if p != CAST_PATH and (ROOT / p).is_file()), "")
+        via = "tools/validate_authorization.py > item_6_reasons, read through the pin"
+
+        short_criterion = _pin(model, _constructed_pin_text(text, own, own, criteria[0]))
+        if f"criterion {criteria[0]} has no row in the stamp table" not in item_6_reasons(
+            {}, paths, criteria, short_criterion
+        ):
+            out.append(
+                Finding(
+                    "AUTH_UNRATIFIED_CRITERION_PERMITTED",
+                    via,
+                    f"a copy of the pin of record without the Step 3 row for {criteria[0]} "
+                    "was not refused for it, so the reader's criterion_stamped answers "
+                    "without reading the table. SS-8 says item 6 is evaluated by reading "
+                    "the pin, and a fixture-supplied list cannot show that",
+                    "fix Pin.criterion_stamped in tools/pin_of_record.py so a criterion "
+                    "with no Step 3 row is unstamped; or, if the Step 3 table's heading "
+                    "moved, move CRITERIA_START with it",
+                )
+            )
+        if target:
+            short_artifact = _pin(model, _constructed_pin_text(text, [p for p in own if p != target], own))
+            if not any(
+                r.startswith(f"{target} is unstamped") for r in item_6_reasons({}, paths, criteria, short_artifact)
+            ):
+                out.append(
+                    Finding(
+                        "AUTH_UNRATIFIED_ARTIFACT_PERMITTED",
+                        via,
+                        f"a copy of the pin of record with no row for {target} was not "
+                        "refused for it, so the reader's artifact_stamped answers without "
+                        "reading the Ratified table",
+                        "fix Pin.artifact_stamped in tools/pin_of_record.py so a path with "
+                        "no dated row is unstamped",
+                    )
+                )
+        # What the copy does not construct, the doctrine files and the criteria,
+        # it inherits from the pin of record; a refusal the pin of record also
+        # makes is reported by the checks that read it, not by this control.
+        live = set(item_6_reasons({}, paths, criteria, _pin(model)))
+        complete_pin = _pin(model, _constructed_pin_text(text, own, own))
+        residual = [
+            r
+            for r in item_6_reasons({}, paths, criteria, complete_pin)
+            if not (cast_seal_reason() and r.startswith(f"{CAST_PATH} is stamped and"))
+            and not any(r.startswith(f"{p} is unstamped") and not (ROOT / p).is_file() for p in paths)
+            and not (r in live and (r.startswith("criterion ") or r.startswith("doctrine/")))
+        ]
+        if residual:
+            out.append(
+                Finding(
+                    "AUTH_STAMP_PREDICATE_ALWAYS_REFUSES",
+                    via,
+                    "a copy of the pin of record with every item 6 path stamped was "
+                    f"refused for {len(residual)} reason(s), the first being {residual[0]}. "
+                    "A reader that refuses a complete pin makes the refusals above prove "
+                    "nothing about what it reads",
+                    "fix the reader in tools/pin_of_record.py so a dated whole-artifact "
+                    "row stamps an existing file; or correct the path list in "
+                    "policy/subject-authorization.yaml the control is built from",
+                )
+            )
     return out
 
 
@@ -2372,6 +2507,21 @@ def _mut_ss5_baseline_ids_collapsed(m: dict) -> None:
     row.update(collapsed)
 
 
+def _mut_reader_stamps_every_criterion(m: dict) -> None:
+    m["pin_overrides"] = {"criterion_stamped": lambda cid: True}
+
+
+def _mut_reader_stamps_every_artifact(m: dict) -> None:
+    m["pin_overrides"] = {"artifact_stamped": lambda path: True, "reason_unstamped": lambda path: ""}
+
+
+def _mut_reader_stamps_nothing(m: dict) -> None:
+    m["pin_overrides"] = {
+        "artifact_stamped": lambda path: False,
+        "reason_unstamped": lambda path: "a reader that stamps nothing",
+    }
+
+
 def _mut_fixture_not_in_register(m: dict) -> None:
     m["register"] = [n for n in m["register"] if n != "seed-permitted"]
 
@@ -2691,6 +2841,28 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
             True,
             "",
+        ),
+        (
+            "let the pin reader stamp every criterion",
+            _mut_reader_stamps_every_criterion,
+            "AUTH_UNRATIFIED_CRITERION_PERMITTED",
+            True,
+            "",
+        ),
+        (
+            "let the pin reader stamp every artifact",
+            _mut_reader_stamps_every_artifact,
+            "AUTH_UNRATIFIED_ARTIFACT_PERMITTED",
+            True,
+            "",
+        ),
+        (
+            "let the pin reader stamp nothing",
+            _mut_reader_stamps_nothing,
+            "AUTH_STAMP_PREDICATE_ALWAYS_REFUSES",
+            False,
+            "a reader that stamps nothing also leaves the doctrine files unstamped, so "
+            "the criterion-file check fires too",
         ),
         (
             "collapse two of SS-5's baseline identifiers into one",

@@ -1937,3 +1937,25 @@ are closed and seven in part.
 on the staged tree, the authorization self-test with 60 breaks, and both forms
 of `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
 checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Nineteenth: A-19 reads the pin, Class B, decided under the grant as renewed
+at 01:26.** One review finding. Every stamp state A-19 constructed carried
+`source: fixture`, so `item_6_reasons` echoed the lists it was handed and never
+called the reader; replacing `Pin.criterion_stamped` with one that answers True
+left `--fixtures` and `--self-test` unchanged. A-19 now also builds three copies
+of the pin of record in memory. The copies replace the Ratified and Pending rows
+for the item 6 paths outside `doctrine/` with whole-artifact rows. One copy drops
+the Step 3 row of the first compiled criterion and must refuse it; one leaves out
+the first existing path's row and must refuse it; one stamps every path and must
+permit, apart from two refusals the reader is right to make on this tree, a path
+with no file and a stamped cast that is unsealed. A refusal the pin of record
+itself makes for a doctrine file or a criterion is left to the checks that read
+it. `_pin` takes a `pin_overrides` seam that only the self-test sets, and three
+new breaks replace a reader method; disabling the new block lets all three pass.
+`--fixtures` output is byte-identical to `7802659`. With this, 58 of the
+review's 88 findings are closed and seven in part.
+
+**Battery for the nineteenth change.** All sixteen preflight commands passed
+on the staged tree, the authorization self-test with 63 breaks, and both forms
+of `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.

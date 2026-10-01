@@ -22,6 +22,26 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. A-19 runs through the pin reader.**
+
+  **What changed.** A-19, the check Step 8's done-condition names, built every
+  case from a fixture-supplied stamp list and never called the reader. It now
+  also runs on three in-memory copies of the pin of record, short a criterion,
+  short an artifact, and complete, so a reader that stamps everything or nothing
+  is refused. One finding of the Step 8 adversarial review, decided under the
+  operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`, the worklog and
+  the handoff.
+
+  **What validation ran.** The authorization self-test, 63 breaks, with the new
+  block shown to be what refuses its three; `--fixtures` output byte-identical
+  to the previous commit; all sixteen preflight commands; both forms of `git
+  diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No corpus row, policy value, schema, doctrine file or
+  stamp.
+
 - **2026-10-01, overnight. SS-5's one-field check compares every gate input.**
 
   **What changed.** A-12 compared an SS-5 fixture with its baseline on the
