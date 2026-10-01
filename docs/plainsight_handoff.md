@@ -12,8 +12,8 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, overnight. The commit that carries this file closes the
-ratification blocker the review's completeness critic found in the shared
-pin-of-record reader, and three neighbouring holes in it, on top of `2720a9a`,
+second ratification blocker the review's completeness critic found: nothing
+read SS-14 item 6's seal condition for the cast. It sits on top of `8ed6550`,
 under the operator's overnight grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
@@ -46,24 +46,23 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** `tools/pin_of_record.py` tested its whole-artifact
-wording as a substring, so an entry row saying "not the whole artifact", or a
-struck or withdrawn row, stamped the whole file: the blocker `c552d13` closed,
-back through the pin's own wording. The Item cell is now a closed grammar, and a
-struck or withdrawn row stamps nothing. A range row stamped every criterion of
-its file, including RT-19 and any criterion added later; a criterion now binds
-only inside a stated range or a row that names it. The year bound the old
-reader had is restored, and PIN-R6 now states its limit rather than claiming a
-file written after its stamp arrives unratified. On the real pin, the same five
-files and 58 criteria bind.
+**What changed and why.** SS-14 item 6 binds `synthetic/CAST.md` only with a
+sealed, hash-pinned GROUND_TRUTH.yaml carrying a designed confuser pair. That
+clause lived only in the policy's prose, so stamping CAST.md would have cleared
+item 7 on an unsealed cast. The authorization gate now counts CAST.md as met on
+the live pin only when `tools/validate_cast.py`'s own seal, hash and confuser
+checks pass, and a constructed check, AUTH_CAST_SEAL_UNREAD, turns the gate red
+if that condition is removed while the cast is unsealed. A fixture-supplied
+stamp state still lists the cast as it chooses, which is GF-U1's open question.
+No current outcome changed.
 
-**Which surfaces moved.** `tools/pin_of_record.py`, the retention self-test,
-`AGENTS.md` section 7, `CHANGELOG.md`, this file, and the worklog.
+**Which surfaces moved.** `tools/validate_authorization.py`, `CHANGELOG.md`,
+this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the reader's
-self-test with 31 cases and the retention self-test with 53 breaks, and both
-forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed and both forms of
+`git diff --check` were clean. With the condition removed in a scratch copy,
+the self-test and `--fixtures` refused. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -331,7 +330,7 @@ claims, commands and outputs are beside it. The completeness critic then ran
 against `8bedba1` and found 11 more, none refuted. Two are ratification
 blockers: the shared reader's whole-artifact test is a substring match, so an
 Item cell saying "not the whole artifact" stamped the file, and nothing reads
-SS-14's seal condition for the cast. Seven are closed, the first blocker among
+SS-14's seal condition for the cast. Eight are closed, both blockers among
 them, and the rest are listed in the review record.
 
 ## 6. Session context that lives outside this repository

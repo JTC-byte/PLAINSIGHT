@@ -22,6 +22,27 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. SS-14 item 7 counts the cast only when it is sealed,
+  hash-verified and carries a confuser pair.**
+
+  **What changed.** The authorization gate reads `tools/validate_cast.py`'s own
+  seal, hash and confuser checks before it counts `synthetic/CAST.md` as met on
+  the live pin, and the constructed check `AUTH_CAST_SEAL_UNREAD` refuses if that
+  condition is removed while the cast is unsealed. From the Step 8 review's
+  completeness critic, decided under the operator's overnight grant of
+  2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`, the worklog and
+  the handoff.
+
+  **What validation ran.** The authorization self-test and `--fixtures`, both
+  unchanged on the real tree and both refusing with the condition removed in a
+  scratch copy; all sixteen preflight commands; both forms of `git diff
+  --check`. The kernel gate exited 0.
+
+  **What did not change.** No policy, corpus row, cast file, doctrine file or
+  stamp. A fixture-supplied stamp state is read as before, pending GF-U1.
+
 - **2026-10-01, overnight. The pin-of-record reader reads the stamp wording as
   a closed grammar and binds a criterion only inside a stated range.**
 

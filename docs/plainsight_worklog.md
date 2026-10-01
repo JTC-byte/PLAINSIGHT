@@ -1810,3 +1810,26 @@ row refuses.
 the staged tree and both forms of `git diff --check` were clean. The kernel
 gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
 2 stubbed and 5 pending.
+
+**Fourteenth: SS-14 item 7's seal condition, the critic's second blocker, Class
+B, decided under the grant.** SS-14 item 6 refuses collection until
+`synthetic/CAST.md` is stamped "with a sealed, hash-pinned GROUND_TRUTH.yaml
+carrying at least one designed confuser pair". The compiled policy kept that
+clause only as item 7's granularity text, which no function reads, and none of
+the four preflight checks reads the seal; so a stamp row for CAST.md would have
+cleared item 7 on an unsealed cast. `tools/validate_authorization.py` now counts
+CAST.md as met on the live pin only when `tools/validate_cast.py`'s own checks
+pass: the cast is sealed, its seal fields and recorded hash verify, and no
+confuser-pair code fires. The refusal says which of those failed. A constructed
+check in the shape of A-19, `AUTH_CAST_SEAL_UNREAD`, reads every item 6 path as
+stamped and asserts the unsealed cast still refuses; with the condition removed
+in a scratch copy, the self-test's baseline and `--fixtures` both refused. Two
+limits are stated rather than closed. A fixture-supplied stamp state still lists
+the cast as it chooses, because whether a fixture may supply the table at all is
+GF-U1, which is open. And once the cast is sealed for real, the constructed
+check has nothing left to observe.
+
+**Battery for the fourteenth change.** All sixteen preflight commands passed on
+the staged tree and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
+2 stubbed and 5 pending.

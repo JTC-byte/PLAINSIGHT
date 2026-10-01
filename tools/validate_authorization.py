@@ -641,6 +641,40 @@ def _table_rows(block: str) -> list[list[str]]:
 
 Pin = pin_of_record.Pin
 
+#: SS-14 item 7's artifact, which binds only "with a sealed, hash-pinned
+#: GROUND_TRUTH.yaml carrying at least one designed confuser pair". Until
+#: 2026-10-01 that clause lived only in the policy's granularity prose and no
+#: check read it, so stamping CAST.md would have cleared item 7 on an unsealed
+#: cast. The completeness critic of that date found it.
+CAST_PATH = "synthetic/CAST.md"
+CONFUSER_CODES = (
+    "CAST_NO_CONFUSER_PAIR",
+    "CAST_CONFUSER_PAIR_WITHIN_ONE_PERSONA",
+    "CAST_CONFUSER_PAIR_NOT_DISTINCT",
+    "CAST_CONFUSER_SHARES_LINKED_DOMAIN",
+)
+
+
+def cast_seal_reason() -> str:
+    """'' when the cast is sealed, its hash verifies and it has a confuser pair.
+
+    Read through tools/validate_cast.py's own checks rather than a copy of them.
+    """
+    try:
+        import validate_cast as vc
+
+        raw = vc.CAST.read_text(encoding="utf-8")
+        model = yaml.safe_load(raw) if yaml is not None else None
+    except Exception as exc:  # an unreadable cast is an unmet condition
+        return f"the cast could not be read ({exc.__class__.__name__})"
+    if not isinstance(model, dict) or not vc.is_sealed(model):
+        return "the cast is not sealed"
+    if vc.check_seal_fields(model) or vc.check_seal_hash(model, raw):
+        return "the cast's seal or its recorded hash does not verify"
+    if any(f.code in CONFUSER_CODES for f in vc.check_structure(model)):
+        return "the cast carries no valid designed confuser pair"
+    return ""
+
 
 def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin: Pin) -> list[str]:
     """Why SS-14 item 6 refuses, or an empty list if it does not.
@@ -659,12 +693,15 @@ def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin
     else:
         stamped = {p for p in paths if pin.artifact_stamped(p)}
         absent = [c for c in criteria if not pin.criterion_stamped(c)]
+        if CAST_PATH in stamped and cast_seal_reason():
+            stamped.discard(CAST_PATH)
 
-    reasons = [
-        f"{p} is unstamped in the pin of record: {pin.reason_unstamped(p) or 'the stamp state omits it'}"
-        for p in paths
-        if p not in stamped
-    ]
+    def _why(p: str) -> str:
+        if p == CAST_PATH and source != "fixture" and pin.artifact_stamped(p):
+            return f"{p} is stamped and {cast_seal_reason()}, so SS-14 item 6's condition on it is unmet"
+        return f"{p} is unstamped in the pin of record: {pin.reason_unstamped(p) or 'the stamp state omits it'}"
+
+    reasons = [_why(p) for p in paths if p not in stamped]
     reasons += [f"criterion {c} has no row in the stamp table" for c in absent]
     return reasons
 
@@ -1780,6 +1817,35 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
                 )
             )
 
+    # A-19b. The seal condition on item 7, constructed. With every path and
+    # criterion read as stamped, an unsealed cast must still refuse, so removing
+    # the condition turns this gate red on the real tree for as long as the cast
+    # is unsealed.
+    class _EverythingStamped:
+        def artifact_stamped(self, path: str) -> bool:
+            return True
+
+        def criterion_stamped(self, cid: str) -> bool:
+            return True
+
+        def reason_unstamped(self, path: str) -> str:
+            return ""
+
+    if CAST_PATH in paths and cast_seal_reason():
+        if not item_6_reasons({}, paths, criteria, _EverythingStamped()):
+            out.append(
+                Finding(
+                    "AUTH_CAST_SEAL_UNREAD",
+                    "tools/validate_authorization.py > item_6_reasons",
+                    "with every SS-14 item 6 path stamped, the predicate permits while the "
+                    f"real cast reports: {cast_seal_reason()}. SS-14 item 6 binds "
+                    "synthetic/CAST.md only with a sealed, hash-pinned GROUND_TRUTH.yaml "
+                    "carrying a designed confuser pair",
+                    "restore the seal condition in item_6_reasons; it reads "
+                    "tools/validate_cast.py's own seal, hash and confuser checks",
+                )
+            )
+
     # A-19. The constructed absence, with its control.
     if paths and criteria:
         short_artifact = {
@@ -2064,14 +2130,15 @@ def check_certification(model: dict) -> list[Finding]:
         if not isinstance(item, dict):
             continue
         for path in _seq(item, "paths"):
-            if not pin.artifact_stamped(str(path)):
+            cast_unmet = str(path) == CAST_PATH and pin.artifact_stamped(CAST_PATH) and cast_seal_reason()
+            if not pin.artifact_stamped(str(path)) or cast_unmet:
                 out.append(
                     Finding(
                         "AUTH_ARTIFACT_UNSTAMPED",
                         f"doctrine/DOCTRINE_STATUS.md > {path}",
                         "SS-14 item 6 refuses all collection, including collection against a "
                         f"synthetic account, until this path is stamped, and it is not: "
-                        f"{pin.reason_unstamped(str(path))}. This is a hard refusal, so a "
+                        f"{pin.reason_unstamped(str(path)) or cast_seal_reason()}. This is a hard refusal, so a "
                         "present, complete, valid, unexpired authorization record does not "
                         "unlock it",
                         f"write {path} if it does not exist, then stamp it with "
