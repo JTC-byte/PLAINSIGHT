@@ -83,18 +83,20 @@ reported here rather than edited there.
 ## 4. What the kernel gate covers today, and what it does not
 
 `tools/validate_conformance.py --kernel-gate` is the one rung that exists.
-Its `KERNEL_GATE` list carries twenty-four entries in four states, and
+Its `KERNEL_GATE` list carries twenty-six entries in four states, and
 `python tools/validate_conformance.py --list` prints the live list with the
 note each entry carries.
 
-Fourteen entries are implemented: doctrine, hygiene, layer-model, cast,
-telemetry, retention-repo-scan, schema, and ontology, plus six self-test
-entries, one each for hygiene, layer-model, cast, retention, ontology and
-authorization, which joined the list on 2026-09-28. A self-test breaks its
-governed artifact in memory and asserts each break is refused, so it grades the
-check rather than the artifact. Before that date five of the six ran on no
-automated path. `tools/validate.py` runs its own self-test inside `--kernel`, so
-the schema entry already carried it, and `tools/validate_doctrine.py` has none.
+Sixteen entries are implemented: doctrine, hygiene, layer-model, cast,
+telemetry, retention-repo-scan, schema, and ontology, plus eight self-test
+entries. Six, one each for hygiene, layer-model, cast, retention, ontology and
+authorization, joined the list on 2026-09-28; the doctrine self-test and the
+self-test of `tools/pin_of_record.py`, the pin-of-record reader the doctrine,
+authorization and retention gates share, joined on 2026-10-01. A self-test
+breaks its governed artifact in memory and asserts each break is refused, so it
+grades the check rather than the artifact. Before 2026-09-28 five of the first
+six ran on no automated path. `tools/validate.py` runs its own self-test inside
+`--kernel`, so the schema entry already carried it.
 
 Two entries are STUB: `tools/validate_ontology.py --matchers` and `--corpus`.
 Both print DEFERRED, check nothing, and exit 0, and nothing called either until
@@ -149,7 +151,7 @@ complete typed handle while the ontology check it exercises still fires. Neither
 change narrows the scan. Both values remain in git history, which is RT-15's
 fourth part and out of reach of this check.
 
-A green kernel-gate run means fourteen implemented checks passed and three unratified checks refused in the way the
+A green kernel-gate run means sixteen implemented checks passed and three unratified checks refused in the way the
 list says they refuse, while two stubs checked nothing and five checks did not
 run at all because the dispatch paths, the credential pool, the case store, the
 divergence register, and every connector do not exist. That is a regression

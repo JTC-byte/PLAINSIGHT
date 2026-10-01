@@ -22,6 +22,44 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. One reader of the pin of record for every gate, and
+  a self-test for it and for the doctrine gate.**
+
+  **What changed.** The Step 8 adversarial review found that the doctrine,
+  authorization and retention gates read `doctrine/DOCTRINE_STATUS.md` three
+  ways, and that one dated row naming a path stamped the whole file.
+  `tools/pin_of_record.py` is the one reader they now import, taking the
+  stricter reading on every axis. A whole-artifact stamp needs an Item cell
+  saying "whole artifact" or "all criteria" and a File cell naming the path
+  alone; the Conclusion stamped cell must be a calendar date and nothing else;
+  the ratifier must be declared; a stamp for an absent file stamps nothing;
+  the contract is stamped by its sections 5 and 12; criterion rows come from the
+  per-criterion table alone. Refusals state why a path is unstamped and quote
+  the row format. `tools/validate_doctrine.py` gains a self-test, and the
+  reader's self-test and the doctrine self-test join the hook, preflight, the
+  kernel gate and CI. Decided under the operator's overnight grant of
+  2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/pin_of_record.py`, new;
+  `tools/validate_authorization.py`, `tools/validate_retention.py` and its
+  self-test, `tools/validate_doctrine.py`, `tools/validate_conformance.py`;
+  `.githooks/pre-commit`, the Makefile, CI; `AGENTS.md` sections 5 and 7;
+  `CONFORMANCE.md` section 4; the worklog and the handoff.
+
+  **What validation ran.** The reader's self-test, 21 cases, with each of its
+  eleven rules deleted in a scratch copy and the self-test failing every time;
+  the doctrine self-test, ten planted defects; the retention self-test, 36
+  breaks; all sixteen preflight commands on the staged tree; both forms of
+  `git diff --check`. The kernel gate exited 0 with 16 implemented checks
+  passing.
+
+  **What did not change.** No doctrine file, stamp, policy, schema, corpus,
+  fixture or generated artifact. No current outcome: the same artifacts refuse
+  and the same doctrine files bind. Every change makes a gate stricter or
+  leaves it as it was. The header heuristic that skips a row whose Item cell
+  begins with "Item" is kept, because accepting such rows would widen what
+  stamps, which is class F.
+
 - **2026-10-01, overnight. Four validators record their runs the way HY-1
   says, and the first gate-telemetry review is recorded.**
 

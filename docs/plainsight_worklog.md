@@ -1518,3 +1518,71 @@ HY-2's basis stamp falls due at this review and stays the operator's.
 staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 14 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Fifth: the Step 8 adversarial review, owed since 2026-09-12.** Run against
+`de9e754` as one workflow. Eight lenses, each required to execute the check it
+reviewed in its own scratch copy with telemetry off and to quote the output: the
+authorization mechanism, the retention mechanism, the stamped state, the schema
+and the gate corpus on Opus 5.5, the two doctrine-fidelity lenses on Fable 5.1,
+and self-description on Sonnet 5.5. One refuter per finding reproduced it in a
+fresh copy, defaulting to refuted, on Fable 5.1 for the doctrine-fidelity
+findings and Opus 5.5 for the rest. Of 89 findings, 88 stand: three
+ratification blockers, 53 class B defects, two class F defects, 18 drift
+findings and 12 notes. The refuters overturned one, against the three-to-one
+over-report of the prose reviews of 2026-09-04 and 2026-09-20, because a lens
+here could not make a finding without running the mechanism. The workflow was
+stopped before its completeness critic, under the operator's machine-load rule
+of 2026-09-30 23:49, and resuming it with a changed script re-ran agents rather
+than replaying them, so it was stopped again and the results were rebuilt from
+its journal. The critic has not run. The record, each finding with its status,
+is `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/REVIEW.md`, with the
+claims, commands and outputs beside it.
+
+**Sixth: one reader of the pin of record, Class B, decided under the grant.**
+The largest cluster in the review was the pin. `tools/validate_authorization.py`
+parsed the Ratified table's cells, `tools/validate_retention.py` accepted any
+dated line naming a path anywhere under the Ratified heading, and
+`tools/validate_doctrine.py` read every table row that opens with a criterion id.
+On the unmodified pin the first two disagreed about
+`spec/pse-semantics-contract.md`. Two of the three ratification blockers lived
+here: one dated row naming a path stamped the whole file, so the dated row the
+policy prescribes for resolving one of its sixteen entries would have stamped the
+policy, and the D7 version-label row would have stamped the contract once its two
+Pending rows were removed. `tools/pin_of_record.py` is now the one reader the
+three import, and on every axis it takes the stricter of the readings they took.
+Only the Ratified table stamps. The Conclusion stamped cell must be a calendar
+date and nothing else, and the ratifier a declared one. A whole-artifact stamp
+needs an Item cell saying "whole artifact" or "all criteria" and a File cell
+naming the path alone, and any other row stamps the item it names. The contract
+is stamped by its §5 and §12 rows together, as SS-14 item 6 compiles it. A
+Pending stamp-target row still holds a path, a stamp for an absent file stamps
+nothing, and criterion rows are read from the per-criterion table alone, which
+closes the SS-1 blind spot the telemetry review found. Its eight predicates are
+assistant readings, PIN-R1 to PIN-R8, recorded in the module and awaiting the
+operator's confirmation. PIN-R8 keeps the old header heuristic that skips a row
+whose Item cell begins with "Item", because accepting such rows would widen what
+stamps, which is class F.
+
+No current outcome changed. The same seven SS-14 item 6 paths refuse, the
+retention policy and the shred fixture refuse, and the five doctrine files bind
+through their range rows. The refusals now state why a path is unstamped rather
+than saying "no dated row" when one exists, and they quote the row format that
+stamps. The reader's self-test plants 21 cases, and each of its eleven rules
+was deleted in a scratch copy, which turned the self-test red every time.
+`tools/validate_doctrine.py` gains its first self-test, ten planted defects, and
+restoring its old whole-pin read turns the SS-1 case red. The retention
+self-test gains two cases: an entry row in house format must not clear the
+policy refusal, and withdrawing the retention range row must refuse. Both new
+self-tests run on the hook, preflight, the kernel gate and CI.
+
+This closes 13 of the review's findings and part of a fourteenth. It leaves the
+third blocker, the RT-11 override `policy/retention.yaml` compiles against the
+pin's RT-11 row, 55 other class B findings and 17 class A ones, which the review
+record lists.
+Binding a stamp to its artifact's content is a change to the pin's format and is
+the operator's.
+
+**Battery for the sixth change.** All sixteen preflight commands passed on the
+staged tree, the eight self-tests among them, and both forms of
+`git diff --check` were clean. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.

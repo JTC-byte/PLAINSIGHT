@@ -91,6 +91,11 @@ try:
 except Exception:  # telemetry must never be able to break a gate
     gate_log = None
 
+# The pin-of-record reader is not optional the way telemetry is: without it
+# no stamp can be read, so an import failure is a crash rather than a pass.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pin_of_record  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = ROOT / "policy" / "retention.yaml"
 FIXTURE = ROOT / "conformance" / "retention" / "shred-roundtrip.yaml"
@@ -229,10 +234,7 @@ SCAN_DOES_NOT_REACH = (
 )
 
 PLACEHOLDER_RE = re.compile(r"<([^<>]+)>")
-#: A dated stamp row in the pin of record: a table row whose cells carry the
-#: artifact path, an ISO date and a ratifier.
-DATE_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
-CRITERION_ROW_RE = re.compile(r"^\|\s*((?:SS|RT|EG|CR|HY)-\d+)\b", re.M)
+#: Stamp rows and criterion rows are read by tools/pin_of_record.py.
 
 # ---------------------------------------------------------------------------
 # The questions this tool does not answer.
@@ -535,32 +537,32 @@ def load_stamps() -> str:
 
 
 def stamped_criteria(status: str) -> set[str]:
-    """Criteria with a row in the per-criterion table.
+    """Criteria that bind: a row in the per-criterion table, and a stamped file.
 
-    Reading VR-R1. The pin of record calls that table the mechanism rather than
-    an index of one, and says a criterion with no row there refuses.
+    Reading VR-R1, read since 2026-10-01 through tools/pin_of_record.py, the one
+    reader validate_authorization.py and validate_doctrine.py also use. Until then
+    this tool counted a row opening with a criterion id anywhere in the pin,
+    including the rejected-readings table, and never asked whether
+    doctrine/RETENTION.md itself carried a stamp. The Step 8 review of that date
+    found both.
     """
-    return set(CRITERION_ROW_RE.findall(status))
+    pin = pin_of_record.Pin(status, ROOT)
+    return {c for c in pin.criteria if pin.criterion_stamped(c)}
 
 
 def stamped_path(status: str, rel: str) -> bool:
-    """True when a ratified table row names this artifact with a date.
+    """True when the pin of record stamps this artifact as a whole.
 
-    Reading VR-R1 again: a recorded conclusion with a date is the predicate, and
-    the basis column is read by nobody. Only the Ratified section counts. A
-    dated row naming this artifact under the pending, the assistant-readings or
-    the rejected-readings heading says the opposite of a stamp, and a predicate
-    that read the whole file would take each of those three as one.
+    Read through tools/pin_of_record.py since 2026-10-01. Until then this tool
+    accepted any dated line naming the path anywhere under the Ratified heading,
+    with no ratifier, a review date inside words, or a Pending stamp-target hold
+    beside it, and the authorization gate read the same pin a different way.
     """
-    section = ""
-    for line in status.splitlines():
-        if line.startswith("## "):
-            section = line[3:].strip().lower()
-        if section != "ratified" or not line.startswith("|") or rel not in line:
-            continue
-        if DATE_RE.search(line):
-            return True
-    return False
+    return pin_of_record.Pin(status, ROOT).artifact_stamped(rel)
+
+
+def unstamped_reason(status: str, rel: str) -> str:
+    return pin_of_record.Pin(status, ROOT).reason_unstamped(rel)
 
 
 def build_context() -> dict:
@@ -1031,10 +1033,13 @@ def check_policy(ctx: dict) -> list[Finding]:
                     "RETENTION_CRITERION_UNSTAMPED",
                     f"doctrine/DOCTRINE_STATUS.md :: {criterion}",
                     f"the policy compiles {criterion} and the pin of record "
-                    "carries no row for it. A criterion with no row refuses "
-                    "rather than permits, so the rule compiled from it binds "
-                    "nothing",
-                    f"add the {criterion} row to the per-criterion table, or "
+                    "does not bind it: either the per-criterion table carries no "
+                    "row for it, or doctrine/RETENTION.md is unstamped ("
+                    f"{unstamped_reason(status, 'doctrine/RETENTION.md') or 'it is stamped'}). "
+                    "A criterion that does not bind refuses rather than permits, "
+                    "so the rule compiled from it binds nothing",
+                    f"add the {criterion} row to the per-criterion table; or "
+                    "restore doctrine/RETENTION.md's 'all criteria' range row; or "
                     "remove the rule this policy compiled from it",
                 )
             )
@@ -1044,14 +1049,15 @@ def check_policy(ctx: dict) -> list[Finding]:
                 "RETENTION_POLICY_UNRATIFIED",
                 "doctrine/DOCTRINE_STATUS.md",
                 "THE RETENTION SWEEP MAY NOT RUN AND NO CASE MAY OPEN. The pin "
-                "of record carries no dated row for policy/retention.yaml, and "
+                "of record does not stamp policy/retention.yaml ("
+                f"{unstamped_reason(status, POLICY_REL)}), and "
                 "an unratified criterion refuses rather than permits. For a "
                 "retention mechanism that means the sweep refuses to run rather "
                 "than running with an unratified TTL, which is what "
                 "doctrine/RETENTION.md states where it names this tool",
-                "stamp policy/retention.yaml in doctrine/DOCTRINE_STATUS.md "
-                "with a date and a ratifier, which clears this refusal with no "
-                "change to this tool; or leave the sweep stopped and open no "
+                f"stamp policy/retention.yaml with {pin_of_record.ROW_FORMAT}, "
+                "which clears this refusal with no change to this tool; or leave "
+                "the sweep stopped and open no "
                 "case, which is the state this refusal describes",
             )
         )
@@ -1760,24 +1766,41 @@ def _mutations():
         )
 
     def _stamp(ctx, row):
-        """Insert a row into the Ratified table, where a stamp actually goes."""
-        ctx["status"] = ctx["status"].replace(
-            "\n## Pending ratification", row + "\n## Pending ratification", 1
-        )
+        """Append a row to the Ratified table, where tools/pin_of_record.py reads.
+
+        Until 2026-10-01 this helper inserted its row after the prose under the
+        table, which this tool's old reader accepted and the authorization
+        gate's reader never saw.
+        """
+        ctx["status"] = pin_of_record._add(ctx["status"], row)
 
     def stamp_the_policy(ctx):
         _stamp(
             ctx,
-            "\n| the compiled retention table | `policy/retention.yaml` | v0.1 "
-            "| 2026-09-11 | unstamped | operator |\n",
+            "| the compiled retention table, whole artifact | "
+            "`policy/retention.yaml` | v0.1 | 2026-09-11 | unstamped | operator |",
         )
 
     def stamp_the_fixture(ctx):
         _stamp(
             ctx,
-            "\n| the shred round trip | "
+            "| the shred round trip, whole artifact | "
             "`conformance/retention/shred-roundtrip.yaml` | v0.1 | 2026-09-11 "
-            "| unstamped | operator |\n",
+            "| unstamped | operator |",
+        )
+
+    def stamp_the_policy_by_an_entry_row(ctx):
+        # The ratification blocker the Step 8 review found: a dated row for one
+        # entry in house format stamped the whole file.
+        _stamp(
+            ctx,
+            "| U-3 retention entry decided | `policy/retention.yaml` | v0.1 "
+            "| 2026-09-11 | unstamped | operator |",
+        )
+
+    def withdraw_the_retention_range_row(ctx):
+        ctx["status"] = re.sub(
+            r"(?m)^\| RT-1 to RT-18, all criteria[^\n]*\n", "", ctx["status"], count=1
         )
 
     def rename_the_fixture_wrapper(ctx):
@@ -1848,6 +1871,8 @@ def _mutations():
         ("give the policy the generated banner", "policy", claim_the_file_is_generated, "RETENTION_POLICY_GENERATED_CLAIM", True),
         ("remove a compiled criterion's stamp row", "policy", unstamp_a_compiled_criterion, "RETENTION_CRITERION_UNSTAMPED", True),
         ("stamp the policy in the pin of record", "policy", stamp_the_policy, "-RETENTION_POLICY_UNRATIFIED", True),
+        ("stamp one policy entry in house format", "policy", stamp_the_policy_by_an_entry_row, "=RETENTION_POLICY_UNRATIFIED", True),
+        ("withdraw doctrine/RETENTION.md's range row", "policy", withdraw_the_retention_range_row, "RETENTION_CRITERION_UNSTAMPED", True),
         ("rename the fixture wrapper key", "roundtrip", rename_the_fixture_wrapper, "SHRED_ROUNDTRIP_WRAPPER_KEY", True),
         ("count one fixture check twice", "roundtrip", count_one_fixture_check_twice, "SHRED_ROUNDTRIP_CHECK_SET", False, "renumbering check 4 to 1 replaces check 1, whose passing condition is the decrypt failing on the key, so the false-pass guard fires with the set check"),
         ("let fixture check 1 pass on a not-found", "roundtrip", let_fixture_check_one_pass_on_not_found, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
@@ -1942,6 +1967,12 @@ def self_test(ctx: dict) -> int:
             wanted = expected[1:]
             gone = wanted not in raw
             ok, note = gone, "" if gone else f", {wanted} still fired"
+        elif expected.startswith("="):
+            # A designed refusal that must survive the mutation: the mutation
+            # tries to clear it by a route that must not clear it.
+            wanted = expected[1:]
+            held = wanted in raw
+            ok, note = held, "" if held else f", {wanted} was cleared"
         elif expected not in fired:
             ok, note = False, f", fired {sorted(fired)}"
         elif only and fired != {expected}:

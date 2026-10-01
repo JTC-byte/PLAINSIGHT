@@ -76,7 +76,7 @@ jobs:
       # two sessions because nothing ran it. These run as named steps before
       # the kernel gate, so a self-test that breaks turns its own step red
       # rather than joining a kernel gate that is already red for a disclosed
-      # reason. The kernel gate runs all six again.
+      # reason. The kernel gate runs all eight again.
       - name: Layer-model self-test
         if: ${{ !cancelled() }}
         run: python tools/validate_layer_model.py --self-test
@@ -96,6 +96,17 @@ jobs:
       - name: Retention self-test
         if: ${{ !cancelled() }}
         run: python tools/validate_retention.py --self-test
+
+      # Joined 2026-10-01. The doctrine gate had no self-test and refused once in
+      # 348 runs; the pin-of-record reader is the one predicate the doctrine,
+      # authorization and retention gates use to decide what binds.
+      - name: Doctrine self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_doctrine.py --self-test
+
+      - name: Pin-of-record self-test
+        if: ${{ !cancelled() }}
+        run: python tools/pin_of_record.py --self-test
 
       - name: Kernel gate
         if: ${{ !cancelled() }}

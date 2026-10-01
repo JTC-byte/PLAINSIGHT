@@ -187,6 +187,10 @@ try:
 except Exception:  # telemetry must never be able to break a gate
     gate_log = None
 
+# The pin-of-record reader is not optional the way telemetry is: without it no
+# stamp can be read, so an import failure is a crash rather than a silent pass.
+import pin_of_record  # noqa: E402
+
 try:
     import yaml
 except Exception:  # reported as a named refusal, never as a traceback
@@ -324,8 +328,6 @@ NAMESPACE_FILE = {
 
 CRITERION_RE = re.compile(r"\b((?:SS|RT|EG|CR|HY)-\d+)\b")
 PENDING_ID_RE = re.compile(r"^(?:SA|SAS|GF|VA)-U\d+$")
-DATE_RE = re.compile(r"\b(?:19|20)\d{2}-\d{2}-\d{2}\b")
-PIN_PATH_RE = re.compile(r"`([A-Za-z0-9_./-]+\.(?:md|ya?ml|json|py))`")
 REGISTER_NAME_RE = re.compile(r"^\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|", re.M)
 GF_ENTRY_RE = re.compile(r"^### (GF-U\d+)\.", re.M)
 
@@ -575,60 +577,15 @@ def _table_rows(block: str) -> list[list[str]]:
 
 
 # ---------------------------------------------------------------------------
-# The pin of record. Three tables, three different questions, one predicate.
-# doctrine/DOCTRINE_STATUS.md is the only source a mechanism reads for whether
-# a criterion binds, and SUBJECT_SELECTION.md says so in its own header.
+# The pin of record. One reader, tools/pin_of_record.py, shared with
+# validate_retention.py and validate_doctrine.py since 2026-10-01, when the Step 8
+# review found the three tools read the pin three ways and one dated row naming a
+# path stamped the whole file. Its READINGS state each predicate. This tool adds
+# one thing: the per-item granularity SS-14 item 6 compiles, so the contract is
+# stamped by its sections 5 and 12.
 # ---------------------------------------------------------------------------
 
-
-class Pin:
-    """The parsed stamp state. Nothing here decides; it reads."""
-
-    __slots__ = ("ratified", "stamp_targets", "criteria", "parsed")
-
-    def __init__(self, text: str):
-        self.ratified: dict[str, str] = {}
-        self.stamp_targets: set[str] = set()
-        self.criteria: set[str] = set()
-        self.parsed = False
-
-        ratified = _slice(text, "## Ratified", "### What each decision was")
-        pending = _slice(text, "## Pending ratification", "### Step 3 criteria")
-        step3 = _slice(text, "### Step 3 criteria", "## Assistant readings")
-        if not (ratified and pending and step3):
-            return
-
-        for cells in _table_rows(ratified):
-            if len(cells) != 6 or cells[0].lower().startswith("item"):
-                continue
-            date = DATE_RE.search(cells[3])
-            if not date or not cells[5]:
-                continue
-            for path in PIN_PATH_RE.findall(cells[1]):
-                self.ratified.setdefault(path, date.group(0))
-
-        for cells in _table_rows(pending):
-            if len(cells) != 4 or "stamp target" not in cells[1].lower():
-                continue
-            for path in PIN_PATH_RE.findall(cells[0]):
-                self.stamp_targets.add(path)
-
-        for cells in _table_rows(step3):
-            if not cells:
-                continue
-            m = CRITERION_RE.match(cells[0])
-            if m:
-                self.criteria.add(m.group(1))
-
-        self.parsed = bool(self.criteria) and bool(self.ratified)
-
-    def artifact_stamped(self, path: str) -> bool:
-        return path in self.ratified and path not in self.stamp_targets
-
-    def criterion_stamped(self, cid: str) -> bool:
-        if cid not in self.criteria:
-            return False
-        return self.artifact_stamped(NAMESPACE_FILE.get(cid.split("-")[0], ""))
+Pin = pin_of_record.Pin
 
 
 def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin: Pin) -> list[str]:
@@ -649,7 +606,11 @@ def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin
         stamped = {p for p in paths if pin.artifact_stamped(p)}
         absent = [c for c in criteria if not pin.criterion_stamped(c)]
 
-    reasons = [f"{p} carries no dated row in the pin of record" for p in paths if p not in stamped]
+    reasons = [
+        f"{p} is unstamped in the pin of record: {pin.reason_unstamped(p) or 'the stamp state omits it'}"
+        for p in paths
+        if p not in stamped
+    ]
     reasons += [f"criterion {c} has no row in the stamp table" for c in absent]
     return reasons
 
@@ -808,7 +769,15 @@ def load() -> dict:
 
 
 def _pin(model: dict) -> Pin:
-    return Pin(model.get("pin_text", ""))
+    sections: dict[str, set[str]] = {}
+    for item in _seq(model.get("policy") or {}, "ratify_before_collection", "items"):
+        if not isinstance(item, dict):
+            continue
+        need = pin_of_record.required_sections(str(item.get("granularity", "")))
+        for path in _seq(item, "paths"):
+            if need:
+                sections[str(path)] = need
+    return Pin(model.get("pin_text", ""), ROOT, sections)
 
 
 # ---------------------------------------------------------------------------
@@ -1539,12 +1508,13 @@ def _stamp_findings(model: dict, pin: Pin) -> list[Finding]:
                 Finding(
                     "AUTH_CRITERION_FILE_NOT_STAMPED",
                     f"doctrine/DOCTRINE_STATUS.md > {source}",
-                    f"{cid} carries a per-criterion row and {source} carries no dated "
-                    "ratifier row, or is named in the Pending table as a stamp target. "
-                    "Nothing binds unless it appears with a date and a ratifier, and one "
-                    "partially stamped item does not stamp its file",
-                    f"stamp {source} in the Ratified table with a date and a ratifier; or "
-                    "resolve the Pending row that names it as a stamp target",
+                    f"{cid} carries a per-criterion row and {source} is unstamped: "
+                    f"{pin.reason_unstamped(source)}. Nothing binds unless it appears with "
+                    "a date and a ratifier, and one partially stamped item does not stamp "
+                    "its file",
+                    f"stamp {source} with {pin_of_record.ROW_FORMAT}, or with the 'all "
+                    "criteria' wording its range row uses; or resolve the Pending row that "
+                    "names it as a stamp target by stamping it",
                 )
             )
     return out
@@ -1847,14 +1817,17 @@ def check_certification(model: dict) -> list[Finding]:
                 out.append(
                     Finding(
                         "AUTH_ARTIFACT_UNSTAMPED",
-                        f"doctrine/DOCTRINE_STATUS.md, no dated row for {path}",
+                        f"doctrine/DOCTRINE_STATUS.md > {path}",
                         "SS-14 item 6 refuses all collection, including collection against a "
-                        "synthetic account, until this path carries a dated stamp in the pin "
-                        "of record. This is a hard refusal, so a present, complete, valid, "
-                        "unexpired authorization record does not unlock it",
-                        f"stamp {path} in doctrine/DOCTRINE_STATUS.md with a date and a "
-                        "ratifier; or resolve the Pending row that names it as a stamp "
-                        "target; or collect nothing, which is what this refusal is holding",
+                        f"synthetic account, until this path is stamped, and it is not: "
+                        f"{pin.reason_unstamped(str(path))}. This is a hard refusal, so a "
+                        "present, complete, valid, unexpired authorization record does not "
+                        "unlock it",
+                        f"write {path} if it does not exist, then stamp it with "
+                        f"{pin_of_record.ROW_FORMAT}, or by the sections item 6 names; a "
+                        "Pending stamp-target row is resolved by stamping it into the Ratified "
+                        "table, not by deleting it; or collect nothing, which is what this "
+                        "refusal is holding",
                     )
                 )
 

@@ -19,7 +19,7 @@
 # gap rather than passing over it.
 
 help:
-	@echo "validate-doctrine     criterion definitions, stamps, cross-references, pin of record"
+	@echo "validate-doctrine     criterion definitions, stamps, cross-references, pin of record, both self-tests"
 	@echo "validate-hygiene       voice, tables, citations against the register, caps, the handoff's tense, inventories, and its self-test"
 	@echo "validate-layer-model  the nine event types, discriminators, denylists, lineage, producer authority"
 	@echo "validate-ontology     the closed selector vocabulary, anchors, constraints, prohibitions, matchers"
@@ -37,6 +37,8 @@ help:
 
 validate-doctrine:
 	python tools/validate_doctrine.py
+	python tools/validate_doctrine.py --self-test
+	python tools/pin_of_record.py --self-test
 
 validate-hygiene:
 	python tools/validate_hygiene.py
@@ -111,12 +113,12 @@ validate-kernel:
 	python tools/validate_conformance.py --kernel-gate
 
 # preflight is the pre-commit battery plus the telemetry test. The hook runs the
-# same thirteen commands and not the test, which CI runs as a step of its own. A
+# same fifteen commands and not the test, which CI runs as a step of its own. A
 # gate that is only enforced in CI is enforced only after the thing it guards
 # has already been committed, and git history is the one store a crypto-shred
 # cannot reach.
 #
-# The six validator self-tests joined this list and the hook on 2026-09-28.
+# Six validator self-tests joined this list and the hook on 2026-09-28.
 # Before then only CI ran one of them, hygiene's, and the fires_when fix was
 # reported green in two sessions while the layer-model self-test exited 1,
 # because nothing on this path or the hook's ran it. The six are green today and
@@ -125,6 +127,11 @@ validate-kernel:
 # cast did until the cast self-test was fixed the same day, and completing SS-14
 # item 6 still does, through row 8 of conformance/gate/decisions.jsonl, which the
 # completing commit edits too. The pre-commit hook states the detail.
+#
+# Two more joined on 2026-10-01: the doctrine gate's first self-test, written
+# after the telemetry review found it could not fire for SS-1, and the self-test
+# of tools/pin_of_record.py, the one reader of the pin of record the doctrine,
+# authorization and retention gates share.
 #
 # The Step 8 artifact modes are deliberately absent from this list. Every one of
 # them refuses while the four Class F artifacts carry no dated row, so adding
@@ -148,6 +155,8 @@ preflight:
 	python tools/validate_cast.py --self-test
 	python tools/validate_authorization.py --self-test
 	python tools/validate_retention.py --self-test
+	python tools/validate_doctrine.py --self-test
+	python tools/pin_of_record.py --self-test
 	python tools/tests/test_gate_log.py
 	python tools/validate_retention.py --repo-scan --staged
 

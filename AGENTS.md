@@ -145,20 +145,22 @@ python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
 
-`make preflight` runs the pre-commit hook's thirteen commands plus the telemetry
+`make preflight` runs the pre-commit hook's fifteen commands plus the telemetry
 test, which the hook leaves to CI, and `make validate-kernel` runs the
 aggregator. The gate battery is defined once, in
 `KERNEL_GATE` inside `tools/validate_conformance.py`, so a new check joins it
 there rather than in every document that quotes a command.
 
 **Every validator self-test runs on all four automated paths**: the hook,
-`make preflight`, the kernel gate, and CI, where five have a named step of their
+`make preflight`, the kernel gate, and CI, where seven have a named step of their
 own and hygiene's runs in the Housekeeping step. A self-test breaks its governed
 artifact in memory and asserts each break is refused, so it is the test that
-fails when a check is removed. Until 2026-09-28 five of the six ran on no path,
-and the fires_when fix was reported green in two sessions while the layer-model
-self-test exited 1. `tools/validate.py` runs its own inside `--kernel`, and
-`tools/validate_doctrine.py` has none. The kernel gate's exit code shows a
+fails when a check is removed. Until 2026-09-28 five of the six that then existed
+ran on no path, and the fires_when fix was reported green in two sessions while
+the layer-model self-test exited 1. `tools/validate.py` runs its own inside
+`--kernel`. `tools/validate_doctrine.py` gained one on 2026-10-01, and so did
+`tools/pin_of_record.py`, the one reader of the pin of record the doctrine,
+authorization and retention gates share. The kernel gate's exit code shows a
 self-test failure only while no other entry holds it red, and its entry line
 always shows it, which is why CI also runs each self-test as a step of its own.
 
@@ -242,6 +244,13 @@ rather than permits. The alternative repeats the
 expiry check was intended and never written.
 
 One partially stamped item does not stamp its file.
+
+**The gates read the pin through one reader.** `tools/pin_of_record.py` decides
+for the doctrine, authorization and retention gates whether an artifact or a
+criterion is stamped, and its `READINGS` state the predicates. A row stamps a
+whole artifact only when its Item cell says "whole artifact" or "all criteria"
+and its File cell names the path alone, which is how the sentence above becomes
+a mechanism rather than a convention.
 
 ## 8. Handoff standard, and the closeout
 

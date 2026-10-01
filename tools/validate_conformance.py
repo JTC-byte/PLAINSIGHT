@@ -21,8 +21,9 @@ and exit 0, the handoff and `CONFORMANCE.md` recorded `--corpus` and
 `docs/THE-GAMEPLAN.md` recorded `--matchers`, and nothing called either until
 2026-09-28, when both joined the list as STUB.
 
-Six validator self-tests are entries of their own, IMPLEMENTED, as of
-2026-09-28, and `tools/validate.py` runs its own inside the schema entry. A
+Eight self-tests are entries of their own, IMPLEMENTED: six as of
+2026-09-28, and the doctrine gate's and the pin-of-record reader's as of
+2026-10-01. `tools/validate.py` runs its own inside the schema entry. A
 self-test breaks the governed artifact in memory and asserts each break is
 refused, which is the test design gate 1 asks for. Before that date only the
 hygiene self-test and the one inside `tools/validate.py --kernel` ran on any
@@ -79,9 +80,10 @@ UNRATIFIED = "unratified"
 #:
 #: The self-test and stub entries are the exception, because no tool records a
 #: run under their tokens. Each takes its tool's token with the mode appended.
-#: Four of the six self-tests record nothing to telemetry. The cast and
-#: authorization self-tests record under the tool's own token, so each run of
-#: either counts in that gate's telemetry as a run of the gate.
+#: Six of the eight self-tests record nothing to telemetry. The cast and
+#: authorization self-tests record under the entry's own token since
+#: 2026-10-01; until then they recorded under the tool's token, so each run
+#: counted in that gate's telemetry as a run of the gate.
 KERNEL_GATE = (
     (
         "doctrine",
@@ -94,6 +96,24 @@ KERNEL_GATE = (
         [PY, "tools/validate_hygiene.py", "--quiet"],
         IMPLEMENTED,
         "voice, table structure, citations against the artifact register, caps, and the handoff's tense",
+    ),
+    (
+        "doctrine-self-test",
+        [PY, "tools/validate_doctrine.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Plants each defect the gate's docstring names, among them "
+        "deleting SS-1's own row, which the Ratified range row shadowed until "
+        "2026-10-01, and asserts each is refused",
+    ),
+    (
+        "pin-of-record-self-test",
+        [PY, "tools/pin_of_record.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Reads planted pins through the one reader the doctrine, "
+        "authorization and retention gates share, and asserts each reads as its "
+        "READINGS state: an entry row never stamps a whole artifact, a date inside "
+        "words or a stamp for an absent file stamps nothing, and the contract is "
+        "stamped by its sections 5 and 12",
     ),
     (
         "hygiene-self-test",

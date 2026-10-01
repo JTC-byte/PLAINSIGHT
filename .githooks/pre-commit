@@ -77,19 +77,22 @@ python tools/validate.py --kernel --quiet || {
 # caught before the commit rather than read as green after it. The fires_when
 # fix was reported green in two sessions while the layer-model self-test exited
 # 1, because nothing on this path ran it. Unlike the Step 8 artifact modes named
-# above, the six are green today and grade the checks rather than the stamps.
+# above, the eight are green today and grade the checks rather than the stamps.
 # Two ratifying acts reach them anyway. Sealing the cast did, until the cast
 # self-test was fixed on 2026-09-28 to construct its own seal state. Completing
 # SS-14 item 6 still does: row 8 of conformance/gate/decisions.jsonl asserts the
 # item 6 refusal from the real pin, so the authorization self-test's baseline
 # stops being clean and the commit that completes the set edits that row too. A
-# self-test's output is printed only when it refuses.
-for tool in hygiene layer_model ontology cast authorization retention; do
-  out=$(python "tools/validate_$tool.py" --self-test 2>&1) || {
+# self-test's output is printed only when it refuses. The doctrine self-test and
+# the self-test of tools/pin_of_record.py, the pin-of-record reader three gates
+# share, joined on 2026-10-01.
+for tool in validate_hygiene validate_layer_model validate_ontology validate_cast \
+            validate_authorization validate_retention validate_doctrine pin_of_record; do
+  out=$(python "tools/$tool.py" --self-test 2>&1) || {
     rc=$?
     printf '%s\n' "$out"
     echo ""
-    echo "pre-commit refused: tools/validate_$tool.py --self-test exited $rc."
+    echo "pre-commit refused: tools/$tool.py --self-test exited $rc."
     echo "  rule:  CLAUDE.md design gate 1, doctrine/HYGIENE.md section 2"
     echo "  what:  exit 1 means the self-test refused, for one of two reasons the output"
     echo "         above names: a deliberate break was not refused, so a clean run of that"

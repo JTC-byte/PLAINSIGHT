@@ -11,17 +11,17 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file records the
-first gate-telemetry review and fixes how four validators record their runs, on
-top of `9fb75c8`, under the operator's overnight grant of 2026-09-30 23:28.
-`9fb75c8` replaced the two values the repo scan refused, and the kernel gate and
-CI have run green since.
+**Date:** 2026-10-01, overnight. The commit that carries this file gives the
+doctrine, authorization and retention gates one reader of the pin of record, on
+top of `f894db6`, under the operator's overnight grant of 2026-09-30 23:28. It
+closes the 13 findings of the Step 8 adversarial review that concern how a stamp
+is read. `9fb75c8` turned the kernel gate and CI green, and they have stayed so.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
 this tree; section 4 says what that costs and section 3 says whose decision it
 is.
-**Kernel gate:** 24 entries: 14 implemented and passing, 3 unratified and
+**Kernel gate:** 26 entries: 16 implemented and passing, 3 unratified and
 refusing as designed, 2 stubbed, 5 pending. Green means that and no more;
 `CONFORMANCE.md` section 4 states what a green run does not claim.
 
@@ -30,11 +30,10 @@ refusing as designed, 2 stubbed, 5 pending. Green means that and no more;
 which holds the 51 distinct decisions Step 8 surfaced and marks the 29 that are
 the operator's; and
 `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
-which is what the operator is buying and standing up in parallel. The next work
-is the adversarial review Step 8 is owed, described in section 5. It has not
-happened, and no session should treat Step 8 as reviewed. The operator's
-overnight grant of 2026-09-30 23:28 covers it, and the worklog's overnight entry
-records what that night reached.
+which is what the operator is buying and standing up in parallel. The
+adversarial review Step 8 was owed ran on 2026-10-01, and section 5 says what it
+found. Its open class B findings are the next work, and the worklog's overnight
+entry records what that night reached.
 
 ---
 
@@ -46,32 +45,35 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** The first review of the gate telemetry under
-`doctrine/HYGIENE.md` HY-2, overdue since 2026-09-11, ran under the operator's
-overnight grant, and the worklog's overnight entry records its outcome per HY-4.
-It kept every gate and found three things this commit fixes in how runs are
-recorded: `tools/validate_layer_model.py` and `tools/validate_cast.py` wrote one
-refuse record per finding against HY-1, and the authorization and cast
-self-tests and the staged repo scan shared a name with a mode whose designed
-outcome differs. No check, threshold or refusal changed. It also found two
-blind spots in the doctrine gate, which section 4 lists.
+**What changed and why.** The Step 8 adversarial review found that the three
+gates reading `doctrine/DOCTRINE_STATUS.md` read it three ways, and that one
+dated row naming a path stamped the whole file, so the first entry the operator
+stamped in a policy would have stamped the policy. `tools/pin_of_record.py` is
+now the one reader, taking the stricter reading on every axis, so it can turn a
+permit into a refusal and never the reverse. No current outcome changed: the
+same artifacts refuse and the same doctrine files bind. `tools/validate_doctrine.py`
+reads criterion rows from the per-criterion table, which closes the SS-1 blind
+spot, and gains its first self-test. Both self-tests join all four paths.
 
-**Which surfaces moved.** Four validators' telemetry calls, `CHANGELOG.md`, this
-file, and the worklog.
+**Which surfaces moved.** `tools/pin_of_record.py`, new; the doctrine,
+authorization, retention and conformance validators; the hook, the Makefile and
+CI; `AGENTS.md` section 5; `CONFORMANCE.md` section 4; `CHANGELOG.md`; this
+file; and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit, and every changed recording path was exercised and its
-records read. All fourteen preflight commands passed and both forms of
-`git diff --check` were clean. The kernel gate exited 0: 14 passed, 3 unratified
-and refusing, 2 stubbed, 5 pending.
+before the commit. All sixteen preflight commands passed, the eight self-tests
+among them, and both forms of `git diff --check` were clean. Each of the
+reader's rules was deleted in a scratch copy and its self-test failed every
+time. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2 stubbed,
+5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
 pull request.
 
 **What remains open or deferred.** Section 3 holds the operator's 29 decisions,
 patch 4b with its four Class F items, and the cast seal. Section 4 holds every
-stamp, the 2026-09-28 follow-ups and the known defects; section 5 holds the
-adversarial review Step 8 is owed.
+stamp, the 2026-09-28 follow-ups and the known defects; section 5 holds what the
+Step 8 review left open, one ratification blocker among it.
 
 ---
 
@@ -95,8 +97,8 @@ part the criterion names. A criterion absent from the stamp table refuses, a
 missing artifact refuses, and a fully stamped state permits, exercised both ways
 by `--self-test`. Clearing the exit code is a stamping act and the operator's.
 
-**Step 8 has had no adversarial review**, and Step 7's owed review was never run
-either. Section 5 says what is owed.
+**Step 8 was reviewed adversarially on 2026-10-01**, and Step 7's owed review was
+never run. Section 5 says what the review found and what it left open.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
 consenting subjects who will confirm the findings, who are S1 CONSENTING. The
@@ -117,13 +119,13 @@ applied. Nothing has touched a platform. No account exists. No connector exists.
 |---|---|
 | `LICENSE`, `NOTICE`, `.gitattributes` | Committed in `ac60ac4`. |
 | `CLAUDE.md` | Committed. Advisory. R6 amended 2026-08-27. |
-| `AGENTS.md` | Committed. Section 5 names the gate commands, the thirteen hook commands, and the four paths every validator self-test runs on; section 8 sets the handoff standard. |
+| `AGENTS.md` | Committed. Section 5 names the gate commands, the fifteen hook commands, and the four paths every validator self-test runs on; section 8 sets the handoff standard. |
 | `CHANGELOG.md` | Committed. One entry per governed commit, newest first. Every entry below the 2026-09-07 rewrite entry cites pre-rewrite hashes; that entry translates them. |
 | `doctrine/DOCTRINE_STATUS.md` | The pin of record. 58 conclusions stamped, 0 bases. No row for any Step 8 artifact, which is why the three Step 8 gates refuse. |
 | `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md` | SS-1 to SS-21 and RT-1 to RT-19. Patches 1, 2 and 3c in. SS-4's table gives `subject_class` R4's seven classes. |
 | `doctrine/EGRESS.md`, `doctrine/CREDENTIAL_LIFECYCLE.md`, `doctrine/HYGIENE.md` | EG-1 to EG-6, CR-1 to CR-8, HY-1 to HY-4. Patch 1 in all three, patch 3c in the first two, patch 2 in CREDENTIAL_LIFECYCLE.md, patch 3b in HYGIENE.md. EG-7 is drafted in patch 4b, not applied. |
 | `doctrine/RETENTION_LEDGER.md`, `doctrine/DISCLOSURE.md` | **Both missing.** The ledger is required at v0.1, its shape is in RT-10, and Step 11 delivers it. DISCLOSURE.md is owed: the trigger fired when RT-18 created a second egress path. |
-| `CONFORMANCE.md` | Committed. Section 4 describes the twenty-four gate entries in all four states, the six self-test entries and the two stubs among them. |
+| `CONFORMANCE.md` | Committed. Section 4 describes the twenty-six gate entries in all four states, the eight self-test entries and the two stubs among them. |
 | `spec/layer-model.yaml` | Committed in `f4e00e1`. `38c93cc` quotes all 57 `fires_when` values, which is a form change that corrected seventeen truncated sentences. Eleven readings await confirmation. |
 | `spec/pse-semantics-contract.md` | Committed in `4e6abda`. **UNRATIFIED.** `pse-event-0.1`, Unlocked. Thirteen sections, every rule labelled. Sections 5 and 12 are SS-14 item 6 stamp targets. |
 | `spec/divergence-register.yaml` | Empty. Step 9. The contract's section 13.2 lists eleven divergences plus three that surfaced in generation. |
@@ -142,11 +144,13 @@ applied. Nothing has touched a platform. No account exists. No connector exists.
 | `tools/validate_layer_model.py` | Committed earlier. `38c93cc` adds L-34, `CODE_ENTRY_KEYS`, refusing a code entry with keys outside the declared five or with no `fires_when`. Its self-test reports 62 deliberate breaks, 62 refused, 50 by the expected code alone, 12 cascading, 44 distinct codes exercised. |
 | `tools/validate_authorization.py` | **Committed in `0e0c840`.** 2,713 lines. `--fixtures` refuses while nothing is stamped. `b378cd8` corrected one docstring count, six unstamped paths to seven. |
 | `tools/validate_retention.py` | **Replaced in `0e0c840`.** 2,105 lines, and no longer a stub. `--repo-scan` reads every tracked file for a filled selector against thirteen shapes reconciled with `ontology/selectors.yaml` in both directions. `--policy` and `--shred-roundtrip` refuse while nothing is stamped. |
-| `tools/validate_doctrine.py`, `validate_hygiene.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
+| `tools/pin_of_record.py` | **New on 2026-10-01.** The one reader of the pin of record the doctrine, authorization and retention gates import. `READINGS` states its eight predicates, PIN-R1 to PIN-R8, each an assistant reading awaiting the operator; its self-test plants 21 cases. |
+| `tools/validate_doctrine.py` | Committed earlier. Since 2026-10-01 it reads criterion rows through the shared reader and has a self-test planting ten defects. |
+| `tools/validate_hygiene.py`, `gate_log.py`, `tests/test_gate_log.py` | Committed earlier, unchanged. |
 | `tools/validate_ontology.py` | Committed earlier. The overnight commit keeps the `value_in_a_form` fixture's platform segment a placeholder, so the file carries no complete typed handle; its self-test still refuses the break by `ONT_VALUE_IN_FILE` alone. |
 | `tools/validate_cast.py` | Committed earlier. `b378cd8` made its self-test run every mutation against the file as loaded and against a sealed copy, so it no longer refuses the commit that seals the cast. |
-| `tools/validate_conformance.py` | **Extended in `b378cd8`.** `KERNEL_GATE` carries twenty-four entries: fourteen implemented, six of them self-tests; three unratified; two stubs; five pending. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `b378cd8`.** `make preflight` runs fourteen commands and the hook thirteen, the six validator self-tests among them. CI runs five self-tests as named steps before the kernel gate, and every gate step carries `if: ${{ !cancelled() }}`, so a red step no longer skips the hook step and the trailer check. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`. |
+| `tools/validate_conformance.py` | **Extended in `b378cd8` and on 2026-10-01.** `KERNEL_GATE` carries twenty-six entries: sixteen implemented, eight of them self-tests; three unratified; two stubs; five pending. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `b378cd8` and on 2026-10-01.** `make preflight` runs sixteen commands and the hook fifteen, the eight self-tests among them. CI runs seven self-tests as named steps before the kernel gate, and every gate step carries `if: ${{ !cancelled() }}`, so a red step no longer skips the hook step and the trailer check. CI pins `actions/checkout@v5` and `actions/setup-python@v6` as of `ff016af`. |
 | `connectors/`, `runner/`, `app/`, `conformance/connector-harness/` | Empty. Steps 10 to 13. |
 
 ## 3. What blocks
@@ -159,6 +163,16 @@ third copies. 22 of the 51 are grounded in the stack's own documentation and an
 agent can settle them by citation; 29 are the operator's, and 25 of those 29
 arrive with at least one option foreclosed. The register is at
 `Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`.
+
+**How the gates read a stamp, since 2026-10-01.** One reader,
+`tools/pin_of_record.py`, decides for the doctrine, authorization and retention
+gates. A row stamps a whole artifact only when its Item cell says "whole
+artifact" or "all criteria", its File cell is the backticked path alone, its
+Conclusion stamped cell is the date alone, and its Ratifier cell is "operator".
+A row naming an entry, a section or a criterion stamps that item and not the
+file, and the contract is stamped by its §5 and §12 rows together. Each
+predicate is an assistant reading in the module's `READINGS` awaiting the
+operator's confirmation.
 
 **Patch 4b.** Four Class F items: EG-7 third-party host declaration, CR-3's
 environment-variable item, CR-6's clearing act, EG-2's vault-key custody
@@ -207,17 +221,9 @@ about 1,720 non-recurring and 205 a month.
 
 ## 4. Known gaps
 
-- **The pin of record has three independent readers, and two disagree.** At
-  `b378cd8`, `tools/validate_authorization.py`'s `Pin` subtracts the Pending
-  table's stamp-target rows and calls `spec/pse-semantics-contract.md`
-  unstamped, while `tools/validate_retention.py`'s `stamped_path()` counts only
-  the Ratified section and calls it stamped. It is latent, because
-  `stamped_path()` is called only for the retention policy and the shred fixture.
-  One shared reader would close it.
 - **The follow-ups from the 2026-09-28 review and re-review, none blocking**,
   listed in that day's worklog entry. The one that matters most: nothing fails
   if an edit drops a self-test from one of the four paths, so the class is open.
-  `tools/validate_doctrine.py` has no self-test at all.
 - **Patch 4b no longer applies to this tree.** `git apply --check` exits 1 on
   `doctrine/DOCTRINE_STATUS.md`. The cause is a fifteen-minute race: the patch
   was regenerated at 2026-09-08 18:40:19 and `4e6abda` was committed at 18:55:58
@@ -235,13 +241,11 @@ about 1,720 non-recurring and 205 a month.
   `doctrine/CREDENTIAL_LIFECYCLE.md:138` cite `../ZISR COP/`, now `../zisr-cop/`.
   Both are dated measurements, so they keep the old path as the `../zisr-recon/`
   ones do, and `README.md` translates it. The mechanism is open.
-- **The doctrine gate has two blind spots, found by the telemetry review's
-  deliberate breaks.** `STATUS_ROW_RE` in `tools/validate_doctrine.py` reads
-  every table row that opens with a criterion id, so the Ratified row "SS-1 to
-  SS-21, all criteria" stands in for SS-1's per-criterion row and deleting that
-  row passes. Nothing reconciles a doctrine file's inline conclusion marker with
-  the Ratified table, so deleting or undating that row passes too; the gates
-  downstream fail closed on it. `tools/validate_doctrine.py` has no self-test.
+- **The doctrine gate does not reconcile a criterion's inline conclusion marker
+  with the Ratified table**, so deleting or undating a doctrine file's range row
+  passes it; the gates downstream fail closed on it. The telemetry review's
+  deliberate breaks found this and a second blind spot, SS-1's row shadowed by
+  that range row, which the shared reader closed.
 - **Two defects found on 2026-09-11 and not fixed.** The `evidence_ref` field in
   `schema/subject-authorization.schema.json` admits only the three pre-R4
   evidence kinds, which is what SA-U2 and SA-U11 both land on. SA-U16's current
@@ -307,19 +311,19 @@ That leaves one gap: the corpus was authored by the same session that wrote the
 generator, so a misreading shared by both would be self-consistent, and no
 second pass has read the generator against the model.
 
-**Step 8 has had no review of any kind.** Its eight artifacts were drafted by
-subagents, integrated by the parent session, and exercised only by their own
-self-tests and by the battery the 2026-09-11 worklog entry records. The
-self-tests were written by the same agents that wrote the artifacts, which is
-the weakness named above in a sharper form, because the policy files are
-hand-authored rather than generated and no model constrains them. Three defects
-are already known, all found by reading rather than by a gate; one, a count, is
-fixed, and section 4 lists the other two. The owed review is the 2026-09-04
-method: lenses that run the mechanism and quote the result, each paired with a
-refuter. That pairing is not optional. The Step 8 session measured eight lenses
-claiming grounded on 45 register entries with refuters overturning 15, a 33 per
-cent over-report, and every overturn ran in one direction, toward claiming a
-decision was settled when it was not.
+**Step 8 was reviewed adversarially on 2026-10-01**, against `de9e754`, under the
+operator's overnight grant. Eight lenses each ran the check they reviewed in a
+scratch copy and quoted the result, and every finding went to a refuter that
+reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
+defects, two class F defects for the operator, and 30 drift findings and notes.
+The refuters overturned one, against the three-to-one over-report of the earlier
+prose reviews, because a lens could not make a finding without running the
+mechanism. The pin-of-record commit fixed 13 of them, two of the blockers among
+them. The third blocker is open: `policy/retention.yaml` compiles an RT-11
+override that the pin's RT-11 row says does not exist. The record, with each
+finding's status, is
+`Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/REVIEW.md`, and the
+claims, commands and outputs are beside it. The completeness critic has not run.
 
 ## 6. Session context that lives outside this repository
 
@@ -368,8 +372,8 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   GitHub no-reply address.
 - **Hashes in the worklog, its archive, and every changelog entry below the
   2026-09-07 rewrite entry are pre-rewrite.** That entry translates them.
-- The gates need PyYAML and jsonschema. `make preflight` runs fourteen
-  commands, the six self-tests among them; the hook runs thirteen.
+- The gates need PyYAML and jsonschema. `make preflight` runs sixteen
+  commands, the eight self-tests among them; the hook runs fifteen.
 - **The worklog is capped at ten live entries and the hygiene gate refuses an
   eleventh.** Each closeout moves the oldest live entry into
   `plainsight_worklog_archive.md` unedited before adding its own.
