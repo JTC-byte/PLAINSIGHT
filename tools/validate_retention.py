@@ -331,6 +331,16 @@ PINNED_RULES = (
     ("freeze.is_a_logged_act", True, "RT-17"),
     ("freeze.crosses_the_case_ceiling", True, "RT-17"),
     ("unratified.refuses_rather_than_permits", True, "the pin of record, doctrine/DOCTRINE_STATUS.md"),
+    # Added after the third review of 2026-10-01, findings rm3:1 and rm3:12.
+    ("gate_telemetry.stratum", "T", "RT-1, RT-19"),
+    ("strata.rows[6].tracked", False, "RT-19"),
+    ("finding_check.survivability[0].carries_subject_values", False, "RT-13"),
+    ("finding_check.survivability[0].survives", True, "RT-13"),
+    ("finding_check.survivability[1].carries_subject_values", False, "RT-13"),
+    ("finding_check.survivability[1].survives", True, "RT-13"),
+    ("finding_check.survivability[2].carries_subject_values", True, "RT-13"),
+    ("finding_check.survivability[2].survives", False, "RT-2, RT-13"),
+    ("cadence.steps[4].cached_read_path_permitted", False, "RT-9, RT-10"),
 )
 
 #: Every boolean or stratum value the policy compiles that is not pinned above,
@@ -364,22 +374,49 @@ UNPINNED_BY_NAME = (
     "disclosure_export.outside_every_mechanism_once_it_leaves",
     "disclosure_export.interface_states_that_at_the_moment_of_export",
     "disclosure_export.alters_the_freeze_or_the_shred_path",
-    "gate_telemetry.stratum",
     "gate_telemetry.rolling",
     "gate_telemetry.swept_on_write",
     "gate_telemetry.swept_on_read",
     "gate_telemetry.swept_by_a_scheduled_job",
+    "repo_scan.enforcement_parts_all_required[1].refused_when_missing",
+    "repo_scan.enforcement_parts_all_required[3].checks_anything",
+    "cadence.steps[2].order_is_normative",
+    "unratified.entries[4].consequential",
 )
 
 
-def _rule_leaves(node, path: str = ""):
-    """Every boolean, and every value under a key naming a stratum, outside lists."""
+def _rule_leaves(node, path: str = "", seen: set | None = None):
+    """Every boolean, a boolean spelled as a string, and every value under a key
+    naming a stratum, inside lists as well. Until the third review of 2026-10-01
+    the walk skipped lists, so eleven compiled booleans were read by nothing."""
+    seen = set() if seen is None else seen
+    if isinstance(node, (dict, list)):
+        if id(node) in seen:
+            return
+        seen.add(id(node))
     if isinstance(node, dict):
         for key, value in node.items():
-            yield from _rule_leaves(value, f"{path}.{key}" if path else str(key))
-    elif not isinstance(node, list):
-        if isinstance(node, bool) or path.endswith("stratum"):
-            yield path
+            yield from _rule_leaves(value, f"{path}.{key}" if path else str(key), seen)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from _rule_leaves(value, f"{path}[{index}]", seen)
+    elif (
+        isinstance(node, bool)
+        or (isinstance(node, str) and node.strip().lower() in ("true", "false"))
+        or path.endswith("stratum")
+    ):
+        yield path
+
+
+#: List items whose booleans and strata are read by a check keyed on the item's
+#: name rather than its place: STRATA_ROWS, RT-9's check 2 side flags, and the
+#: RT-15 and RT-16 tables.
+READ_BY_A_CHECK = re.compile(
+    r"^(strata\.rows\[\d+\]\.(stratum|carries_subject_values|inside_shred_boundary)"
+    r"|verification\.checks\[1\]\.(cached_read_path_permitted|delete_exit_code_accepted_as_evidence)"
+    r"|repo_scan\.enforcement_parts_all_required\[\d+\]\.present"
+    r"|connector_floor\.enforcement\[\d+\]\.present)$"
+)
 
 #: RT-15. The code doctrine requires in policy/violation-codes.yaml. That file
 #: is generated from spec/layer-model.yaml and cannot be hand-edited, and the
@@ -645,13 +682,26 @@ def _same(actual, want) -> bool:
     return actual == want
 
 
+_INDEXED = re.compile(r"^([^\[\]]+)\[(\d+)\]$")
+
+
 def dig(node, dotted: str):
-    """Read a dotted path out of a nested mapping, or return None."""
+    """Read a dotted path out of a nested mapping, or return None.
+
+    A part may index a list, as in finding_check.survivability[2].survives.
+    """
     cur = node
     for part in dotted.split("."):
-        if not isinstance(cur, dict) or part not in cur:
+        indexed = _INDEXED.match(part)
+        key = indexed.group(1) if indexed else part
+        if not isinstance(cur, dict) or key not in cur:
             return None
-        cur = cur[part]
+        cur = cur[key]
+        if indexed:
+            i = int(indexed.group(2))
+            if not isinstance(cur, list) or i >= len(cur):
+                return None
+            cur = cur[i]
     return cur
 
 
@@ -667,7 +717,7 @@ def as_list(value) -> list:
 
 
 #: The exceptions a governed input of the wrong shape raises inside a check.
-MALFORMED = (TypeError, AttributeError, KeyError, IndexError)
+MALFORMED = (TypeError, AttributeError, KeyError, IndexError, RecursionError)
 
 
 class Unreadable(Exception):
@@ -1067,7 +1117,7 @@ def check_policy(ctx: dict) -> list[Finding]:
             row.get("lifetime"),
             row.get("inside_shred_boundary"),
         )
-        if want and got != want:
+        if want and not _same(list(got), list(want)):
             drift_text.append(f"{row.get('name')} reads {got} where RT-1 states {want}")
     if drift_text:
         out.append(
@@ -1247,7 +1297,7 @@ def check_policy(ctx: dict) -> list[Finding]:
     # R-04. Every stamped duration.
     for path, days, criterion in DURATIONS:
         actual = dig(pol, path)
-        if actual != days:
+        if not _same(actual, days):
             out.append(
                 Finding(
                     "RETENTION_POLICY_TTL_DRIFT",
@@ -1355,7 +1405,7 @@ def check_policy(ctx: dict) -> list[Finding]:
         | set(UNPINNED_BY_NAME)
     )
     leaves = set(_rule_leaves(pol))
-    for path in sorted(leaves - known):
+    for path in sorted(p for p in leaves - known if not READ_BY_A_CHECK.match(p)):
         out.append(
             Finding(
                 "RETENTION_POLICY_RULE_UNCLASSIFIED",
@@ -2022,9 +2072,14 @@ class _Repeated(list):
     """
 
 
-def _keep_repeats(pairs):
-    mapping: dict = {}
+def _keep_repeats(pairs, mapping: dict | None = None):
+    mapping = {} if mapping is None else mapping
     for key, value in pairs:
+        try:
+            hash(key)
+        except TypeError:
+            # A complex YAML key, which crashed the scan until 2026-10-01.
+            key = repr(key)
         if key in mapping:
             held = mapping[key]
             mapping[key] = held + [value] if isinstance(held, _Repeated) else _Repeated([held, value])
@@ -2039,21 +2094,58 @@ if yaml is not None:
         """Every scalar a string, every repeated key kept. An unquoted E.164 number
         was an int under safe_load and was dropped until 2026-10-01."""
 
+    def _flatten_merge(node, seen=None):
+        # "<<" merges flattened at node level, as SafeConstructor does, so an
+        # inherited selector_type pairs with its value.
+        seen = set() if seen is None else seen
+        if id(node) in seen:
+            return []
+        seen.add(id(node))
+        pairs, merged = [], []
+        for k, v in node.value:
+            if isinstance(k, yaml.ScalarNode) and k.value == "<<":
+                for source in (v.value if isinstance(v, yaml.SequenceNode) else [v]):
+                    if isinstance(source, yaml.MappingNode):
+                        merged.extend(_flatten_merge(source, seen))
+            else:
+                pairs.append((k, v))
+        explicit = {k.value for k, _ in pairs if isinstance(k, yaml.ScalarNode)}
+        return pairs + [(k, v) for k, v in merged if not (isinstance(k, yaml.ScalarNode) and k.value in explicit)]
+
     def _construct_scan_mapping(loader, node, deep=False):
-        return _keep_repeats(
-            (loader.construct_object(k, deep=True), loader.construct_object(v, deep=True))
-            for k, v in node.value
+        # A generator that yields its mapping before filling it, with children
+        # built lazily, so an anchor that refers to itself constructs. Until the
+        # third review of 2026-10-01 both a self-referential anchor and a "<<"
+        # merge made the whole file read as nothing.
+        mapping: dict = {}
+        yield mapping
+        _keep_repeats(
+            ((loader.construct_object(k), loader.construct_object(v)) for k, v in _flatten_merge(node)),
+            mapping,
         )
 
+    def _construct_any(loader, suffix, node):
+        # Any tag: a tagged mapping keeps its repeats like an untagged one.
+        if isinstance(node, yaml.MappingNode):
+            return _construct_scan_mapping(loader, node)
+        if isinstance(node, yaml.SequenceNode):
+            return loader.construct_sequence(node)
+        return loader.construct_scalar(node)
+
     _ScanLoader.add_constructor("tag:yaml.org,2002:map", _construct_scan_mapping)
+    _ScanLoader.add_multi_constructor("", _construct_any)
 
 
-def _strings(value) -> list[str]:
-    """The strings a value carries: itself, or the strings in a list of them."""
+def _strings(value, seen: set | None = None) -> list[str]:
+    """The strings a value carries, at any depth of lists, each list once."""
     if isinstance(value, str):
         return [value]
     if isinstance(value, list):
-        return [v for v in value if isinstance(v, str)]
+        seen = set() if seen is None else seen
+        if id(value) in seen:
+            return []
+        seen.add(id(value))
+        return [s for v in value for s in _strings(v, seen)]
     return []
 
 
@@ -2066,7 +2158,7 @@ def _pairs_in(node, types: set[str]):
     read in any case, and a list or a repeated key yields every string it holds.
     """
     for mapping in _mappings(node):
-        folded = {str(k).lower(): v for k, v in mapping.items()}
+        folded = _keep_repeats((str(k).lower(), v) for k, v in mapping.items())
         for type_key, value_key in PAIR_KEYS:
             for selector in _strings(folded.get(type_key)):
                 for value in _strings(folded.get(value_key)):
@@ -2093,10 +2185,13 @@ def selector_pairs(rel: str, text: str, types: set[str]) -> list[tuple[int, str,
             if suffix == ".json":
                 docs = [json.loads(text, object_pairs_hook=_keep_repeats)]
             elif yaml is not None:
-                docs = list(yaml.load_all(text, Loader=_ScanLoader))
+                try:
+                    docs = list(yaml.load_all(text, Loader=_ScanLoader))
+                except (TypeError, RecursionError, yaml.YAMLError):
+                    docs = list(yaml.safe_load_all(text))
             else:
                 docs = []
-        except (ValueError, RecursionError, yaml.YAMLError if yaml is not None else ValueError):
+        except (ValueError, TypeError, RecursionError, yaml.YAMLError if yaml is not None else ValueError):
             docs = None
         if docs is not None:
             for doc in docs:
@@ -2345,16 +2440,58 @@ def _read_for_measure(path: Path) -> str:
         return ""
 
 
-def _hook_runs(text: str, command: str) -> bool:
-    """True when an uncommented line runs `command` and does not swallow it."""
-    for line in text.splitlines():
-        bare = line.strip()
-        if bare.startswith("#") or command not in bare:
-            continue
-        if re.search(r"\|\|\s*(true\b|:(\s|$)|exit\s+0\b)", bare):
-            continue
-        return True
+#: Words that withdraw the clause when they follow it in its own bullet.
+CLAUSE_WITHDRAWN = re.compile(r"no longer applies|does not apply|is withdrawn|was removed|is suspended", re.I)
+
+
+def _clause_in_place(agents: str) -> bool:
+    """RT-15's first part: the Execution Limits bullet, rendered and unwithdrawn.
+
+    Until the third review of 2026-10-01 any heading containing "## 4." matched,
+    an HTML comment counted, and a following "This rule no longer applies" left
+    it in place.
+    """
+    text = re.sub(r"<!--.*?-->", " ", agents, flags=re.S)
+    text = re.sub(r"(?ms)^```.*?^```", " ", text)
+    heading = re.search(r"(?m)^## 4\. Execution Limits[ \t]*$", text)
+    if not heading:
+        return False
+    rest = text[heading.end():]
+    end = re.search(r"(?m)^## ", rest)
+    section = rest[: end.start()] if end else rest
+    for bullet in re.split(r"(?m)^- ", section):
+        flat = " ".join(bullet.split())
+        if flat.startswith("**" + RT15_CLAUSE_SENTENCE + "**"):
+            return not CLAUSE_WITHDRAWN.search(flat)
     return False
+
+
+#: The hook's scan stanza, by shape: the command at the start of a line, its
+#: failure block, and that block's refusal.
+SCAN_STANZA = "python tools/validate_retention.py --repo-scan --staged || {"
+
+
+def _scan_stanza_in_place(hook: str) -> bool:
+    """RT-15's fourth part: the hook runs the scan and refuses when it refuses.
+
+    Until the third review of 2026-10-01 a line-level test passed a block that
+    ended in exit 0, a no-op ":", a trailing --help and an exit 0 before it.
+    """
+    lines = hook.splitlines()
+    starts = [i for i, line in enumerate(lines) if line.strip() == SCAN_STANZA and not line.startswith(" ")]
+    if len(starts) != 1:
+        return False
+    start = starts[0]
+    if any(re.match(r"\s*exit\s+0\b", line) for line in lines[:start]):
+        return False
+    block = []
+    for line in lines[start + 1:]:
+        if line.strip() == "}":
+            break
+        block.append(line.strip())
+    else:
+        return False
+    return "exit 1" in block and not any(re.match(r"exit\s+0\b", line) for line in block)
 
 
 def rt15_parts(codes: set[str], root: Path | None = None) -> list[tuple[str, bool]]:
@@ -2367,9 +2504,7 @@ def rt15_parts(codes: set[str], root: Path | None = None) -> list[tuple[str, boo
     comment satisfied, so a deleted section 4 still measured as in place.
     """
     base = ROOT if root is None else root
-    agents = _read_for_measure(base / "AGENTS.md")
-    section = agents.split("## 4. Execution Limits", 1)[1].split("\n## ", 1)[0] if "## 4. Execution Limits" in agents else ""
-    clause = RT15_CLAUSE_SENTENCE in " ".join(section.split())
+    clause = _clause_in_place(_read_for_measure(base / "AGENTS.md"))
     manifests = []
     connectors = base / "connectors"
     try:
@@ -2393,7 +2528,7 @@ def rt15_parts(codes: set[str], root: Path | None = None) -> list[tuple[str, boo
         (f"the violation code {DOCTRINE_SCAN_CODE} in policy/violation-codes.yaml",
          DOCTRINE_SCAN_CODE in codes),
         ("this scan wired into .githooks/pre-commit",
-         _hook_runs(hook, "tools/validate_retention.py --repo-scan")),
+         _scan_stanza_in_place(hook)),
     ]
 
 
@@ -2442,7 +2577,9 @@ def rt16_table_findings(pol: dict) -> list[Finding]:
     if len(entries) != len(RT16_ENFORCEMENT):
         problems.append(f"{len(entries)} entries where RT-16 names {len(RT16_ENFORCEMENT)}")
     for (key, text, present), entry in zip(RT16_ENFORCEMENT, entries):
-        if not _same(entry.get(key), text):
+        if present is None and not _same(entry, {key: text}):
+            problems.append(f"the {key} entry carries {sorted(entry)} where RT-16's is exactly {{{key}: {text!r}}}")
+        elif not _same(entry.get(key), text):
             problems.append(f"an entry reads {key}: {entry.get(key)!r} where RT-16's is {text!r}")
         elif present is not None and isinstance(entry.get("present"), bool) and entry.get("present") is not present:
             problems.append(
@@ -2604,6 +2741,31 @@ def _pair_json_holding_lines(ctx) -> tuple[str, str]:
 
 def _pair_keys_in_capitals(ctx) -> tuple[str, str]:
     return "conformance/x.jsonl", json.dumps({"Selector_Type": "email", "Value": _email_value()})
+
+
+def _pair_by_merge_key(ctx) -> tuple[str, str]:
+    """A selector_type inherited through a YAML merge key."""
+    return "policy/x.yaml", "base: &b\n  selector_type: email\nentry:\n  <<: *b\n  value: " + _email_value() + "\n"
+
+
+def _pair_in_a_tagged_mapping(ctx) -> tuple[str, str]:
+    """A live value behind a placeholder in a mapping with a custom tag."""
+    return "policy/x.yaml", "entry: !thing\n  selector_type: email\n  value: " + _email_value() + "\n  value: <addr>\n"
+
+
+def _pair_by_case_variant(ctx) -> tuple[str, str]:
+    """A live value under Value hidden by a placeholder under value."""
+    return "conformance/x.jsonl", '{"selector_type": "email", "Value": "' + _email_value() + '", "value": "<addr>"}'
+
+
+def _pair_list_then_repeat(ctx) -> tuple[str, str]:
+    """A live value in a list, then the key repeated with a placeholder."""
+    return "policy/x.yaml", "entry:\n  selector_type: email\n  value: [" + _email_value() + "]\n  value: <addr>\n"
+
+
+def _complex_key(ctx) -> tuple[str, str]:
+    """A YAML mapping key that is a sequence, which crashed the scan."""
+    return "policy/x.yaml", "? [a, b]\n: c\n"
 
 
 def _upper_domain(ctx) -> tuple[str, str]:
@@ -2896,10 +3058,8 @@ def _mutations():
     scan = scan_code(declared_codes())
     def _flip(path, value):
         def mutate(ctx):
-            node = ctx["policy"]["retention"]
             *parents, last = path.split(".")
-            for part in parents:
-                node = node[part]
+            node = dig(ctx["policy"]["retention"], ".".join(parents)) if parents else ctx["policy"]["retention"]
             if isinstance(value, bool):
                 node[last] = not value
             elif isinstance(value, list):
@@ -2963,6 +3123,26 @@ def _mutations():
     def fixture_check3_passes_always(ctx):
         ctx["fixture"]["shred_roundtrip"]["verify_step"]["checks"][2]["passes_when"] = "always"
 
+    def rule_in_a_list_nobody_classified(ctx):
+        ctx["policy"]["retention"]["verification"]["checks"][0]["skippable"] = True
+
+    def rule_spelled_as_a_string(ctx):
+        ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = "true"
+
+    def narrative_survives(ctx):
+        ctx["policy"]["retention"]["finding_check"]["survivability"][2]["survives"] = True
+
+    def rt16_code_claimed(ctx):
+        ctx["policy"]["retention"]["connector_floor"]["enforcement"][2]["present"] = True
+
+    def strata_row_stratum_as_true(ctx):
+        for row in ctx["policy"]["retention"]["strata"]["rows"]:
+            if row.get("name") == "case_material":
+                row["stratum"] = True
+
+    def duration_as_a_float(ctx):
+        ctx["policy"]["retention"]["case_ttl"]["default_days"] = 30.0
+
     def rule_nobody_classified(ctx):
         ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = True
 
@@ -2973,9 +3153,9 @@ def _mutations():
         ("let check 1 pass when the decrypt succeeds", "policy", check1_passes_on_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("leave RT-16's reconcile entry silent on whether it exists", "policy", reconcile_unstated, "RETENTION_POLICY_ENFORCEMENT_UNSTATED", True),
         ("claim RT-16's reconcile is written", "policy", reconcile_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
-        ("move the canary part first and claim it", "policy", canary_moved_first, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("move the canary part first and claim it", "policy", canary_moved_first, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", False, "RT-15's unpinned table items are named by place in UNPINNED_BY_NAME, so moving or deleting the table also unclassifies them"),
         ("add a fifth part to RT-15's table", "policy", rt15_fifth_part, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
-        ("delete RT-15's enforcement table", "policy", rt15_table_gone, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("delete RT-15's enforcement table", "policy", rt15_table_gone, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", False, "RT-15's unpinned table items are named by place in UNPINNED_BY_NAME, so moving or deleting the table also unclassifies them"),
         ("reword RT-16's reconcile and claim it", "policy", reconcile_reworded_and_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("hide RT-16's reconcile flag behind a decoy deferral", "policy", reconcile_hidden_by_a_decoy, "RETENTION_POLICY_ENFORCEMENT_UNSTATED", True),
         ("claim RT-16's AGENTS.md clause is written", "policy", rt16_clause_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
@@ -2986,6 +3166,12 @@ def _mutations():
         ("let the fixture's check 3 pass always", "roundtrip", fixture_check3_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
         ("write the index's stratum as true", "policy", stratum_written_as_true, "RETENTION_POLICY_RULE_DRIFT", True),
         ("compile a rule nobody pinned or named", "policy", rule_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
+        ("compile a rule inside a list", "policy", rule_in_a_list_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
+        ("compile a rule spelled as a string", "policy", rule_spelled_as_a_string, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
+        ("let the case narrative survive", "policy", narrative_survives, "RETENTION_POLICY_RULE_DRIFT", True),
+        ("claim RT-16's undecided code exists", "policy", rt16_code_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("write a strata row's stratum as true", "policy", strata_row_stratum_as_true, "RETENTION_POLICY_STRATA_ROW_DRIFT", True),
+        ("write a duration as a float", "policy", duration_as_a_float, "RETENTION_POLICY_TTL_DRIFT", True),
         ("claim canary_subject_class is required on manifests", "policy", canary_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("stop failing check 1 on a successful decrypt", "policy", check1_forgets_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("hold the witness inside the delete path", "policy", witness_inside_the_delete_path, "RETENTION_POLICY_WITNESS_UNDESIGNATED", True),
@@ -3056,6 +3242,11 @@ def _mutations():
         ("commit the same pair in a YAML file", "scan", _pair_yaml, scan, True),
         ("commit the pair with a placeholder, beside an ordinary word", "scan", _pair_placeholder, "-" + scan, True),
         ("commit a typed domain in capitals", "scan", _upper_domain, scan, True),
+        ("commit a pair whose type comes through a merge key", "scan", _pair_by_merge_key, scan, True),
+        ("hide a live value in a tagged mapping", "scan", _pair_in_a_tagged_mapping, scan, True),
+        ("hide a live value behind a key in other case", "scan", _pair_by_case_variant, scan, True),
+        ("hide a live list behind a repeated key", "scan", _pair_list_then_repeat, scan, True),
+        ("commit a mapping with a sequence for a key", "scan", _complex_key, "-" + scan, True),
         ("commit a phone pair written by hand in YAML", "scan", _pair_unquoted_phone, scan, True),
         ("hide a live value behind a repeated key", "scan", _pair_repeated_value, scan, True),
         ("commit a .json pair behind a byte-order mark", "scan", _pair_json_with_bom, scan, True),
@@ -3197,10 +3388,14 @@ def self_test(ctx: dict) -> int:
         base = Path(tmp)
         (base / ".githooks").mkdir()
         (base / "connectors" / "acme" / "manifests").mkdir(parents=True)
-        (base / "AGENTS.md").write_bytes(b"The Execution Limits clause was removed \x96 on purpose.\n")
+        (base / "AGENTS.md").write_bytes(
+            b"## 4. Execution Limits\n\n<!-- - **" + RT15_CLAUSE_SENTENCE.encode() + b"** -->\n"
+            b"\xff a byte that is not UTF-8\n\n## 5. Next\n"
+        )
         (base / ".githooks" / "pre-commit").write_text(
             "# python tools/validate_retention.py --repo-scan --staged\n"
-            "python tools/validate_retention.py --repo-scan --staged || true\n",
+            "python tools/validate_retention.py --repo-scan --staged || {\n"
+            "  echo refused\n  exit 0\n}\n",
             encoding="utf-8",
         )
         (base / "connectors" / "acme" / "manifest.yaml").write_text(
@@ -3218,13 +3413,41 @@ def self_test(ctx: dict) -> int:
         f"expected four absent parts, {note}"
     )
 
+    # The canary half, measured with the validator flag set as if one existed:
+    # a commented field is absent and a parsed one is present.
+    global MANIFEST_VALIDATOR_REQUIRES_CANARY
+    held_flag = MANIFEST_VALIDATOR_REQUIRES_CANARY
+    MANIFEST_VALIDATOR_REQUIRES_CANARY = True
     try:
-        selector_pairs("policy/x.yaml", "node: &n\n  child: *n\n", {"email"})
-        ok = True
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            manifest = base / "connectors" / "acme" / "manifest.yaml"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text("# canary_subject_class: synthetic\nid: acme\n", encoding="utf-8")
+            commented = rt15_parts(set(), base)[1][1]
+            manifest.write_text("canary_subject_class: synthetic\nid: acme\n", encoding="utf-8")
+            parsed = rt15_parts(set(), base)[1][1]
+        ok = commented is False and parsed is True
+    finally:
+        MANIFEST_VALIDATOR_REQUIRES_CANARY = held_flag
+    failures += 0 if ok else 1
+    print(
+        f"  {'refused' if ok else 'PASSED  '}  {'measure the canary field by parse, not by text':56} "
+        f"expected absent then present, measured {commented} then {parsed}"
+    )
+
+    try:
+        found = selector_pairs(
+            "policy/x.yaml",
+            "node: &n\n  child: *n\nselectors:\n  - selector_type: email\n    value: "
+            + "examplename" + "@" + "example" + ".org\n",
+            {"email"},
+        )
+        ok = any(selector == "email" for _, selector, _ in found)
     except RecursionError:
         ok = False
     failures += 0 if ok else 1
-    print(f"  {'refused' if ok else 'PASSED  '}  {'walk a self-referential YAML anchor':56} expected no crash")
+    print(f"  {'refused' if ok else 'PASSED  '}  {'read a live pair beside a self-referential anchor':56} expected the pair to be read")
 
     print()
     if failures:

@@ -22,6 +22,31 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. A third pass over the retention fixes.**
+
+  **What changed.** The rule classification reads lists and string booleans,
+  with nine more pins, among them the case narrative's `survives: false`. The
+  YAML pair reader constructs self-referential anchors, flattens merge keys,
+  reads tagged mappings, keeps repeats across case and nested lists, survives a
+  sequence used as a key, and falls back to the safe loader; `53da6ce` had
+  regressed on the first two. RT-15's clause and hook are measured by shape,
+  RT-16's code entry is pinned whole, STRATA_ROWS and DURATIONS compare type,
+  and a recursive policy is reported as malformed. **This corrects the entry
+  below for `53da6ce`**, whose "every compiled boolean and stratum" skipped
+  lists. Twelve findings of a third adversarial pass, decided under the
+  operator's grant of 2026-09-30 23:28 as resumed at 12:24 and confirmed for
+  merges at 12:37, and revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py`, the worklog and the
+  handoff.
+
+  **What validation ran.** The retention self-test, 155 breaks; `--policy` and
+  `--repo-scan` output byte-identical to the previous commit; all sixteen
+  preflight commands; both forms of `git diff --check`. The kernel gate exited
+  0.
+
+  **What did not change.** No policy value, doctrine file or stamp.
+
 - **2026-10-01, afternoon. The second review's authorization findings.**
 
   **What changed.** A-12 catches a reference copied from its baseline, a field

@@ -2178,3 +2178,46 @@ output is byte-identical to `53da6ce`.
 staged tree, the authorization self-test with 113 breaks, and both forms of
 `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
 checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Ninth: a third pass over this afternoon's retention fixes, Class B.** Each
+review has found holes in the previous round's fixes, so a third lens on Opus
+5.5 ran over `c82ed28` and `53da6ce` before the 16:15 stop. It found twelve, and
+its refuter confirmed all twelve. Two corrections to the seventh paragraph above
+belong here.
+- "The last" was still false, because the classification walk skipped lists.
+  It now reads list items by index and reads a boolean spelled as a string.
+  List items read by a name-keyed check are recognized as read; the rest are
+  pinned or named. The case narrative's `survives: false` (RT-13, RT-2) and
+  RT-9's cached-read flag in the cadence are among the nine new pins.
+  `gate_telemetry.stratum` moves from named to pinned.
+- 53da6ce's YAML reader regressed. On a self-referential anchor and on a "<<"
+  merge key it read the whole file as nothing, where `c82ed28` read both. On a
+  sequence used as a key it crashed, and the crash was reported against the
+  wrong file. The reader now builds a mapping before filling it, so an anchor
+  constructs. It flattens merge keys at the node level, routes a tagged mapping
+  through the same constructor, keeps repeated keys across case variants and
+  nested lists, and falls back to the safe loader when its own read fails.
+
+The other fixes:
+- RT-15's clause is measured as a rendered, unwithdrawn bullet under a
+  level-two "## 4. Execution Limits" heading. HTML comments and fenced blocks
+  are stripped first.
+- RT-15's hook part is measured as the scan stanza at the start of a line whose
+  failure block ends in `exit 1`, with no `exit 0` before it.
+- RT-16's code entry must be exactly the U-07 deferral.
+- STRATA_ROWS and DURATIONS compare type.
+- A recursion in the governed policy is reported as malformed rather than as a
+  traceback.
+- The self-test's synthetic tree now carries a real section 4 heading with the
+  bullet commented out. It measures the canary field by parse, with the
+  validator flag set for the case. Its anchor case puts a live pair beside the
+  anchor and requires it to be read.
+
+Twenty self-test breaks are new, each a mutation the refuter showed passed the
+previous tool, and one measured case is new and two are reworked. `--policy` and `--repo-scan` output are byte-identical
+to `9fad18e`.
+
+**Battery for the ninth change.** All sixteen preflight commands passed on the
+staged tree, the retention self-test with 155 breaks, and both forms of `git
+diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.
