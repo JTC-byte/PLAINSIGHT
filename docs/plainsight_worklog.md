@@ -2011,3 +2011,24 @@ review table: 64 closed, nine in part, fourteen open and one the operator's.
 staged tree, the authorization self-test with 86 breaks, and both forms of `git
 diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Fourth: the generated policies stop naming an evaluator that does not exist,
+Class A.** One review finding, self-description:11. `policy/lineage.yaml`'s two
+chain rules carried `evaluated_by: tools/validate_authorization.py at Step 8,
+over the composed chain`, `policy/violation-codes.yaml` described the gate
+category the same way, and `tools/validate.py`'s header said the chain rules
+belong to that tool at Step 8. `--fixtures` grades wire form, enums and the stamp
+read and produces no gate decision, and every chain row is held. The sentences
+come from `tools/generate_pse.py`, not from `spec/layer-model.yaml`, so the
+generator's two sentences were corrected and both files regenerated; the other
+three generated artifacts and both corpora are byte-identical, which both
+`--check` modes confirm. The header now says that rows in `conformance/gate/`
+assert the rules, that the rows are held, and that no tool evaluates a chain
+until VA-U1 decides where the evaluator lives and Step 10 delivers it. No rule,
+code or fixture changed. Recounted from the review table: 65 closed, nine in
+part, thirteen open and one the operator's.
+
+**Battery for the fourth change.** All sixteen preflight commands passed on the
+staged tree, both drift checks among them, and both forms of `git diff
+--check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.

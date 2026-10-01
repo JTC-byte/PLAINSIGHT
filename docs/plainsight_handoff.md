@@ -12,9 +12,9 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file makes A-08 find an email or phone shape under any key, on top of
-`69b182d`, under the overnight grant of 2026-09-30 23:28 as renewed at 01:26,
-resumed by the maintainer at 12:24 after the hold of 01:56. The commits before it that night gave the gates one reader of the pin of
+file stops the generated policies naming an evaluator that does not exist, on
+top of `1238b28`, under the overnight grant of 2026-09-30 23:28 as renewed at
+01:26, resumed by the maintainer at 12:24 after the hold of 01:56. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,18 +46,19 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** A-08 refused a selector-shaped value only under
-one of ten selector keys, so an email address written into a fixture's prose or
-an input under another key passed. A second pass now refuses an email or E.164
-phone shape in any string of a row, outside a bracketed placeholder. The corpus
-carries none, and `--fixtures` output is unchanged.
+**What changed and why.** The generated lineage and violation-code policies,
+and `tools/validate.py`'s header, said the composed-chain rules are evaluated by
+`tools/validate_authorization.py` at Step 8. No chain is evaluated: gate rows
+assert the rules and are held, and where the evaluator lives is VA-U1. The
+generator's two sentences and the header now say that.
 
-**Which surfaces moved.** `tools/validate_authorization.py` and its
-self-test, `CHANGELOG.md`, this file, and the worklog.
+**Which surfaces moved.** `tools/generate_pse.py`, the regenerated
+`policy/lineage.yaml` and `policy/violation-codes.yaml`, `tools/validate.py`,
+`CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the authorization
-self-test with 86 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit, both drift checks included. All sixteen preflight commands
+passed, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -315,7 +316,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Commits made on 2026-10-01 closed 64 of them and part of nine
+mechanism. Commits made on 2026-10-01 closed 65 of them and part of nine
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each
@@ -326,11 +327,10 @@ against `8bedba1` and found 11 more, none refuted. Two are ratification
 blockers: the shared reader's whole-artifact test is a substring match, so an
 Item cell saying "not the whole artifact" stamped the file, and nothing reads
 SS-14's seal condition for the cast. All eleven are closed, three of them in
-part, and the review record lists what remains of each. Of the fourteen
+part, and the review record lists what remains of each. Of the thirteen
 review findings still open, three wait on the operator's queue, nine on the
 evaluator VA-U1 holds until Step 10 or on fixture semantics a ratified entry
-decides, and two are agent work: retention-mechanism:1 and
-self-description:11.
+decides, and one is agent work: retention-mechanism:1.
 
 ## 6. Session context that lives outside this repository
 

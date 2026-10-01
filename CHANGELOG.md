@@ -22,6 +22,31 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. The generated policies stop naming an evaluator that
+  does not exist.**
+
+  **What changed.** `tools/generate_pse.py` wrote that the composed-chain rules
+  are evaluated by `tools/validate_authorization.py` at Step 8, and
+  `tools/validate.py`'s header said the same. No chain is evaluated. The
+  generator's two sentences and the header now say that gate rows assert the
+  rules, that the rows are held, and that the evaluator is VA-U1's, with
+  `runner/subject_guard.py` at Step 10. `policy/lineage.yaml` and
+  `policy/violation-codes.yaml` are regenerated. One finding of the Step 8
+  adversarial review, decided under the operator's overnight grant of
+  2026-09-30 23:28 as resumed at 12:24, and revertible.
+
+  **Which surfaces moved.** `tools/generate_pse.py`, `policy/lineage.yaml`,
+  `policy/violation-codes.yaml`, `tools/validate.py`, the worklog and the
+  handoff.
+
+  **What validation ran.** Both `--check` modes, with the schema, the semantics
+  and producer-authority policies and both corpora byte-identical; all sixteen
+  preflight commands; both forms of `git diff --check`. The kernel gate exited
+  0.
+
+  **What did not change.** No rule, code, fixture, layer-model entry, doctrine
+  file or stamp.
+
 - **2026-10-01, afternoon. A-08 finds an email or phone shape under any key.**
 
   **What changed.** A-08 read only the values of ten selector keys. A second pass

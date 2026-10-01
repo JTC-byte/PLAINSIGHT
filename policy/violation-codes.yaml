@@ -21,7 +21,8 @@ violation_codes:
     runtime: a rule whose condition is a fact about the case; the runner, not the corpus validator
     lineage: the lineage policy
     producer: the producer-authority policy, checked before any semantic check
-    gate: tools/validate_authorization.py over the composed chain, Step 8
+    gate: the subject gate over the composed chain, asserted by conformance/gate/ rows and evaluated once
+      VA-U1's evaluator lands at Step 10
     egress: the crossing check at the environment boundary
   codes:
   - code: SCHEMA_INVALID

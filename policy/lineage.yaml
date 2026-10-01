@@ -413,7 +413,8 @@ lineage:
         from the seed, and refuses when the chain leaves the authorized set even though every hop was
         individually legal. Three individually legal hops that compose into a selector nobody authorized
         is the fixture.
-      evaluated_by: tools/validate_authorization.py at Step 8, over the composed chain
+      evaluated_by: 'nothing yet: conformance/gate/ rows assert it and are held on unratified entries,
+        and where the evaluator lives is VA-U1, with runner/subject_guard.py at Step 10'
     incidental_never_seeds:
       code: SUBJECT_NOT_AUTHORIZED
       corpus: conformance/gate/
@@ -423,7 +424,8 @@ lineage:
       - doctrine/SUBJECT_SELECTION.md SS-16
       statement: A chain whose origin resolves to a COLLECT_EVENT with subject_relation incidental is
         refused. An S5 selector is not a seed for anything.
-      evaluated_by: tools/validate_authorization.py at Step 8, over the composed chain
+      evaluated_by: 'nothing yet: conformance/gate/ rows assert it and are held on unratified entries,
+        and where the evaluator lives is VA-U1, with runner/subject_guard.py at Step 10'
   matrix:
     AUTHORIZE_EVENT:
     - AUTHORIZE_EVENT

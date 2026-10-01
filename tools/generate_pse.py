@@ -755,7 +755,11 @@ def build_lineage(ctx: Ctx) -> dict:
             "fixture": rule.get("fixture"),
             "cites": list(_as_list(rule.get("cites"))),
             "statement": " ".join(str(rule.get("statement", "")).split()),
-            "evaluated_by": "tools/validate_authorization.py at Step 8, over the composed chain",
+            "evaluated_by": (
+                "nothing yet: conformance/gate/ rows assert it and are held on unratified "
+                "entries, and where the evaluator lives is VA-U1, with runner/subject_guard.py "
+                "at Step 10"
+            ),
         }
 
     return {
@@ -878,7 +882,7 @@ def build_codes(ctx: Ctx) -> dict:
                 "runtime": "a rule whose condition is a fact about the case; the runner, not the corpus validator",
                 "lineage": "the lineage policy",
                 "producer": "the producer-authority policy, checked before any semantic check",
-                "gate": "tools/validate_authorization.py over the composed chain, Step 8",
+                "gate": "the subject gate over the composed chain, asserted by conformance/gate/ rows and evaluated once VA-U1's evaluator lands at Step 10",
                 "egress": "the crossing check at the environment boundary",
             },
             "codes": entries,

@@ -32,8 +32,10 @@ runner at Step 10 evaluates them. Two exceptions are evaluated here because a
 corpus-aware runner can resolve them: a citation of a possible-band cluster
 needs a caveat, and a citation of a gestalt-rationale cluster needs a note.
 `REASON_NAMES_SUBJECT` is a review rule with no mechanism and is never emitted
-here. The chain rules in `policy/lineage.yaml` are the gate's and belong to
-`tools/validate_authorization.py` at Step 8. `ABSENCE_CLAIMED_WITHOUT_CANARY`
+here. The chain rules in `policy/lineage.yaml` are the gate's. Rows in
+`conformance/gate/` assert them and are held on unratified entries, and no tool
+evaluates a chain until VA-U1 decides where the evaluator lives and Step 10
+delivers it. `ABSENCE_CLAIMED_WITHOUT_CANARY`
 fires on every `attempted_and_absent` until a connector's canary proves a field
 `always_present`, which is Step 12 input; today there is no proof, so there is
 no exemption.
