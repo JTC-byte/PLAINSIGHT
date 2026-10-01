@@ -1985,3 +1985,24 @@ seven in part.
 the staged tree, the retention self-test with 81 breaks, and both forms of `git
 diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Twenty-first: the register is reconciled column by column, Class B, decided
+under the grant as renewed at 01:26.** One review finding. A-13 compared the set
+of fixture names in `conformance/gate/README.md` section 4 with the corpus and
+read nothing else, so rewriting a register row's criterion, decision, step,
+basis and code produced no finding and the summary still said reconciled. Each
+row's six remaining cells are now read against its fixture and refuse as
+`AUTH_REGISTER_ROW_DRIFT`. The register's notation is read as written: "none"
+for no value, "held" for a value a held row leaves open, which refuses on a row
+nothing holds, and "determinate" for an empty hold. Four Criterion cells were
+shortened forms of the fixture's field and now carry it whole; the README
+states the notation under the table. Four self-test breaks are new and pass
+when the column check is disabled. Nine existing breaks edit a fixture the
+register describes without editing the register, so they now also fire A-13's
+columns and each says so. `--fixtures` output is byte-identical to `d0b1984`.
+With this, 60 of the review's 88 findings are closed and seven in part.
+
+**Battery for the twenty-first change.** All sixteen preflight commands passed
+on the staged tree, the authorization self-test with 67 breaks, and both forms
+of `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.

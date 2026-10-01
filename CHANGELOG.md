@@ -22,6 +22,27 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The gate register is reconciled column by column.**
+
+  **What changed.** A-13 read only the name column of the register in
+  `conformance/gate/README.md` section 4. It now reads each row's criterion,
+  decision, step, basis, code and hold against its fixture, on the register's
+  notation, and refuses a contradiction as `AUTH_REGISTER_ROW_DRIFT`. Four
+  shortened Criterion cells now carry the fixture's field whole, and the README
+  states the notation. One finding of the Step 8 adversarial review, decided
+  under the operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`,
+  `conformance/gate/README.md` section 4, the worklog and the handoff.
+
+  **What validation ran.** The authorization self-test, 67 breaks, with the
+  column check shown to be what refuses its four; `--fixtures` output
+  byte-identical to the previous commit; all sixteen preflight commands; both
+  forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No corpus row, policy value, schema, doctrine file or
+  stamp.
+
 - **2026-10-01, overnight. The repo scan reads a selector written as a type
   beside a value.**
 

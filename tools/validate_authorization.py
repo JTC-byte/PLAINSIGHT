@@ -92,7 +92,10 @@ Every check guards a specific defect:
         half the drift, which is the lesson D-01 recorded. Two rows sharing one
         name is the adjacent case: a reconcile keyed on the name reads one row as
         covering both, and a criterion is proven by whichever row the grader
-        reached last.
+        reached last. Since 2026-10-01 each register row's criterion, decision,
+        step, basis, code and hold are read against its fixture too, on the
+        register's notation: "none" for no value, "held" for a value a held row
+        leaves open, and "determinate" for an empty hold.
   A-14  A fixture name `spec/layer-model.yaml` reserves for this corpus that is
         missing, or present with a code or an `expect_only` other than the one
         the fixture map reserves. Rank 3 owns those three names.
@@ -397,6 +400,49 @@ CRITERION_RE = re.compile(r"\b((?:SS|RT|EG|CR|HY)-\d+)\b")
 PENDING_ID_RE = re.compile(r"^(?:SA|SAS|GF|VA)-U\d+$")
 REGISTER_NAME_RE = re.compile(r"^\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|", re.M)
 GF_ENTRY_RE = re.compile(r"^### (GF-U\d+)\.", re.M)
+
+
+def _register_rows(block: str) -> dict[str, list[str]]:
+    """Each register row's six cells after the name, keyed on the name."""
+    out: dict[str, list[str]] = {}
+    for line in block.splitlines():
+        match = REGISTER_NAME_RE.match(line)
+        if match:
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            out.setdefault(match.group(1), cells[1:])
+    return out
+
+
+def _register_drift(cells: list[str], row: dict) -> list[str]:
+    """Where a register row states something its fixture does not."""
+
+    def cell(text) -> str:
+        return str(text).replace("`", "").strip()
+
+    if len(cells) != 6:
+        return [f"{len(cells)} cells after the name where the register has 6"]
+    criterion, decision, step, basis, code, held = (cell(c) for c in cells)
+    dec = _decision(row)
+    pending = [str(x) for x in (row.get("pending") or [])]
+    out: list[str] = []
+    if criterion != cell(row.get("criterion", "")):
+        out.append(f"criterion '{criterion}' where the fixture states '{cell(row.get('criterion', ''))}'")
+    for label, stated, value in (
+        ("decision", decision, dec.get("value")),
+        ("step", step, dec.get("decided_at_step")),
+        ("basis", basis, dec.get("basis")),
+        ("code", code, row.get("expect_code")),
+    ):
+        if value in (None, ""):
+            ok = stated == "none" or (stated == "held" and bool(pending))
+        else:
+            ok = stated == str(value)
+        if not ok:
+            out.append(f"{label} '{stated}' where the fixture states {value!r}")
+    want = ", ".join(pending) if pending else "determinate"
+    if held != want:
+        out.append(f"held on '{held}' where the fixture states '{want}'")
+    return out
 
 # ---------------------------------------------------------------------------
 # The unratified questions this tool cannot answer. Each entry carries the
@@ -877,6 +923,7 @@ def load() -> dict:
         "codes": codes,
         "model": _yaml(LAYER_MODEL),
         "register": list(dict.fromkeys(REGISTER_NAME_RE.findall(register_block))),
+        "register_rows": _register_rows(register_block),
         "gf_entries": set(GF_ENTRY_RE.findall(register_text)),
         "pin_text": _read(PIN),
         "ss_defined": DEFINITION_RE.findall(_read(SUBJECT_SELECTION)),
@@ -1367,6 +1414,27 @@ def check_corpus(model: dict) -> list[Finding]:
                 "that required it no longer does",
             )
         )
+    # A-13's columns. Until 2026-10-01 only the name column was read, so a
+    # register row could state another criterion, decision, step, basis, code
+    # or hold than its fixture and the summary still said reconciled.
+    by_name = {r.get("name"): r for r in rows}
+    for name, cells in sorted((model.get("register_rows") or {}).items()):
+        if name not in by_name:
+            continue
+        drift = _register_drift(cells, by_name[name])
+        if drift:
+            f.append(
+                Finding(
+                    "AUTH_REGISTER_ROW_DRIFT",
+                    f"conformance/gate/README.md section 4 > {name}",
+                    f"the register row states {'; '.join(drift)}. The register is what "
+                    "a reader checks a fixture against, and a row that contradicts its "
+                    "fixture certifies a case the corpus does not carry",
+                    "correct whichever of the two is wrong, in the same commit as the "
+                    "reason; the register writes none for no value, held for a value a "
+                    "held row leaves open, and determinate for an empty hold",
+                )
+            )
     for name in sorted(set(corpus_names)):
         if corpus_names.count(name) > 1:
             f.append(
@@ -2522,6 +2590,22 @@ def _mut_reader_stamps_nothing(m: dict) -> None:
     }
 
 
+def _mut_register_decision_drifts(m: dict) -> None:
+    m["register_rows"]["seed-permitted"][1] = "REFUSED"
+
+
+def _mut_register_holds_a_determinate_row(m: dict) -> None:
+    m["register_rows"]["runner-started-on-local"][5] = "GF-U1"
+
+
+def _mut_register_held_without_a_hold(m: dict) -> None:
+    m["register_rows"]["runner-started-on-local"][1] = "held"
+
+
+def _mut_register_criterion_drifts(m: dict) -> None:
+    m["register_rows"]["seed-expires-on-mutated"][0] = "SS-5, `selectors`"
+
+
 def _mut_fixture_not_in_register(m: dict) -> None:
     m["register"] = [n for n in m["register"] if n != "seed-permitted"]
 
@@ -2721,7 +2805,7 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
     reader can check against the artifacts, which is the point of the flag.
     """
     return [
-        ("drop a key from a corpus row", _mut_drop_row_key, "AUTH_ROW_KEYS_UNEXPECTED", True, ""),
+        ("drop a key from a corpus row", _mut_drop_row_key, "AUTH_ROW_KEYS_UNEXPECTED", False, "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too"),
         (
             "a row asserting no value, no code and no entry",
             _mut_row_asserts_nothing,
@@ -2748,8 +2832,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "assert a seventh evaluation step",
             _mut_step_outside_enum,
             "AUTH_DECIDED_AT_STEP_OUTSIDE_ENUM",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         (
             "record an extension basis under refusal_basis",
@@ -2762,8 +2846,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "invent a refusal basis for an incidental origin",
             _mut_basis_invented,
             "AUTH_BASIS_OUTSIDE_ENUM",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         (
             "invent a fourth subject relation",
@@ -2776,15 +2860,15 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "expect a violation code nothing declares",
             _mut_code_undeclared,
             "AUTH_CODE_OUTSIDE_VOCABULARY",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         (
             "unhold a refusal with no step and no sentence",
             _mut_unheld_thin_refusal,
             "AUTH_ASSERTION_INCOMPLETE_AND_UNHELD",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         (
             "render a consequence the policy does not carry",
@@ -2797,8 +2881,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "hold a row on an entry nobody wrote",
             _mut_pending_unknown,
             "AUTH_PENDING_ENTRY_UNKNOWN",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         (
             "drop expires_on from an authorization record",
@@ -2839,6 +2923,34 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "point an SS-5 fixture's dispatch at a different event",
             _mut_ss5_reference_moved,
             "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+            True,
+            "",
+        ),
+        (
+            "state another decision in a register row",
+            _mut_register_decision_drifts,
+            "AUTH_REGISTER_ROW_DRIFT",
+            True,
+            "",
+        ),
+        (
+            "hold a determinate row in the register",
+            _mut_register_holds_a_determinate_row,
+            "AUTH_REGISTER_ROW_DRIFT",
+            True,
+            "",
+        ),
+        (
+            "write held for a value on a row nothing holds",
+            _mut_register_held_without_a_hold,
+            "AUTH_REGISTER_ROW_DRIFT",
+            True,
+            "",
+        ),
+        (
+            "name another field in a register row's criterion",
+            _mut_register_criterion_drifts,
+            "AUTH_REGISTER_ROW_DRIFT",
             True,
             "",
         ),
@@ -2896,8 +3008,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "change the code on a name rank 3 reserves",
             _mut_reserved_code_drift,
             "AUTH_RESERVED_FIXTURE_DRIFT",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         (
             "widen the authorizable class set to S5",
@@ -3059,8 +3171,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "assert a permit under a stamp state missing a criterion",
             _mut_permit_under_a_missing_stamp,
             "AUTH_UNRATIFIED_CRITERION_PERMITTED",
-            True,
-            "",
+            False,
+            "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too",
         ),
         ("drop expires_on from the schema's required list", _mut_schema_drops_required, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
         ("open the schema's record to undeclared fields", _mut_schema_opens, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
@@ -3078,7 +3190,7 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ("delete the environment input from the row that tests it", _mut_given_drops_environment, "AUTH_GIVEN_KEYS_UNEXPECTED", True, ""),
         ("add an ungraded key to a decision", _mut_decision_gains_a_key, "AUTH_DECISION_KEYS_UNEXPECTED", True, ""),
         ("claim a collected string sits in the corpus", _mut_payload_string_claimed, "AUTH_PAYLOAD_STRING_CLAIMED", True, ""),
-        ("let an SS-12 row stand in for SS-5's expires_on fixture", _mut_ss5_criterion_without_ss5, "AUTH_SS5_FIXTURE_MISSING", True, ""),
+        ("let an SS-12 row stand in for SS-5's expires_on fixture", _mut_ss5_criterion_without_ss5, "AUTH_SS5_FIXTURE_MISSING", False, "the break edits a fixture the register describes and not the register, so the register row now contradicts it and A-13's columns fire too"),
         ("take the record off SS-5's expires_on fixture", _mut_ss5_fixture_without_record, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
         ("assert a permit with no stamp state at all", _mut_permit_row_with_no_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", False, "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too"),
         ("swap a preflight check for a mode that always passes", _mut_preflight_check_swapped, "AUTH_PREFLIGHT_LIST_DRIFT", True, ""),

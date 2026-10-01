@@ -173,19 +173,25 @@ rank 3 reserves three names for this corpus.
 | `expiry-boundary-same-day` | SS-5, `expires_on` | held | none | none | none | GF-U1, SA-U1, SA-U3 |
 | `depth-at-the-limit` | SS-16 section 9 | held | none | none | none | GF-U1, GF-U4 |
 | `never-item-6-artifacts-unstamped` | SS-8, SS-14 item 6 | REFUSED | 1 | `never_item` | none | GF-U1, SA-U15 |
-| `criterion-absent-from-stamp-table` | the pin of record, SS-14 item 6 | REFUSED | 1 | `never_item` | none | GF-U1, SA-U15 |
-| `run-against-unauthorized-subject` | fixture map, S7-R7 | none | none | none | `SUBJECT_NOT_AUTHORIZED` | determinate |
-| `run-without-purpose-binding` | fixture map, SS-4 | REFUSED | held | `purpose_unbound` | `CASE_PURPOSE_UNBOUND` | GF-U1, GF-U3, GF-U5 |
+| `criterion-absent-from-stamp-table` | `doctrine/DOCTRINE_STATUS.md`, SS-14 item 6 | REFUSED | 1 | `never_item` | none | GF-U1, SA-U15 |
+| `run-against-unauthorized-subject` | `spec/layer-model.yaml` fixture map, S7-R7 | none | none | none | `SUBJECT_NOT_AUTHORIZED` | determinate |
+| `run-without-purpose-binding` | `spec/layer-model.yaml` fixture map, SS-4 | REFUSED | held | `purpose_unbound` | `CASE_PURPOSE_UNBOUND` | GF-U1, GF-U3, GF-U5 |
 | `bystander-disposition-retain` | SS-10, R8 | REFUSED | 6 | `disposition_out_of_set` | `BYSTANDER_DISPOSITION_OUT_OF_SET` | GF-U1, GF-U5 |
 | `bystander-declaration-absent` | SS-8 step 6, SS-10 | REFUSED | 6 | `bystander_undeclared` | none | GF-U1, GF-U5, SA-U9 |
 | `incidental-estimate-absent` | SS-12 | REFUSED | held | `incidental_estimate_missing` | `INCIDENTAL_ESTIMATE_MISSING` | GF-U1, GF-U5, SA-U13, SA-U16 |
 | `incidental-selector-dispatched-as-seed` | SS-1, SS-10 | REFUSED | held | held | `SUBJECT_NOT_AUTHORIZED` | GF-U1, GF-U2, GF-U5 |
 | `injected-instruction-in-collected-bio` | SS-19 | REQUIRES_EXTENSION | 5 | `chain_scope_drift` | `SCOPE_DRIFT_UNADJUDICATED` | GF-U1, GF-U4 |
-| `injected-instruction-absent` | SS-19, SS-8 | REQUIRES_EXTENSION | 5 | `chain_scope_drift` | `SCOPE_DRIFT_UNADJUDICATED` | GF-U1, GF-U4 |
+| `injected-instruction-absent` | SS-19, SS-8 matched-pair standard | REQUIRES_EXTENSION | 5 | `chain_scope_drift` | `SCOPE_DRIFT_UNADJUDICATED` | GF-U1, GF-U4 |
 | `runner-started-on-local` | EG-6 | none | none | none | `EGRESS_ENVIRONMENT_REFUSED` | determinate |
 | `scope-drift-three-hops` | SS-9 | REQUIRES_EXTENSION | 5 | `chain_scope_drift` | `SCOPE_DRIFT_UNADJUDICATED` | GF-U1, GF-U4 |
 | `s4-baseline-scorecard-absent` | SS-8 step 3, SS-17 | REFUSED | 3 | `baseline_missing` | none | GF-U1, SA-U1, SA-U2, SA-U6, SA-U7 |
 | `s4-baseline-scorecard-present` | SS-8 step 3, SS-17 | PERMITTED | 6 | none | none | GF-U1, SA-U2, SA-U6, SA-U9 |
+
+Each row is read against its fixture, column by column, by
+`tools/validate_authorization.py` A-13. A cell reads "none" where the fixture
+carries no value, "held" where a held row leaves the value open, and
+"determinate" where the fixture's `pending` list is empty. The Criterion cell
+is the fixture's `criterion` field with its backticks.
 
 Three of those names, their codes and their `expect_only` flags are reserved for
 this corpus by `spec/layer-model.yaml`'s fixture map:
