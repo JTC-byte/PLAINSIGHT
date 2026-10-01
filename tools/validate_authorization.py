@@ -627,10 +627,20 @@ class Unreadable(Exception):
 
 
 def _read(path: Path) -> str:
+    rel = REL.get(path, str(path))
     try:
         return path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        # Until 2026-10-01 this ended in a traceback and exit 1.
+        raise Unreadable(
+            "AUTH_INPUT_UNPARSEABLE",
+            rel,
+            f"the file is not valid UTF-8 (byte {exc.start}: {exc.reason}), so the "
+            "entries this gate reconciles cannot be read",
+            f"re-save {rel} as UTF-8; or move the authorization gate to PENDING in "
+            "tools/validate_conformance.py",
+        ) from exc
     except OSError as exc:
-        rel = REL.get(path, str(path))
         raise Unreadable(
             "AUTH_INPUT_UNREADABLE",
             rel,

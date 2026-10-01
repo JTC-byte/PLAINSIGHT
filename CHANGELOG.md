@@ -22,6 +22,31 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The repo scan reads every file, and a malformed or
+  unreadable input refuses rather than passing or crashing.**
+
+  **What changed.** Both repo-scan modes read names NUL-separated and decode
+  every file with replacement, so a non-ASCII path or a non-UTF-8 file is no
+  longer skipped, and an unshowable staged file refuses. The retention policy
+  check refuses when the layer model's strata cannot be read, where it used to
+  fall back to empty sets and pass RT-2's own refusal. A malformed policy or
+  fixture refuses as `RETENTION_INPUT_MALFORMED` and a non-UTF-8 authorization
+  input as `AUTH_INPUT_UNPARSEABLE`, both with exit 2, where each ended in a
+  traceback. Five findings of the Step 8 adversarial review, decided under the
+  operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py` and its self-test,
+  `tools/validate_authorization.py`, the worklog and the handoff.
+
+  **What validation ran.** The retention self-test, 43 breaks; a planted handle
+  in a non-ASCII-named and a non-UTF-8 file in a scratch repository, found by
+  both modes; a malformed policy and a non-UTF-8 pin, each exit 2; all sixteen
+  preflight commands on the staged tree; both forms of `git diff --check`. The
+  kernel gate exited 0.
+
+  **What did not change.** No doctrine file, stamp, policy, schema, corpus, or
+  scan shape. Every change makes a gate stricter.
+
 - **2026-10-01, overnight. RT-11's halt override refuses as U-17, the halt is
   graded, and no mode is dropped from a combined call.**
 

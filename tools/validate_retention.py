@@ -410,6 +410,10 @@ def as_list(value) -> list:
 # ---------------------------------------------------------------------------
 
 
+#: The exceptions a governed input of the wrong shape raises inside a check.
+MALFORMED = (TypeError, AttributeError, KeyError, IndexError)
+
+
 class Unreadable(Exception):
     """A governed input this tool reads could not be read. Exit code 2."""
 
@@ -565,6 +569,21 @@ def unstamped_reason(status: str, rel: str) -> str:
     return pin_of_record.Pin(status, ROOT).reason_unstamped(rel)
 
 
+def layer_model_strata():
+    """STRATA, SURVIVING_STRATA and CROSSING_STRATA from the layer model's tool.
+
+    None when the module or a constant cannot be read. Until 2026-10-01 that
+    case fell back to three empty sets, and R-01, RT-2's own refusal, and the
+    strata-set reconcile then passed with nothing to compare against.
+    """
+    try:
+        import validate_layer_model as lm
+
+        return set(lm.STRATA), set(lm.SURVIVING_STRATA), set(lm.CROSSING_STRATA)
+    except Exception:
+        return None
+
+
 def build_context() -> dict:
     policy, policy_text = load_policy()
     fixture, fixture_text = load_fixture()
@@ -576,6 +595,7 @@ def build_context() -> dict:
         "registry": load_registry(),
         "codes": declared_codes(),
         "status": load_stamps(),
+        "strata": layer_model_strata(),
     }
 
 
@@ -777,14 +797,23 @@ def check_policy(ctx: dict) -> list[Finding]:
             )
         )
 
-    try:
-        import validate_layer_model as lm
-
-        model_strata = set(lm.STRATA)
-        model_surviving = set(lm.SURVIVING_STRATA)
-        model_crossing = set(lm.CROSSING_STRATA)
-    except Exception:
-        model_strata, model_surviving, model_crossing = set(), set(), set()
+    lm_strata = ctx.get("strata", layer_model_strata())
+    if lm_strata is None:
+        out.append(
+            Finding(
+                "RETENTION_LAYER_MODEL_UNREADABLE",
+                "tools/validate_layer_model.py",
+                "STRATA, SURVIVING_STRATA and CROSSING_STRATA could not be read "
+                "from the layer model's tool, so R-01, RT-2's own refusal, and the "
+                "strata-set reconcile have nothing to compare against. Until "
+                "2026-10-01 this case fell back to empty sets and passed",
+                "restore tools/validate_layer_model.py and its three constants; "
+                "this tool keeps no copy of them, because a second pin beside the "
+                "layer model's would drift from it",
+            )
+        )
+        return out
+    model_strata, model_surviving, model_crossing = lm_strata
 
     row_names = set()
     for row in rows:
@@ -1588,14 +1617,24 @@ def _git(args: list[str]) -> str:
 
 
 def scan_paths(staged: bool) -> list[tuple[str, str]]:
-    """The file set, and its content. Reading VR-U2 bounds what this covers."""
+    """The file set, and its content. Reading VR-U2 bounds what this covers.
+
+    Until 2026-10-01 both modes could skip a file and still report ok. git
+    quotes a path with a non-ASCII character unless asked for NUL-separated
+    output, so the quoted name opened nothing and was dropped; and the working
+    tree mode dropped any file that was not valid UTF-8. Names are now read
+    NUL-separated, every file is decoded with replacement so a selector in its
+    ASCII typed form is still found, and a staged file git cannot show refuses
+    rather than vanishing. A tracked file missing from the working tree has no
+    content to scan in that mode and is still passed over.
+    """
     out: list[tuple[str, str]] = []
     if staged:
         names = [
             n
             for n in _git(
-                ["diff", "--cached", "--name-only", "--diff-filter=ACMR"]
-            ).splitlines()
+                ["diff", "--cached", "--name-only", "-z", "--diff-filter=ACMR"]
+            ).split("\0")
             if n.strip()
         ]
         for name in names:
@@ -1603,20 +1642,24 @@ def scan_paths(staged: bool) -> list[tuple[str, str]]:
                 ["git", "show", f":{name}"],
                 cwd=ROOT,
                 capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
             )
-            if proc.returncode == 0:
-                out.append((name, proc.stdout))
+            if proc.returncode != 0:
+                raise Unreadable(
+                    "RETENTION_REPO_SCAN_SOURCE_UNREADABLE",
+                    name,
+                    "git could not show this staged file, so the scan cannot read "
+                    "what the commit would carry and has not checked it",
+                    "restage the file and commit again; or unstage it",
+                )
+            out.append((name, proc.stdout.decode("utf-8", errors="replace")))
         return out
-    for name in _git(["ls-files"]).splitlines():
+    for name in _git(["ls-files", "-z"]).split("\0"):
         if not name.strip():
             continue
         path = ROOT / name
         try:
-            out.append((name, path.read_text(encoding="utf-8")))
-        except (OSError, UnicodeDecodeError):
+            out.append((name, path.read_bytes().decode("utf-8", errors="replace")))
+        except OSError:
             continue
     return out
 
@@ -1850,6 +1893,18 @@ def _mutations():
     def delete_the_halt(ctx):
         del ctx["policy"]["retention"]["halt"]
 
+    def hide_the_layer_model(ctx):
+        ctx["strata"] = None
+
+    def make_the_policy_a_scalar(ctx):
+        ctx["policy"]["retention"] = "a string where the policy was"
+
+    def make_a_stratum_a_list(ctx):
+        ctx["policy"]["retention"]["strata"]["rows"][0]["stratum"] = [0, 1]
+
+    def make_the_fixture_a_scalar(ctx):
+        ctx["fixture"]["shred_roundtrip"] = 7
+
     def withdraw_the_retention_range_row(ctx):
         ctx["status"] = re.sub(
             r"(?m)^\| RT-1 to RT-18, all criteria[^\n]*\n", "", ctx["status"], count=1
@@ -1925,6 +1980,10 @@ def _mutations():
         ("stamp the policy in the pin of record", "policy", stamp_the_policy, "-RETENTION_POLICY_UNRATIFIED", True),
         ("stamp one policy entry in house format", "policy", stamp_the_policy_by_an_entry_row, "=RETENTION_POLICY_UNRATIFIED", True),
         ("withdraw doctrine/RETENTION.md's range row", "policy", withdraw_the_retention_range_row, "RETENTION_CRITERION_UNSTAMPED", True),
+        ("lose the layer model's strata", "policy", hide_the_layer_model, "RETENTION_LAYER_MODEL_UNREADABLE", False),
+        ("make the policy wrapper a scalar", "policy", make_the_policy_a_scalar, "RETENTION_INPUT_MALFORMED", False),
+        ("make a stratum a list", "policy", make_a_stratum_a_list, "RETENTION_INPUT_MALFORMED", False),
+        ("make the fixture wrapper a scalar", "roundtrip", make_the_fixture_a_scalar, "RETENTION_INPUT_MALFORMED", False),
         ("let a ledger override lift the RT-11 halt", "policy", let_the_override_lift_the_halt, "RETENTION_POLICY_HALT_DRIFT", False),
         ("make the RT-11 halt per-case and clear it on a ledger entry", "policy", make_the_halt_per_case, "RETENTION_POLICY_HALT_DRIFT", True),
         ("delete the RT-11 halt", "policy", delete_the_halt, "RETENTION_POLICY_HALT_DRIFT", False),
@@ -1949,10 +2008,13 @@ def _mutations():
 
 
 def _run_check(which: str, ctx: dict, sample) -> set[str]:
-    if which == "policy":
-        return {f.code for f in check_policy(ctx)}
-    if which == "roundtrip":
-        return {f.code for f in check_roundtrip(ctx)}
+    try:
+        if which == "policy":
+            return {f.code for f in check_policy(ctx)}
+        if which == "roundtrip":
+            return {f.code for f in check_roundtrip(ctx)}
+    except MALFORMED:
+        return {"RETENTION_INPUT_MALFORMED"}
     if which == "shapes":
         return {f.code for f in check_scan_shapes(ctx)}
     registry = ctx["registry"]
@@ -2135,6 +2197,22 @@ def main(argv: list[str]) -> int:
             gate = GATE_POLICY
     except Unreadable as exc:
         print(exc.finding.render(), file=sys.stderr)
+        return 2
+    except MALFORMED as exc:
+        print(
+            Finding(
+                "RETENTION_INPUT_MALFORMED",
+                f"{POLICY_REL} or {FIXTURE_REL}",
+                f"a governed input has a shape this gate cannot read "
+                f"({exc.__class__.__name__}: {exc}), so the checks after that "
+                "point never ran. Until 2026-10-01 this case ended in a traceback "
+                "and exit 1, which a caller could not tell from violations found",
+                "restore the block to the shape the policy header and the "
+                "fixture's contract describe, a mapping where a mapping is "
+                "read and a scalar stratum on every row",
+            ).render(),
+            file=sys.stderr,
+        )
         return 2
 
     if gate_log:

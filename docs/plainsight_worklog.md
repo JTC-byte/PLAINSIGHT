@@ -1615,3 +1615,27 @@ which combine as before. With these, 17 of the review's 88 findings are closed.
 staged tree and both forms of `git diff --check` were clean. The kernel gate
 exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Eighth: five robustness findings, Class B, decided under the grant.** The
+repo scan, RT-15's mechanism, skipped files and still reported ok. git quotes a
+path with a non-ASCII character unless asked for NUL-separated output, so the
+quoted name opened nothing in either mode; the working-tree mode also skipped
+any file that is not valid UTF-8, and a staged file git could not show vanished.
+Both modes now take names NUL-separated and decode every file with replacement,
+so a selector in its ASCII typed form is still found, and an unshowable staged
+file refuses. A synthetic handle planted in a file with a non-ASCII name and in a
+non-UTF-8 file was found by both modes in a scratch repository. When
+`tools/validate_layer_model.py` could not be imported, the retention policy check
+fell back to empty strata sets, and R-01, RT-2's own refusal, passed with nothing
+to compare; it now refuses as `RETENTION_LAYER_MODEL_UNREADABLE` and keeps no
+copy of the sets. A policy or fixture of the wrong shape ended in a traceback
+and exit 1, which a caller cannot tell from violations found; it is now
+`RETENTION_INPUT_MALFORMED` with exit 2, and the authorization gate's reader
+refuses a non-UTF-8 input as `AUTH_INPUT_UNPARSEABLE` with exit 2. The retention
+self-test gains four breaks and refuses all 43. With these, 22 of the review's 88
+findings are closed.
+
+**Battery for the eighth change.** All sixteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.
