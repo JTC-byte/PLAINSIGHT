@@ -1992,3 +1992,22 @@ the operator's.
 staged tree, the authorization self-test with 84 breaks, and both forms of `git
 diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
 passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Third: A-08 finds a selector shape under any key, Class B.** One review
+finding, authorization-mechanism:12. A-08's docstring said it refuses "a
+selector-shaped value that is not a bracketed placeholder", and its walk read
+only the values of ten selector keys, so an email-shaped string in
+`dispatch.motivated_by` or in a row's description passed. A second pass now
+reads every string in a row, removes bracketed placeholders, and refuses an
+email or E.164 phone shape that remains, as `AUTH_VALUE_NOT_PLACEHOLDER`. Those
+two shapes cannot occur by accident in a fixture's prose; a handle or an id is
+an ordinary word, so those are still found only under a selector key, and the
+docstring now says both. Two self-test breaks are new, assembled at run time so
+this tracked file carries no address, and both pass when the second pass is
+disabled. `--fixtures` output is byte-identical to `69b182d`. Recounted from the
+review table: 64 closed, nine in part, fourteen open and one the operator's.
+
+**Battery for the third change.** All sixteen preflight commands passed on the
+staged tree, the authorization self-test with 86 breaks, and both forms of `git
+diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
+passing, 3 unratified and refusing, 2 stubbed and 5 pending.

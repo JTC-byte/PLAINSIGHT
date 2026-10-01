@@ -61,7 +61,10 @@ Every check guards a specific defect:
         was accepted for any value.
   A-08  A selector-shaped value that is not a bracketed placeholder. SS-14 item 5
         keeps a natural person's selector out of every tracked file, and a
-        synthetic value is still a value. This is the rule
+        synthetic value is still a value. Two passes: every value under a
+        selector key, and, since 2026-10-01, an email or E.164 phone shape in any
+        string of a row, outside a placeholder. Before then a selector-shaped
+        string under any other key passed. This is the rule
         `tools/validate_cast.py --placeholder-scan` already applies to the truth
         file, applied to the one corpus that carries authorization records.
   A-09  A `pending` entry naming no unratified entry in
@@ -386,6 +389,15 @@ SELECTOR_KEYS = (
     "selector_value",
 )
 PLACEHOLDER_RE = re.compile(r"^<[^<>]+>$")
+PLACEHOLDER_SPAN_RE = re.compile(r"<[^<>]+>")
+
+#: The shapes A-08's second pass finds under any key. Email and E.164 phone are
+#: the two that cannot occur by accident in a fixture's prose; a handle or an id
+#: is an ordinary word and is found only under a selector key.
+VALUE_SHAPES = (
+    ("an email address", re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
+    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9]\d{7,14}(?!\d)")),
+)
 
 #: Criterion namespaces and the file whose dated ratifier row stamps them.
 NAMESPACE_FILE = {
@@ -1512,6 +1524,21 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
                 seen.append(path)
 
     walk({k: v for k, v in row.items() if k != "_where"}, "", None, False)
+
+    # The second pass: a shape under any key.
+    def shapes(node, path: str):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                shapes(v, f"{path}.{k}")
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                shapes(v, f"{path}[{i}]")
+        elif isinstance(node, str):
+            bare = PLACEHOLDER_SPAN_RE.sub(" ", node)
+            if any(pattern.search(bare) for _, pattern in VALUE_SHAPES) and path not in seen:
+                seen.append(path)
+
+    shapes({k: v for k, v in row.items() if k != "_where"}, "")
     for path in seen:
         out.append(
             Finding(
@@ -2833,6 +2860,17 @@ def _mut_schema_drops_required(m: dict) -> None:
     m["schema"]["required"] = [x for x in m["schema"]["required"] if x != "expires_on"]
 
 
+def _mut_email_in_prose(m: dict) -> None:
+    # Assembled at run time, so this tracked file carries no address.
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Contact " + "examplename" + "@" + "example" + ".org."
+
+
+def _mut_phone_in_prose(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call " + "+1" + "5550100" + "999."
+
+
 def _mut_schema_bound(path: tuple):
     def mutate(m: dict) -> None:
         node = m["schema"]
@@ -3255,6 +3293,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ),
         ("drop expires_on from the schema's required list", _mut_schema_drops_required, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
         ("open the schema's record to undeclared fields", _mut_schema_opens, "AUTH_SCHEMA_RECORD_SHAPE_DRIFT", True, ""),
+        ("write an email address into a fixture's prose", _mut_email_in_prose, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a phone number into a fixture's prose", _mut_phone_in_prose, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
     ] + [
         (f"widen the schema at {'.'.join(path)}", _mut_schema_bound(path), "AUTH_SCHEMA_BOUND_DRIFT", True, "")
         for path, _, _ in SCHEMA_PINS

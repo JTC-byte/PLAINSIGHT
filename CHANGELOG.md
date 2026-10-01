@@ -22,6 +22,25 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. A-08 finds an email or phone shape under any key.**
+
+  **What changed.** A-08 read only the values of ten selector keys. A second pass
+  now refuses an email or E.164 phone shape in any string of a gate corpus row,
+  outside a bracketed placeholder, as `AUTH_VALUE_NOT_PLACEHOLDER`. One finding
+  of the Step 8 adversarial review, decided under the operator's overnight grant
+  of 2026-09-30 23:28 as resumed at 12:24, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`, the worklog and
+  the handoff.
+
+  **What validation ran.** The authorization self-test, 86 breaks, with the
+  second pass shown to be what refuses its two; `--fixtures` output
+  byte-identical to the previous commit; all sixteen preflight commands; both
+  forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No corpus row, schema, policy value, doctrine file or
+  stamp.
+
 - **2026-10-01, afternoon. The authorization schema's bounds and refusing forms
   are pinned, and a string of spaces is blank.**
 
