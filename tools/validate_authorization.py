@@ -82,9 +82,11 @@ Every check guards a specific defect:
         SS-1's class set and is not in this one, because SS-1 marks it not
         authorizable and SS-4 excludes it from the field.
   A-12  One of SS-5's three fields with no refusing fixture, or a fixture that
-        differs from its baseline in more than the field it names. Both halves
-        matter: a missing fixture leaves the field unproven, and a fixture that
-        changes two fields cannot show which one the gate read.
+        differs from its baseline in any gate input other than the field it
+        names: the record, the chain, the dispatch, the given inputs or the
+        instant. Both halves matter: a missing fixture leaves the field
+        unproven, and a fixture that changes two inputs cannot show which one
+        the gate read.
   A-13  A corpus row absent from the register in `conformance/gate/README.md`
         section 4, or a register row absent from the corpus. One direction finds
         half the drift, which is the lesson D-01 recorded. Two rows sharing one
@@ -1382,6 +1384,84 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
     return out
 
 
+#: The gate inputs SS-5's one-field comparison reads. The rest of a row is its
+#: name, its assertion and its hold, none of which the gate is given.
+SS5_INPUTS = ("authorization", "chain", "dispatch", "given", "evaluated_at")
+
+#: Keys whose values are a row's own identifiers. Each is a uuid5 of a label, so
+#: a mutated fixture carries its own; the comparison pairs them by position and
+#: renames them before it compares, and the pairing must be one to one.
+SS5_ID_KEYS = ("event_id", "run_id", "item_id")
+
+UUID_RE = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
+
+def _leaves(x, path: tuple = ()):
+    if isinstance(x, dict):
+        for k, v in x.items():
+            yield from _leaves(v, path + (k,))
+    elif isinstance(x, list):
+        for i, v in enumerate(x):
+            yield from _leaves(v, path + (i,))
+    else:
+        yield path, x
+
+
+def _path_text(path: tuple) -> str:
+    return "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in path).lstrip(".")
+
+
+def _renamed(x, names: dict):
+    if isinstance(x, dict):
+        return {k: _renamed(v, names) for k, v in x.items()}
+    if isinstance(x, list):
+        return [_renamed(v, names) for v in x]
+    if isinstance(x, str):
+        return UUID_RE.sub(lambda m: names.get(m.group(0), m.group(0)), x)
+    return x
+
+
+def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
+    """Every gate input in which `row` differs from `base`, other than `field`.
+
+    Until 2026-10-01 A-12 compared the authorization record alone, so a fixture
+    could differ from its baseline in the chain, the dispatch, the given inputs
+    or the instant and still count as SS-5's one-field mutation; one did, in an
+    item's locator. The field is exempt in the record and in any chain payload
+    that carries a copy, and a copy that disagrees with its own row's record is
+    a difference. Identifiers are renamed through the pairing above, so a
+    reference that points at a different event after renaming is a difference.
+    """
+    a = {k: row.get(k) for k in SS5_INPUTS}
+    b = {k: base.get(k) for k in SS5_INPUTS}
+    out: list[str] = []
+    fwd: dict = {}
+    back: dict = {}
+    lb = dict(_leaves(b))
+    for path, va in _leaves(a):
+        vb = lb.get(path)
+        if path and path[-1] in SS5_ID_KEYS and isinstance(va, str) and isinstance(vb, str):
+            if fwd.setdefault(va, vb) != vb or back.setdefault(vb, va) != va:
+                out.append(f"{_path_text(path)} (its identifiers do not pair one to one)")
+    a = _renamed(a, fwd)
+    for side in (a, b):
+        record = side.get("authorization")
+        value = record.get(field) if isinstance(record, dict) else None
+        for i, event in enumerate(side.get("chain") or []):
+            payload = event.get("payload") if isinstance(event, dict) else None
+            if isinstance(payload, dict) and field in payload:
+                if side is a and payload[field] != value:
+                    out.append(f"chain[{i}].payload.{field} (disagrees with the record)")
+                payload = {k: v for k, v in payload.items() if k != field}
+                side["chain"] = list(side["chain"])
+                side["chain"][i] = {**event, "payload": payload}
+        if isinstance(record, dict):
+            side["authorization"] = {k: v for k, v in record.items() if k != field}
+    la, lb = dict(_leaves(a)), dict(_leaves(b))
+    out += sorted(_path_text(p) for p in set(la) | set(lb) if la.get(p, ...) != lb.get(p, ...))
+    return out
+
+
 def _ss5_findings(rows: list[dict]) -> list[Finding]:
     """A-12. The criterion that exists because of the measured guard.py defect."""
     out: list[Finding] = []
@@ -1435,8 +1515,9 @@ def _ss5_findings(rows: list[dict]) -> list[Finding]:
                 base = other.get("authorization")
                 if not isinstance(base, dict):
                     continue
-                keys = set(base) | set(record)
-                delta = sorted(k for k in keys if base.get(k) != record.get(k))
+                delta = _ss5_input_delta(row, other, field)
+                if base.get(field) == record.get(field):
+                    delta = [f"no change to {field}"] + delta
                 differs.append((len(delta), delta, other.get("name")))
             if not differs:
                 out.append(
@@ -1451,18 +1532,22 @@ def _ss5_findings(rows: list[dict]) -> list[Finding]:
                 )
                 continue
             size, delta, base_name = min(differs)
-            if delta != [field]:
+            if delta:
                 out.append(
                     Finding(
                         "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
                         f"{row.get('_where', row.get('name'))} > authorization",
                         f"the fixture for {field} differs from its nearest permitted row "
-                        f"({base_name}) in {delta or 'no field at all'}. SS-5 requires a "
-                        "row identical to a passing row except in that one field, because a "
-                        "fixture that changes two fields cannot show which one the gate read",
-                        f"restore every field except {field} to the permitted row's values; "
-                        "or, if the permitted row moved, move both in one commit so the pair "
-                        "stays a one-field difference",
+                        f"({base_name}) in {', '.join(delta)}, beyond {field} itself. SS-5 "
+                        "requires a row identical to a passing row except in that one field, "
+                        "and every gate input counts: the record, the chain, the dispatch, "
+                        "the given inputs and the instant. A fixture that changes two "
+                        "inputs cannot show which one the gate read",
+                        f"restore every input except {field} to the permitted row's values, "
+                        "with the chain's identifiers renamed one to one and any copy of "
+                        f"{field} in a chain payload equal to the record's; or, if the "
+                        "permitted row moved, move both in one commit so the pair stays a "
+                        "one-field difference",
                     )
                 )
 
@@ -2263,6 +2348,30 @@ def _mut_ss5_two_fields(m: dict) -> None:
     _row(m, "seed-selectors-mutated")["authorization"]["purpose"] = "A different purpose."
 
 
+def _mut_ss5_locator_differs(m: dict) -> None:
+    item = _row(m, "one-hop-pivot-depth-max-mutated")["chain"][3]["payload"]
+    item["locator"] = item["locator"] + "-zero"
+
+
+def _mut_ss5_reference_moved(m: dict) -> None:
+    row = _row(m, "one-hop-pivot-depth-max-mutated")
+    row["dispatch"]["motivated_by"] = row["chain"][2]["event"]["event_id"]
+
+
+def _mut_ss5_grant_copy_disagrees(m: dict) -> None:
+    row = _row(m, "seed-expires-on-mutated")
+    base = _row(m, "seed-permitted")
+    row["chain"][0]["payload"]["expires_on"] = base["chain"][0]["payload"]["expires_on"]
+
+
+def _mut_ss5_baseline_ids_collapsed(m: dict) -> None:
+    row = _row(m, "one-hop-permitted")
+    keep, drop = row["chain"][0]["event"]["event_id"], row["chain"][1]["event"]["event_id"]
+    collapsed = json.loads(json.dumps(row).replace(drop, keep))
+    row.clear()
+    row.update(collapsed)
+
+
 def _mut_fixture_not_in_register(m: dict) -> None:
     m["register"] = [n for n in m["register"] if n != "seed-permitted"]
 
@@ -2545,15 +2654,15 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "drop expires_on from an authorization record",
             _mut_record_field_missing,
             "AUTH_RECORD_FIELD_MISSING",
-            True,
-            "",
+            False,
+            "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too",
         ),
         (
             "authorize an incidental subject",
             _mut_record_class_s5,
             "AUTH_SUBJECT_CLASS_UNAUTHORIZABLE",
-            True,
-            "",
+            False,
+            "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too",
         ),
         (
             "delete SS-5's expires_on fixture",
@@ -2565,6 +2674,34 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         (
             "change a second field in an SS-5 fixture",
             _mut_ss5_two_fields,
+            "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+            True,
+            "",
+        ),
+        (
+            "change an item's locator in an SS-5 fixture's chain",
+            _mut_ss5_locator_differs,
+            "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+            True,
+            "",
+        ),
+        (
+            "point an SS-5 fixture's dispatch at a different event",
+            _mut_ss5_reference_moved,
+            "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+            True,
+            "",
+        ),
+        (
+            "collapse two of SS-5's baseline identifiers into one",
+            _mut_ss5_baseline_ids_collapsed,
+            "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+            True,
+            "",
+        ),
+        (
+            "leave the GRANT's copy of expires_on at the baseline value",
+            _mut_ss5_grant_copy_disagrees,
             "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
             True,
             "",
@@ -2699,15 +2836,15 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "fill in a selector value in the corpus",
             _mut_value_filled_in,
             "AUTH_VALUE_NOT_PLACEHOLDER",
-            True,
-            "",
+            False,
+            "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too",
         ),
         (
             "add a tenth field to an authorization record",
             _mut_record_field_undeclared,
             "AUTH_RECORD_FIELD_UNDECLARED",
-            True,
-            "",
+            False,
+            "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too",
         ),
         (
             "record a basis under a third basis field",
@@ -2736,8 +2873,8 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
             "make SS-5's differential baseline refuse",
             _mut_baseline_refuses,
             "AUTH_SS5_BASELINE_NOT_PERMITTED",
-            True,
-            "",
+            False,
+            "a refusing baseline leaves the SS-5 fixtures with no one-field permitted partner, so A-12 fires too",
         ),
         (
             "remove a doctrine file's dated ratifier row",
@@ -2765,13 +2902,13 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ),
         ("drop SS-14 from the compiled criteria", _mut_criterion_dropped_from_compiled, "AUTH_CRITERION_NOT_COMPILED", True, ""),
         ("render a permit on the item 6 refusal row", _mut_refused_rendered_as_permit, "AUTH_RENDER_NOT_THE_COMPILED_SENTENCE", True, ""),
-        ("assert a permit on a well-formed permit row under a short stamp state", _mut_permit_row_under_short_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", True, ""),
+        ("assert a permit on a well-formed permit row under a short stamp state", _mut_permit_row_under_short_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", False, "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too"),
         ("delete the environment input from the row that tests it", _mut_given_drops_environment, "AUTH_GIVEN_KEYS_UNEXPECTED", True, ""),
         ("add an ungraded key to a decision", _mut_decision_gains_a_key, "AUTH_DECISION_KEYS_UNEXPECTED", True, ""),
         ("claim a collected string sits in the corpus", _mut_payload_string_claimed, "AUTH_PAYLOAD_STRING_CLAIMED", True, ""),
         ("let an SS-12 row stand in for SS-5's expires_on fixture", _mut_ss5_criterion_without_ss5, "AUTH_SS5_FIXTURE_MISSING", True, ""),
         ("take the record off SS-5's expires_on fixture", _mut_ss5_fixture_without_record, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),
-        ("assert a permit with no stamp state at all", _mut_permit_row_with_no_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", True, ""),
+        ("assert a permit with no stamp state at all", _mut_permit_row_with_no_state, "AUTH_UNRATIFIED_CRITERION_PERMITTED", False, "it changes seed-permitted, SS-5's differential baseline, so the SS-5 fixtures derived from it no longer differ from it in one gate input and A-12 fires too"),
         ("swap a preflight check for a mode that always passes", _mut_preflight_check_swapped, "AUTH_PREFLIGHT_LIST_DRIFT", True, ""),
         ("let the policy stamp the contract by section 5 alone", _mut_contract_granularity_coarsened, "AUTH_RATIFY_LIST_DRIFT", True, ""),
     ]

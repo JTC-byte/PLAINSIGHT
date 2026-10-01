@@ -1910,3 +1910,30 @@ closed and seven in part.
 on the staged tree and both forms of `git diff --check` were clean. The kernel
 gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Eighteenth: SS-5's one-field check reads every gate input, Class B, decided
+under the grant as renewed at 01:26.** The maintainer's handover at 01:26 on
+2026-10-01, relayed by the parent session and recorded verbatim in the parent
+folder's dispatch record of that date, renews the grant to a natural stopping
+point and adds no authority it did not give. Three review findings, one defect.
+A-12 compared each SS-5 fixture with its nearest permitted row on the
+authorization record alone, so a fixture could also differ in its chain, its
+dispatch, its given inputs or its instant and still count as a one-field
+mutation. One did: `one-hop-pivot-depth-max-mutated` named its item's locator
+differently from `one-hop-permitted`. A-12 now compares all five inputs. Each
+row's identifiers are uuid5 of labels, so they are paired by position and renamed
+before the comparison, and a pairing that is not one to one, or a reference that
+points at a different event after renaming, is a difference. A chain payload's
+copy of the field must equal its own record's value. The fixture's locator is
+restored to the baseline's, which leaves `--fixtures` output byte-identical to
+`8352e4b`. Four self-test breaks are new, the locator, a moved reference, a
+GRANT copy left at the baseline value and two baseline identifiers collapsed
+into one, and removing the pairing's reverse direction lets the last one pass.
+Seven existing breaks that change `seed-permitted`, the differential baseline,
+now also fire A-12, and each says so. With this, 57 of the review's 88 findings
+are closed and seven in part.
+
+**Battery for the eighteenth change.** All sixteen preflight commands passed
+on the staged tree, the authorization self-test with 60 breaks, and both forms
+of `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.

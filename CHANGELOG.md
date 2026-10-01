@@ -22,6 +22,27 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. SS-5's one-field check compares every gate input.**
+
+  **What changed.** A-12 compared an SS-5 fixture with its baseline on the
+  authorization record alone. It now compares the record, the chain, the
+  dispatch, the given inputs and the instant, pairing each row's identifiers one
+  to one, and requires a chain copy of the field to agree with its record. The
+  pivot-depth fixture's item locator, which differed from its baseline's, is
+  restored. Three findings of the Step 8 adversarial review, decided under the
+  operator's overnight grant of 2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`,
+  `conformance/gate/decisions.jsonl`, the worklog and the handoff.
+
+  **What validation ran.** The authorization self-test, 60 breaks, with the
+  pairing check shown to be what refuses its break; `--fixtures` output
+  byte-identical to the previous commit; all sixteen preflight commands; both
+  forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No policy value, schema, doctrine file or stamp, and
+  no row's assertion.
+
 - **2026-10-01, overnight. RT-15's enforcement is stated as two of four parts,
   measured on every scan.**
 
