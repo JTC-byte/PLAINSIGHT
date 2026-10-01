@@ -12,9 +12,9 @@ which is the failure mode this cap prevents.
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
 **Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file closes the third review's authorization and records findings, on top
-of `23d041a`, under the overnight grant of 2026-09-30 23:28, resumed at 12:24
-and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
+file closes the fourth review's findings and is the checkpoint closeout before
+the 16:15 stop, on top of `46beb98`, under the grant of 2026-09-30 23:28,
+resumed at 12:24 and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,18 +46,15 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Every Finding masks an address or phone shape, and
-the self-test fails any refusal that prints one. Whole selector nodes are
-pinned, record selectors and values are held to the contract's form, two
-crashes are named refusals, and this afternoon's records are corrected.
+**What changed and why.** A fourth pass found twelve more holes in the third
+round's fixes; eight are closed here, and f4:4, 7, 10 and 11 are open.
 
-**Which surfaces moved.** `tools/validate_authorization.py` and its self-test,
-comments in `tools/validate_retention.py`, `conformance/gate/README.md`
-section 5, `CHANGELOG.md`, this file, and the worklog.
+**Which surfaces moved.** Both validators and their self-tests,
+`CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the authorization
-self-test with 124 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, the two
+self-tests with 129 and 163 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -331,8 +328,8 @@ SS-14's seal condition for the cast. All eleven are closed, three of them in
 part, and the review record lists what remains of each. Of the twelve review
 findings still open, three wait on the operator's queue and nine on the
 evaluator VA-U1 holds until Step 10 or on fixture semantics a ratified entry
-decides. None is left that an agent can take alone. A second adversarial
-pass over PRs 13 to 24 is recorded beside the first, in `REVIEW2.md`.
+decides. Passes two to four over today's PRs are in `REVIEW2.md`; four
+fourth-pass findings are open, and this closeout commit has had no review.
 
 ## 6. Session context that lives outside this repository
 

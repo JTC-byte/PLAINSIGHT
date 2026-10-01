@@ -343,6 +343,12 @@ PINNED_RULES = (
     ("finding_check.survivability[2].carries_subject_values", True, "RT-13"),
     ("finding_check.survivability[2].survives", False, "RT-2, RT-13"),
     ("cadence.steps[4].cached_read_path_permitted", False, "RT-9, RT-10"),
+    # Added after the fourth review of 2026-10-01, finding f4:1: the indexed
+    # pins above name their item, so swapping two items' labels refuses.
+    ("finding_check.survivability[0].artifact", "capability finding", "RT-13"),
+    ("finding_check.survivability[1].artifact", "scorecard against the cast", "RT-13"),
+    ("finding_check.survivability[2].artifact", "case narrative", "RT-13"),
+    ("cadence.steps[4].act", "runner/reconcile_ledger.py diffs the ledger against storage in both directions", "RT-10"),
 )
 
 #: Every boolean or stratum value the policy compiles that is not pinned above,
@@ -385,6 +391,9 @@ UNPINNED_BY_NAME = (
     "repo_scan.enforcement_parts_all_required[3].checks_anything",
     "cadence.steps[2].order_is_normative",
     "unratified.entries[4].consequential",
+    # RT-1's text column for the skeleton row, "No"; its boolean twin,
+    # carries_subject_values, is pinned in STRATA_ROWS.
+    "strata.rows[3].subject_values",
 )
 
 
@@ -405,11 +414,15 @@ def _rule_leaves(node, path: str = "", seen: set | None = None):
             yield from _rule_leaves(value, f"{path}[{index}]", seen)
     elif (
         isinstance(node, bool)
-        or (isinstance(node, str) and node.strip().lower() in ("true", "false"))
+        or (isinstance(node, str) and node.strip().lower() in BOOLEAN_SPELLINGS)
         or path.endswith("stratum")
     ):
         yield path
 
+
+#: Every spelling YAML 1.1 reads as a boolean, plus enabled and disabled. Until
+#: the fourth review of 2026-10-01 only "true" and "false" were leaves.
+BOOLEAN_SPELLINGS = ("true", "false", "yes", "no", "on", "off", "y", "n", "enabled", "disabled")
 
 #: List items whose booleans and strata are read by a check keyed on the item's
 #: name rather than its place: STRATA_ROWS, RT-9's check 2 side flags, and the
@@ -2112,8 +2125,10 @@ if yaml is not None:
                         merged.extend(_flatten_merge(source, seen))
             else:
                 pairs.append((k, v))
-        explicit = {k.value for k, _ in pairs if isinstance(k, yaml.ScalarNode)}
-        return pairs + [(k, v) for k, v in merged if not (isinstance(k, yaml.ScalarNode) and k.value in explicit)]
+        # Every merged pair is kept, an overridden one as a repeat beside the
+        # explicit one, so a live value merged in behind a placeholder is read.
+        # Until the fourth review of 2026-10-01 an overridden pair was dropped.
+        return pairs + merged
 
     def _construct_scan_mapping(loader, node, deep=False):
         # A generator that yields its mapping before filling it, with children
@@ -2127,15 +2142,25 @@ if yaml is not None:
             mapping,
         )
 
+    def _construct_scan_sequence(loader, node, deep=False):
+        # Lazily, like a mapping, so a sequence anchor that refers to itself
+        # constructs. Until the fourth review of 2026-10-01 one such line sent
+        # the whole file to the safe reader, which keeps the last of a repeated
+        # key and reads an unquoted phone as a number.
+        data: list = []
+        yield data
+        data.extend(loader.construct_object(child) for child in node.value)
+
     def _construct_any(loader, suffix, node):
         # Any tag: a tagged mapping keeps its repeats like an untagged one.
         if isinstance(node, yaml.MappingNode):
             return _construct_scan_mapping(loader, node)
         if isinstance(node, yaml.SequenceNode):
-            return loader.construct_sequence(node)
+            return _construct_scan_sequence(loader, node)
         return loader.construct_scalar(node)
 
     _ScanLoader.add_constructor("tag:yaml.org,2002:map", _construct_scan_mapping)
+    _ScanLoader.add_constructor("tag:yaml.org,2002:seq", _construct_scan_sequence)
     _ScanLoader.add_multi_constructor("", _construct_any)
 
 
@@ -2192,7 +2217,19 @@ def selector_pairs(rel: str, text: str, types: set[str]) -> list[tuple[int, str,
                 try:
                     docs = list(yaml.load_all(text, Loader=_ScanLoader))
                 except (TypeError, RecursionError, yaml.YAMLError):
-                    docs = list(yaml.safe_load_all(text))
+                    # The safe reader keeps the last of a repeated key and reads an
+                    # unquoted phone as a number, so a file only it can read is a
+                    # refusal rather than a weaker read.
+                    list(yaml.safe_load_all(text))
+                    raise Unreadable(
+                        "RETENTION_REPO_SCAN_SOURCE_UNREADABLE",
+                        rel,
+                        "the scan's reader, which keeps every repeated key and reads "
+                        "every scalar as text, could not read a file the YAML library "
+                        "reads, so a selector in it could hide behind the weaker reading",
+                        "simplify the file's YAML (an anchor or tag the scan's reader "
+                        "cannot build); or move it out of the tracked tree",
+                    )
             else:
                 docs = []
         except (ValueError, TypeError, RecursionError, yaml.YAMLError if yaml is not None else ValueError):
@@ -2769,7 +2806,25 @@ def _pair_list_then_repeat(ctx) -> tuple[str, str]:
 
 def _complex_key(ctx) -> tuple[str, str]:
     """A YAML mapping key that is a sequence, which crashed the scan."""
-    return "policy/x.yaml", "? [a, b]\n: c\n"
+    return "policy/x.yaml", "selectors:" + chr(10) + "  - selector_type: email" + chr(10) + "    value: " + _email_value() + chr(10) + "? [a, b]\n: c\n"
+
+
+def _pair_beside_a_sequence_anchor(ctx) -> tuple[str, str]:
+    """A live value behind a repeated key, beside a sequence that refers to itself."""
+    nl = chr(10)
+    return "policy/x.yaml", (
+        "x: &a [*a]" + nl + "entry:" + nl + "  selector_type: email" + nl
+        + "  value: " + _email_value() + nl + "  value: <addr>" + nl
+    )
+
+
+def _pair_merged_behind_a_placeholder(ctx) -> tuple[str, str]:
+    """A live value merged in through "<<" and overridden by a placeholder."""
+    nl = chr(10)
+    return "policy/x.yaml", (
+        "live: &l" + nl + "  value: " + _email_value() + nl + "entry:" + nl
+        + "  <<: *l" + nl + "  selector_type: email" + nl + "  value: <addr>" + nl
+    )
 
 
 def _upper_domain(ctx) -> tuple[str, str]:
@@ -3147,6 +3202,13 @@ def _mutations():
     def duration_as_a_float(ctx):
         ctx["policy"]["retention"]["case_ttl"]["default_days"] = 30.0
 
+    def survivability_labels_swapped(ctx):
+        items = ctx["policy"]["retention"]["finding_check"]["survivability"]
+        items[0]["artifact"], items[2]["artifact"] = items[2]["artifact"], items[0]["artifact"]
+
+    def rule_spelled_yes(ctx):
+        ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = "yes"
+
     def rule_nobody_classified(ctx):
         ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = True
 
@@ -3170,6 +3232,8 @@ def _mutations():
         ("let the fixture's check 3 pass always", "roundtrip", fixture_check3_passes_always, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
         ("write the index's stratum as true", "policy", stratum_written_as_true, "RETENTION_POLICY_RULE_DRIFT", True),
         ("compile a rule nobody pinned or named", "policy", rule_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
+        ("swap the case narrative's label with a finding's", "policy", survivability_labels_swapped, "RETENTION_POLICY_RULE_DRIFT", True),
+        ("compile a rule spelled yes", "policy", rule_spelled_yes, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
         ("compile a rule inside a list", "policy", rule_in_a_list_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
         ("compile a rule spelled as a string", "policy", rule_spelled_as_a_string, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
         ("let the case narrative survive", "policy", narrative_survives, "RETENTION_POLICY_RULE_DRIFT", True),
@@ -3195,7 +3259,7 @@ def _mutations():
         ("defer a TTL to a question nothing declares", "policy", defer_to_an_undeclared_question, "RETENTION_PLACEHOLDER_UNDECLARED", False, "the TTL is also no longer the stamped number, so the duration check fires with it"),
         ("declare a question no field defers to", "policy", declare_a_question_nothing_asks, "RETENTION_PLACEHOLDER_UNREFERENCED", True),
         ("leave a placeholder one legal option", "policy", leave_one_legal_option, "RETENTION_PLACEHOLDER_INCOMPLETE", True),
-        ("empty a placeholder's refusal", "policy", empty_a_refusal, "RETENTION_REFUSAL_PROSE_INCOMPLETE", True),
+        ("empty a placeholder's refusal", "policy", empty_a_refusal, "RETENTION_REFUSAL_PROSE_INCOMPLETE", False, "the emptied refusal is a value YAML reads as a boolean at a place no pin names, so the rule classification fires too"),
         ("rename the policy wrapper key", "policy", rename_the_wrapper, "RETENTION_POLICY_WRAPPER_KEY", True),
         ("point the policy's self-lint at another tool", "policy", point_the_lint_elsewhere, "RETENTION_POLICY_SELF_LINT_DRIFT", True),
         ("give the policy the generated banner", "policy", claim_the_file_is_generated, "RETENTION_POLICY_GENERATED_CLAIM", True),
@@ -3204,7 +3268,7 @@ def _mutations():
         ("stamp one policy entry in house format", "policy", stamp_the_policy_by_an_entry_row, "=RETENTION_POLICY_UNRATIFIED", True),
         ("withdraw doctrine/RETENTION.md's range row", "policy", withdraw_the_retention_range_row, "RETENTION_CRITERION_UNSTAMPED", True),
         ("drop the only row that stamps RT-19", "policy", drop_rt19s_own_row, "RETENTION_CRITERION_UNSTAMPED", True),
-        ("swap the authorization row for a second skeleton row", "policy", swap_authorization_for_a_second_skeleton, "RETENTION_POLICY_STRATA_ROW_DRIFT", True),
+        ("swap the authorization row for a second skeleton row", "policy", swap_authorization_for_a_second_skeleton, "RETENTION_POLICY_STRATA_ROW_DRIFT", False, "the copied row carries RT-1's text No, a boolean spelling at a place the classification names only for row 3, so it fires too"),
         ("let gate telemetry live forever", "policy", let_telemetry_live_forever, "RETENTION_POLICY_STRATA_ROW_DRIFT", False),
         ("give the synthetic corpus a subject value", "policy", give_the_corpus_a_subject_value, "RETENTION_SUBJECT_VALUE_IN_SURVIVING_STRATUM", False),
         ("let a case extension reach incidental content", "policy", let_extension_reach_incidental, "RETENTION_POLICY_TTL_DRIFT", True),
@@ -3250,7 +3314,9 @@ def _mutations():
         ("hide a live value in a tagged mapping", "scan", _pair_in_a_tagged_mapping, scan, True),
         ("hide a live value behind a key in other case", "scan", _pair_by_case_variant, scan, True),
         ("hide a live list behind a repeated key", "scan", _pair_list_then_repeat, scan, True),
-        ("commit a mapping with a sequence for a key", "scan", _complex_key, "-" + scan, True),
+        ("commit a live pair beside a sequence for a key", "scan", _complex_key, scan, True),
+        ("hide a live value beside a self-referential sequence", "scan", _pair_beside_a_sequence_anchor, scan, True),
+        ("merge a live value in behind a placeholder", "scan", _pair_merged_behind_a_placeholder, scan, True),
         ("commit a phone pair written by hand in YAML", "scan", _pair_unquoted_phone, scan, True),
         ("hide a live value behind a repeated key", "scan", _pair_repeated_value, scan, True),
         ("commit a .json pair behind a byte-order mark", "scan", _pair_json_with_bom, scan, True),

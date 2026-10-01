@@ -22,6 +22,29 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, afternoon. The fourth pass, and the checkpoint closeout.**
+
+  **What changed.** The survivability and cadence pins name their item. YAML
+  sequences build lazily, and a file only the safe reader can read refuses. A
+  merged value overridden by a placeholder is kept. A record selector's shape,
+  container and type are checked. Undeclared field names and malformed pending
+  ids are not printed. The phone shape reads any space or dash. Every YAML 1.1
+  boolean spelling is a rule leaf. Two new breaks cover the whole-node pins and
+  the hash guard. Eight findings of a fourth adversarial pass, decided under the
+  operator's grant of 2026-09-30 23:28 as resumed at 12:24 and confirmed for
+  merges at 12:37, and revertible. Four confirmed findings stay open.
+
+  **Which surfaces moved.** `tools/validate_retention.py`,
+  `tools/validate_authorization.py`, the worklog and the handoff.
+
+  **What validation ran.** The two self-tests, 163 and 129 breaks; `--policy`,
+  `--repo-scan` and `--fixtures` output byte-identical to the previous commit;
+  all sixteen preflight commands; both forms of `git diff --check`. The kernel
+  gate exited 0.
+
+  **What did not change.** No policy value, corpus row, schema, doctrine file or
+  stamp.
+
 - **2026-10-01, afternoon. A third pass over the authorization fixes and the
   records.**
 

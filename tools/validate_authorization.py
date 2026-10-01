@@ -431,7 +431,9 @@ VALUE_SHAPES = (
     # of 2026-10-01; a number with a 00 prefix is not read, which is stated.
     # Grouped with spaces, hyphens, dots, slashes or parentheses since the third
     # review of 2026-10-01.
-    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9](?:[ .\-()/]*\d){7,14}(?!\d)")),
+    # Any space, including no-break and thin spaces, and any dash, since the
+    # fourth review of 2026-10-01.
+    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9](?:[\s  ‐-―.\-()/]*\d){7,14}(?!\d)")),
     ("a percent-encoded email address", re.compile(r"[A-Za-z0-9._%+-]+%40[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
 )
 
@@ -983,6 +985,9 @@ def load() -> dict:
         "register": list(dict.fromkeys(REGISTER_NAME_RE.findall(register_block))),
         "register_rows": _register_rows(register_block),
         "register_block": register_block,
+        # The registry's selector types, which a record selector's type must be
+        # one of, since the fourth review of 2026-10-01.
+        "selector_types": sorted((_yaml(ROOT / "ontology" / "selectors.yaml").get("selectors") or {})),
         "gf_entries": set(GF_ENTRY_RE.findall(register_text)),
         "pin_text": _read(PIN),
         "ss_defined": DEFINITION_RE.findall(_read(SUBJECT_SELECTION)),
@@ -1434,7 +1439,7 @@ def check_corpus(model: dict) -> list[Finding]:
                     Finding(
                         "AUTH_PENDING_ENTRY_UNKNOWN",
                         f"{where} > pending",
-                        f"the row is held on {held_id!r}, and no entry of that id exists in "
+                        f"the row is held on {repr(held_id) if PENDING_ID_RE.match(str(held_id)) else 'an id that is not an entry id, not printed here'}, and no entry of that id exists in "
                         "policy/subject-authorization.yaml, conformance/gate/README.md or "
                         "this tool. A row held on an entry that does not exist is held "
                         "forever while reading as scheduled",
@@ -1479,20 +1484,23 @@ def check_corpus(model: dict) -> list[Finding]:
                     )
                 )
 
-        f += _placeholder_findings(row, where)
+        f += _placeholder_findings(row, where, frozenset(model.get("selector_types") or ()))
 
-    for field, names in sorted(undeclared_fields.items()):
+    for number, (field, names) in enumerate(sorted(undeclared_fields.items()), 1):
+        # A field name can itself be a selector, so it is never printed; the
+        # fourth review of 2026-10-01 found a handle-named field in the refusal
+        # and in the telemetry record.
         f.append(
             Finding(
                 "AUTH_RECORD_FIELD_UNDECLARED",
-                f"conformance/gate/ > authorization.{field}",
-                f"{len(names)} record(s) carry {field!r}, which "
+                f"conformance/gate/ > authorization, undeclared field {number}",
+                f"{len(names)} record(s) carry a field, not printed here, which "
                 "schema/subject-authorization.schema.json does not declare while setting "
                 "additionalProperties false. The corpus records are therefore not "
                 "instances of the schema they are graded against, and the drift runs in "
                 "exactly one direction, which is the shape the doctrine gate's own D-01 "
                 "defect took",
-                f"remove {field!r} from the records; or declare it in the schema and record "
+                "remove the field from the records; or declare it in the schema and record "
                 "the decision that adds it, since the schema closes SS-4's nine-field table "
                 "and a tenth field is an amendment to that table rather than a shape choice",
             )
@@ -1593,7 +1601,7 @@ def check_corpus(model: dict) -> list[Finding]:
     return f
 
 
-def _placeholder_findings(row: dict, where: str) -> list[Finding]:
+def _placeholder_findings(row: dict, where: str, selector_types: frozenset = frozenset()) -> list[Finding]:
     """A-08. Every selector-keyed value is a bracketed placeholder, and no string
     or key anywhere in a row carries an email or phone shape.
 
@@ -1636,10 +1644,22 @@ def _placeholder_findings(row: dict, where: str) -> list[Finding]:
     # selector key holds a string. Until the third review of 2026-10-01 a bare
     # string, a pair as a list, a "type" key or a mapping under value passed.
     record = row.get("authorization")
+    if record is not None and not isinstance(record, dict):
+        # Until the fourth review of 2026-10-01 a record written as a list or a
+        # string skipped every check below it.
+        seen.append(".authorization")
+    elif isinstance(record, dict) and "selectors" in record and not isinstance(record.get("selectors"), list):
+        seen.append(".authorization.selectors")
     for i, entry in enumerate(_seq(record, "selectors") if isinstance(record, dict) else []):
-        if not (isinstance(entry, dict) and set(entry) == {"selector_type", "value"} and isinstance(entry.get("value"), str)):
-            if f".authorization.selectors[{i}]" not in seen:
-                seen.append(f".authorization.selectors[{i}]")
+        well_formed = (
+            isinstance(entry, dict)
+            and set(entry) == {"selector_type", "value"}
+            and isinstance(entry.get("value"), str)
+            and isinstance(entry.get("selector_type"), str)
+            and (not selector_types or entry["selector_type"] in selector_types)
+        )
+        if not well_formed and f".authorization.selectors[{i}]" not in seen:
+            seen.append(f".authorization.selectors[{i}]")
 
     def nested(node, path: str, key, typed: bool):
         if isinstance(node, dict):
@@ -3044,6 +3064,31 @@ def _mut_address_as_a_pending_id(m: dict) -> None:
     _row(m, "runner-started-on-local")["pending"] = ["examplename" + "@" + "example" + ".org"]
 
 
+def _mut_selectors_with_their_own_defs(m: dict) -> None:
+    # A local $id and $defs make items' $ref resolve to an empty schema. Only
+    # SCHEMA_NODE_PINS sees it; the fourth review found no break guarded it.
+    selectors = m["schema"]["properties"]["selectors"]
+    selectors["$id"] = "urn:example:selectors"
+    selectors["$defs"] = {"selector": {}}
+
+
+def _mut_record_selectors_as_a_string(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"]["selectors"] = "jdoe" + "1987"
+
+
+def _mut_record_as_a_list(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"] = ["jdoe" + "1987"]
+
+
+def _mut_selector_type_as_a_handle(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"]["selectors"][0]["selector_type"] = "jdoe" + "1987"
+
+
+def _mut_phone_with_no_break_spaces(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call +44" + chr(0xA0) + "20" + chr(0xA0) + "7946" + chr(0xA0) + "0958."
+
+
 def _mut_selectors_prefixed(m: dict) -> None:
     m["schema"]["properties"]["selectors"]["prefixItems"] = [True]
 
@@ -3439,6 +3484,11 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ("list a register row twice", _mut_register_row_repeated, "AUTH_REGISTER_NAME_DUPLICATE", True, ""),
         ("list a register row again, indented one space", _mut_register_row_indented, "AUTH_REGISTER_NAME_DUPLICATE", True, ""),
         ("open selectors[0] with prefixItems", _mut_selectors_prefixed, "AUTH_SCHEMA_BOUND_DRIFT", True, ""),
+        ("give selectors their own $id and $defs", _mut_selectors_with_their_own_defs, "AUTH_SCHEMA_BOUND_DRIFT", True, ""),
+        ("write a record's selectors as a string", _mut_record_selectors_as_a_string, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a record as a list", _mut_record_as_a_list, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("name a handle as a selector's type", _mut_selector_type_as_a_handle, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a phone with no-break spaces", _mut_phone_with_no_break_spaces, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
         ("give a record a field named as an address", _mut_address_as_a_record_field, "AUTH_RECORD_FIELD_UNDECLARED", False, "the key also carries an email shape, so A-08 refuses it too; the self-test also fails if any refusal prints it"),
         ("hold a row on an id written as an address", _mut_address_as_a_pending_id, "AUTH_PENDING_ENTRY_UNKNOWN", False, "the register row and A-08 also refuse the id; the self-test also fails if any refusal prints it"),
         ("write the baseline's chain as a mapping", _mut_baseline_chain_as_a_mapping, "AUTH_SS5_FIXTURE_NOT_ONE_FIELD", True, ""),

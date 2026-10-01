@@ -2278,3 +2278,45 @@ staged tree, the authorization self-test with 124 breaks and the retention
 self-test with 155, and both forms of `git diff --check` were clean. The kernel
 gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
 stubbed and 5 pending.
+
+**Eleventh: the fourth pass, and the checkpoint closeout before the 16:15 stop,
+Class B.** One combined lens on Opus 5.5 ran over `23d041a` and `46beb98`; it
+found twelve. Its refuter ran as a one-agent workflow under the ultracode
+setting the operator turned on, and confirmed eleven and downgraded one (f4:3).
+Eight are closed here:
+- **f4:1.** The indexed survivability and cadence pins now name their item, so
+  swapping two labels refuses.
+- **f4:2.** A self-referential sequence anchor sent the whole file to the safe
+  reader. Sequences now build lazily, and a file only the safe reader can read
+  refuses rather than being read under its weaker semantics.
+- **f4:3.** A merged value overridden by an explicit one is kept as a repeat.
+- **f4:5.** A record written as a list, selectors written as a string, and a
+  selector type outside the registry refuse.
+- **f4:6, in part.** An undeclared field name and a pending id outside the id
+  grammar are no longer printed, and the phone shape reads any space or dash.
+- **f4:8 and f4:9.** Each now has a break of its own: the whole-node pins are
+  the only check that refuses a selectors node given its own $id and $defs, and
+  a live pair beside a sequence key is read only because of the hash guard.
+- **f4:12.** Every YAML 1.1 boolean spelling is a leaf. That surfaced RT-1's
+  text "No" in the skeleton row, which is now named as unpinned.
+
+**Open, for the next session**, each confirmed and recorded in `REVIEW2.md`:
+- **f4:4.** A typed placeholder's label is not yet bound to a cast id.
+- **f4:7.** RT-15's clause and hook measures still miss a tilde fence and a
+  never-taken conditional.
+- **f4:10.** A register row without its leading pipe is not read.
+- **f4:11.** The pair scan does not read a value nested in a mapping.
+- **f4:6, the other half.** The register-drift and certification texts can
+  still quote a pending id.
+
+**This commit is the checkpoint closeout.** The pattern held at every round:
+each pass found holes in the previous round's fixes, one of them a regression.
+This last commit, reviewed by nobody, is therefore the one most likely to hold
+a defect. `--policy`, `--repo-scan` and `--fixtures` output are
+byte-identical to `46beb98`.
+
+**Battery for the closeout.** All sixteen preflight commands passed on the
+staged tree, the authorization self-test with 129 breaks and the retention
+self-test with 163, and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.
