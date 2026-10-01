@@ -194,12 +194,13 @@ CI installs both and a local checkout must have both.
 closed D-001. It reads every tracked file in the working tree for a filled
 selector in its typed form, against thirteen shapes reconciled with
 `ontology/selectors.yaml` in both directions, and the pre-commit hook runs the
-same mode over the index. It enforces three of RT-15's four parts and does not
-reach the fourth, for two reasons that are worth stating separately. The
-violation code RT-15 names is not in the wire vocabulary, so the scan has no
-legal token to emit for it. Git history is out of reach of any check that runs
-at commit time, so a selector deleted from the working tree and still present in
-an earlier commit is not found. It refused on two values that predate Step 8
+same mode over the index. Two of RT-15's four enforcement parts are in place,
+this file's Execution Limits clause and the scan in the hook. The other two are
+not: `canary_subject_class` is required on no connector manifest, because no
+connector exists, and the violation code RT-15 names is not in the wire
+vocabulary, so the scan emits a tool-local code. Separately, git history is out
+of reach of any check that runs at commit time, so a selector deleted from the
+working tree and still present in an earlier commit is not found. It refused on two values that predate Step 8
 until both were replaced with placeholders under the operator's overnight grant
 of 2026-09-30, and `CONFORMANCE.md` section 4 records what they were and why no
 exemption was added.

@@ -1888,3 +1888,25 @@ these, 53 of the review's 88 findings are closed and seven in part.
 the staged tree and both forms of `git diff --check` were clean. The kernel
 gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
 2 stubbed and 5 pending.
+
+**Seventeenth: how RT-15's enforcement is stated, Class B, decided under the
+grant.** RT-15 lists four enforcement parts and requires all four: the
+Execution Limits clause in `AGENTS.md`, `canary_subject_class` as a required
+connector manifest field, the violation code `FIXTURE_CONTAINS_LIVE_SELECTOR`,
+and the scan in the pre-commit hook. The policy's own table records two present
+and two absent. `AGENTS.md`, `README.md`, `CONFORMANCE.md`, the kernel gate's
+note and the handoff said three of four were enforced, and the scan printed the
+same on every run; each counted git history as the fourth part, which RT-15 does
+not list. Git history is a reach limit of any commit-time check, and that is now
+stated apart from the four. The scan measures the four parts on every run, from
+`AGENTS.md`, the connector manifests, the code vocabulary and the hook, and names
+the two not in place; the self-test fails if that measure disagrees with the
+policy's table. VR-U3's recorded consequence is updated to match. The earlier
+records that say three, this worklog's entry of 2026-09-11 and the CHANGELOG
+entry of Step 8, stay as written. With this, 54 of the review's 88 findings are
+closed and seven in part.
+
+**Battery for the seventeenth change.** All sixteen preflight commands passed
+on the staged tree and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.

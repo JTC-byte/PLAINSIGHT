@@ -323,7 +323,8 @@ SCAN_DOES_NOT_REACH = (
     "a bare value carrying no selector type, such as an address pasted into a "
     "stack trace or a handle written into a worklog entry. VR-U1 carries the "
     "question and the measurement behind it",
-    "git history, which no commit-time check reaches and no later act clears",
+    "git history, which no commit-time check reaches and no later act clears; "
+    "it is a reach limit of any such check, not one of RT-15's four parts",
     "compressed and binary containers such as xlsx, docx, zip, pdf and images, "
     "which carry NUL bytes and refuse as unreadable rather than being read",
 )
@@ -437,10 +438,10 @@ UNRATIFIED = (
             "Both, each with a stated scope",
         ),
         "The scan refuses to mint the code. It emits the tool-local code, and "
-        "every run states that RT-15 is enforced in three of its four parts and "
-        "names the rank-3 edit and regeneration the fourth needs. The statement "
-        "disappears when the code is declared, and the finding carries the "
-        "declared code from that run onward.",
+        "every run measures RT-15's four enforcement parts, names each one not yet "
+        "in place, and names the rank-3 edit and regeneration the code needs. The "
+        "code's line disappears when the code is declared, and the finding carries "
+        "the declared code from that run onward.",
     ),
     (
         "VR-U4",
@@ -1943,12 +1944,41 @@ def check_repo_scan(ctx: dict, staged: bool) -> tuple[list[Finding], dict]:
     }
 
 
+def rt15_parts(codes: set[str]) -> list[tuple[str, bool]]:
+    """RT-15's four enforcement parts, each measured rather than asserted.
+
+    Until 2026-10-01 every run printed that RT-15 was enforced in three of its
+    four parts, counting git history as the fourth. RT-15 lists four parts and
+    git history is not one of them; two were in place.
+    """
+    agents = ROOT / "AGENTS.md"
+    hook = ROOT / ".githooks" / "pre-commit"
+    manifests = list((ROOT / "connectors").glob("*/manifest*")) if (ROOT / "connectors").is_dir() else []
+    return [
+        ("the Execution Limits clause in AGENTS.md",
+         agents.is_file() and "Execution Limits" in agents.read_text(encoding="utf-8")),
+        ("canary_subject_class required on connector manifests",
+         bool(manifests) and all("canary_subject_class" in m.read_text(encoding="utf-8", errors="replace") for m in manifests)),
+        (f"the violation code {DOCTRINE_SCAN_CODE} in policy/violation-codes.yaml",
+         DOCTRINE_SCAN_CODE in codes),
+        ("this scan wired into .githooks/pre-commit",
+         hook.is_file() and "validate_retention.py --repo-scan" in hook.read_text(encoding="utf-8")),
+    ]
+
+
 def scan_notices(report: dict, codes: set[str]) -> str:
     """The states this mode renders rather than refuses."""
     lines = [f"validate_retention --repo-scan: {report['cast_state']}."]
+    parts = rt15_parts(codes)
+    missing = [name for name, present in parts if not present]
+    lines.append(
+        f"  RT-15's enforcement is in place in {len(parts) - len(missing)} of its "
+        f"{len(parts)} parts"
+        + (f"; not yet: {'; '.join(missing)}." if missing else ".")
+    )
     if report["code"] != DOCTRINE_SCAN_CODE:
         lines.append(
-            "  RT-15 is enforced in three of its four parts. The violation code "
+            "  The violation code "
             f"{DOCTRINE_SCAN_CODE} is required in\n"
             "  policy/violation-codes.yaml and that file declares "
             f"{len(codes)} codes without it, so a refusal from this scan "
@@ -2511,6 +2541,19 @@ def self_test(ctx: dict) -> int:
         ok = exc.finding.code == "RETENTION_REPO_SCAN_SOURCE_UNREADABLE"
     failures += 0 if ok else 1
     print(f"  {'refused' if ok else 'PASSED  '}  {'refuse NUL-bearing bytes with no byte-order mark':56} expected RETENTION_REPO_SCAN_SOURCE_UNREADABLE")
+
+    measured = [present for _, present in rt15_parts(ctx["codes"])]
+    table = [
+        r.get("present")
+        for r in as_list(dig(ctx["policy"].get("retention") or {}, "repo_scan.enforcement_parts_all_required"))
+        if isinstance(r, dict)
+    ]
+    ok = measured == table
+    failures += 0 if ok else 1
+    print(
+        f"  {'refused' if ok else 'PASSED  '}  {'measure RT-15s four parts against the policy table':56} "
+        f"expected {table}, measured {measured}"
+    )
 
     print()
     if failures:

@@ -105,10 +105,10 @@ in section 3 records. Step 8 replaced the D-001 stub with
 `tools/validate_retention.py`, so retention-repo-scan left the STUB state
 before these two entered it. That check reads every tracked file in the working
 tree for a filled selector in its typed form, against thirteen shapes reconciled
-with `ontology/selectors.yaml` in both directions, and it enforces three of
-RT-15's four parts. The fourth part is out of reach for two separate reasons:
-the violation code RT-15 names is not in the wire vocabulary, and git history
-cannot be read by a check that runs at commit time.
+with `ontology/selectors.yaml` in both directions. Two of RT-15's four
+enforcement parts are in place, the AGENTS.md clause and this scan in the hook;
+`canary_subject_class` on a connector manifest and the violation code are not,
+and git history cannot be read by a check that runs at commit time.
 
 Three entries are UNRATIFIED, which is a state Step 8 added to the list. An
 UNRATIFIED check is implemented and refuses, because the artifact it grades
@@ -148,8 +148,8 @@ overnight grant of 2026-09-30 the scan's first legal move was taken instead. The
 worked example now reads in the registry's placeholder form, and the fixture
 keeps its platform segment a placeholder, so the line no longer carries a
 complete typed handle while the ontology check it exercises still fires. Neither
-change narrows the scan. Both values remain in git history, which is RT-15's
-fourth part and out of reach of this check.
+change narrows the scan. Both values remain in git history, which no
+commit-time check reaches.
 
 A green kernel-gate run means sixteen implemented checks passed and three unratified checks refused in the way the
 list says they refuse, while two stubs checked nothing and five checks did not

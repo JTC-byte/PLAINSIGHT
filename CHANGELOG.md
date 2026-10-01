@@ -22,6 +22,28 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. RT-15's enforcement is stated as two of four parts,
+  measured on every scan.**
+
+  **What changed.** The repository said three of RT-15's four enforcement parts
+  were in place, counting git history as the fourth, which RT-15 does not list.
+  Two are: the AGENTS.md clause and the scan in the hook. The scan now measures
+  the four parts on every run and names the two missing, and its self-test fails
+  if the measure disagrees with the policy's enforcement table. One finding of
+  the Step 8 adversarial review, decided under the operator's overnight grant of
+  2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py`,
+  `tools/validate_conformance.py`, `AGENTS.md` section 5, `README.md`,
+  `CONFORMANCE.md` section 4, the worklog and the handoff.
+
+  **What validation ran.** The retention self-test with the new cross-check;
+  the scan's notice read; all sixteen preflight commands; both forms of `git
+  diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No check, refusal, policy value, doctrine file or
+  stamp.
+
 - **2026-10-01, overnight. Thirteen compiled retention rules and RT-9's guards
   are pinned by value, and item 6 reads RETENTION.md per criterion.**
 

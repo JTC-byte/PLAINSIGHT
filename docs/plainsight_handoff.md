@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts totalling 9,342 lines are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, overnight. The commit that carries this file pins the
-retention policy's compiled rules and RT-9's guards by value and reads item 6
-per criterion for RETENTION.md, on top of `13cfd54`, under the operator's
-overnight grant of 2026-09-30 23:28. The commits before it that night gave the gates one reader of the pin of
+**Date:** 2026-10-01, overnight. The commit that carries this file corrects how
+RT-15's enforcement is stated: two of its four parts are in place, not three. It
+sits on top of `b24ae5d`, under the operator's overnight grant of 2026-09-30
+23:28. The commits before it that night gave the gates one reader of the pin of
 record, closed all three ratification blockers, and turned the kernel gate and
 CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
@@ -46,23 +46,21 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** Thirteen compiled rules from RT-3 to RT-19 that
-bound what is held, where and how long were read by no tool, so each could be
-flipped to its permissive value with every gate green; they are pinned by value.
-RT-9's guards were substring tests, so check 1 could pass on a successful
-decrypt, the witness could sit inside the delete path, and checks 4 and 5 could
-pass "always"; each is pinned. The authorization gate read SS-14 item 6's
-"RETENTION.md per criterion" at file granularity; it now checks RT-1 to RT-19
-per criterion. No current outcome changed.
+**What changed and why.** RT-15 lists four enforcement parts: the AGENTS.md
+clause, `canary_subject_class` on connector manifests, its violation code, and
+the scan in the hook. The repository said in five places, and the scan printed
+on every run, that three were enforced, counting git history as the fourth,
+which is not one of them. Two are in place. The scan now measures the four parts
+on every run and names the two missing, and its self-test fails if the measure
+disagrees with the policy's enforcement table. No check or refusal changed.
 
-**Which surfaces moved.** `tools/validate_retention.py`,
-`tools/validate_authorization.py`, their self-tests, `CHANGELOG.md`, this file,
-and the worklog.
+**Which surfaces moved.** `tools/validate_retention.py` and its self-test,
+`tools/validate_conformance.py`'s note, `AGENTS.md` section 5, `README.md`,
+`CONFORMANCE.md` section 4, `CHANGELOG.md`, this file, and the worklog.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the retention
-self-test with 77 breaks and the authorization self-test with 56, and both
-forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+before the commit. All sixteen preflight commands passed, and both forms of
+`git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -256,9 +254,9 @@ about 1,720 non-recurring and 205 a month.
   which is class F. SA-U16's current
   `decided_at_step` placement is not wire-legal, because
   `spec/layer-model.yaml:607` requires the field on every REFUSED.
-- **`retention-repo-scan` enforces three of RT-15's four parts.** The code RT-15
-  names, `FIXTURE_CONTAINS_LIVE_SELECTOR`, is not in the wire vocabulary, and git
-  history is out of reach of any commit-time check. The two values it refused
+- **Two of RT-15's four enforcement parts are in place.** No connector manifest
+  carries `canary_subject_class`, and `FIXTURE_CONTAINS_LIVE_SELECTOR` is not in
+  the wire vocabulary; git history is out of reach of any commit-time check. The two values it refused
   until the overnight commit were replaced, not exempted, and both remain in git
   history.
 - **Seven generation readings await confirmation, S7-R1 to S7-R7.** S7-R1 is the
@@ -320,7 +318,7 @@ reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
 The refuters overturned one, against the three-to-one over-report of the earlier
 prose reviews, because a lens could not make a finding without running the
-mechanism. Commits made on 2026-10-01 closed 53 of them and part of seven
+mechanism. Commits made on 2026-10-01 closed 54 of them and part of seven
 more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
 as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
 record, with each

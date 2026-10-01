@@ -168,9 +168,10 @@ KERNEL_GATE = (
         "RT-15, and D-001 closed at Step 8. Every tracked file in the working "
         "tree read for a filled selector in its typed form, against thirteen "
         "shapes reconciled with ontology/selectors.yaml in both directions. "
-        "Three of RT-15's four parts: the code the criterion names is not in the "
-        "wire vocabulary, and git history is out of reach of any commit-time "
-        "check. The pre-commit hook runs the same mode over the index",
+        "Two of RT-15's four enforcement parts are in place: canary_subject_class "
+        "on a connector manifest and the code the criterion names are not, and git "
+        "history is out of reach of any commit-time check. The pre-commit hook runs "
+        "the same mode over the index",
     ),
     (
         "retention-self-test",

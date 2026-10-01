@@ -133,5 +133,5 @@ selector enters a tracked file, per `AGENTS.md` section 4, so the history is
 publishable by rule and the local instance keeps its private material on the
 filesystem rather than in git. The commit-time scan that enforces the selector
 rule, `tools/validate_retention.py --repo-scan`, replaced its stub at Step 8 and
-runs in the pre-commit hook over the index. It enforces three of RT-15's four
-parts, and `AGENTS.md` section 5 states which part it does not reach.
+runs in the pre-commit hook over the index. Two of RT-15's four enforcement
+parts are in place, and `AGENTS.md` section 5 states which two are not.
