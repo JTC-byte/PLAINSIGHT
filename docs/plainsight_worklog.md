@@ -1833,3 +1833,30 @@ check has nothing left to observe.
 the staged tree and both forms of `git diff --check` were clean. The kernel
 gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
 2 stubbed and 5 pending.
+
+**Fifteenth: the critic's three retention findings, Class B, decided under the
+grant.** R-18, the RT-11 halt check `722b367` added, matched substrings: a halt
+that "blocks nothing; connector dispatch continues", one that also clears on an
+operator's ledger entry, a dispatch runner added to the exemptions, a trigger
+narrowed to flagged cases, and an answer written into U-17's deferral all
+passed, which repeats the weakness the review found in RT-9's guards. The halt is
+now pinned by value as `HALT_PIN`, with the ledger's halt acts, and the
+self-test gains a break for each of the five widenings, each of which the old
+check passed. The repo scan decoded every file as UTF-8 with replacement, which
+turns a UTF-16 file into text no shape matches while counting it read and clean;
+UTF-16 with a byte-order mark is what Windows PowerShell 5.1's `Out-File` writes
+by default. A file with a UTF-16 or UTF-32 mark is now decoded by it, and bytes
+carrying NUL without a mark, a binary or BOM-less UTF-16, refuse as
+`RETENTION_REPO_SCAN_SOURCE_UNREADABLE`; other bytes are still read as UTF-8 with
+replacement, because the typed shapes are ASCII and an ASCII-compatible file
+reads them the same. That is less strict than the critic proposed, which
+refused every non-UTF-8 file, and the difference is a judgment recorded here.
+The not-reached notice now names compressed and binary containers, and the
+self-test gains two decode cases that fail if the decode reverts. A clean
+combined `--policy --shred-roundtrip` run reported only the round trip; it now
+reports both. With these the critic's eleven are closed, three in part.
+
+**Battery for the fifteenth change.** All sixteen preflight commands passed on
+the staged tree and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing,
+2 stubbed and 5 pending.

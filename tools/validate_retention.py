@@ -162,6 +162,28 @@ INVARIANTS = (
     ("extension.extends_incidental_content", False, "RT-6, SS-11"),
     ("case_ttl.ceiling_is", "absolute_deadline", "RT-5, reading RET-R3"),
 )
+#: RT-11's halt, by value. Until the completeness critic of 2026-10-01 R-18
+#: matched substrings, so a halt that "blocks nothing; connector dispatch
+#: continues", or clears "on a ledger entry, or verify_shred passing all five",
+#: passed. The two unratified mappings stay deferred until the operator decides
+#: U-03 and U-17, and this pin moves in the commit that records the decision.
+HALT_PIN = {
+    "trigger": "SHRED_FAILED on any case",
+    "scope": "system_wide",
+    "per_case": False,
+    "blocks": "connector dispatch",
+    "does_not_block": [
+        "runner/retention_sweep.py",
+        "runner/verify_shred.py",
+        "runner/reconcile_ledger.py",
+        "the validators in tools/",
+    ],
+    "clears_when": "verify_shred passes all five RT-9 checks for the failed case",
+    "clearing_is_a_logged_act": True,
+    "clearing_fields": ["author", "timestamp", "receipt_hash"],
+    "clearing_author_authority": {"unratified": "U-03"},
+    "override": {"unratified": "U-17"},
+}
 #: RT-9. Five checks, each once. A receipt of [1, 1, 1, 1, 1] is one check
 #: counted five times, which RT-9 says is not a check.
 SHRED_CHECKS = [1, 2, 3, 4, 5]
@@ -267,6 +289,8 @@ SCAN_DOES_NOT_REACH = (
     "stack trace or a handle written into a worklog entry. VR-U1 carries the "
     "question and the measurement behind it",
     "git history, which no commit-time check reaches and no later act clears",
+    "compressed and binary containers such as xlsx, docx, zip, pdf and images, "
+    "which carry NUL bytes and refuse as unreadable rather than being read",
 )
 
 PLACEHOLDER_RE = re.compile(r"<([^<>]+)>")
@@ -1154,17 +1178,16 @@ def check_policy(ctx: dict) -> list[Finding]:
     if not isinstance(halt, dict):
         drift.append("the halt block is absent")
     else:
-        if halt.get("scope") != "system_wide" or halt.get("per_case") is not False:
-            drift.append("the halt is not system-wide")
-        if "verify_shred" not in str(halt.get("clears_when", "")) or "five" not in str(halt.get("clears_when", "")):
-            drift.append("the halt does not clear only on verify_shred passing all five RT-9 checks")
-        if "dispatch" not in str(halt.get("blocks", "")):
-            drift.append("the halt does not block connector dispatch")
-        if not (isinstance(halt.get("override"), dict) and set(halt["override"]) == {"unratified"}):
-            drift.append("halt.override is compiled as a value rather than deferred to an unratified entry")
-    for act in as_list(dig(pol, "ledger.additional_recorded_acts")):
-        if isinstance(act, dict) and act.get("name") == "halt_override" and "unratified" not in act:
-            drift.append("the ledger records a halt override as a permitted act")
+        for key, want in HALT_PIN.items():
+            if halt.get(key) != want:
+                drift.append(f"halt.{key} reads {halt.get(key)!r} where RT-11 fixes {want!r}")
+    acts = [a for a in as_list(dig(pol, "ledger.additional_recorded_acts")) if isinstance(a, dict)]
+    overrides = [a for a in acts if a.get("name") == "halt_override"]
+    if len(overrides) != 1 or overrides[0].get("unratified") != "U-17":
+        drift.append("the ledger's halt_override act is not the single U-17 deferral")
+    clearings = [a for a in acts if a.get("name") == "halt_clearing"]
+    if len(clearings) != 1 or clearings[0].get("fields") != HALT_PIN["clearing_fields"]:
+        drift.append("the ledger's halt_clearing act does not record author, timestamp and receipt_hash")
     if drift:
         out.append(
             Finding(
@@ -1723,6 +1746,44 @@ def _git(args: list[str]) -> str:
     return proc.stdout
 
 
+_BOMS = (
+    (b"\x00\x00\xfe\xff", "utf-32-be"),
+    (b"\xff\xfe\x00\x00", "utf-32-le"),
+    (b"\xfe\xff", "utf-16-be"),
+    (b"\xff\xfe", "utf-16-le"),
+)
+
+
+def decode_for_scan(name: str, data: bytes) -> str:
+    """Bytes to text the typed shapes can match, or a refusal.
+
+    A file carrying a UTF-16 or UTF-32 byte-order mark is decoded with that
+    codec. A file with NUL bytes and no mark is binary or BOM-less UTF-16, and
+    replacement decoding would turn it into text no shape matches while it was
+    still counted as read, so it refuses. Anything else is decoded as UTF-8 with
+    replacement: the typed shapes are ASCII, and ASCII bytes read the same in
+    every ASCII-compatible encoding. Until the completeness critic of 2026-10-01
+    a UTF-16 file was counted as read and clean.
+    """
+    for bom, codec in _BOMS:
+        if data.startswith(bom):
+            try:
+                return data[len(bom):].decode(codec)
+            except UnicodeDecodeError:
+                break
+    if b"\x00" in data:
+        raise Unreadable(
+            "RETENTION_REPO_SCAN_SOURCE_UNREADABLE",
+            name,
+            "the file is not text this scan can read: it carries NUL bytes, as a "
+            "binary file or UTF-16 without a byte-order mark does, so a selector in "
+            "it would not be found and the file would be counted as read",
+            "re-save it as UTF-8; or remove or unstage it; or keep binary files out "
+            "of the tracked tree",
+        )
+    return data.decode("utf-8", errors="replace")
+
+
 def scan_paths(staged: bool) -> list[tuple[str, str]]:
     """The file set, and its content. Reading VR-U2 bounds what this covers.
 
@@ -1758,14 +1819,14 @@ def scan_paths(staged: bool) -> list[tuple[str, str]]:
                     "what the commit would carry and has not checked it",
                     "restage the file and commit again; or unstage it",
                 )
-            out.append((name, proc.stdout.decode("utf-8", errors="replace")))
+            out.append((name, decode_for_scan(name, proc.stdout)))
         return out
     for name in _git(["ls-files", "-z"]).split("\0"):
         if not name.strip():
             continue
         path = ROOT / name
         try:
-            out.append((name, path.read_bytes().decode("utf-8", errors="replace")))
+            out.append((name, decode_for_scan(name, path.read_bytes())))
         except OSError:
             continue
     return out
@@ -2036,6 +2097,23 @@ def _mutations():
             "| 2026-09-11 | unstamped | operator |",
         )
 
+    def let_dispatch_continue(ctx):
+        ctx["policy"]["retention"]["halt"]["blocks"] = "nothing; connector dispatch continues"
+
+    def clear_the_halt_on_a_ledger_entry_too(ctx):
+        ctx["policy"]["retention"]["halt"]["clears_when"] = (
+            "a ledger entry by the operator, or verify_shred passes all five RT-9 checks"
+        )
+
+    def exempt_a_dispatch_runner(ctx):
+        ctx["policy"]["retention"]["halt"]["does_not_block"].append("runner/dispatch.py")
+
+    def narrow_the_trigger(ctx):
+        ctx["policy"]["retention"]["halt"]["trigger"] = "SHRED_FAILED on a case the operator flags"
+
+    def decide_u17_in_the_policy(ctx):
+        ctx["policy"]["retention"]["halt"]["override"] = {"unratified": "decided, a ledger entry lifts the halt"}
+
     def let_the_override_lift_the_halt(ctx):
         ctx["policy"]["retention"]["halt"]["override"] = {
             "permitted_when": "the shred genuinely cannot be completed",
@@ -2159,6 +2237,11 @@ def _mutations():
         ("let a ledger override lift the RT-11 halt", "policy", let_the_override_lift_the_halt, "RETENTION_POLICY_HALT_DRIFT", False),
         ("make the RT-11 halt per-case and clear it on a ledger entry", "policy", make_the_halt_per_case, "RETENTION_POLICY_HALT_DRIFT", True),
         ("delete the RT-11 halt", "policy", delete_the_halt, "RETENTION_POLICY_HALT_DRIFT", False),
+        ("let connector dispatch continue under the halt", "policy", let_dispatch_continue, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("clear the halt on a ledger entry as well", "policy", clear_the_halt_on_a_ledger_entry_too, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("exempt a dispatch runner from the halt", "policy", exempt_a_dispatch_runner, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("fire the halt only on a flagged case", "policy", narrow_the_trigger, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write U-17's answer into the deferral", "policy", decide_u17_in_the_policy, "RETENTION_POLICY_HALT_DRIFT", False),
         ("rename the fixture wrapper key", "roundtrip", rename_the_fixture_wrapper, "SHRED_ROUNDTRIP_WRAPPER_KEY", True),
         ("count one fixture check twice", "roundtrip", count_one_fixture_check_twice, "SHRED_ROUNDTRIP_CHECK_SET", False, "renumbering check 4 to 1 replaces check 1, whose passing condition is the decrypt failing on the key, so the false-pass guard fires with the set check"),
         ("let fixture check 1 pass on a not-found", "roundtrip", let_fixture_check_one_pass_on_not_found, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
@@ -2278,6 +2361,21 @@ def self_test(ctx: dict) -> int:
         mark = "refused" if ok else "PASSED  "
         print(f"  {mark}  {desc:56} expected {expected}{note}")
 
+    token = "handle" + ":" + "acmegram" + "/" + "examplename"
+    patterns = compile_patterns(ctx["registry"])
+    utf16 = b"\xff\xfe" + ("note " + token + "\n").encode("utf-16-le")
+    decoded = decode_for_scan("notes/u16.md", utf16)
+    ok = any(p.search(decoded) for p in patterns.values())
+    failures += 0 if ok else 1
+    print(f"  {'refused' if ok else 'PASSED  '}  {'read a UTF-16 file by its byte-order mark':56} expected the typed shape to match")
+    try:
+        decode_for_scan("notes/u16be.md", ("note " + token).encode("utf-16-be"))
+        ok = False
+    except Unreadable as exc:
+        ok = exc.finding.code == "RETENTION_REPO_SCAN_SOURCE_UNREADABLE"
+    failures += 0 if ok else 1
+    print(f"  {'refused' if ok else 'PASSED  '}  {'refuse NUL-bearing bytes with no byte-order mark':56} expected RETENTION_REPO_SCAN_SOURCE_UNREADABLE")
+
     print()
     if failures:
         print(
@@ -2291,7 +2389,7 @@ def self_test(ctx: dict) -> int:
         f"validate_retention --self-test ok: {len(muts)} deliberate breaks, "
         f"{len(muts)} refused, {len(muts) - cascading} of them by the expected "
         f"code alone, {cascading} cascading with a stated reason. "
-        f"{len(exercised)} distinct codes exercised."
+        f"{len(exercised)} distinct codes exercised, and both decode cases held."
     )
     return 0
 
@@ -2433,6 +2531,8 @@ def main(argv: list[str]) -> int:
                 "tools/validate_retention.py --questions."
             )
             return 0
+        if args.shred_roundtrip and args.policy:
+            print("validate_retention --policy ok: graded in the same run as the round trip below.")
         if args.shred_roundtrip:
             print(
                 "validate_retention --shred-roundtrip ok: the fixture is "

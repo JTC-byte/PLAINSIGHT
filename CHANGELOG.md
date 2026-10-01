@@ -22,6 +22,28 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-01, overnight. The RT-11 halt is pinned by value, and the repo scan
+  reads UTF-16 and refuses binary bytes.**
+
+  **What changed.** R-18 compares the halt block and the ledger's halt acts
+  with `HALT_PIN` by value, where it matched substrings. The repo scan decodes
+  a file by its UTF-16 or UTF-32 byte-order mark, refuses NUL-bearing bytes
+  without one as `RETENTION_REPO_SCAN_SOURCE_UNREADABLE`, and names compressed
+  and binary containers as not read. A clean combined `--policy
+  --shred-roundtrip` run reports both modes. From the Step 8 review's
+  completeness critic, decided under the operator's overnight grant of
+  2026-09-30 23:28, and revertible.
+
+  **Which surfaces moved.** `tools/validate_retention.py` and its self-test,
+  the worklog and the handoff.
+
+  **What validation ran.** The retention self-test, 58 breaks and two decode
+  cases; every retention mode refusing exactly as before; all sixteen preflight
+  commands; both forms of `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No policy value, doctrine file or stamp. Every change
+  makes the gate stricter.
+
 - **2026-10-01, overnight. SS-14 item 7 counts the cast only when it is sealed,
   hash-verified and carries a confuser pair.**
 
