@@ -2006,3 +2006,24 @@ With this, 60 of the review's 88 findings are closed and seven in part.
 on the staged tree, the authorization self-test with 67 breaks, and both forms
 of `git diff --check` were clean. The kernel gate exited 0, with 16 implemented
 checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
+
+**Twenty-second: the checkpoint closeout, at a natural stopping point.** The
+handover of 01:26 asked for a closeout at a natural stopping point or a
+tactical pause, named as one or the other. This is a natural stopping point.
+What remains of the Step 8 review is either reserved to the operator, waits on
+the evaluator VA-U1 holds until Step 10, or needs fixture semantics that only a
+ratified entry decides; the eight findings an agent can still take are listed
+in the handoff's section 5. Since the summary of 01:35, PRs 15 to 18 landed
+`7802659`, `4ec9132`, `d0b1984` and `3e54101`, each fast-forwarded after both
+CI runs passed on every step. **A count correction.** The running review count
+in the seventeenth to twenty-first paragraphs and in the session's reports ran
+one high. The review table carries 59 findings closed and eight in part, one
+of those the class B half of retention-mechanism:6, a class F finding, plus
+twenty open and one, stamped-state:12, the operator's. The paragraphs above
+stay as written, and the handoff and the review record carry the corrected
+figures.
+
+**Battery for the closeout.** All sixteen preflight commands passed on the
+staged tree and both forms of `git diff --check` were clean. The kernel gate
+exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending.
