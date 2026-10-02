@@ -11,12 +11,12 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts, 9,342 lines at `0e0c840`, are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-01, afternoon, resumed at 12:24. The commit that carries this
-file closes the fourth review's findings and is the checkpoint closeout before
-the 16:15 stop, on top of `46beb98`, under the grant of 2026-09-30 23:28,
-resumed at 12:24 and confirmed for merges at 12:37. The commits before it that night gave the gates one reader of the pin of
-record, closed all three ratification blockers, and turned the kernel gate and
-CI green.
+**Date:** 2026-10-02, morning. The commit that carries this file closes the
+fourth review's open findings and the fifth review's, on top of `77fe6da`,
+under the maintainer's words of 2026-10-02 10:14, relayed by the parent session,
+which renew the grant of 2026-09-30 23:28. The commits of 2026-09-30 and
+2026-10-01 gave the gates one reader of the pin of record, closed all three
+ratification blockers, and turned the kernel gate and CI green.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -46,15 +46,18 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** A fourth pass found twelve more holes in the third
-round's fixes; eight are closed here, and f4:4, 7, 10 and 11 are open.
+**What changed and why.** This commit closes the fifth pass's ten findings over
+`77fe6da` and the fourth pass's five open ones, f4:6's other half among them,
+which this file's previous version omitted. A sixth and a seventh pass found
+nineteen and twenty more; their eight regressions are fixed or backed out.
 
 **Which surfaces moved.** Both validators and their self-tests,
-`CHANGELOG.md`, this file, and the worklog.
+`conformance/gate/README.md` section 5, `CHANGELOG.md`, this file, and the
+worklog, whose 2026-09-05 entry moved to the archive under its ten-entry cap.
 
 **What validation ran and what passed.** The battery ran on the staged tree
 before the commit. All sixteen preflight commands passed, the two
-self-tests with 129 and 163 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
+self-tests with 147 and 184 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
@@ -328,8 +331,8 @@ SS-14's seal condition for the cast. All eleven are closed, three of them in
 part, and the review record lists what remains of each. Of the twelve review
 findings still open, three wait on the operator's queue and nine on the
 evaluator VA-U1 holds until Step 10 or on fixture semantics a ratified entry
-decides. Passes two to four over today's PRs are in `REVIEW2.md`; four
-fourth-pass findings are open, and this closeout commit has had no review.
+decides. Passes two to seven are in `REVIEW2.md`, and the worklog names what
+the sixth and seventh left open.
 
 ## 6. Session context that lives outside this repository
 

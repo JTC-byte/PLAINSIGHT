@@ -245,7 +245,10 @@ a tracked file, and `tools/build_corpus.py` states the same rule as an absolute
 over the other two corpora. Every value under a selector key in
 `decisions.jsonl` is a typed placeholder matching `^<[a-z_]+:[^<>]+>$`, which
 `tools/validate_authorization.py` has required since 2026-10-01; before then
-any bracketed text passed. Six of the
+any bracketed text passed. Since 2026-10-02 the placeholder must also be one of
+the tokens `synthetic/GROUND_TRUTH.yaml` carries as a value, or the
+corpus-local token named below, because the pattern bound the type and
+accepted a live handle as the label. Six of the
 eight tokens in the file are copied from `synthetic/GROUND_TRUTH.yaml`, so the
 corpus becomes reproducible in one step when the operator fills the cast. The
 seventh is `<handle>` inside an `argv_template`, which names a selector type

@@ -66,10 +66,12 @@ Every check guards a specific defect:
         string or mapping key of a row, inside a bracketed placeholder as well.
         Before then a selector-shaped string under any other key passed. A
         number written with a 00 prefix is not read. A value under a selector key
-        is a typed placeholder, <type:label>, and a record selector is an object
-        of exactly selector_type and value. This is the rule
-        `tools/validate_cast.py --placeholder-scan` already applies to the truth
-        file, applied to the one corpus that carries authorization records.
+        is a typed placeholder, <type:label>, and since 2026-10-02 it is one of
+        the tokens synthetic/GROUND_TRUTH.yaml carries or the corpus-local token;
+        a record selector is an object of exactly selector_type and value. This
+        is the rule `tools/validate_cast.py --placeholder-scan` already applies
+        to the truth file, applied to the one corpus that carries authorization
+        records.
   A-09  A `pending` entry naming no unratified entry in
         `policy/subject-authorization.yaml` or `conformance/gate/README.md`. A
         row held on an entry that does not exist is held forever and reads as
@@ -101,7 +103,10 @@ Every check guards a specific defect:
         reached last. Since 2026-10-01 each register row's criterion, decision,
         step, basis, code and hold are read against its fixture too, on the
         register's notation: "none" for no value, "held" for a value a held row
-        leaves open, and "determinate" for an empty hold.
+        leaves open, and "determinate" for an empty hold. Since 2026-10-02 the
+        register is read as GitHub renders its table, so a row without its
+        outer pipes or its backticks is read, and a row with no fixture name in
+        its first column is refused.
   A-14  A fixture name `spec/layer-model.yaml` reserves for this corpus that is
         missing, or present with a code or an `expect_only` other than the one
         the fixture map reserves. Rank 3 owns those three names.
@@ -245,6 +250,9 @@ CODE_VOCABULARY = ROOT / "policy" / "violation-codes.yaml"
 PIN = ROOT / "doctrine" / "DOCTRINE_STATUS.md"
 RUNNER = ROOT / "runner"
 ALLOWLIST = RUNNER / "dispatch_allowlist.yaml"
+ONTOLOGY = ROOT / "ontology" / "selectors.yaml"
+PSE_SCHEMA = ROOT / "schema" / "pse-event-0.1.schema.json"
+TRUTH = ROOT / "synthetic" / "GROUND_TRUTH.yaml"
 
 REL = {
     POLICY: "policy/subject-authorization.yaml",
@@ -253,6 +261,9 @@ REL = {
     LAYER_MODEL: "spec/layer-model.yaml",
     CODE_VOCABULARY: "policy/violation-codes.yaml",
     PIN: "doctrine/DOCTRINE_STATUS.md",
+    ONTOLOGY: "ontology/selectors.yaml",
+    PSE_SCHEMA: "schema/pse-event-0.1.schema.json",
+    TRUTH: "synthetic/GROUND_TRUTH.yaml",
 }
 
 #: The gate token. One token per tool, matching every sibling and matching the
@@ -398,6 +409,16 @@ PLACEHOLDER_RE = re.compile(r"^<[^<>]+>$")
 #: A value under a selector key names its type and a label, as every corpus
 #: value does. Until the third review of 2026-10-01 any bracketed text passed.
 TYPED_PLACEHOLDER_RE = re.compile(r"^<[a-z_]+:[^<>]+>$")
+#: The one token with no row in synthetic/GROUND_TRUTH.yaml. The cast designs no
+#: bystander, so the S5 row's token is corpus-local, and conformance/gate/README.md
+#: section 5 names it. A second such token is an edit here, reviewed as one.
+CORPUS_LOCAL_TOKENS = ("<platform_uid:incidental-bystander-1>",)
+
+#: A word in no vocabulary this gate reads. The self-test plants it where a
+#: refusal could quote a fixture or register value, and fails a break whose
+#: refusal prints it: a refusal that printed it would print a handle in the same
+#: place, since a handle has no shape for _masked_text to find.
+UNSHAPED_MARK = "unshaped" + "-sentinel"
 
 
 def _masked_text(text) -> str:
@@ -411,16 +432,70 @@ def _masked_text(text) -> str:
     return text
 
 
-def _masked(keys) -> list:
-    # A refusal names an unexpected key, and a key can carry an address.
-    # Until the second review of 2026-10-01 A-01 quoted it, which made the gate
-    # its own durable surface, against HY-1 and RT-19.
-    return [
-        "<a key carrying an email or phone shape>"
-        if isinstance(k, str) and any(p.search(k) for _, p in VALUE_SHAPES)
-        else k
-        for k in keys
-    ]
+#: Keys the gate corpus writes under `given` and its blocks that no schema
+#: declares. A key outside these, the row contract, the two schemas and the
+#: layer model is printed as undeclared rather than by name.
+CORPUS_KEYS = (
+    "artifacts_stamped",
+    "carrier",
+    "criteria_absent",
+    "declares_bystanders",
+    "kind",
+    "override",
+    "payload_family",
+    "runner_environment",
+    "scorecard_on_file",
+    "string_in_this_file",
+)
+UNDECLARED_KEY = "<a key no schema or contract declares>"
+
+
+def _masked(keys, vocabulary=frozenset()) -> list:
+    """Keys as a refusal may print them: a key in a declared vocabulary by name,
+    any other as undeclared.
+
+    A refusal names an unexpected key, and a key can carry a selector. Until
+    the second review of 2026-10-01 A-01 quoted it, which made the gate its own
+    durable surface, against HY-1 and RT-19; until the fifth review of
+    2026-10-02 only an email or phone shape was masked, so a handle used as a
+    key was printed.
+    """
+    return [k if isinstance(k, str) and k in vocabulary else UNDECLARED_KEY for k in keys]
+
+
+def _key_vocabulary(*documents) -> set[str]:
+    """Every name declared under properties, patternProperties or $defs in the
+    given documents, every key of a mapping document, and the tool's own key
+    tuples."""
+    out: set[str] = set(CORPUS_KEYS) | {"_where"}
+
+    def walk(node, in_schema: bool):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if isinstance(k, str) and not in_schema:
+                    out.add(k)
+                if k in ("properties", "patternProperties", "$defs", "definitions") and isinstance(v, dict):
+                    out.update(x for x in v if isinstance(x, str))
+                walk(v, in_schema)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v, in_schema)
+
+    for document, in_schema in documents:
+        walk(document, in_schema)
+    return out
+
+#: Every character Unicode files as a dash (category Pd) and the minus sign,
+#: escaped for a character class. The fifth review of 2026-10-02 found U+2212,
+#: U+FF0D and U+FE63 between the groups of a phone read as no phone, under a
+#: comment that said any dash was read.
+#: Characters that render as nothing or as a stop between a phone's groups:
+#: the soft hyphen, the zero-width space, joiners and the word joiner, the
+#: byte-order mark, middle dots, fullwidth and ideographic stops, parentheses and slash. The
+#: sixth review of 2026-10-02 found each between the groups of a phone A-08 read
+#: as no phone.
+PHONE_STOPS = re.escape("\u00AD\u200B\u200C\u200D\u2060\uFEFF\u00B7\u2027\u30FB\uFF0E\u3002\uFF08\uFF09\uFF0F")
+PHONE_DASHES = re.escape("\u002D\u058A\u05BE\u1400\u1806\u2010\u2011\u2012\u2013\u2014\u2015\u2E17\u2E1A\u2E3A\u2E3B\u2E40\u2E5D\u301C\u3030\u30A0\uFE31\uFE32\uFE58\uFE63\uFF0D\U00010D6E\U00010EAD\u2212")
 
 #: The shapes A-08's second pass finds under any key. Email and E.164 phone are
 #: the two that cannot occur by accident in a fixture's prose; a handle or an id
@@ -431,9 +506,11 @@ VALUE_SHAPES = (
     # of 2026-10-01; a number with a 00 prefix is not read, which is stated.
     # Grouped with spaces, hyphens, dots, slashes or parentheses since the third
     # review of 2026-10-01.
-    # Any space, including no-break and thin spaces, and any dash, since the
-    # fourth review of 2026-10-01.
-    ("an E.164 phone number", re.compile(r"(?<![\w+])\+[1-9](?:[\s  ‐-―.\-()/]*\d){7,14}(?!\d)")),
+    # Any space, including no-break and thin spaces, since the fourth review of
+    # 2026-10-01, every dash and the minus sign since the fifth review, and the
+    # invisible separators and stops in PHONE_STOPS, with a fullwidth plus, since
+    # the sixth.
+    ("an E.164 phone number", re.compile(r"(?<![\w+])[+\uFF0B][1-9](?:[\s.()/" + PHONE_DASHES + PHONE_STOPS + r"]*\d){7,14}(?!\d)")),
     ("a percent-encoded email address", re.compile(r"[A-Za-z0-9._%+-]+%40[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}")),
 )
 
@@ -448,30 +525,133 @@ NAMESPACE_FILE = {
 
 CRITERION_RE = re.compile(r"\b((?:SS|RT|EG|CR|HY)-\d+)\b")
 PENDING_ID_RE = re.compile(r"^(?:SA|SAS|GF|VA)-U\d+$")
-REGISTER_NAME_RE = re.compile(r"^ {0,3}\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|", re.M)
+#: A fixture name, as the register's first column writes it once its backticks
+#: are removed.
+REGISTER_NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 GF_ENTRY_RE = re.compile(r"^### (GF-U\d+)\.", re.M)
 
 
+#: A pipe table's delimiter row, with or without its outer pipes.
+TABLE_DELIMITER_RE = re.compile(r"^ {0,3}\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)*\|?\s*$")
+#: A line that starts another block, which ends a table body with no blank line.
+TABLE_ENDS_RE = re.compile(r"^ {0,3}(?:#{1,6}(?:\s|$)|>|```|~~~|[-*+]\s|\d+[.)]\s|<|(?:[-*_]\s*){3,}$)")
+
+
+#: The line the reader of 77fe6da and before took as a register row: a leading
+#: pipe and a backticked name, wherever it sits. Every such line is still read.
+OLD_REGISTER_ROW_RE = re.compile(r"^ {0,3}\|\s*`[a-z0-9][a-z0-9-]*`\s*\|")
+
+
+def _cells(line: str) -> list[str]:
+    text = line.strip()
+    if text.startswith("|"):
+        text = text[1:]
+    if text.endswith("|") and not text.endswith("\\|"):
+        text = text[:-1]
+    return [c.strip() for c in re.split(r"(?<!\\)\|", text)]
+
+
+def _register_table(block: str) -> list[list[str]]:
+    """Every body row of every pipe table in the block, as its cells, read as
+    GitHub renders the table: the outer pipes are optional, a backslash-escaped
+    pipe is text, and the body runs to the first blank line or the next block.
+    Every line the earlier reader took as a row is read as well, wherever it
+    sits, so this reader reads a superset of what it read.
+
+    Until the fourth review of 2026-10-01 a register row was read only with a
+    leading pipe and a backticked name, so a contradicting row written without
+    either rendered in the table and was compared with nothing. The sixth review
+    of 2026-10-02 found the first version of this reader skipping three rows the
+    earlier one read: a second table's header, a row after a line opening with
+    HTML, and a row alone after a blank line. A table inside a blockquote is not
+    read.
+    """
+    lines = block.splitlines()
+    found: dict[int, list[str]] = {}
+    i = 0
+    while i < len(lines):
+        header, delimiter = lines[i], lines[i + 1] if i + 1 < len(lines) else ""
+        if "|" in header and "|" in delimiter and TABLE_DELIMITER_RE.match(delimiter):
+            j = i + 2
+            while j < len(lines) and lines[j].strip() and not TABLE_ENDS_RE.match(lines[j]):
+                found[j] = _cells(lines[j])
+                j += 1
+            i = j
+        else:
+            i += 1
+    for n, line in enumerate(lines):
+        if n not in found and OLD_REGISTER_ROW_RE.match(line):
+            found[n] = _cells(line)
+    return [found[n] for n in sorted(found)]
+
+
 def _register_rows(block: str) -> dict[str, list[list[str]]]:
-    """Every register row's six cells after the name, keyed on the name.
+    """Every register row's cells after the name, keyed on the name.
 
     Every row, not the first: until the second review of 2026-10-01 a
     contradictory second row for a name was never read.
     """
     out: dict[str, list[list[str]]] = {}
-    for line in block.splitlines():
-        match = REGISTER_NAME_RE.match(line)
-        if match:
-            cells = [c.strip() for c in line.strip().strip("|").split("|")]
-            out.setdefault(match.group(1), []).append(cells[1:])
+    for cells in _register_table(block):
+        name = cells[0].replace("`", "").strip()
+        if REGISTER_NAME_RE.match(name):
+            out.setdefault(name, []).append(cells[1:])
     return out
 
 
-def _register_drift(cells: list[str], row: dict) -> list[str]:
-    """Where a register row states something its fixture does not."""
+def _register_unreadable(block: str) -> int:
+    """How many register rows carry no fixture name in their first cell."""
+    return sum(1 for cells in _register_table(block) if not REGISTER_NAME_RE.match(cells[0].replace("`", "").strip()))
+
+
+def _quoted(value, known) -> str:
+    """A value as a refusal may print it: quoted when it is a token of a
+    vocabulary this gate reads, described otherwise.
+
+    A value outside every vocabulary may be a selector, and a handle has no
+    shape for _masked_text to find. Until the fourth review of 2026-10-01 eight
+    refusals quoted such a value, and the register drift quoted pending ids and
+    whole register cells.
+    """
+    if value is None or isinstance(value, bool):
+        return repr(value)
+    if isinstance(value, int) and 0 <= value < 100:
+        return repr(value)
+    if isinstance(value, str) and (value in known or PENDING_ID_RE.match(value)):
+        return repr(value)
+    return "a value outside every vocabulary this gate reads, not printed here"
+
+
+def _held_text(ids) -> str:
+    return ", ".join(
+        str(i) if PENDING_ID_RE.match(str(i)) or str(i) == "determinate" else "an id outside the entry grammar"
+        for i in ids
+    )
+
+
+def _known_tokens(model: dict) -> set[str]:
+    """Every token a refusal may quote: the enums rank 3 ships, the compiled
+    gate values, the code vocabulary, the subject classes, and the register's
+    own words for no value and a hold."""
+    collect = _d(model.get("model") or {}, "event_types", "COLLECT_EVENT", "payload", "fields", default={}) or {}
+    known = {"none", "held", "determinate", "refusal_basis", "extension_basis"}
+    for field in ("refusal_basis", "extension_basis", "decided_at_step", "decision", "subject_relation"):
+        known |= {str(x) for x in _seq(collect, field, "enum")}
+    known |= {str(x) for x in _seq(model.get("policy") or {}, "gate", "values", "enum")}
+    known |= {str(x) for x in (model.get("codes") or ()) if x is not None}
+    known |= set(AUTHORIZABLE_CLASSES) | set(NOT_AUTHORIZABLE)
+    return known
+
+
+def _register_drift(cells: list[str], row: dict, known: set[str] = frozenset()) -> list[str]:
+    """Where a register row states something its fixture does not. A cell or
+    a fixture value outside every vocabulary is described rather than quoted."""
 
     def cell(text) -> str:
         return str(text).replace("`", "").strip()
+
+    def ids(text) -> str:
+        return ", ".join(dict.fromkeys(CRITERION_RE.findall(text))) or "no criterion id"
 
     if len(cells) != 6:
         return [f"{len(cells)} cells after the name where the register has 6"]
@@ -479,8 +659,12 @@ def _register_drift(cells: list[str], row: dict) -> list[str]:
     dec = _decision(row)
     pending = [str(x) for x in (row.get("pending") or [])]
     out: list[str] = []
-    if criterion != cell(row.get("criterion", "")):
-        out.append(f"criterion '{criterion}' where the fixture states '{cell(row.get('criterion', ''))}'")
+    fixture_criterion = cell(row.get("criterion", ""))
+    if criterion != fixture_criterion:
+        if ids(criterion) != ids(fixture_criterion):
+            out.append(f"a criterion citing {ids(criterion)} where the fixture cites {ids(fixture_criterion)}")
+        else:
+            out.append(f"a criterion worded unlike the fixture's, both citing {ids(criterion)}")
     for label, stated, value in (
         ("decision", decision, dec.get("value")),
         ("step", step, dec.get("decided_at_step")),
@@ -492,10 +676,14 @@ def _register_drift(cells: list[str], row: dict) -> list[str]:
         else:
             ok = stated == str(value)
         if not ok:
-            out.append(f"{label} '{stated}' where the fixture states {value!r}")
+            out.append(f"{label} {_quoted(stated, known)} where the fixture states {_quoted(value, known)}")
     want = ", ".join(pending) if pending else "determinate"
     if held != want:
-        out.append(f"held on '{held}' where the fixture states '{want}'")
+        stated_ids = [p.strip() for p in held.split(",")]
+        out.append(
+            f"held on '{_held_text(stated_ids)}' where the fixture states "
+            f"'{_held_text(pending) if pending else 'determinate'}'"
+        )
     return out
 
 # ---------------------------------------------------------------------------
@@ -816,10 +1004,13 @@ def item_6_reasons(stamp_state: dict, paths: list[str], criteria: list[str], pin
 
     reasons = [_why(p) for p in paths if p not in stamped]
     rows = getattr(pin, "criteria", {}) if source != "fixture" else {}
+    # A fixture supplies criteria_absent, so an entry outside the criterion
+    # grammar is described rather than printed, since the sixth review of
+    # 2026-10-02 found A-18 printing it.
     reasons += [
         f"criterion {c} has a Step 3 row, and no dated range or Ratified row covers it"
         if c in rows
-        else f"criterion {c} has no row in the stamp table"
+        else f"criterion {c if CRITERION_RE.fullmatch(str(c)) else 'outside the criterion grammar'} has no row in the stamp table"
         for c in absent
     ]
     return reasons
@@ -886,6 +1077,61 @@ def _yaml(path: Path) -> dict:
             "with hyphens turned to underscores, so a mistyped key fails closed",
         )
     return doc
+
+
+def _json(path: Path):
+    rel = REL.get(path, str(path))
+    try:
+        return json.loads(_read(path))
+    except json.JSONDecodeError as exc:
+        raise Unreadable(
+            "AUTH_INPUT_UNPARSEABLE",
+            rel,
+            f"the file is not valid JSON (line {exc.lineno}, column {exc.colno}), so the "
+            "names this gate may print cannot be read",
+            f"fix the JSON at the reported location in {rel}",
+        ) from exc
+
+
+def _selector_types() -> list[str]:
+    """The registry's selector types. A key that is not a string is a refusal by
+    name: until the fifth review of 2026-10-02 it ended --fixtures in a
+    TypeError traceback."""
+    selectors = _yaml(ONTOLOGY).get("selectors") or {}
+    if not isinstance(selectors, dict) or not all(isinstance(k, str) for k in selectors):
+        raise Unreadable(
+            "AUTH_INPUT_UNPARSEABLE",
+            "ontology/selectors.yaml",
+            "the registry's selectors block is not a mapping keyed by type names, so "
+            "the selector types a record may name cannot be read",
+            "restore the selectors mapping in ontology/selectors.yaml, one string key "
+            "per selector type",
+        )
+    return sorted(selectors)
+
+
+def _truth_tokens() -> list[str]:
+    """Every typed placeholder synthetic/GROUND_TRUTH.yaml carries as a value,
+    read as YAML so that a comment cannot add one, with the corpus-local token.
+
+    Until the fourth review of 2026-10-01 TYPED_PLACEHOLDER_RE bound a value's
+    type and never its label, so a live handle written as the label of a typed
+    placeholder passed A-08.
+    """
+    found: set[str] = set(CORPUS_LOCAL_TOKENS)
+
+    def walk(node):
+        if isinstance(node, dict):
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+        elif isinstance(node, str) and TYPED_PLACEHOLDER_RE.match(node):
+            found.add(node)
+
+    walk(_yaml(TRUTH))
+    return sorted(found)
 
 
 def load() -> dict:
@@ -982,12 +1228,22 @@ def load() -> dict:
         "rows": rows,
         "codes": codes,
         "model": _yaml(LAYER_MODEL),
-        "register": list(dict.fromkeys(REGISTER_NAME_RE.findall(register_block))),
+        "register": list(_register_rows(register_block)),
         "register_rows": _register_rows(register_block),
+        "register_unreadable": _register_unreadable(register_block),
         "register_block": register_block,
         # The registry's selector types, which a record selector's type must be
         # one of, since the fourth review of 2026-10-01.
-        "selector_types": sorted((_yaml(ROOT / "ontology" / "selectors.yaml").get("selectors") or {})),
+        "selector_types": _selector_types(),
+        "key_vocabulary": sorted(
+            _key_vocabulary((schema, True), (_json(PSE_SCHEMA), True), (_yaml(LAYER_MODEL), False))
+            | set(ROW_KEYS)
+            | set(GIVEN_KEYS)
+            | set(DECISION_KEYS)
+            | set(SELECTOR_KEYS)
+        ),
+        # The cast's own tokens, which a typed placeholder must be one of.
+        "cast_tokens": _truth_tokens(),
         "gf_entries": set(GF_ENTRY_RE.findall(register_text)),
         "pin_text": _read(PIN),
         "ss_defined": DEFINITION_RE.findall(_read(SUBJECT_SELECTION)),
@@ -1093,6 +1349,8 @@ def check_corpus(model: dict) -> list[Finding]:
     relation_enum = set(_seq(collect, "subject_relation", "enum"))
 
     policy_values = set(_seq(policy, "gate", "values", "enum"))
+    known = _known_tokens(model)
+    vocabulary = frozenset(model.get("key_vocabulary") or ())
     consequences = {
         m.get("value"): m.get("consequence", "")
         for m in _seq(policy, "gate", "values", "members")
@@ -1209,7 +1467,7 @@ def check_corpus(model: dict) -> list[Finding]:
         present = {k for k in row if k != "_where"}
         if present != set(ROW_KEYS):
             missing = sorted(set(ROW_KEYS) - present)
-            extra = _masked(sorted(present - set(ROW_KEYS)))
+            extra = _masked(sorted(present - set(ROW_KEYS), key=str), vocabulary)
             f.append(
                 Finding(
                     "AUTH_ROW_KEYS_UNEXPECTED",
@@ -1242,7 +1500,7 @@ def check_corpus(model: dict) -> list[Finding]:
                         f"the row's {block} is not the {len(keys)} keys the row contract "
                         "fixes"
                         + (f", missing {sorted(set(keys) - have)}" if set(keys) - have else "")
-                        + (f", carrying {_masked(sorted(have - set(keys)))}" if have - set(keys) else "")
+                        + (f", carrying {_masked(sorted(have - set(keys), key=str), vocabulary)}" if have - set(keys) else "")
                         + ". A missing key is an input or an assertion the fixture never "
                         "supplied, and an extra one is something nothing grades",
                         f"restore the keys in conformance/gate/README.md section 3; or add "
@@ -1295,7 +1553,7 @@ def check_corpus(model: dict) -> list[Finding]:
                 Finding(
                     "AUTH_DECISION_VALUE_UNKNOWN",
                     f"{where} > expect_decision.value",
-                    f"the row asserts {value!r}, which the compiled gate enum does not "
+                    f"the row asserts {_quoted(value, known)}, which the compiled gate enum does not "
                     "carry. SS-7 closes the set at three values and rank 3 ships them as "
                     "COLLECT_EVENT subtypes, so a fourth value is a decision no consumer "
                     "can read",
@@ -1312,7 +1570,7 @@ def check_corpus(model: dict) -> list[Finding]:
                 Finding(
                     "AUTH_DECIDED_AT_STEP_OUTSIDE_ENUM",
                     f"{where} > expect_decision.decided_at_step",
-                    f"the row asserts step {step!r} and SS-8's order is stamped at six "
+                    f"the row asserts step {_quoted(step, known)} and SS-8's order is stamped at six "
                     "steps, which rank 3 ships as a closed enum. A step outside it claims "
                     "the gate decided at a point in an order the operator never stamped",
                     "assert one of " + ", ".join(str(s) for s in sorted(step_enum)) + "; or "
@@ -1331,7 +1589,7 @@ def check_corpus(model: dict) -> list[Finding]:
                     Finding(
                         "AUTH_BASIS_FIELD_UNKNOWN",
                         f"{where} > expect_decision.basis_field",
-                        f"the row records a basis under {basis_field!r}, and the wire "
+                        f"the row records a basis under {_quoted(basis_field, known)}, and the wire "
                         "record carries exactly two basis fields. A basis under neither "
                         "is a token no consumer reads",
                         "record the basis under refusal_basis or extension_basis, "
@@ -1349,7 +1607,7 @@ def check_corpus(model: dict) -> list[Finding]:
                     Finding(
                         "AUTH_BASIS_OUTSIDE_ENUM",
                         f"{where} > expect_decision.basis",
-                        f"the row asserts basis {b!r} under {basis_field}, which rank 3 "
+                        f"the row asserts basis {_quoted(b, known)} under {basis_field}, which rank 3 "
                         "closes." + hint + " A refusal whose basis nothing declares cannot "
                         "be routed or rendered",
                         "assert a member of " + ", ".join(sorted(legal)) + "; or, to add a "
@@ -1365,7 +1623,7 @@ def check_corpus(model: dict) -> list[Finding]:
                 Finding(
                     "AUTH_SUBJECT_RELATION_UNKNOWN",
                     f"{where} > expect_decision.subject_relation",
-                    f"the row asserts relation {relation!r}. SS-10 closes the computed "
+                    f"the row asserts relation {_quoted(relation, known)}. SS-10 closes the computed "
                     "column at seed, pivot and incidental, and a connector may not assert "
                     "it at all",
                     "assert one of " + ", ".join(sorted(relation_enum)) + "; or leave the "
@@ -1379,7 +1637,7 @@ def check_corpus(model: dict) -> list[Finding]:
                 Finding(
                     "AUTH_CODE_OUTSIDE_VOCABULARY",
                     f"{where} > expect_code",
-                    f"the row expects {code!r} and policy/violation-codes.yaml does not "
+                    f"the row expects {_quoted(code, known)} and policy/violation-codes.yaml does not "
                     "declare it. A gate emitting an undeclared code emits a string, and "
                     "nothing downstream can route it",
                     "expect a declared code; or land the new code in spec/layer-model.yaml "
@@ -1474,7 +1732,7 @@ def check_corpus(model: dict) -> list[Finding]:
                     Finding(
                         "AUTH_SUBJECT_CLASS_UNAUTHORIZABLE",
                         f"{where} > authorization.subject_class",
-                        f"the record names class {klass!r}. SS-1 marks S5 not authorizable "
+                        f"the record names class {_quoted(klass, known)}. SS-1 marks S5 not authorizable "
                         "and SS-4 excludes it from this field, so a record naming it is an "
                         "authorization for a class no authorization reaches",
                         "name one of " + ", ".join(AUTHORIZABLE_CLASSES) + " with the "
@@ -1484,7 +1742,13 @@ def check_corpus(model: dict) -> list[Finding]:
                     )
                 )
 
-        f += _placeholder_findings(row, where, frozenset(model.get("selector_types") or ()))
+        f += _placeholder_findings(
+            row,
+            where,
+            frozenset(model.get("selector_types") or ()),
+            frozenset(model.get("cast_tokens") or ()),
+            vocabulary,
+        )
 
     for number, (field, names) in enumerate(sorted(undeclared_fields.items()), 1):
         # A field name can itself be a selector, so it is never printed; the
@@ -1507,7 +1771,7 @@ def check_corpus(model: dict) -> list[Finding]:
         )
 
     # -- A-12. SS-5's three fields, and the one-field property ---------------
-    f += _ss5_findings(rows)
+    f += _ss5_findings(rows, vocabulary)
 
     # -- A-13. Both directions against the register --------------------------
     corpus_names = [r.get("name") for r in rows if r.get("name")]
@@ -1541,6 +1805,19 @@ def check_corpus(model: dict) -> list[Finding]:
     # register row could state another criterion, decision, step, basis, code
     # or hold than its fixture and the summary still said reconciled.
     by_name = {r.get("name"): r for r in rows}
+    unreadable = model.get("register_unreadable") or 0
+    if unreadable:
+        f.append(
+            Finding(
+                "AUTH_REGISTER_ROW_UNNAMED",
+                "conformance/gate/README.md section 4",
+                f"{unreadable} row(s) of the register table carry no fixture name in the "
+                "first column, so each renders as a statement about a fixture and is "
+                "compared with nothing. The cell is not printed here",
+                "write the fixture's name in the first column, in backticks as the other "
+                "rows do; or remove the row",
+            )
+        )
     for name, rows_for_name in sorted((model.get("register_rows") or {}).items()):
         if len(rows_for_name) > 1:
             f.append(
@@ -1555,7 +1832,7 @@ def check_corpus(model: dict) -> list[Finding]:
             )
         if name not in by_name:
             continue
-        drift = [d for cells in rows_for_name for d in _register_drift(cells, by_name[name])]
+        drift = [d for cells in rows_for_name for d in _register_drift(cells, by_name[name], known)]
         if drift:
             f.append(
                 Finding(
@@ -1601,9 +1878,21 @@ def check_corpus(model: dict) -> list[Finding]:
     return f
 
 
-def _placeholder_findings(row: dict, where: str, selector_types: frozenset = frozenset()) -> list[Finding]:
-    """A-08. Every selector-keyed value is a bracketed placeholder, and no string
-    or key anywhere in a row carries an email or phone shape.
+def _placeholder_findings(
+    row: dict,
+    where: str,
+    selector_types: frozenset = frozenset(),
+    cast_tokens: frozenset = frozenset(),
+    vocabulary: frozenset = frozenset(),
+) -> list[Finding]:
+    """A-08. Every selector-keyed value is one of the cast's typed tokens, and no
+    string or key anywhere in a row carries an email or phone shape.
+
+    A token is one synthetic/GROUND_TRUTH.yaml carries, or the corpus-local
+    token conformance/gate/README.md section 5 names. Until the fourth review of
+    2026-10-01 any text of the form <type:label> passed, live handle or not. An
+    empty token set refuses every value, so a truth file that cannot be read
+    fails closed.
 
     Until the second review of 2026-10-01 the second pass removed bracketed
     spans before it looked, so an address written "Name <address>" passed, and a
@@ -1616,6 +1905,13 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
     out: list[Finding] = []
     seen: list[str] = []
 
+    def seg(k) -> str:
+        # A refusal locates the value by its key path, and a key can carry a
+        # selector, so an undeclared key is named as undeclared. Until the
+        # fifth review of 2026-10-02 a handle used as a record field was
+        # printed here and written to the gate log.
+        return k if isinstance(k, str) and k in vocabulary else UNDECLARED_KEY
+
     def walk(node, path: str, key: str | None, typed: bool):
         if isinstance(node, dict):
             # `value` is a selector only where its object also names the type.
@@ -1623,7 +1919,7 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
             # register's `value` columns are prose.
             pair = "selector_type" in node
             for k, v in node.items():
-                walk(v, f"{path}.{k}", k, pair)
+                walk(v, f"{path}.{seg(k)}", k, pair)
         elif isinstance(node, list):
             for i, v in enumerate(node):
                 walk(v, f"{path}[{i}]", key, typed)
@@ -1631,7 +1927,7 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
             if key == "value" and not typed:
                 return
             shaped = any(pattern.search(node) for _, pattern in VALUE_SHAPES)
-            if (shaped or not TYPED_PLACEHOLDER_RE.match(node)) and path not in seen:
+            if (shaped or node not in cast_tokens) and path not in seen:
                 seen.append(path)
         elif isinstance(node, (int, float)) and not isinstance(node, bool) and key in SELECTOR_KEYS:
             # A selector written as a number, such as a phone without quotes.
@@ -1656,7 +1952,7 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
             and set(entry) == {"selector_type", "value"}
             and isinstance(entry.get("value"), str)
             and isinstance(entry.get("selector_type"), str)
-            and (not selector_types or entry["selector_type"] in selector_types)
+            and entry["selector_type"] in selector_types
         )
         if not well_formed and f".authorization.selectors[{i}]" not in seen:
             seen.append(f".authorization.selectors[{i}]")
@@ -1667,9 +1963,9 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
             for k, v in node.items():
                 if k in SELECTOR_KEYS and (k != "value" or pair):
                     if isinstance(v, dict) or (isinstance(v, list) and not all(isinstance(x, str) for x in v)):
-                        if f"{path}.{k}" not in seen:
-                            seen.append(f"{path}.{k}")
-                nested(v, f"{path}.{k}", k, pair)
+                        if f"{path}.{seg(k)}" not in seen:
+                            seen.append(f"{path}.{seg(k)}")
+                nested(v, f"{path}.{seg(k)}", k, pair)
         elif isinstance(node, list):
             for i, v in enumerate(node):
                 nested(v, f"{path}[{i}]", key, typed)
@@ -1682,7 +1978,7 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
             for k, v in node.items():
                 if isinstance(k, str) and any(p.search(k) for _, p in VALUE_SHAPES) and f"{path} key" not in seen:
                     seen.append(f"{path} key")
-                shapes(v, f"{path}.{k}")
+                shapes(v, f"{path}.{seg(k)}")
         elif isinstance(node, list):
             for i, v in enumerate(node):
                 shapes(v, f"{path}[{i}]")
@@ -1696,15 +1992,17 @@ def _placeholder_findings(row: dict, where: str, selector_types: frozenset = fro
             Finding(
                 "AUTH_VALUE_NOT_PLACEHOLDER",
                 f"{where} > {path.lstrip('.')}",
-                "a selector-keyed value, or an email or phone shape under any key, is not "
-                "a bracketed placeholder. SS-14 item 5 keeps "
+                "a selector-keyed value is not one of the cast's typed tokens, or an email "
+                "or phone shape sits under some key. SS-14 item 5 keeps "
                 "a natural person's selector out of every tracked file, and a synthetic "
                 "value is still a value while the cast is unsealed. The value itself is not "
                 "quoted here, on the HY-1 rule that a gate's own evidence must not become "
                 "the durable surface the gate exists to prevent",
-                "replace the value with a <placeholder> drawn from synthetic/CAST.md; or, "
-                "once the operator seals the cast, fill the corpus from the sealed truth "
-                "file in one reproducible step",
+                "replace the value with a typed token copied from "
+                "synthetic/GROUND_TRUTH.yaml, or with the corpus-local token "
+                "conformance/gate/README.md section 5 names; or, once the operator seals "
+                "the cast, fill the corpus from the sealed truth file in one reproducible "
+                "step",
             )
         )
     return out
@@ -1749,8 +2047,19 @@ def _typed(value):
     return (type(value).__name__, value)
 
 
-def _path_text(path: tuple) -> str:
-    return "".join(f"[{p}]" if isinstance(p, int) else f".{p}" for p in path).lstrip(".")
+def _path_text(path: tuple, vocabulary=None) -> str:
+    """A key path as a refusal prints it. With a vocabulary, a key outside it is
+    named as undeclared, since the sixth review of 2026-10-02 found A-12 printing
+    a handle used as a record field or a chain payload key."""
+
+    def seg(p) -> str:
+        if isinstance(p, int):
+            return f"[{p}]"
+        if vocabulary is not None and not (isinstance(p, str) and p in vocabulary):
+            return "." + UNDECLARED_KEY
+        return f".{p}"
+
+    return "".join(seg(p) for p in path).lstrip(".")
 
 
 def _renamed(x, names: dict):
@@ -1858,7 +2167,7 @@ def _schema_value(schema: dict, path: tuple):
     return node
 
 
-def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
+def _ss5_input_delta(row: dict, base: dict, field: str, vocabulary=None) -> list[str]:
     """Every gate input in which `row` differs from `base`, other than `field`.
 
     Until 2026-10-01 A-12 compared the authorization record alone, so a fixture
@@ -1879,7 +2188,7 @@ def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
         vb = lb.get(path)
         if path and path[-1] in SS5_ID_KEYS and isinstance(va, str) and isinstance(vb, str):
             if fwd.setdefault(va, vb) != vb or back.setdefault(vb, va) != va:
-                out.append(f"{_path_text(path)} (its identifiers do not pair one to one)")
+                out.append(f"{_path_text(path, vocabulary)} (its identifiers do not pair one to one)")
     # A reference copied from the baseline names an event the fixture's own
     # chain does not carry. Until the second review of 2026-10-01 it compared
     # equal to the baseline and passed.
@@ -1889,7 +2198,7 @@ def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
         if isinstance(va, str):
             for found in UUID_RE.findall(va):
                 if found in theirs and found not in own:
-                    out.append(f"{_path_text(path)} (refers to the baseline's identifier)")
+                    out.append(f"{_path_text(path, vocabulary)} (refers to the baseline's identifier)")
                     break
     a = _renamed(a, fwd)
     for name, side in (("fixture", a), ("baseline", b)):
@@ -1928,7 +2237,7 @@ def _ss5_input_delta(row: dict, base: dict, field: str) -> list[str]:
             side["authorization"] = {k: v for k, v in record.items() if k != field}
     la, lb = dict(_leaves(a)), dict(_leaves(b))
     out += sorted(
-        _path_text(p)
+        _path_text(p, vocabulary)
         for p in set(la) | set(lb)
         if p not in la or p not in lb or _typed(la[p]) != _typed(lb[p])
     )
@@ -1939,7 +2248,7 @@ def _same_typed(x, y) -> bool:
     return json.dumps(x, sort_keys=True) == json.dumps(y, sort_keys=True)
 
 
-def _ss5_findings(rows: list[dict]) -> list[Finding]:
+def _ss5_findings(rows: list[dict], vocabulary=None) -> list[Finding]:
     """A-12. The criterion that exists because of the measured guard.py defect."""
     out: list[Finding] = []
     by_name = {r.get("name"): r for r in rows}
@@ -1992,7 +2301,7 @@ def _ss5_findings(rows: list[dict]) -> list[Finding]:
                 base = other.get("authorization")
                 if not isinstance(base, dict):
                     continue
-                delta = _ss5_input_delta(row, other, field)
+                delta = _ss5_input_delta(row, other, field, vocabulary)
                 if base.get(field) == record.get(field):
                     delta = [f"no change to {field}"] + delta
                 differs.append((len(delta), delta, other.get("name")))
@@ -2074,7 +2383,7 @@ def _reserved_findings(model: dict, rows: list[dict]) -> list[Finding]:
                 Finding(
                     "AUTH_RESERVED_FIXTURE_DRIFT",
                     f"{row.get('_where', name)} > expect_code",
-                    f"the row expects {row.get('expect_code')!r} and the rank 3 fixture map "
+                    f"the row expects {_quoted(row.get('expect_code'), _known_tokens(model))} and the rank 3 fixture map "
                     f"reserves {spec.get('code')!r} for this name. The map and the corpus "
                     "are the two halves of one assertion, and a drift passes both "
                     "validators",
@@ -2386,6 +2695,7 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
     # A-18's second pass. Until 2026-10-01 only rows naming never_item 6 were
     # read, and a well-formed permit row carries no never_item, so a permit, or a
     # decision past step 1, asserted under a stamp state item 6 refuses passed.
+    known = _known_tokens(model)
     for row in model.get("rows") or []:
         dec = _decision(row)
         if dec.get("never_item") == 6 or dec.get("value") is None:
@@ -2402,7 +2712,7 @@ def _item_6_findings(model: dict, pin: Pin) -> list[Finding]:
                 Finding(
                     "AUTH_UNRATIFIED_CRITERION_PERMITTED",
                     f"{row.get('_where', row.get('name'))} > given.stamp_state",
-                    f"the row asserts {dec.get('value')} at step {step} under a stamp state "
+                    f"the row asserts {_quoted(dec.get('value'), known)} at step {_quoted(step, known)} under a stamp state "
                     f"that is short {len(reasons)} item(s), the first being {reasons[0]}. "
                     "SS-14 item 6 refuses at step 1 under that state, so the gate never "
                     "reaches the decision the row asserts",
@@ -2776,8 +3086,10 @@ def check_certification(model: dict) -> list[Finding]:
         for entry in _held(row):
             held.setdefault(entry, []).append(row.get("name") or "unnamed")
     if held:
+        # An id outside the entry grammar is described rather than printed, since
+        # the fourth review of 2026-10-01: a row held on a handle printed it here.
         summary = "; ".join(
-            f"{entry} holds {len(names)} row(s)" for entry, names in sorted(held.items())
+            f"{_held_text([entry])} holds {len(names)} row(s)" for entry, names in sorted(held.items())
         )
         out.append(
             Finding(
@@ -3036,7 +3348,8 @@ def _register_with(m: dict, edit) -> None:
     block = "\n".join(lines)
     m["register_block"] = block
     m["register_rows"] = _register_rows(block)
-    m["register"] = list(dict.fromkeys(REGISTER_NAME_RE.findall(block)))
+    m["register"] = list(_register_rows(block))
+    m["register_unreadable"] = _register_unreadable(block)
 
 
 def _mut_register_row_repeated(m: dict) -> None:
@@ -3054,6 +3367,137 @@ def _mut_register_row_contradicted(m: dict) -> None:
 
 def _mut_register_row_indented(m: dict) -> None:
     _register_with(m, lambda line: " " + line)
+
+
+def _mut_register_row_without_outer_pipes(m: dict) -> None:
+    def contradict(line):
+        cells = line.split("|")
+        cells[3] = " REFUSED "
+        return "|".join(cells).strip().strip("|").strip()
+
+    _register_with(m, contradict)
+
+
+def _mut_register_row_without_backticks(m: dict) -> None:
+    def contradict(line):
+        cells = line.split("|")
+        cells[1] = cells[1].replace("`", "")
+        cells[3] = " REFUSED "
+        return "|".join(cells)
+
+    _register_with(m, contradict)
+
+
+def _contradicted(line: str) -> str:
+    cells = line.split("|")
+    cells[3] = " REFUSED "
+    return "|".join(cells)
+
+
+def _mut_register_row_as_a_second_header(m: dict) -> None:
+    _register_with(m, lambda line: "\n" + _contradicted(line) + "\n|---|---|---|---|---|---|---|")
+
+
+def _mut_register_row_after_a_blank_line(m: dict) -> None:
+    _register_with(m, lambda line: "\n" + _contradicted(line))
+
+
+def _mut_absent_criterion_unshaped(m: dict) -> None:
+    row = _row(m, "seed-permitted")
+    paths = [
+        str(p)
+        for item in _seq(m["policy"], "ratify_before_collection", "items")
+        if isinstance(item, dict)
+        for p in _seq(item, "paths")
+    ]
+    row["given"] = dict(
+        row["given"],
+        stamp_state={"source": "fixture", "artifacts_stamped": paths, "criteria_absent": [UNSHAPED_MARK]},
+    )
+
+
+def _mut_ss5_key_unshaped(m: dict) -> None:
+    _row(m, "seed-selectors-mutated")["authorization"][UNSHAPED_MARK] = "x"
+
+
+def _mut_phone_with_a_fullwidth_plus(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call " + chr(0xFF0B) + "1 555" + " 0100 999."
+
+
+def _mut_permits_unshaped_under_a_short_state(m: dict) -> None:
+    # A-18's second pass quotes a permit's value and step; until the seventh
+    # review of 2026-10-02 no break reached either.
+    paths = [
+        str(p)
+        for item in _seq(m["policy"], "ratify_before_collection", "items")
+        if isinstance(item, dict)
+        for p in _seq(item, "paths")
+    ]
+    short = {"source": "fixture", "artifacts_stamped": paths, "criteria_absent": ["SS-5"]}
+    seed = _row(m, "seed-permitted")
+    seed["given"] = dict(seed["given"], stamp_state=short)
+    seed["expect_decision"] = dict(seed["expect_decision"], decided_at_step=UNSHAPED_MARK)
+    hop = _row(m, "one-hop-permitted")
+    hop["given"] = dict(hop["given"], stamp_state=short)
+    hop["expect_decision"] = dict(hop["expect_decision"], value=UNSHAPED_MARK, decided_at_step=3)
+
+
+def _mut_phone_with_zero_width_spaces(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call " + chr(0x200B).join(["+1", "555", "0100", "999"]) + "."
+
+
+def _mut_register_row_unnamed(m: dict) -> None:
+    _register_with(m, lambda line: "| Seed permitted, again " + line[line.index("|", 1):])
+
+
+def _mut_pending_unshaped(m: dict) -> None:
+    _row(m, "seed-permitted")["pending"] = [UNSHAPED_MARK]
+
+
+def _mut_register_row_unshaped(m: dict) -> None:
+    m["register_rows"]["seed-permitted"][0] = [UNSHAPED_MARK] * 6
+
+
+def _mut_fixture_values_unshaped(m: dict) -> None:
+    row = _row(m, "run-against-unauthorized-subject")
+    row["expect_decision"] = dict(
+        row["expect_decision"],
+        value=UNSHAPED_MARK,
+        decided_at_step=UNSHAPED_MARK,
+        basis_field="refusal_basis",
+        basis=[UNSHAPED_MARK],
+        subject_relation=UNSHAPED_MARK,
+    )
+    row["expect_code"] = UNSHAPED_MARK
+    _first_record(m)["subject_class"] = UNSHAPED_MARK
+
+
+def _mut_basis_field_unshaped(m: dict) -> None:
+    row = _row(m, "seed-selectors-mutated")
+    row["expect_decision"] = dict(row["expect_decision"], basis_field=UNSHAPED_MARK)
+
+
+def _mut_keys_unshaped(m: dict) -> None:
+    row = _row(m, "incidental-estimate-absent")
+    row[UNSHAPED_MARK] = "x"
+    row["given"] = dict(row["given"], **{UNSHAPED_MARK: "x"})
+    row["expect_decision"] = dict(row["expect_decision"], **{UNSHAPED_MARK: "x"})
+    row["authorization"][UNSHAPED_MARK] = {"handle": "x"}
+
+
+def _mut_registry_reads_empty(m: dict) -> None:
+    m["selector_types"] = []
+
+
+def _mut_phone_with_minus_signs(m: dict) -> None:
+    row = _row(m, "runner-started-on-local")
+    row["description"] = row["description"] + " Call " + chr(0x2212).join(["+1", "555", "0100", "999"]) + "."
+
+
+def _mut_placeholder_label_not_a_cast_token(m: dict) -> None:
+    _row(m, "incidental-estimate-absent")["authorization"]["selectors"][0]["value"] = "<handle:instagram:not-a-cast-token>"
 
 
 def _mut_address_as_a_record_field(m: dict) -> None:
@@ -3497,6 +3941,90 @@ def _mutations() -> list[tuple[str, object, str, bool, str]]:
         ("write a handle in brackets as a selector value", _mut_handle_in_brackets, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
         ("write a phone with its area code in parentheses", _mut_phone_with_parentheses, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
         ("write an address percent-encoded", _mut_address_percent_encoded, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("label a typed placeholder with no cast token", _mut_placeholder_label_not_a_cast_token, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        (
+            "use a word in no vocabulary as a key at every level of a row",
+            _mut_keys_unshaped,
+            "AUTH_ROW_KEYS_UNEXPECTED",
+            False,
+            "the given, expect_decision and record keys are refused by their own checks, A-08 refuses the record field's selector key, and the self-test fails if any refusal prints the word",
+        ),
+        ("read the selector registry as empty", _mut_registry_reads_empty, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a phone with minus signs between its groups", _mut_phone_with_minus_signs, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        (
+            "add a contradicting register row without its outer pipes",
+            _mut_register_row_without_outer_pipes,
+            "AUTH_REGISTER_ROW_DRIFT",
+            False,
+            "a second row for a name is also a duplicate, so the duplicate check fires too",
+        ),
+        (
+            "add a contradicting register row without backticks",
+            _mut_register_row_without_backticks,
+            "AUTH_REGISTER_ROW_DRIFT",
+            False,
+            "a second row for a name is also a duplicate, so the duplicate check fires too",
+        ),
+        ("add a register row with no fixture name", _mut_register_row_unnamed, "AUTH_REGISTER_ROW_UNNAMED", True, ""),
+        (
+            "add a contradicting register row as a second table's header",
+            _mut_register_row_as_a_second_header,
+            "AUTH_REGISTER_ROW_DRIFT",
+            False,
+            "a second row for a name is also a duplicate, so the duplicate check fires too",
+        ),
+        (
+            "add a contradicting register row alone after a blank line",
+            _mut_register_row_after_a_blank_line,
+            "AUTH_REGISTER_ROW_DRIFT",
+            False,
+            "a second row for a name is also a duplicate, so the duplicate check fires too",
+        ),
+        (
+            "permit under a stamp state missing a word in no vocabulary",
+            _mut_absent_criterion_unshaped,
+            "AUTH_UNRATIFIED_CRITERION_PERMITTED",
+            False,
+            "the stamp state is also a gate input that differs from the baseline's, and the self-test fails if any refusal prints the word",
+        ),
+        (
+            "give an SS-5 fixture's record a field named by a word in no vocabulary",
+            _mut_ss5_key_unshaped,
+            "AUTH_SS5_FIXTURE_NOT_ONE_FIELD",
+            False,
+            "the field is also undeclared and A-01 refuses the key, and the self-test fails if any refusal prints the word",
+        ),
+        ("write a phone with zero-width spaces between its groups", _mut_phone_with_zero_width_spaces, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        ("write a phone with a fullwidth plus", _mut_phone_with_a_fullwidth_plus, "AUTH_VALUE_NOT_PLACEHOLDER", True, ""),
+        (
+            "permit with words in no vocabulary as value and step under a short stamp state",
+            _mut_permits_unshaped_under_a_short_state,
+            "AUTH_UNRATIFIED_CRITERION_PERMITTED",
+            False,
+            "the value and step are refused by their own checks, the stamp states differ from the SS-5 baseline's, the register rows differ, and the self-test fails if any refusal prints the word",
+        ),
+        (
+            "hold a row on a word that is not an entry id",
+            _mut_pending_unshaped,
+            "AUTH_PENDING_ENTRY_UNKNOWN",
+            False,
+            "the register row's held column then differs too; the self-test also fails if any refusal prints the word",
+        ),
+        (
+            "write a word in no vocabulary into every cell of a register row",
+            _mut_register_row_unshaped,
+            "AUTH_REGISTER_ROW_DRIFT",
+            True,
+            "",
+        ),
+        (
+            "assert words in no vocabulary as a row's decision, step, basis, relation, code and class",
+            _mut_fixture_values_unshaped,
+            "AUTH_CODE_OUTSIDE_VOCABULARY",
+            False,
+            "each field is refused by its own check, the reserved-name map and the register row also differ, and the self-test fails if any refusal prints the word",
+        ),
+        ("record a basis under a word that is no basis field", _mut_basis_field_unshaped, "AUTH_BASIS_FIELD_UNKNOWN", True, ""),
         ("list a register row a second time, contradicting the first", _mut_register_row_contradicted, "AUTH_REGISTER_ROW_DRIFT", False, "a second row for a name is also a duplicate, so the duplicate check fires too"),
         (
             "state another decision in a register row",
@@ -3821,11 +4349,21 @@ def self_test(model: dict, quiet: bool = False) -> int:
         found = check_corpus(m)
         fired = {f.code for f in found if (f.code, f.where) not in baseline_pairs}
         # A refusal must never print the value it guards. Removing the mask in
-        # Finding turns this red, which the third review found nothing did.
-        printed = any(p.search(f.render()) for f in found for _, p in VALUE_SHAPES)
+        # Finding turns this red, which the third review found nothing did. The
+        # certification refusal is read too, and so is the unshaped mark, since
+        # the fourth review found a handle printed where no shape could be masked.
+        try:
+            certification = check_certification(m)
+        except Exception:
+            certification = []
+        rendered = [f.render() for f in found] + [f.render() for f in certification]
+        printed = any(p.search(r) for r in rendered for _, p in VALUE_SHAPES)
+        quoted = any(UNSHAPED_MARK in r for r in rendered)
         exercised |= fired
         if printed:
             ok, note = False, ", and a refusal printed an email or phone shape"
+        elif quoted:
+            ok, note = False, ", and a refusal printed a word no vocabulary holds"
         elif expected not in fired:
             ok, note = False, f", fired {sorted(fired)}"
         elif only and fired != {expected}:

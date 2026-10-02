@@ -89,6 +89,7 @@ import copy
 import json
 import re
 import subprocess
+import unicodedata
 import sys
 from pathlib import Path
 
@@ -349,6 +350,21 @@ PINNED_RULES = (
     ("finding_check.survivability[1].artifact", "scorecard against the cast", "RT-13"),
     ("finding_check.survivability[2].artifact", "case narrative", "RT-13"),
     ("cadence.steps[4].act", "runner/reconcile_ledger.py diffs the ledger against storage in both directions", "RT-10"),
+    # Added after the fifth review of 2026-10-02, finding r5:2: the act alone
+    # was pinned, so swapping two steps' when made the sweep monthly and the
+    # reconcile daily with nothing refused.
+    ("cadence.steps[0].when", "at_case_open", "RETENTION.md section 9"),
+    ("cadence.steps[1].when", "at_every_extension", "RETENTION.md section 9"),
+    ("cadence.steps[2].when", "at_case_close", "RETENTION.md section 9"),
+    ("cadence.steps[3].when", "daily", "RETENTION.md section 9"),
+    ("cadence.steps[3].act", "the sweep runs, whether or not it has anything to do, and writes its heartbeat", "RETENTION.md section 9"),
+    # Added after the sixth review of 2026-10-02, finding r6:11.
+    ("cadence.steps[0].act", "the purpose is bound and retain_until is set", "RETENTION.md section 9"),
+    ("cadence.steps[1].act", "an author, a timestamp, and a reason are recorded", "RETENTION.md section 9"),
+    ("cadence.steps[2].act", "run --finding, then shred, then verify_shred, then write the receipt row", "RETENTION.md section 9"),
+    ("cadence.steps[5].act", "re-run tools/validate_retention.py --policy", "RETENTION.md section 9"),
+    ("cadence.steps[4].when", "monthly", "RETENTION.md section 9"),
+    ("cadence.steps[5].when", "at_every_doctrine_change", "RETENTION.md section 9"),
 )
 
 #: Every boolean or stratum value the policy compiles that is not pinned above,
@@ -396,6 +412,17 @@ UNPINNED_BY_NAME = (
     "strata.rows[3].subject_values",
 )
 
+#: Leaves that are not booleans, with the type each holds: RT-1's text column,
+#: and a 0 or 1 that is a stratum token, an id or a count. Every other leaf is a
+#: rule, and a rule is written as a boolean.
+LEAVES_NOT_BOOLEAN = {
+    "strata.rows[3].subject_values": str,
+    "strata.tokens[0]": int,
+    "strata.tokens[1]": int,
+    "verification.checks[0].id": int,
+    "verification.witness.count_per_case": int,
+}
+
 
 def _rule_leaves(node, path: str = "", seen: set | None = None):
     """Every boolean, a boolean spelled as a string, and every value under a key
@@ -415,6 +442,9 @@ def _rule_leaves(node, path: str = "", seen: set | None = None):
     elif (
         isinstance(node, bool)
         or (isinstance(node, str) and node.strip().lower() in BOOLEAN_SPELLINGS)
+        # A 0 or a 1 is a leaf since the fifth review of 2026-10-02: a rule
+        # written 1 is true to a reader, and was read by nothing.
+        or (isinstance(node, int) and node in (0, 1))
         or path.endswith("stratum")
     ):
         yield path
@@ -1419,8 +1449,31 @@ def check_policy(ctx: dict) -> list[Finding]:
         | {path for path, _, _ in DURATIONS}
         | {f"halt.{key}" for key in HALT_PIN}
         | set(UNPINNED_BY_NAME)
+        | set(LEAVES_NOT_BOOLEAN)
     )
     leaves = set(_rule_leaves(pol))
+    # A rule is written as a boolean. Until the fifth review of 2026-10-02 a
+    # named rule rewritten as the string "no" or the number 0 stayed a leaf and
+    # was accepted, though a reader takes any non-empty string as true; before
+    # the fourth review's change it dropped out of the leaves and refused.
+    for path in sorted(leaves):
+        if path.endswith("stratum"):
+            continue
+        value = dig(pol, path)
+        want = LEAVES_NOT_BOOLEAN.get(path, bool)
+        if type(value) is not want:
+            out.append(
+                Finding(
+                    "RETENTION_POLICY_RULE_NOT_A_BOOLEAN",
+                    f"{POLICY_REL} :: retention.{path}",
+                    f"the value is written as {type(value).__name__} {value!r} where "
+                    f"{'a boolean' if want is bool else want.__name__} is compiled. YAML reads "
+                    "a quoted spelling as text and 1 as a number, and a reader takes any "
+                    "non-empty string and any non-zero number as true",
+                    "write the rule as true or false, unquoted; or, for a value that is not "
+                    "a rule, name it in LEAVES_NOT_BOOLEAN with the type it holds",
+                )
+            )
     for path in sorted(p for p in leaves - known if not READ_BY_A_CHECK.match(p)):
         out.append(
             Finding(
@@ -2164,16 +2217,30 @@ if yaml is not None:
     _ScanLoader.add_multi_constructor("", _construct_any)
 
 
-def _strings(value, seen: set | None = None) -> list[str]:
-    """The strings a value carries, at any depth of lists, each list once."""
+def _strings(value, seen: set | None = None, mappings: bool = True) -> list[str]:
+    """The strings a value carries, at any depth of lists and, with mappings,
+    of mappings, keys included, each container once and each string without its
+    padding.
+
+    Until the fourth review of 2026-10-01 a value nested in a mapping, a value
+    written as a key or a !!set member, and a value padded with spaces were not
+    read, so a live selector in any of those shapes passed the pair scan.
+    """
     if isinstance(value, str):
-        return [value]
-    if isinstance(value, list):
+        # Format characters render as nothing, so a value padded or split with a
+        # zero-width space, a byte-order mark or a soft hyphen reads as it
+        # renders. The sixth review of 2026-10-02 found each passing.
+        return ["".join(ch for ch in value if unicodedata.category(ch) != "Cf").strip()]
+    if isinstance(value, int) and not isinstance(value, bool):
+        return [str(value)]
+    if isinstance(value, list) or (mappings and isinstance(value, dict)):
         seen = set() if seen is None else seen
         if id(value) in seen:
             return []
         seen.add(id(value))
-        return [s for v in value for s in _strings(v, seen)]
+        if isinstance(value, dict):
+            return [s for k, v in value.items() for s in _strings(k, seen, mappings) + _strings(v, seen, mappings)]
+        return [s for v in value for s in _strings(v, seen, mappings)]
     return []
 
 
@@ -2184,16 +2251,22 @@ def _pairs_in(node, types: set[str]):
     line also carries expect_decision.value, and pairing that with a
     selector_type elsewhere on the line would refuse an ordinary word. Keys are
     read in any case, and a list or a repeated key yields every string it holds.
+    A pair's value is read into any mapping under it, and its type is not, since
+    a mapping there is a schema describing the key. A key named for a type is
+    not, because the registry itself writes each type as a key over a mapping
+    that defines it; a value nested in a mapping under such a key is not read.
     """
     for mapping in _mappings(node):
         folded = _keep_repeats((str(k).lower(), v) for k, v in mapping.items())
         for type_key, value_key in PAIR_KEYS:
-            for selector in _strings(folded.get(type_key)):
+            # The type is a string or a list of strings; a mapping there is a
+            # schema describing the key, as schema/pse-event-0.1.schema.json does.
+            for selector in _strings(folded.get(type_key), mappings=False):
                 for value in _strings(folded.get(value_key)):
                     yield selector.lower(), value
         for key, value in folded.items():
             if key in types:
-                for item in _strings(value):
+                for item in _strings(value, mappings=False):
                     yield key, item
 
 
@@ -2481,8 +2554,39 @@ def _read_for_measure(path: Path) -> str:
         return ""
 
 
-#: Words that withdraw the clause when they follow it in its own bullet.
-CLAUSE_WITHDRAWN = re.compile(r"no longer applies|does not apply|is withdrawn|was removed|is suspended", re.I)
+#: Words that withdraw the clause anywhere in its section.
+CLAUSE_WITHDRAWN = re.compile(
+    r"no longer applies|does not apply|is withdrawn|was removed|is suspended"
+    # Added after the sixth review of 2026-10-02. The list stays closed, so a
+    # withdrawal in other words is a limit of this measure.
+    r"|is revoked|is rescinded|is repealed|is void|no longer binds|does not bind|no longer in force|is lifted",
+    re.I,
+)
+
+
+def _rendered_markdown(text: str) -> str:
+    """Markdown with its HTML comments and fenced code removed, as GitHub renders
+    it: a comment or a fence left open runs to the end of the file, a fence is
+    three or more backticks or tildes, and it closes on a run of its own
+    character at least as long."""
+    text = re.sub(r"<!--.*?(?:-->|\Z)", " ", text, flags=re.S)
+    out: list[str] = []
+    fence = None
+    for line in text.splitlines():
+        match = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
+        if fence is None:
+            if match and not (match.group(1)[0] == "`" and "`" in line[match.end():]):
+                fence = match.group(1)
+                continue
+            out.append(line)
+        elif (
+            match
+            and match.group(1)[0] == fence[0]
+            and len(match.group(1)) >= len(fence)
+            and not line[match.end():].strip()
+        ):
+            fence = None
+    return "\n".join(out)
 
 
 def _clause_in_place(agents: str) -> bool:
@@ -2490,21 +2594,22 @@ def _clause_in_place(agents: str) -> bool:
 
     Until the third review of 2026-10-01 any heading containing "## 4." matched,
     an HTML comment counted, and a following "This rule no longer applies" left
-    it in place.
+    it in place. Until the fourth review a tilde fence, an unclosed comment and
+    a withdrawal in a later bullet of the section left it in place too.
     """
-    text = re.sub(r"<!--.*?-->", " ", agents, flags=re.S)
-    text = re.sub(r"(?ms)^```.*?^```", " ", text)
+    text = _rendered_markdown(agents)
     heading = re.search(r"(?m)^## 4\. Execution Limits[ \t]*$", text)
     if not heading:
         return False
     rest = text[heading.end():]
     end = re.search(r"(?m)^## ", rest)
     section = rest[: end.start()] if end else rest
-    for bullet in re.split(r"(?m)^- ", section):
-        flat = " ".join(bullet.split())
-        if flat.startswith("**" + RT15_CLAUSE_SENTENCE + "**"):
-            return not CLAUSE_WITHDRAWN.search(flat)
-    return False
+    if CLAUSE_WITHDRAWN.search(" ".join(section.split())):
+        return False
+    return any(
+        " ".join(bullet.split()).startswith("**" + RT15_CLAUSE_SENTENCE + "**")
+        for bullet in re.split(r"(?m)^- ", section)
+    )
 
 
 #: The hook's scan stanza, by shape: the command at the start of a line, its
@@ -2512,10 +2617,73 @@ def _clause_in_place(agents: str) -> bool:
 SCAN_STANZA = "python tools/validate_retention.py --repo-scan --staged || {"
 
 
-def _scan_stanza_in_place(hook: str) -> bool:
-    """RT-15's fourth part: the hook runs the scan and refuses when it refuses.
+#: A here-document's opening, with its delimiter, quoted, escaped or bare.
+HEREDOC_RE = re.compile(r"<<(-?)\s*\\?(['\"]?)([A-Za-z0-9_]+)\2")
+#: A function or alias named python, which would stand in for the scan.
+SHADOWS_PYTHON_RE = re.compile(r"(?:^|[;&|{(\s])(?:function\s+python\b|python\s*\(\s*\)|alias\s+python=)")
+#: Commands that, before the stanza, can change what the stanza runs or whether
+#: the hook reaches it, and that the measure therefore refuses outright.
+SHELL_REFUSED_BEFORE = ("exec", "trap", "alias", "hash", "eval", "source", ".")
+#: What a quoted span and a backslash escape read as in _shell_text: characters
+#: no command name carries, so a quoted or escaped command name is visible.
+QUOTED, ESCAPED = chr(1), chr(2)
 
-    Until the third review of 2026-10-01 a line-level test passed a block that
+
+def _shell_text(line: str) -> str:
+    """A shell line with each quoted span and each escape replaced by a marker,
+    and its comment cut."""
+    out: list[str] = []
+    i, word_start = 0, True
+    while i < len(line):
+        c = line[i]
+        if c == "\\" and i + 1 < len(line):
+            out.append(ESCAPED)
+            i, word_start = i + 2, False
+            continue
+        if c in "'\"":
+            j = i + 1
+            while j < len(line) and line[j] != c:
+                j += 2 if c == '"' and line[j] == "\\" else 1
+            out.append(QUOTED)
+            i, word_start = j + 1, False
+            continue
+        if c == "#" and word_start:
+            break
+        out.append(c)
+        word_start = c in " \t;&|(){}"
+        i += 1
+    return "".join(out)
+
+
+def _shell_commands(text: str) -> list[tuple[str, list[str], str]]:
+    """Each simple command on a line as (the operator before it, its words, the
+    operator after it)."""
+    text = re.sub(r"\d*[<>]&\d*-?|&>>?", " R ", text)
+    commands: list[list] = []
+    connector, words = "", []
+    for token in re.findall(r"&&|\|\||[;&|]|[^\s;&|]+", text):
+        if token in ("&&", "||", ";", "&", "|"):
+            if words:
+                commands.append([connector, words, token])
+            connector, words = token, []
+        else:
+            words.append(token)
+    if words:
+        commands.append([connector, words, ""])
+    return [tuple(c) for c in commands]
+
+
+def _refusing_status(words: list[str]) -> bool:
+    """An exit with a literal status from 1 to 255, which the shell keeps."""
+    return len(words) == 2 and re.fullmatch(r"[1-9][0-9]{0,2}", words[1]) is not None and int(words[1]) <= 255
+
+
+def _stanza_lines_in_place(hook: str) -> bool:
+    """The line test of 77fe6da, kept as a second condition on the hook measure.
+
+    The sixth and seventh reviews of 2026-10-02 found each shell-aware version of
+    the measure accepting shapes this test refused, so the measure now requires
+    both: whatever either refuses is refused. Until the third review of 2026-10-01 a line-level test passed a block that
     ended in exit 0, a no-op ":", a trailing --help and an exit 0 before it.
     """
     lines = hook.splitlines()
@@ -2533,6 +2701,107 @@ def _scan_stanza_in_place(hook: str) -> bool:
     else:
         return False
     return "exit 1" in block and not any(re.match(r"exit\s+0\b", line) for line in block)
+
+
+def _scan_stanza_in_place(hook: str) -> bool:
+    """RT-15's fourth part: the hook runs the scan and refuses when it refuses.
+    In place only when both this reading and _stanza_lines_in_place, the line
+    test of 77fe6da, say so.
+
+    The hook is read line by line much as the shell reads it: here-document
+    bodies are text, quoted spans, escapes and comments are not commands, and
+    compound commands and brace groups are counted. The stanza is in place when
+    the hook's interpreter is a shell; when the stanza appears once, at the top
+    level, unindented and not continued from the line before; when nothing before
+    it exits with a status other than a literal 1 to 255, exits at the top level,
+    or runs exec, trap, alias, hash, eval or source, sets PATH, defines a
+    function named python, or names a command through quotes or an escape; and
+    when its block closes, holds no exec, return or exit other than a literal 1
+    to 255, and exits so unconditionally at its own level, not backgrounded and
+    not piped.
+
+    Until the third review of 2026-10-01 a line-level test passed a block that
+    ended in exit 0, a no-op ":", a trailing --help and an exit 0 before it.
+    Until the fourth review a stanza under "if false", in a here-document, after
+    a bare exit, or with "echo; exit 0" in its block measured as in place. The
+    sixth review of 2026-10-02 found the first version of this measure accepting
+    an exit 0 inside an always-true if or a called function before the stanza,
+    and exit 256, exit 1 & and exit 1 | cat in its block, all of which the line
+    test refused, with a brace-group exit, a trap, an alias, hash, an escaped or
+    quoted exit, two here-document forms and a shebang that runs nothing.
+
+    What this does not read: a command substitution, a quoted span that runs
+    over a line, an alias, a function or PATH set in the caller's environment, a
+    shell option that changes parsing, and a hook bypassed by --no-verify or by
+    another core.hooksPath.
+    """
+    if not _stanza_lines_in_place(hook):
+        return False
+    lines = hook.splitlines()
+    if lines and lines[0].startswith("#!"):
+        interpreter = lines[0][2:].split()
+        names = [Path(w).name for w in interpreter[:2]]
+        if not interpreter or not (
+            names[0] in ("sh", "bash", "dash") or (names[0] == "env" and names[1:] and names[1] in ("sh", "bash", "dash"))
+        ):
+            return False
+    depth = 0
+    heredocs: list[tuple[str, bool]] = []
+    start = None
+    refusing_exits = 0
+    continued = False
+    for index, line in enumerate(lines):
+        if heredocs:
+            end, tabs = heredocs[0]
+            if (line.lstrip("\t") if tabs else line) == end:
+                heredocs.pop(0)
+            continue
+        text = _shell_text(line)
+        heredocs += [(word, dash == "-") for dash, _, word in HEREDOC_RE.findall(line)]
+        if line.strip() == SCAN_STANZA:
+            if start is not None or depth != 0 or continued or line[:1].isspace():
+                return False
+            start = index
+        elif start is None and SHADOWS_PYTHON_RE.search(text):
+            return False
+        for before, words, after in _shell_commands(text):
+            lead = True
+            for k, word in enumerate(words):
+                if word in ("{", "}"):
+                    depth += 1 if word == "{" else -1
+                    lead = True
+                elif lead and word in ("if", "case", "for", "while", "until"):
+                    depth += 1
+                    lead = word in ("if", "while", "until")
+                elif lead and word in ("fi", "esac", "done"):
+                    depth -= 1
+                    lead = False
+                elif lead and word in ("then", "do", "else", "elif", "!", "time"):
+                    lead = True
+                elif lead:
+                    # A word in command position, with the words after it.
+                    lead = False
+                    rest = words[k:]
+                    if start is None:
+                        if QUOTED in word or ESCAPED in word or word in SHELL_REFUSED_BEFORE:
+                            return False
+                        if any(w.startswith("PATH=") for w in rest):
+                            return False
+                        if word == "exit" and (depth == 0 or not _refusing_status(rest)):
+                            return False
+                    elif word in ("exec", "return") or QUOTED in word or ESCAPED in word:
+                        return False
+                    elif word == "exit":
+                        if not _refusing_status(rest):
+                            return False
+                        if depth == 1 and before in ("", ";") and after not in ("|", "&"):
+                            refusing_exits += 1
+                if start is not None and index > start and depth <= 0:
+                    return refusing_exits > 0 and depth == 0
+        stripped = text.rstrip()
+        if stripped:
+            continued = stripped.endswith(("\\", "&&", "||", "|"))
+    return False
 
 
 def rt15_parts(codes: set[str], root: Path | None = None) -> list[tuple[str, bool]]:
@@ -2782,6 +3051,26 @@ def _pair_json_holding_lines(ctx) -> tuple[str, str]:
 
 def _pair_keys_in_capitals(ctx) -> tuple[str, str]:
     return "conformance/x.jsonl", json.dumps({"Selector_Type": "email", "Value": _email_value()})
+
+
+def _pair_value_in_a_mapping(ctx) -> tuple[str, str]:
+    return "policy/x.yaml", "entry:\n  selector_type: email\n  value: {text: " + _email_value() + "}\n"
+
+
+def _pair_value_as_a_key(ctx) -> tuple[str, str]:
+    return "conformance/x.jsonl", json.dumps({"selector_type": "email", "value": {_email_value(): "seen"}})
+
+
+def _pair_value_in_a_set(ctx) -> tuple[str, str]:
+    return "policy/x.yaml", "entry:\n  selector_type: email\n  value: !!set {" + _email_value() + "}\n"
+
+
+def _pair_value_with_a_zero_width_space(ctx) -> tuple[str, str]:
+    return "conformance/x.jsonl", json.dumps({"selector_type": "email", "value": chr(0x200B) + _email_value()})
+
+
+def _pair_value_padded(ctx) -> tuple[str, str]:
+    return "conformance/x.jsonl", json.dumps({"selector_type": "email", "value": "  " + _email_value() + " "})
 
 
 def _pair_by_merge_key(ctx) -> tuple[str, str]:
@@ -3206,6 +3495,24 @@ def _mutations():
         items = ctx["policy"]["retention"]["finding_check"]["survivability"]
         items[0]["artifact"], items[2]["artifact"] = items[2]["artifact"], items[0]["artifact"]
 
+    def named_rule_written_no(ctx):
+        ctx["policy"]["retention"]["ledger"]["present_in_tree"] = "no"
+
+    def named_rule_written_zero(ctx):
+        ctx["policy"]["retention"]["ledger"]["present_in_tree"] = 0
+
+    def rule_written_one(ctx):
+        ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = 1
+
+    def survivability_item_written_one(ctx):
+        ctx["policy"]["retention"]["finding_check"]["survivability"].append(
+            {"artifact": "case narrative", "carries_subject_values": 1, "survives": 1}
+        )
+
+    def sweep_and_reconcile_swapped(ctx):
+        steps = ctx["policy"]["retention"]["cadence"]["steps"]
+        steps[3]["when"], steps[4]["when"] = steps[4]["when"], steps[3]["when"]
+
     def rule_spelled_yes(ctx):
         ctx["policy"]["retention"]["freeze"]["also_stops_the_ledger"] = "yes"
 
@@ -3233,9 +3540,14 @@ def _mutations():
         ("write the index's stratum as true", "policy", stratum_written_as_true, "RETENTION_POLICY_RULE_DRIFT", True),
         ("compile a rule nobody pinned or named", "policy", rule_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
         ("swap the case narrative's label with a finding's", "policy", survivability_labels_swapped, "RETENTION_POLICY_RULE_DRIFT", True),
-        ("compile a rule spelled yes", "policy", rule_spelled_yes, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
+        ("compile a rule spelled yes", "policy", rule_spelled_yes, "RETENTION_POLICY_RULE_UNCLASSIFIED", False),
+        ("rewrite a named rule as the string no", "policy", named_rule_written_no, "RETENTION_POLICY_RULE_NOT_A_BOOLEAN", True),
+        ("rewrite a named rule as the number 0", "policy", named_rule_written_zero, "RETENTION_POLICY_RULE_NOT_A_BOOLEAN", True),
+        ("compile a new rule written 1", "policy", rule_written_one, "RETENTION_POLICY_RULE_UNCLASSIFIED", False),
+        ("add a survivability item written 1", "policy", survivability_item_written_one, "RETENTION_POLICY_RULE_UNCLASSIFIED", False),
+        ("swap the sweep's and the reconcile's cadence", "policy", sweep_and_reconcile_swapped, "RETENTION_POLICY_RULE_DRIFT", True),
         ("compile a rule inside a list", "policy", rule_in_a_list_nobody_classified, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
-        ("compile a rule spelled as a string", "policy", rule_spelled_as_a_string, "RETENTION_POLICY_RULE_UNCLASSIFIED", True),
+        ("compile a rule spelled as a string", "policy", rule_spelled_as_a_string, "RETENTION_POLICY_RULE_UNCLASSIFIED", False),
         ("let the case narrative survive", "policy", narrative_survives, "RETENTION_POLICY_RULE_DRIFT", True),
         ("claim RT-16's undecided code exists", "policy", rt16_code_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("write a strata row's stratum as true", "policy", strata_row_stratum_as_true, "RETENTION_POLICY_STRATA_ROW_DRIFT", True),
@@ -3323,6 +3635,94 @@ def _mutations():
         ("commit a pair whose value is a list", "scan", _pair_value_in_a_list, scan, True),
         ("commit JSON lines in a .json file", "scan", _pair_json_holding_lines, scan, True),
         ("commit a pair with its keys in capitals", "scan", _pair_keys_in_capitals, scan, True),
+        ("hide a live value in a mapping under value", "scan", _pair_value_in_a_mapping, scan, True),
+        ("write a live value as a key under value", "scan", _pair_value_as_a_key, scan, True),
+        ("hide a live value in a YAML set", "scan", _pair_value_in_a_set, scan, True),
+        ("pad a live value with spaces", "scan", _pair_value_padded, scan, True),
+        ("lead a live value with a zero-width space", "scan", _pair_value_with_a_zero_width_space, scan, True),
+    ]
+
+
+def _rt15_measure_breaks(agents: str, hook: str) -> list[tuple[str, object, str]]:
+    """The clause and the hook, each edited into a shape that must not measure as
+    in place. The fourth review of 2026-10-01 found each of these measured as in
+    place. Every edit is anchored on the real file, so a break that stops
+    applying fails rather than passing on text it never changed."""
+    lines = agents.splitlines()
+    i = next(n for n, line in enumerate(lines) if line.startswith("- **" + RT15_CLAUSE_SENTENCE[:30]))
+    j = i + 1
+    while j < len(lines) and lines[j].startswith("  "):
+        j += 1
+
+    def around(before, after=None):
+        return "\n".join(lines[:i] + [before] + lines[i:j] + ([after] if after is not None else []) + lines[j:])
+
+    hl = hook.splitlines()
+    s = next(n for n, line in enumerate(hl) if line.strip() == SCAN_STANZA)
+    e = next(n for n in range(s + 1, len(hl)) if hl[n].strip() == "}")
+    x = next(n for n in range(s + 1, e) if hl[n].strip() == "exit 1")
+
+    def hook_with(before, after=None, around_exit=None, exit_line=None, first_line=None, close_line=None):
+        # around_exit wraps the block's own exit 1 in the lines given, which
+        # keeps that line in place so a test for its presence alone still passes;
+        # exit_line replaces it, and first_line replaces the shebang.
+        edited = list(hl)
+        if around_exit is not None:
+            edited[x:x + 1] = around_exit[0] + [edited[x]] + around_exit[1]
+        if exit_line is not None:
+            edited[x] = exit_line
+        if first_line is not None:
+            edited[0] = first_line
+        end = e + (len(edited) - len(hl))
+        if close_line is not None:
+            edited[end] = close_line
+        return "\n".join(edited[:s] + before + edited[s:end + 1] + (after or []) + edited[end + 1:])
+
+    return [
+        ("hide the clause in a tilde fence", _clause_in_place, around("~~~", "~~~")),
+        ("hide the clause in a fence left open", _clause_in_place, around("```")),
+        ("hide the clause in a comment left open", _clause_in_place, around("<!--")),
+        ("withdraw the clause in a later bullet", _clause_in_place, around("", "- The rule above no longer applies.")),
+        ("wrap the scan in if false", _scan_stanza_in_place, hook_with(["if false; then"], ["fi"])),
+        ("put the scan in a here-document", _scan_stanza_in_place, hook_with([": <<'SKIPPED'"], ["SKIPPED"])),
+        ("put the scan in a function never called", _scan_stanza_in_place, hook_with(["skipped() {"], ["}"])),
+        ("exit before the scan with no status", _scan_stanza_in_place, hook_with(["exit"])),
+        ("continue the line before the scan", _scan_stanza_in_place, hook_with(["false &&"])),
+        ("define python as a function before the scan", _scan_stanza_in_place, hook_with(["python() { :; }"])),
+        ("leave the scan's refusal early with echo; exit 0", _scan_stanza_in_place, hook_with([], around_exit=(["  echo; exit 0"], []))),
+        ("put the scan's exit under if false", _scan_stanza_in_place, hook_with([], around_exit=(["  if false; then"], ["  fi"]))),
+        ("leave the scan's refusal early with a bare exit", _scan_stanza_in_place, hook_with([], around_exit=(["  exit"], []))),
+        # Added after the sixth review of 2026-10-02. The first, third and fourth
+        # are shapes the line test refused and the first shell-aware measure
+        # accepted; the second is the one-line form of one the line test refused.
+        ("exit 0 inside an always-true if before the scan", _scan_stanza_in_place, hook_with(["if true; then", "  exit 0", "fi"])),
+        ("call a function that exits 0 before the scan", _scan_stanza_in_place, hook_with(["leave() { exit 0; }", "leave"])),
+        ("background the scan's exit", _scan_stanza_in_place, hook_with([], exit_line="  exit 1 &")),
+        ("pipe the scan's exit", _scan_stanza_in_place, hook_with([], exit_line="  exit 1 | cat")),
+        ("leave the scan's refusal early with exit 256", _scan_stanza_in_place, hook_with([], around_exit=(["  exit 256"], []))),
+        ("exit 0 in a brace group before the scan", _scan_stanza_in_place, hook_with(["{ exit 0; }"])),
+        ("trap exit 0 before the scan", _scan_stanza_in_place, hook_with(["trap 'exit 0' EXIT"])),
+        ("escape the exit before the scan", _scan_stanza_in_place, hook_with(["\\exit 0"])),
+        ("open a here-document with an escaped delimiter", _scan_stanza_in_place, hook_with([": <<\\SKIPPED"], ["SKIPPED"])),
+        ("give the hook a shebang that runs nothing", _scan_stanza_in_place, hook_with([], first_line="#!/bin/true")),
+        ("alias python after another name", _scan_stanza_in_place, hook_with(["alias py=x python=true"])),
+        ("hash python to true", _scan_stanza_in_place, hook_with(["hash -p /usr/bin/true python"])),
+        ("put PATH ahead of the scan", _scan_stanza_in_place, hook_with(["PATH=."])),
+        ("exec in the scan's block", _scan_stanza_in_place, hook_with([], around_exit=(["  exec true"], []))),
+        # Added after the seventh review of 2026-10-02, which found these rules
+        # guarded by no case.
+        ("return in the scan's block", _scan_stanza_in_place, hook_with([], around_exit=(["  return"], []))),
+        ("quote a command name in the scan's block", _scan_stanza_in_place, hook_with([], around_exit=(["  'true'"], []))),
+        ("eval before the scan", _scan_stanza_in_place, hook_with(["eval true"])),
+        ("source a file before the scan", _scan_stanza_in_place, hook_with(["source /dev/null"])),
+        ("dot a file before the scan", _scan_stanza_in_place, hook_with([". /dev/null"])),
+        ("open a here-document with a digit-led delimiter", _scan_stanza_in_place, hook_with([": <<1SKIPPED"], ["1SKIPPED"])),
+        # Two shapes only the line test of 77fe6da refuses, which guard the
+        # measure's second condition: the seventh review found the shell-aware
+        # reading accepting both.
+        ("run a here-document's body as commands before the scan", _scan_stanza_in_place, hook_with(["while read -r l; do $l; done <<RUN", "exit 0", "RUN"])),
+        ("pipe the scan's closing brace", _scan_stanza_in_place, hook_with([], close_line="} | cat")),
+        ("revoke the clause in a later bullet", _clause_in_place, around("", "- The rule above is revoked.")),
     ]
 
 
@@ -3349,10 +3749,16 @@ def _run_check(which: str, ctx: dict, sample) -> set[str]:
     # because the real allowlist is empty until the cast is sealed.
     allowlist = set(allowlist) | set(ctx.get("_allowlisted", ()))
     code = scan_code(ctx["codes"])
-    return {
-        f.code
-        for f in scan_text(rel, text, patterns, exemptions, allowlist, code)
-    }
+    try:
+        return {
+            f.code
+            for f in scan_text(rel, text, patterns, exemptions, allowlist, code)
+        }
+    except Unreadable as exc:
+        # A scan row whose sample the reader refuses fails as that row. Until
+        # the fifth review of 2026-10-02 the refusal ended the whole self-test
+        # with exit 2 at that row, naming a file that does not exist.
+        return {exc.finding.code}
 
 
 def self_test(ctx: dict) -> int:
@@ -3452,6 +3858,24 @@ def self_test(ctx: dict) -> int:
         f"expected {table}, measured {measured}"
     )
 
+    agents = _read_for_measure(ROOT / "AGENTS.md")
+    hook = _read_for_measure(ROOT / ".githooks" / "pre-commit")
+    real = _clause_in_place(agents) and _scan_stanza_in_place(hook)
+    failures += 0 if real else 1
+    print(f"  {'refused' if real else 'PASSED  '}  {'measure the real clause and hook as in place':56} expected both in place")
+    try:
+        measure_breaks = _rt15_measure_breaks(agents, hook)
+    except StopIteration:
+        # The breaks anchor on the clause, the stanza and its exit 1. Until the
+        # sixth review of 2026-10-02 a reworded one ended this run in a traceback.
+        measure_breaks = []
+        failures += 1
+        print(f"  PASSED    {'anchor the RT-15 measure breaks':56} the clause, the stanza or its exit 1 is not where they look")
+    for desc, measure, text in measure_breaks:
+        ok = measure(text) is False
+        failures += 0 if ok else 1
+        print(f"  {'refused' if ok else 'PASSED  '}  {desc:56} expected not in place")
+
     import tempfile
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -3514,7 +3938,7 @@ def self_test(ctx: dict) -> int:
             {"email"},
         )
         ok = any(selector == "email" for _, selector, _ in found)
-    except RecursionError:
+    except (RecursionError, Unreadable):
         ok = False
     failures += 0 if ok else 1
     print(f"  {'refused' if ok else 'PASSED  '}  {'read a live pair beside a self-referential anchor':56} expected the pair to be read")

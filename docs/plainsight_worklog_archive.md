@@ -1409,3 +1409,75 @@ operator has not made. `doctrine/RETENTION_LEDGER.md` and
 and every basis stamp is still unstamped.
 
 ---
+
+## 2026-09-05, closeout checkpoint. The committed tree verified from a fresh clone.
+
+**Class:** A (the handoff, this worklog, the archive). No governed artifact.
+
+`AGENTS.md` section 8 defines a closeout as the battery, the records, and the
+commit in one act. Both commits this session, `377d7d4` and `7c14888`, were
+closed out that way against the working tree. This checkpoint adds the check a
+working tree cannot give: the committed tree, cloned fresh into a scratch
+directory, run through every CI step and the whole battery.
+
+### What the fresh clone showed
+
+Every step `.github/workflows/ci.yml` runs passes on the clone: PyYAML present,
+doctrine integrity, housekeeping with its new self-test, the twelve-case
+telemetry suite, the kernel gate at six implemented, zero failed, one stubbed,
+five pending, the hook executable and running, and zero commits in the history
+carrying an agent trailer. The remaining preflight validators and the three
+older self-test suites pass there too. `conformance/` is absent in the clone,
+which is what `CONFORMANCE.md` has said since `377d7d4` and had not said before.
+
+### What was persisted outside the tree
+
+`Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` now holds the
+three verification passes behind the two commits as full JSON, every finding
+with its quoted text and every verdict with the quote that decided it; the seven
+scripts that applied every edit, each of which asserted every anchor unique
+before writing; the three workflow definitions with their lens and refuter
+prompts; both commit messages; and a README that indexes them and restates what
+this session got wrong. A scan of the copied files for the operator's identity
+returned nothing. The handoff's section 6 points there, beside the previous
+session's review directory, whose `DECISIONS.md` amendment gained a pointer and
+a correction: its Part 1 puts the authorization schema at Step 7, and the
+register puts it at Step 8.
+
+### The archive, again
+
+The worklog was at ten live entries, so the 2026-08-26 Step 3 entry moved to
+`docs/plainsight_worklog_archive.md` without edit, after the Wave 0 entry, and
+this entry took its place. Two entries are archived; ten are live.
+
+### The handoff
+
+Section 0 answers the five questions for this commit and relabels the previous
+block as `7c14888`. Every phrase whose referent the relabel could move was
+grepped for and read, because the previous relabel moved three and a verifier
+caught them. The date line now states this session's span and that the clock
+rolled to 2026-09-05 during `7c14888`, whose records carry the day they were
+written.
+
+### Validation
+
+The five preflight validators, the four self-test suites, the twelve-case
+telemetry suite, the hook, `git diff HEAD --check` and `git diff --cached
+--check`, and the kernel gate at six implemented, zero failed, one stubbed, five
+pending, on the working tree; the same battery on the fresh clone of `7c14888`.
+
+### Agent involvement, stated precisely
+
+No subagent ran for this checkpoint. The parent session did the clone, the
+battery, the copying, and the edits.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine criterion amended or stamped, no Class F change proposed.
+
+**Not done:** patches 2 through 4 are still unapplied and the operator decides
+patch 4. The hook still does not run the telemetry test. Step 7 is unblocked and
+not started. `doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md` are
+still owed, the D-001 repo scan is still a stub, and every basis stamp is still
+unstamped.
+
+---

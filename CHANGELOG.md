@@ -22,6 +22,41 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-02, morning. The fourth review's open findings and the fifth
+  review's.**
+
+  **What changed.** A typed placeholder must be a token the cast's truth file
+  carries. The register is read as GitHub renders its table, and a row with no
+  fixture name refuses. A refusal prints a key, a pending id, a register cell or
+  a fixture value only when a vocabulary the gate reads holds it, and the
+  self-test fails a break whose refusal prints a word it planted. The phone shape
+  reads every Unicode dash and the minus sign. An empty selector registry
+  refuses rather than switching its check off. RT-15's clause measure removes
+  tilde fences and a comment or fence left open, and reads a withdrawal anywhere
+  in its section; the hook measure reads the hook as the shell does. A pair's
+  value is read inside a mapping, as a key, in a set and without its padding. A
+  rule is written as a boolean, a 0 or 1 is a leaf, and the cadence's steps are
+  pinned by when and act. Five fourth-pass and ten fifth-pass findings, and
+  fifteen sixth-pass findings, two of them in part and two of them regressions
+  in this change's own first version. A seventh pass found six more
+  regressions in the sixth pass's fixes, and those were backed out: the hook
+  measure also requires the line test of `77fe6da`, and the earlier alias and
+  phone forms are restored. Decided under the maintainer's words of
+  2026-10-02 10:14 relayed by the parent session; stricter only, and
+  revertible.
+
+  **Which surfaces moved.** `tools/validate_authorization.py`,
+  `tools/validate_retention.py`, `conformance/gate/README.md` section 5, the
+  worklog and its archive, and the handoff.
+
+  **What validation ran.** The two self-tests, 147 and 184 breaks; `--policy`,
+  `--repo-scan`, `--shred-roundtrip` and `--fixtures` output byte-identical to
+  the previous commit; all sixteen preflight commands; both forms of
+  `git diff --check`. The kernel gate exited 0.
+
+  **What did not change.** No policy value, corpus row, schema, doctrine file or
+  stamp.
+
 - **2026-10-01, afternoon. The fourth pass, and the checkpoint closeout.**
 
   **What changed.** The survivability and cadence pins name their item. YAML
