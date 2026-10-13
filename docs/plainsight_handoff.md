@@ -11,12 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts, 9,342 lines at `0e0c840`, are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-02, morning. The commit that carries this file closes the
-fourth review's open findings and the fifth review's, on top of `77fe6da`,
-under the maintainer's words of 2026-10-02 10:14, relayed by the parent session,
-which renew the grant of 2026-09-30 23:28. The commits of 2026-09-30 and
-2026-10-01 gave the gates one reader of the pin of record, closed all three
-ratification blockers, and turned the kernel gate and CI green.
+**Date:** 2026-10-12. The commit that carries this file is a records commit on
+top of `064fa27`, under the maintainer's words of 2026-10-12 17:02:01, relayed by
+the personal-account parent session, to finish what was in swing. It corrects
+six passages that were false at `064fa27` and records two delegations.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -26,15 +24,14 @@ is.
 refusing as designed, 2 stubbed, 5 pending. Green means that and no more;
 `CONFORMANCE.md` section 4 states what a green run does not claim.
 
-**Resume here.** Read two files first:
-`Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`,
-which holds the 51 distinct decisions Step 8 surfaced and marks the 29 that are
-the operator's; and
-`Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md`,
-which is what the operator is buying and standing up in parallel. The
-adversarial review Step 8 was owed ran on 2026-10-01, and section 5 says what it
-found. Its open class B findings are the next work, and the worklog's overnight
-entry records what that night reached.
+**Resume here.** Nothing is scheduled for an agent, and every open item waits on
+the operator's words for that act. His queue is `MAINTAINER_QUEUE.md` in
+`Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/`, 28 items, none
+answered. The held agent work is in the same folder: Step 7's review in
+`STEP7_REVIEW.md`, twenty findings, all open, the narrowing ones first (s7:1,
+s7:6, s7:7, s7:8 and s7:14); the open rows of `REVIEW2.md`, r6:5, r6:8, r6:14,
+r6:18, r7:7 to r7:17 and the open halves of r6:4 and r6:11; an eighth review
+pass over `064fa27`'s back-outs; and six self-tests that write no telemetry.
 
 ---
 
@@ -46,27 +43,29 @@ commit that carries this file, and `CHANGELOG.md` and the worklog answer them
 for every earlier one. Two earlier answers still bind: nothing has been stamped
 since 2026-08-27, and no release baseline has changed, because PSE has no tag.
 
-**What changed and why.** This commit closes the fifth pass's ten findings over
-`77fe6da` and the fourth pass's five open ones, f4:6's other half among them,
-which this file's previous version omitted. A sixth and a seventh pass found
-nineteen and twenty more; their eight regressions are fixed or backed out.
+**What changed and why.** Six passages were false at `064fa27`, four in this
+file: sections 1 and 5 said Step 7's review never ran, Resume here named Step
+8's open findings as the next work, and section 7 called `main` the only branch
+on `origin`. `README.md`'s Next action and `docs/THE-GAMEPLAN.md` Step 8 called
+Step 8's review owed. The harvests of 2026-10-05 and 2026-10-11 found five and
+this commit the sixth. The worklog also records two delegations no commit had.
 
-**Which surfaces moved.** Both validators and their self-tests,
-`conformance/gate/README.md` section 5, `CHANGELOG.md`, this file, and the
-worklog, whose 2026-09-05 entry moved to the archive under its ten-entry cap.
+**Which surfaces moved.** `README.md`, `docs/THE-GAMEPLAN.md`, this file, and the
+worklog, whose first 2026-09-07 entry moved to the archive under its ten-entry
+cap. No governed artifact changed, so `CHANGELOG.md` takes no entry.
 
 **What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the two
-self-tests with 147 and 184 breaks, and both forms of `git diff --check` were clean. The kernel gate exited 0: 16 passed, 3 unratified and refusing, 2
-stubbed, 5 pending.
+before the commit. All sixteen preflight commands passed, the two self-tests
+with 147 and 184 breaks, and both forms of `git diff --check` were clean. The
+kernel gate exited 0: 16 passed, 3 unratified and refusing, 2 stubbed, 5 pending.
 
 **Whether a release baseline changed.** No. `main` gains this commit through a
 pull request.
 
-**What remains open or deferred.** Section 3 holds the operator's 29 decisions,
-patch 4b with its four Class F items, and the cast seal. Section 4 holds every
-stamp, the 2026-09-28 follow-ups and the known defects; section 5 holds what the
-Step 8 review left open.
+**What remains open or deferred.** Unchanged from `064fa27`. Section 3 holds the
+operator's 29 decisions, patch 4b and the cast seal; section 4 holds every stamp,
+the 2026-09-28 follow-ups and the known defects; section 5 holds what the two
+reviews left open.
 
 ---
 
@@ -90,8 +89,8 @@ part the criterion names. A criterion absent from the stamp table refuses, a
 missing artifact refuses, and a fully stamped state permits, exercised both ways
 by `--self-test`. Clearing the exit code is a stamping act and the operator's.
 
-**Step 8 was reviewed adversarially on 2026-10-01**, and Step 7's owed review was
-never run. Section 5 says what the review found and what it left open.
+**Step 8 was reviewed adversarially on 2026-10-01, and Step 7 on 2026-10-02.**
+Section 5 says what each review found and what each left open.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
 consenting subjects who will confirm the findings, who are S1 CONSENTING. The
@@ -283,9 +282,8 @@ about 1,720 non-recurring and 205 a month.
   same property meanwhile, because the schema inlines the registry keys. The
   mode and `--matchers` are STUB entries in the kernel gate, so every run
   prints the debt.
-- **The voice pass is parked.** 814 drafts, 6 refuter verdicts, nothing applied.
-  The drafts on this file are dead, this file having been rewritten four times
-  since. Not on the path to a first run.
+- **The voice pass is parked.** 814 drafts, 6 refuter verdicts, nothing applied;
+  the drafts on this file are dead. Not on the path to a first run.
 - **The public repository's non-provider secret scanning would not enable** on
   this plan. Branch protection, secret scanning and push protection are on, and
   the replaced initial commit is still served by hash until GitHub collects it.
@@ -297,7 +295,7 @@ about 1,720 non-recurring and 205 a month.
   documented. **The compatibility-claim check reads one file, not the tree**,
   and Step 9 closes it.
 
-## 5. What Step 7's verification covered, and the Step 8 reviews
+## 5. What Step 7's verification covered, and the reviews of Steps 7 and 8
 
 Step 7's generated artifacts are checked three ways: the two `--check` modes
 prove the files on disk are what the model and the fixture tables generate, and
@@ -306,33 +304,34 @@ they refuse, with a self-test that breaks five things and asserts the matching
 fixture stops failing each time. The 2026-09-08 worklog entry carries the
 detail.
 
-That leaves one gap: the corpus was authored by the same session that wrote the
-generator, so a misreading shared by both would be self-consistent, and no
-second pass has read the generator against the model.
+That left one gap: the corpus was authored by the same session that wrote the
+generator, so a misreading shared by both would be self-consistent. **A second
+pass read the generator against the model on 2026-10-02**: one Opus 5.5 lens,
+read-only, and a refuter that ran the mechanism for each finding. It returned
+twenty findings, eighteen confirmed and two downgraded, all open and all class B
+or A; three touch the rank-2 contract and are queued as plainsight-26. The
+record is `STEP7_REVIEW.md` in the overnight folder named below.
 
 **Step 8 was reviewed adversarially on 2026-10-01**, against `de9e754`, under the
 operator's overnight grant. Eight lenses each ran the check they reviewed in a
 scratch copy and quoted the result, and every finding went to a refuter that
 reproduced it. 88 of 89 findings stand: three ratification blockers, 53 class B
 defects, two class F defects for the operator, and 30 drift findings and notes.
-The refuters overturned one, against the three-to-one over-report of the earlier
-prose reviews, because a lens could not make a finding without running the
-mechanism. Commits made on 2026-10-01 closed 66 of them and part of nine
-more, all three blockers among them: the pin-of-record reader, and the RT-11 override, which now refuses
-as U-17 rather than permitting what the pin's RT-11 row says does not exist. The
-record, with each
-finding's status, is
-`Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/REVIEW.md`, and the
-claims, commands and outputs are beside it. The completeness critic then ran
-against `8bedba1` and found 11 more, none refuted. Two are ratification
-blockers: the shared reader's whole-artifact test is a substring match, so an
-Item cell saying "not the whole artifact" stamped the file, and nothing reads
-SS-14's seal condition for the cast. All eleven are closed, three of them in
-part, and the review record lists what remains of each. Of the twelve review
-findings still open, three wait on the operator's queue and nine on the
-evaluator VA-U1 holds until Step 10 or on fixture semantics a ratified entry
-decides. Passes two to seven are in `REVIEW2.md`, and the worklog names what
-the sixth and seventh left open.
+Commits made on 2026-10-01 closed 66 of them and part of nine more, all three
+blockers among them: the pin-of-record reader, and the RT-11 override, which now
+refuses as U-17 rather than permitting what the pin's RT-11 row says does not
+exist. The record, with each finding's status, is `REVIEW.md` in
+`Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/`, with the claims,
+commands and outputs beside it. The completeness critic then ran against
+`8bedba1` and found 11 more, none refuted. Two are ratification blockers: the
+shared reader's whole-artifact test is a substring match, so an Item cell saying
+"not the whole artifact" stamped the file, and nothing reads SS-14's seal
+condition for the cast. All eleven are closed, three of them in part, and the
+review record lists what remains of each. Of the twelve review findings still
+open, three wait on the operator's queue and nine on the evaluator VA-U1 holds
+until Step 10 or on fixture semantics a ratified entry decides. Passes two to
+seven are in `REVIEW2.md`, and the worklog names what the sixth and seventh left
+open.
 
 ## 6. Session context that lives outside this repository
 
@@ -343,7 +342,8 @@ the sixth and seventh left open.
 | The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies, and the method the Step 8 reviews used. Pre-rewrite hashes. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Carries the removed values; unshared. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, and the critical path to a first S1 run. |
-| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/` and `.../2026-09-30-plainsight-harvest-and-archive/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, and the record of the worktree's 751 gate-log rows merged into this checkout's log. |
+| The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | `REVIEW.md`, `REVIEW2.md` and `STEP7_REVIEW.md` with each finding's status, `MAINTAINER_QUEUE.md` with the operator's 28 items, and `REPORTS.md`. |
+| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/`, `.../2026-09-30-plainsight-harvest-and-archive/`, `.../2026-10-05-plainsight-harvest-of-f8d7cd3b/` and `.../2026-10-11-plainsight-harvest-of-12c08cc1/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, the worktree's 751 gate-log rows merged into this checkout's log, and the two harvests that found five of the six passages this commit corrects. |
 | The 2026-09-09 harvest and operator checklist | `Z-ISR/_session-artifacts/2026-09-09-plainsight-harvest-and-operator-checklist/` | The verified shopping list, the identity sequence, and the pending operator acts. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The compartmentalization invariants the ISOLATED environment inherits. |
 | Measured Sherlock review, clone and image | `Z-ISR/Sherlock/sherlock/CAPABILITIES.md`, `Z-ISR/Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
@@ -375,10 +375,10 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   governed prose and the hygiene gate checks it.
 - The operator's order of work, decided 2026-09-08: Step 8 onward toward a first
   run; the voice pass is parked.
-- **The public repository is `origin`, and `main` is the only branch that goes
-  there.** A push is an operator-instructed act and follows a closeout, and
-  every step conclusion of its CI run is read afterwards. Commits carry the
-  GitHub no-reply address.
+- **The public repository is `origin`, and work reaches `main` by a pull request
+  fast-forwarded after its CI passes**; the merged branches stay on `origin`. A
+  push is an operator-instructed act that follows a closeout, and every step
+  conclusion of its CI run is read afterwards. Commits carry the no-reply address.
 - **Hashes in worklog entries above the 2026-09-07 rewrite entry, the persona
   entry of that day included, in the archive, and in every changelog entry
   below the rewrite entry are pre-rewrite.** That entry translates them.

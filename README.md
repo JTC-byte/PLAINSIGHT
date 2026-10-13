@@ -95,8 +95,10 @@ One lane rule is enforced: nothing under `spec/`, `schema/`, `ontology/`,
 
 `docs/plainsight_handoff.md` carries the current next action and is rewritten
 at every closeout, so this section names it in outline and points there. As of
-2026-09-30 the next work is the adversarial review Step 8 is owed, which the
-handoff's section 5 describes. A first live run waits on SS-14 item 6, which
+2026-10-12 the adversarial reviews of Step 8 (2026-10-01) and Step 7
+(2026-10-02) have both run, and the handoff's section 5 says what each left
+open. Those findings and the operator's queue are the next work, and the
+handoff's Resume here names both. A first live run waits on SS-14 item 6, which
 the handoff's section 3 lists in full: the doctrine, the Step 8 artifacts, the
 selector registry's proposed rows and the contract's sections 5 and 12 stamped
 on the operator's decisions, the cast filled and sealed, and a dispatch

@@ -1481,3 +1481,156 @@ still owed, the D-001 repo scan is still a stub, and every basis stamp is still
 unstamped.
 
 ---
+
+## 2026-09-07, the example persona made fictional, the voice pass harvested, and a stale patch hunk found.
+
+**Class:** A (four advisory documents, `.gitignore`, the three records) plus C
+for one fixture string in `tools/tests/test_gate_log.py`, the class this worklog
+gave that file when it was created. No doctrine, spec,
+schema, policy, or runtime artifact changed.
+
+On 2026-09-05 the operator concurred with the previous rundown's
+recommendation to start Step 7 and added two instructions to run first: replace
+every variant of their own name in the documents with a made-up one, and pass
+every document through the ZMeta Register 1 voice standard, so that Step 7 does
+not produce documents that need the same pass. That session applied the
+replacement, launched a voice-pass workflow, started two mapping agents for
+Step 7, and ended on a usage limit at 20:04 UTC with nothing committed. This
+session recovered what it left, verified it, and committed the half that was
+finished.
+
+### The replacement
+
+Four documents in `docs/` carried a worked example, the subject in the design
+mockups, the persona in the tool review, one line each in the foundation and
+the gameplan, whose name and handles belonged to a real person. One fixture
+string in `tools/tests/test_gate_log.py` reused the handle. Every value was
+replaced with a fictional one of identical length: fifty-five removed lines,
+fifty-five added, no length difference in any pair, checked by a script over
+the diff, so the fixed-width mockups in the design document kept their
+alignment. Six masked email hints, five in the design document and one in the
+tool review, still carried the last letter of the old surname, and the tool
+review paired one with a candidate it no longer matched; the records verifier
+described below found them, and they were corrected, same length, before the
+commit. A tree-wide case-insensitive search for every variant returns nothing. The
+battery is green on the result. This entry, the handoff and the changelog name
+neither the old values nor the new ones; the diff carries them.
+
+The old handle remains in `5d53973` and `d99f213`. A history rewrite is the only
+thing that removes it, there is no remote yet so a rewrite is feasible, and every
+record here cites hashes a rewrite would change. That is the operator's decision
+and it falls due before the first push.
+
+`.gitignore` gains `_voice-pass/`, the directory the voice pass writes its
+survivor files into, so that working material cannot enter a commit.
+
+### The harvest
+
+The voice-pass workflow cut sixteen files into 58 chunks of about 1,500 words:
+`README.md`, `CLAUDE.md`, `AGENTS.md`, `CONFORMANCE.md`, the five doctrine
+files, `synthetic/CAST.md`, the handoff, and the five rank-7 documents in
+`docs/`. The worklog, its archive, the changelog and the doctrine status pin were
+excluded by rule. Each chunk had a lens that drafted paragraph-level edits with
+the exact original text and a refuter, default REJECT, that checked anchors and
+meaning and wrote the survivors to `_voice-pass/`. Doctrine chunks carried extra
+rules: no criterion paragraph, no enforcement pointer, no counted phrase, no
+table.
+
+| Stage | Count |
+|---|---|
+| Lens agents that returned | 57 of 58 |
+| Edits proposed | 814 |
+| Refuter agents that returned a verdict | 6 of 56 started |
+| Refuter agents that failed on the session limit | 50 |
+| Survivor files written | 9, three of them without a returned verdict |
+| Drafts passing the applier's mechanical checks | 719 of 814 |
+
+Of the 95 mechanical refusals, 69 changed a number, 14 kept an em dash in the
+replacement, 12 compressed, and one has an anchor that is not unique; one draft
+carries two of those reasons. All 556
+em dashes in tracked markdown sit in the five `docs/` files the hygiene gate
+exempts, so the governed files already pass the mechanical half and the lenses
+on them hunted the unchecked half. Nothing is applied. The drafts, the six
+verdicts, the survivors, the workflow script and journal, the applier with its
+chunk table, and the two Step 7 mapping reports are copied to
+`Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/` with a README,
+because the previous session's scratchpad is a temp directory. A scan of that
+directory for the operator's identity returned nothing.
+
+One tension surfaced. The handoff records `docs/PLAINSIGHT-FOUNDATION.md` as
+voice-exempt, a record of intent. The pass drafted 114 edits for it across five
+chunks, because the operator asked for all documentation. Which of the two
+holds is the operator's call and is recorded in the handoff.
+
+### The stale hunk
+
+The handoff and the 2026-09-04 amendment to `DECISIONS.md` both said patches 2,
+3 and 4 still applied in order. Measured on a fresh clone of `2d406db`: patch 2
+applies clean; patch 3 fails on its second `doctrine/HYGIENE.md` hunk, which
+anchors on a sentence `377d7d4` rewrote when patch 1 landed with the docstring
+correction, and the tree already carries the corrected claim that hunk was
+drafted to add, so the hunk is stale in intent as well as anchor. Patch 3 has
+thirteen hunks, two in HYGIENE.md: `git apply --exclude` lands the eleven
+outside that file, the first HYGIENE.md hunk applies alone and is saved beside
+the patches as `patch-3b-hygiene-first-hunk-only.patch`, so twelve of thirteen
+land, and patch 4 applies on top. The fully patched tree passes the kernel gate
+and `tools/validate_doctrine.py` counts 59 criteria there. The handoff is corrected in this commit and `DECISIONS.md`
+gains a dated amendment. The claim had been false since `377d7d4`.
+
+### The archive
+
+The worklog was at ten live entries, so the 2026-08-26 entry that begins "Step
+3 continued" moved to `docs/plainsight_worklog_archive.md` without edit, after
+the two already there, and this entry took its place. Three entries are
+archived; ten are live.
+
+### Validation
+
+The five preflight validators, the twelve-case telemetry suite, `git diff
+--check` and `git diff --cached --check`, the hook at commit, and the kernel
+gate at six implemented, zero failed, one stubbed, five pending, on the working
+tree before staging and on the staged tree. Three Sonnet verifiers, each told to
+run the command and quote the output, re-derived the 22 state claims in the
+rundown given to the operator: 21 confirmed, one refuted for how a transcript
+filter was described, a detail no fact depended on. A second pass over these
+records before the commit, one Sonnet lens for the mechanical checks and one
+Opus lens for the five questions, tense, voice and consistency, returned 20
+verdicts: 18 confirmed and 2 refuted. One refutation was of the brief rather
+than the record, a heading count the parent stated wrong in the prompt. The
+other was the class of the fixture change, B in the draft and C by `AGENTS.md`
+section 3 and this worklog's own precedent, corrected above. The Opus lens also
+found two things outside its questions: a hunk count of twelve that the exclude
+command alone does not deliver, corrected above with the hunk-level route, and
+the six masked hints described under the replacement. Both passes are in this
+session's workflow journals.
+
+### Agent involvement, stated precisely
+
+The 2026-09-05 session ran 114 workflow agents, a lens and a refuter for each of
+58 chunks: the 29 chunks over the rank-7 documents on Opus, the 29 over governed
+files and the handoff inheriting the session model. It ran two Explore agents on
+Opus for the Step 7 maps. Its parent applied the replacement with a script that
+asserted every count before writing. This session's parent did the harvest with
+Python over the workflow journal, wrote the artifacts directory, and wrote these
+records; no subagent edited a tracked file. Three Sonnet verifiers spent about
+198,000 tokens on the state claims, and a Sonnet lens and an Opus lens about
+201,000 on these records. The commit was executed by
+the agent on the operator's instruction of 2026-09-07 for this act, with the
+operator as author, per R6 as amended.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine criterion amended or stamped, no Class F change proposed,
+no voice edit applied.
+
+**Not done:** the refuter pass over 50 chunks and the application of any
+survivor; patches 2 through 4; the history decision; Step 7;
+`doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md`; the D-001 repo
+scan; every basis stamp.
+
+**Next:** the operator stands up the remote. Then, in the operator's stated
+order: patch 2 and the twelve applying hunks of patch 3 before any doctrine
+voice edit, the refuter continuation and the application of survivors, then
+Step 7.
+
+
+---

@@ -15,158 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-09-07, the example persona made fictional, the voice pass harvested, and a stale patch hunk found.
-
-**Class:** A (four advisory documents, `.gitignore`, the three records) plus C
-for one fixture string in `tools/tests/test_gate_log.py`, the class this worklog
-gave that file when it was created. No doctrine, spec,
-schema, policy, or runtime artifact changed.
-
-On 2026-09-05 the operator concurred with the previous rundown's
-recommendation to start Step 7 and added two instructions to run first: replace
-every variant of their own name in the documents with a made-up one, and pass
-every document through the ZMeta Register 1 voice standard, so that Step 7 does
-not produce documents that need the same pass. That session applied the
-replacement, launched a voice-pass workflow, started two mapping agents for
-Step 7, and ended on a usage limit at 20:04 UTC with nothing committed. This
-session recovered what it left, verified it, and committed the half that was
-finished.
-
-### The replacement
-
-Four documents in `docs/` carried a worked example, the subject in the design
-mockups, the persona in the tool review, one line each in the foundation and
-the gameplan, whose name and handles belonged to a real person. One fixture
-string in `tools/tests/test_gate_log.py` reused the handle. Every value was
-replaced with a fictional one of identical length: fifty-five removed lines,
-fifty-five added, no length difference in any pair, checked by a script over
-the diff, so the fixed-width mockups in the design document kept their
-alignment. Six masked email hints, five in the design document and one in the
-tool review, still carried the last letter of the old surname, and the tool
-review paired one with a candidate it no longer matched; the records verifier
-described below found them, and they were corrected, same length, before the
-commit. A tree-wide case-insensitive search for every variant returns nothing. The
-battery is green on the result. This entry, the handoff and the changelog name
-neither the old values nor the new ones; the diff carries them.
-
-The old handle remains in `5d53973` and `d99f213`. A history rewrite is the only
-thing that removes it, there is no remote yet so a rewrite is feasible, and every
-record here cites hashes a rewrite would change. That is the operator's decision
-and it falls due before the first push.
-
-`.gitignore` gains `_voice-pass/`, the directory the voice pass writes its
-survivor files into, so that working material cannot enter a commit.
-
-### The harvest
-
-The voice-pass workflow cut sixteen files into 58 chunks of about 1,500 words:
-`README.md`, `CLAUDE.md`, `AGENTS.md`, `CONFORMANCE.md`, the five doctrine
-files, `synthetic/CAST.md`, the handoff, and the five rank-7 documents in
-`docs/`. The worklog, its archive, the changelog and the doctrine status pin were
-excluded by rule. Each chunk had a lens that drafted paragraph-level edits with
-the exact original text and a refuter, default REJECT, that checked anchors and
-meaning and wrote the survivors to `_voice-pass/`. Doctrine chunks carried extra
-rules: no criterion paragraph, no enforcement pointer, no counted phrase, no
-table.
-
-| Stage | Count |
-|---|---|
-| Lens agents that returned | 57 of 58 |
-| Edits proposed | 814 |
-| Refuter agents that returned a verdict | 6 of 56 started |
-| Refuter agents that failed on the session limit | 50 |
-| Survivor files written | 9, three of them without a returned verdict |
-| Drafts passing the applier's mechanical checks | 719 of 814 |
-
-Of the 95 mechanical refusals, 69 changed a number, 14 kept an em dash in the
-replacement, 12 compressed, and one has an anchor that is not unique; one draft
-carries two of those reasons. All 556
-em dashes in tracked markdown sit in the five `docs/` files the hygiene gate
-exempts, so the governed files already pass the mechanical half and the lenses
-on them hunted the unchecked half. Nothing is applied. The drafts, the six
-verdicts, the survivors, the workflow script and journal, the applier with its
-chunk table, and the two Step 7 mapping reports are copied to
-`Z-ISR/_session-artifacts/2026-09-05-plainsight-voice-pass/` with a README,
-because the previous session's scratchpad is a temp directory. A scan of that
-directory for the operator's identity returned nothing.
-
-One tension surfaced. The handoff records `docs/PLAINSIGHT-FOUNDATION.md` as
-voice-exempt, a record of intent. The pass drafted 114 edits for it across five
-chunks, because the operator asked for all documentation. Which of the two
-holds is the operator's call and is recorded in the handoff.
-
-### The stale hunk
-
-The handoff and the 2026-09-04 amendment to `DECISIONS.md` both said patches 2,
-3 and 4 still applied in order. Measured on a fresh clone of `2d406db`: patch 2
-applies clean; patch 3 fails on its second `doctrine/HYGIENE.md` hunk, which
-anchors on a sentence `377d7d4` rewrote when patch 1 landed with the docstring
-correction, and the tree already carries the corrected claim that hunk was
-drafted to add, so the hunk is stale in intent as well as anchor. Patch 3 has
-thirteen hunks, two in HYGIENE.md: `git apply --exclude` lands the eleven
-outside that file, the first HYGIENE.md hunk applies alone and is saved beside
-the patches as `patch-3b-hygiene-first-hunk-only.patch`, so twelve of thirteen
-land, and patch 4 applies on top. The fully patched tree passes the kernel gate
-and `tools/validate_doctrine.py` counts 59 criteria there. The handoff is corrected in this commit and `DECISIONS.md`
-gains a dated amendment. The claim had been false since `377d7d4`.
-
-### The archive
-
-The worklog was at ten live entries, so the 2026-08-26 entry that begins "Step
-3 continued" moved to `docs/plainsight_worklog_archive.md` without edit, after
-the two already there, and this entry took its place. Three entries are
-archived; ten are live.
-
-### Validation
-
-The five preflight validators, the twelve-case telemetry suite, `git diff
---check` and `git diff --cached --check`, the hook at commit, and the kernel
-gate at six implemented, zero failed, one stubbed, five pending, on the working
-tree before staging and on the staged tree. Three Sonnet verifiers, each told to
-run the command and quote the output, re-derived the 22 state claims in the
-rundown given to the operator: 21 confirmed, one refuted for how a transcript
-filter was described, a detail no fact depended on. A second pass over these
-records before the commit, one Sonnet lens for the mechanical checks and one
-Opus lens for the five questions, tense, voice and consistency, returned 20
-verdicts: 18 confirmed and 2 refuted. One refutation was of the brief rather
-than the record, a heading count the parent stated wrong in the prompt. The
-other was the class of the fixture change, B in the draft and C by `AGENTS.md`
-section 3 and this worklog's own precedent, corrected above. The Opus lens also
-found two things outside its questions: a hunk count of twelve that the exclude
-command alone does not deliver, corrected above with the hunk-level route, and
-the six masked hints described under the replacement. Both passes are in this
-session's workflow journals.
-
-### Agent involvement, stated precisely
-
-The 2026-09-05 session ran 114 workflow agents, a lens and a refuter for each of
-58 chunks: the 29 chunks over the rank-7 documents on Opus, the 29 over governed
-files and the handoff inheriting the session model. It ran two Explore agents on
-Opus for the Step 7 maps. Its parent applied the replacement with a script that
-asserted every count before writing. This session's parent did the harvest with
-Python over the workflow journal, wrote the artifacts directory, and wrote these
-records; no subagent edited a tracked file. Three Sonnet verifiers spent about
-198,000 tokens on the state claims, and a Sonnet lens and an Opus lens about
-201,000 on these records. The commit was executed by
-the agent on the operator's instruction of 2026-09-07 for this act, with the
-operator as author, per R6 as amended.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched, no doctrine criterion amended or stamped, no Class F change proposed,
-no voice edit applied.
-
-**Not done:** the refuter pass over 50 chunks and the application of any
-survivor; patches 2 through 4; the history decision; Step 7;
-`doctrine/RETENTION_LEDGER.md` and `doctrine/DISCLOSURE.md`; the D-001 repo
-scan; every basis stamp.
-
-**Next:** the operator stands up the remote. Then, in the operator's stated
-order: patch 2 and the twelve applying hunks of patch 3 before any doctrine
-voice edit, the refuter continuation and the application of survivors, then
-Step 7.
-
----
-
 ## 2026-09-07, the history rewritten before the first push, and the public-facing files added.
 
 **Class:** A for the records, `README.md`, the new `LICENSE`, `NOTICE` and
@@ -2431,3 +2279,123 @@ authorization self-test with 147 breaks and the retention self-test with 184,
 and both forms of `git diff --check` were clean. The kernel gate exited 0, with
 16 implemented checks passing, 3 unratified and refusing, 2 stubbed and 5
 pending.
+
+---
+
+## 2026-10-12, six false passages corrected and two delegations recorded, under the maintainer's words of 17:02.
+
+**Class:** A (`README.md`, `docs/THE-GAMEPLAN.md`, the handoff and the two
+process records). No doctrine, spec, schema, policy, ontology, runtime or other
+governed artifact changed, so `CHANGELOG.md` takes no entry.
+
+**The words this commit acts on.** The maintainer at 17:02:01 EDT on
+2026-10-12, in the personal-account parent-folder session: "go ahead and make
+sure everything needing to be finished is taken care of so we are moving forward
+cleanly. Any commits, merges and pushes along with finishing up any threads on
+work that was in swing then lets engage the weeks efforts". That session,
+`local_ac773541`, relayed them here at about 19:52, after a messaging limit held
+the copy, and they are verbatim in the parent's
+`research/inputs/dispatches_2026-09-30/decisions_queue_2026-10-01.md`. The relay
+meets the four tests the delegations below set. This session read "in swing" as
+the corrections the two harvests found, which waited only on a commit, the one
+this commit's own reading found, the queue brought level, and the two
+delegations no commit had carried. The Step 7 fixes, plan item 0.7 and the queue
+answers were never started, and they stay held.
+
+**Two delegations, recorded here because no commit had carried them.** Each
+names a parent-folder session whose relays of the maintainer's dated words are
+his word in this repository, as the 2026-09-30 overnight entry records for the
+sentences of 2026-09-28 and 2026-09-30.
+
+- Typed at 23:17:08 EDT on 2026-10-05 in the team-account PLAINSIGHT session:
+  "Delegation, 2026-10-05: the team-account parent-folder session
+  local_5f1148fb-244a-4c91-b2ca-8c1b812c21f5 (titled "Harvest closed ecosystem
+  project session") is my parent session for this repository and for this
+  project from today and going forward; a decision it relays with my dated words
+  quoted is my word here, the same as my sentences of 2026-09-28 and 2026-09-30;
+  anything that pushes, merges, deploys, deletes or mints still names the words
+  it acts on; record this in your notes."
+- Typed at 15:30:56 EDT on 2026-10-11 in the personal-account PLAINSIGHT session:
+  "Delegation, 2026-10-11: the personal-account parent-folder session
+  local_ac773541-f864-4080-900a-f80fea7aaa5d (titled "Ecosystem project") is my
+  parent session for this repository and for this project from today and going
+  forward, in place of the team-account parent session
+  local_5f1148fb-244a-4c91-b2ca-8c1b812c21f5 while I work on this account; a
+  decision it relays with my dated words quoted is my word here, the same as my
+  sentences of 2026-09-28, 2026-09-30 and 2026-10-05; anything that pushes,
+  merges, deploys, deletes or mints still names the words it acts on; record
+  this in your notes."
+
+A relay qualifies only when it comes from the named session, quotes his dated
+words, those words are found verbatim in the parent folder's records, and the
+act falls inside them. It reaches no Class F decision and no stamp, which stay
+his own hand per item. The session's reading of "in place of ... while I work on
+this account", labelled as a reading: while he works on the personal account, a
+relay from the team parent is held and he is asked first.
+
+**Between 2026-10-02 and this commit, nothing touched the tree.**
+
+- On 2026-10-05 the team-account session harvested the closed personal session
+  `f8d7cd3b`, in `Z-ISR/_session-artifacts/2026-10-05-plainsight-harvest-of-f8d7cd3b/`.
+  It found four of the six passages below, one confirmed class F review finding
+  with no queue item (rm2:9, drafted as plainsight-28), and one held finding
+  missing from plainsight-22's Blocks line (sd2:13).
+- From 2026-10-06 to 2026-10-09 that session stood by under relayed words that
+  asked for no act here, and closed out on 2026-10-09 at 20:06 as report 13.
+- On 2026-10-11 the personal-account session harvested it, in
+  `.../2026-10-11-plainsight-harvest-of-12c08cc1/`: four Sonnet 5.5 readers, four
+  Opus 5.5 refuters and an Opus 5.5 critic, 70 items, none refuted. It found the
+  Resume here passage, item 3 below, and that the parent had put plainsight-28
+  into its answer sheet on 2026-10-05.
+- At 15:45:56 EDT on 2026-10-11 the maintainer's "maintain direction till map is
+  done" held this repository while the COP's map work ran.
+
+**What this commit corrects**, each false at `064fa27`:
+
+1. The handoff's section 1 said Step 7's owed review was never run. It ran on
+   2026-10-02, and `STEP7_REVIEW.md` in the overnight folder records it.
+2. The handoff's section 5 said no second pass had read the generator against
+   the model. That is the same review: twenty findings, eighteen confirmed and
+   two downgraded, all open.
+3. The handoff's Resume here named Step 8's open class B findings as the next
+   work, while its own section 5 said all twelve wait on the maintainer's queue
+   or on Step 10. It now names the queue and the held agent work.
+4. The handoff's section 7 said `main` is the only branch that goes to `origin`.
+   Every pull request since 2026-09-30 pushed its branch there, and the 31
+   merged branches remain. This commit's own reading found it.
+5. `docs/THE-GAMEPLAN.md` Step 8 said no adversarial review has run. It ran on
+   2026-10-01.
+6. `README.md`'s Next action said the next work, as of 2026-09-30, was the
+   review Step 8 was owed.
+
+The handoff stays at its 400-line cap. Section 5's Step 8 paragraph lost its
+ragged line breaks and its sentence on method, which the 2026-09-30 overnight
+entry carries, and section 6 gained the overnight folder and the two harvests.
+
+**Outside the tree, as part of the same act.** The session-artifact queue,
+`MAINTAINER_QUEUE.md` in the overnight folder, gains plainsight-28 in full, and
+plainsight-22's Blocks line reads "rm2:8 and sd2:13", matching the parent's
+answer sheet of 2026-10-05. The queue holds 28 items, and none is answered.
+
+**Two notes from the parent, checked against this tree.** The parent's TMN
+instance design of 2026-10-12 uses "managed attribution" for an instance's
+disposable outward identity; the term appeared nowhere in this repository at
+`064fa27`. The
+design reuses this repository's shred verification as a pattern only, and
+nothing crosses between the two. This repository's isolated collection
+environment is ISOLATED in `doctrine/EGRESS.md`. The doctrine never calls it a
+DMZ, and the handoff's "DMZ compartment" is the 2026-09-02 design that ISOLATED
+inherits, not ZMeta's admission DMZ. CR-7's burn retires one credential, not an
+instance.
+
+**Battery.** All sixteen preflight commands passed on the staged tree, the
+authorization self-test with 147 breaks and the retention self-test with 184,
+and both forms of `git diff --check` were clean. The kernel gate exited 0, with
+16 implemented checks passing, 3 unratified and refusing, 2 stubbed and 5
+pending.
+
+**Open.** Unchanged from `064fa27`. Every item waits on the maintainer's words
+for that act: the 28 queue items, plan item 0.7, the Step 7 fixes and the rest
+of the held agent work the handoff's Resume here lists. The 31 merged branches
+stay on `origin` and in this checkout; deleting them needs his words naming that
+act.
