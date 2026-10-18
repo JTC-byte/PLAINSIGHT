@@ -11,61 +11,57 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts, 9,342 lines at `0e0c840`, are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-12. The commit that carries this file is a records commit on
-top of `064fa27`, under the maintainer's words of 2026-10-12 17:02:01, relayed by
-the personal-account parent session, to finish what was in swing. It corrects
-six passages that were false at `064fa27` and records two delegations.
+**Date:** 2026-10-18. The commit that carries this file is a records commit on
+top of `bf6d5d4`, under the maintainer's words of 2026-10-18 typed in this
+session, recording the standing words of 2026-10-16 and 2026-10-17 no commit
+had carried: a delegation, two rules, his order of work, the credentials plan.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
 this tree; section 4 says what that costs and section 3 says whose decision it
 is.
-**Kernel gate:** 26 entries: 16 implemented and passing, 3 unratified and
-refusing as designed, 2 stubbed, 5 pending. Green means that and no more;
-`CONFORMANCE.md` section 4 states what a green run does not claim.
+**Kernel gate:** 26 entries: 16 implemented and passing, each seen failing under
+its negative control on 2026-10-18 (the audit in section 6); 3 unratified and
+refusing as designed, 2 stubbed, 5 pending. `CONFORMANCE.md` section 4 applies.
 
-**Resume here.** Nothing is scheduled for an agent, and every open item waits on
-the operator's words for that act. His queue is `MAINTAINER_QUEUE.md` in
+**Resume here.** The repository holds under the operator's words of 2026-10-11
+("maintain direction till map is done") and 2026-10-16, which put it fourth after
+the TMN, the one-script deploy and the COP redesign; every open item waits on his
+words for that act. His queue is `MAINTAINER_QUEUE.md` in
 `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/`, 28 items, none
-answered. The held agent work is in the same folder: Step 7's review in
-`STEP7_REVIEW.md`, twenty findings, all open, the narrowing ones first (s7:1,
-s7:6, s7:7, s7:8 and s7:14); the open rows of `REVIEW2.md`, r6:5, r6:8, r6:14,
-r6:18, r7:7 to r7:17 and the open halves of r6:4 and r6:11; an eighth review
-pass over `064fa27`'s back-outs; and six self-tests that write no telemetry.
+answered. Held agent work, same folder: Step 7's twenty findings in
+`STEP7_REVIEW.md` (s7:1, 6, 7, 8 and 14 first), `REVIEW2.md`'s open rows, an
+eighth pass over `064fa27`'s back-outs, six self-tests that write no telemetry.
 
 ---
 
 ## 0. The five questions, for the commit that carries this file
 
 `AGENTS.md` section 8 sets the handoff standard: a completed change leaves the
-next maintainer able to answer five questions. This section answers them for the
-commit that carries this file, and `CHANGELOG.md` and the worklog answer them
-for every earlier one. Two earlier answers still bind: nothing has been stamped
-since 2026-08-27, and no release baseline has changed, because PSE has no tag.
+next maintainer able to answer five questions, answered here for the commit that
+carries this file. Nothing has been stamped since 2026-08-27; PSE has no tag.
 
-**What changed and why.** Six passages were false at `064fa27`, four in this
-file: sections 1 and 5 said Step 7's review never ran, Resume here named Step
-8's open findings as the next work, and section 7 called `main` the only branch
-on `origin`. `README.md`'s Next action and `docs/THE-GAMEPLAN.md` Step 8 called
-Step 8's review owed. The harvests of 2026-10-05 and 2026-10-11 found five and
-this commit the sixth. The worklog also records two delegations no commit had.
+**What changed and why.** Five standing words typed between 2026-10-16 and
+2026-10-17 bound this repository and no commit carried them: the delegation
+naming the team parent, the ZMeta rule, the negative-control rule, the order of
+work that places PLAINSIGHT fourth, and the credentials plan. The worklog's
+2026-10-18 entry records each verbatim with what it reaches here, and this file
+states the hold and the harvests of 2026-10-15 and 2026-10-18 that found them.
 
-**Which surfaces moved.** `README.md`, `docs/THE-GAMEPLAN.md`, this file, and the
-worklog, whose first 2026-09-07 entry moved to the archive under its ten-entry
-cap. No governed artifact changed, so `CHANGELOG.md` takes no entry.
+**Which surfaces moved.** This file, the worklog, and the archive, which takes
+the worklog's 2026-09-07 rewrite entry unedited under the ten-entry cap. No
+governed artifact changed, so `CHANGELOG.md` takes no entry.
 
-**What validation ran and what passed.** The battery ran on the staged tree
-before the commit. All sixteen preflight commands passed, the two self-tests
-with 147 and 184 breaks, and both forms of `git diff --check` were clean. The
-kernel gate exited 0: 16 passed, 3 unratified and refusing, 2 stubbed, 5 pending.
+**What validation ran and what passed.** On the staged tree: sixteen preflight
+commands, the two self-tests with 147 and 184 breaks, both forms of `git diff
+--check` clean; the kernel gate at 0, 16 passed, 3 unratified, 2 stubs, 5 pending.
 
-**Whether a release baseline changed.** No. `main` gains this commit through a
-pull request.
+**Whether a release baseline changed.** No; `main` gains this commit by a pull
+request.
 
-**What remains open or deferred.** Unchanged from `064fa27`. Section 3 holds the
-operator's 29 decisions, patch 4b and the cast seal; section 4 holds every stamp,
-the 2026-09-28 follow-ups and the known defects; section 5 holds what the two
-reviews left open.
+**What remains open or deferred.** Unchanged from `bf6d5d4`, plus the credentials
+session's inventory ask after the 2026-10-19 reset. The negative-control audit ran
+on 2026-10-18; its finding for the maintainer is in its record, section 8.
 
 ---
 
@@ -343,7 +339,7 @@ open.
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Carries the removed values; unshared. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | `REVIEW.md`, `REVIEW2.md` and `STEP7_REVIEW.md` with each finding's status, `MAINTAINER_QUEUE.md` with the operator's 28 items, and `REPORTS.md`. |
-| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/`, `.../2026-09-30-plainsight-harvest-and-archive/`, `.../2026-10-05-plainsight-harvest-of-f8d7cd3b/` and `.../2026-10-11-plainsight-harvest-of-12c08cc1/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, the worktree's 751 gate-log rows merged into this checkout's log, and the two harvests that found five of the six passages this commit corrects. |
+| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/`, `.../2026-09-30-plainsight-harvest-and-archive/`, `.../2026-10-05-plainsight-harvest-of-f8d7cd3b/`, `.../2026-10-11-plainsight-harvest-of-12c08cc1/`, `.../2026-10-15-plainsight-harvest-of-b994d03c/`, `.../2026-10-18-plainsight-harvest-of-b4c6ae3c/` and `.../2026-10-18-plainsight-negative-control-audit/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, the worktree's 751 gate-log rows merged into this checkout's log, the harvests that found the six passages `bf6d5d4` corrected, the 2026-10-18 harvest record (section 5 the roll-up, section 8 the names-only credentials inventory), and the audit under which all sixteen implemented gate entries were seen failing, eight for the first time on any record. |
 | The 2026-09-09 harvest and operator checklist | `Z-ISR/_session-artifacts/2026-09-09-plainsight-harvest-and-operator-checklist/` | The verified shopping list, the identity sequence, and the pending operator acts. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The compartmentalization invariants the ISOLATED environment inherits. |
 | Measured Sherlock review, clone and image | `Z-ISR/Sherlock/sherlock/CAPABILITIES.md`, `Z-ISR/Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
@@ -373,8 +369,12 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   A green run of that entry is a finding.
 - Repo prose follows Register 1 in `CLAUDE.md` section 4; the contract is
   governed prose and the hygiene gate checks it.
-- The operator's order of work, decided 2026-09-08: Step 8 onward toward a first
-  run; the voice pass is parked.
+- His order of work: 2026-09-08, Step 8 onward toward a first run; 2026-10-16,
+  PLAINSIGHT fourth after the TMN, the deploy script and the COP redesign.
+- A check is green only when its negative control has been seen to fail, his
+  rule of 2026-10-16; a report names the control, or marks the check unproven.
+- A parent's relay binds only when it quotes his dated words, found verbatim in
+  the parent folder's records; words he types here outrank a relay that differs.
 - **The public repository is `origin`, and work reaches `main` by a pull request
   fast-forwarded after its CI passes**; the merged branches stay on `origin`. A
   push is an operator-instructed act that follows a closeout, and every step
