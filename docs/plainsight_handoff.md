@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts, 9,342 lines at `0e0c840`, are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-18. The commit that carries this file is a records commit on
-top of `bf6d5d4`, under the maintainer's words of 2026-10-18 typed in this
-session, recording the standing words of 2026-10-16 and 2026-10-17 no commit
-had carried: a delegation, two rules, his order of work, the credentials plan.
+**Date:** 2026-10-24. The commit that carries this file is a records commit on
+top of `d51ce06`, drafted and committed on the maintainer's clicks in the
+team-account session (his sentence: a click on an offered action is his
+instruction for that act), correcting the 2026-10-18 wording and the branch count.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -26,8 +26,9 @@ refusing as designed, 2 stubbed, 5 pending. `CONFORMANCE.md` section 4 applies.
 
 **Resume here.** The repository holds under the operator's words of 2026-10-11
 ("maintain direction till map is done") and 2026-10-16, which put it fourth after
-the TMN, the one-script deploy and the COP redesign; every open item waits on his
-words for that act. His queue is `MAINTAINER_QUEUE.md` in
+the TMN, the one-script deploy and the COP redesign. No parent is delegated on
+either account, his decision of 2026-10-23, so every act waits on his own words in
+the PLAINSIGHT chat, per act. His queue is `MAINTAINER_QUEUE.md` in
 `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/`, 28 items, none
 answered. Held agent work, same folder: Step 7's twenty findings in
 `STEP7_REVIEW.md` (s7:1, 6, 7, 8 and 14 first), `REVIEW2.md`'s open rows, an
@@ -41,16 +42,16 @@ eighth pass over `064fa27`'s back-outs, six self-tests that write no telemetry.
 next maintainer able to answer five questions, answered here for the commit that
 carries this file. Nothing has been stamped since 2026-08-27; PSE has no tag.
 
-**What changed and why.** Five standing words typed between 2026-10-16 and
-2026-10-17 bound this repository and no commit carried them: the delegation
-naming the team parent, the ZMeta rule, the negative-control rule, the order of
-work that places PLAINSIGHT fourth, and the credentials plan. The worklog's
-2026-10-18 entry records each verbatim with what it reaches here, and this file
-states the hold and the harvests of 2026-10-15 and 2026-10-18 that found them.
+**What changed and why.** The 2026-10-18 entry and the `d51ce06` message call his
+two recorded messages of that day typed; each of his four was his click on an
+action the session had offered, word for word its button text, a reading of his
+decision the worklog puts to him. The same entry counts 32 merged branches where
+33 exist. The worklog's 2026-10-23 entry records the harvest that found both, the
+corrections filed out of tree, and his decision of 2026-10-23 on delegation.
 
 **Which surfaces moved.** This file, the worklog, and the archive, which takes
-the worklog's 2026-09-07 rewrite entry unedited under the ten-entry cap. No
-governed artifact changed, so `CHANGELOG.md` takes no entry.
+the worklog's 2026-09-08 entry unedited under the ten-entry cap. No governed
+artifact changed, so `CHANGELOG.md` takes no entry.
 
 **What validation ran and what passed.** On the staged tree: sixteen preflight
 commands, the two self-tests with 147 and 184 breaks, both forms of `git diff
@@ -59,9 +60,8 @@ commands, the two self-tests with 147 and 184 breaks, both forms of `git diff
 **Whether a release baseline changed.** No; `main` gains this commit by a pull
 request.
 
-**What remains open or deferred.** Unchanged from `bf6d5d4`, plus the credentials
-session's inventory ask after the 2026-10-19 reset. The negative-control audit ran
-on 2026-10-18; its finding for the maintainer is in its record, section 8.
+**What remains open or deferred.** The queue, the held agent work, the audit's
+finding, the credentials inventory and the note to the new parent, each on his word.
 
 ---
 
@@ -339,7 +339,7 @@ open.
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Carries the removed values; unshared. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B: what the operator buys and stands up, and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | `REVIEW.md`, `REVIEW2.md` and `STEP7_REVIEW.md` with each finding's status, `MAINTAINER_QUEUE.md` with the operator's 28 items, and `REPORTS.md`. |
-| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/`, `.../2026-09-30-plainsight-harvest-and-archive/`, `.../2026-10-05-plainsight-harvest-of-f8d7cd3b/`, `.../2026-10-11-plainsight-harvest-of-12c08cc1/`, `.../2026-10-15-plainsight-harvest-of-b994d03c/`, `.../2026-10-18-plainsight-harvest-of-b4c6ae3c/` and `.../2026-10-18-plainsight-negative-control-audit/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, the worktree's 751 gate-log rows merged into this checkout's log, the harvests that found the six passages `bf6d5d4` corrected, the 2026-10-18 harvest record (section 5 the roll-up, section 8 the names-only credentials inventory), and the audit under which all sixteen implemented gate entries were seen failing, eight for the first time on any record. |
+| The cross-session records of the plainsight sessions | `Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/`, `.../2026-09-15-plainsight-harvest-of-c45e1214/`, `.../2026-09-20-plainsight-harvest-and-reply/`, `.../2026-09-28-plainsight-selftest-wiring-review/`, `.../2026-09-30-plainsight-harvest-and-archive/`, `.../2026-10-05-plainsight-harvest-of-f8d7cd3b/`, `.../2026-10-11-plainsight-harvest-of-12c08cc1/`, `.../2026-10-15-plainsight-harvest-of-b994d03c/`, `.../2026-10-18-plainsight-harvest-of-b4c6ae3c/`, `.../2026-10-18-plainsight-negative-control-audit/` and `.../2026-10-22-plainsight-harvest-of-dc310f2c/` | The corrected crossings classing, four fact replies to the ecosystem research sessions, the two reviews of `b378cd8`, the worktree's 751 gate-log rows merged into this checkout's log, the harvests that found the six passages `bf6d5d4` corrected, the 2026-10-18 harvest record (section 5 the roll-up, section 8 the names-only credentials inventory) with the 2026-10-20 closeout record `CLOSEOUT_2026-10-20.md` beside it, the audit under which all sixteen implemented gate entries were seen failing, eight for the first time on any record, and the 2026-10-22 harvest record whose corrections this commit carries (section 5 the roll-up, section 7 his decision on delegation). |
 | The 2026-09-09 harvest and operator checklist | `Z-ISR/_session-artifacts/2026-09-09-plainsight-harvest-and-operator-checklist/` | The verified shopping list, the identity sequence, and the pending operator acts. |
 | DMZ compartment design | `Z-ISR/_session-artifacts/2026-09-02-dmz-design/` | The compartmentalization invariants the ISOLATED environment inherits. |
 | Measured Sherlock review, clone and image | `Z-ISR/Sherlock/sherlock/CAPABILITIES.md`, `Z-ISR/Sherlock/sherlock/`, `sherlock-local:0.16.1` | Sherlock is the one audited tool that works and plugs in behind a wrapper. |
@@ -373,8 +373,8 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   PLAINSIGHT fourth after the TMN, the deploy script and the COP redesign.
 - A check is green only when its negative control has been seen to fail, his
   rule of 2026-10-16; a report names the control, or marks the check unproven.
-- A parent's relay binds only when it quotes his dated words, found verbatim in
-  the parent folder's records; words he types here outrank a relay that differs.
+- A parent's relay binds only under a delegation line he typed naming that parent,
+  and only quoting his dated words found verbatim in the parent folder's records.
 - **The public repository is `origin`, and work reaches `main` by a pull request
   fast-forwarded after its CI passes**; the merged branches stay on `origin`. A
   push is an operator-instructed act that follows a closeout, and every step
