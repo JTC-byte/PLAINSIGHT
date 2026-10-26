@@ -22,6 +22,47 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-25. The since-last-record extraction joins the closeout rule.**
+
+  **What changed.** `AGENTS.md` section 8 gains a dated amendment: before the
+  records are written, a closeout runs `tools/since_last_record.py` from the
+  stamp of the session's last record to the end of its own transcript and files
+  the output beside the closeout record, outside the tree; the session reads it
+  before writing any message of the maintainer's into a record, and a line the
+  tool marks as a click on an offered action or a selection on an offered
+  question is never written as typed. The tool is new. It classifies the
+  maintainer's lines by how they arrived (typed; a click, detected by comparing
+  the text with the actions offered in the most recent wrap-up call before it,
+  a message the app cut at 300 characters included; a selection, read from an
+  AskUserQuestion answer), lists every message sent and received verbatim, and
+  the last assistant texts. It refuses a since without a zone and an output
+  path inside the repository, and exits 2 on a file that is not a transcript.
+  Its `--self-test` plants one line of each kind and asserts the
+  classification, keeps a line equal to a superseded or a later offer typed,
+  and sees four controls refuse: a since past the last entry returns zero
+  entries, a file that is not a transcript exits 2, a since without a zone and
+  a path inside the repository are refused. The Makefile target
+  `since-last-record` runs the self-test, because the hygiene gate refuses a
+  tool no target runs; by the drafting session's decision, put to the
+  maintainer, it is not in `preflight`. It was decided on
+  the maintainer's selection of the offered option in the PLAINSIGHT session on
+  2026-10-25, after the parent folder's spin-up protocol of 2026-10-24; the tool
+  is a copy under this repository's process, not an import, adapted after the
+  playbook's click test was found never to fire here, because it looked for an
+  attachment this harness does not write.
+
+  **Which surfaces moved.** `AGENTS.md` section 8, `tools/since_last_record.py`,
+  the Makefile, this file, the worklog and its archive, and the handoff.
+
+  **What validation ran.** The tool's self-test, fourteen checks with four
+  controls seen refusing; all sixteen preflight commands; both forms of
+  `git diff --check`; the kernel gate exited 0 (16 passed, 3 unratified and
+  refusing, 2 stubbed, 5 pending).
+
+  **What did not change.** No doctrine file, stamp, schema, policy value,
+  ontology entry, corpus row, hook line, `preflight` line or CI step; the
+  extraction is not a gate and joins no battery.
+
 - **2026-10-02, morning. The fourth review's open findings and the fifth
   review's.**
 

@@ -280,6 +280,49 @@ a committed record durable. The order is the battery, then the records, then the
 commit, because a record written after the commit describes a tree that is
 already in the history.
 
+**Amended 2026-10-25: a closeout files a since-last-record extraction beside its
+record before the records are written.** The session runs
+`python tools/since_last_record.py <transcript.jsonl> <since> <out.md>`, with
+`<since>` the stamp of its last record as a moment with a zone (UTC, or an
+explicit offset; the tool refuses a moment without one, because a zone guessed
+wrong empties the span silently), to the end of its own transcript, and files
+the output beside the closeout record, outside the tree; the tool refuses an
+output path inside the repository. The file carries the maintainer's lines in
+that span, each marked by how it arrived: typed; a click on an action the
+session offered, which the tool detects by comparing the text with the actions
+offered in the most recent wrap-up call before the line, reading a message the
+app cut at 300 characters as the same click; or a selection on an offered
+question, read from the answer to an AskUserQuestion call with each question
+and the chosen option verbatim. It carries every message the session sent and
+received, verbatim, and its last assistant texts. The session reads the file
+once before writing the records: a maintainer line it shows that the records
+lack is written in, and a line marked as a click or a selection is never
+written as typed, which is the error the records of 2026-10-18 carried and the
+commit of 2026-10-24 corrected. A resumer reads the closeout record and that
+file, and re-reads the transcript only when the file shows substantive entries
+after the closeout. The file is a verbatim copy that no retention mechanism in
+this repository reaches, so a closeout does not run the tool over a span in
+which case material was discussed until `doctrine/RETENTION.md` says how such
+a copy is held. The tool's `--self-test` plants a typed line, a click, a click
+cut at 300 characters, a selection, a sent and a received message and an
+assistant text and asserts each is classified as what it is, keeps a line
+equal to a superseded or a later offer typed, and runs four controls that must
+refuse: a since past the last entry (zero entries, every section "none in the
+span"), a file that is not a transcript (exit 2), a since without a zone, and
+an output path inside the repository; a closeout that files an extraction
+names the self-test's result, per the negative-control rule of 2026-10-16. The
+extraction is a records aid rather than a gate: it joins no battery, the hook
+and CI are unchanged, the Makefile target `since-last-record` runs only the
+self-test, by the drafting session's decision the self-test runs on no
+automated path and only at closeout, and whether it joins the battery is the
+maintainer's separate decision. The rule above that a closeout commits is unchanged by it. It was
+adopted on the maintainer's selection of the offered option in the PLAINSIGHT
+session on 2026-10-25, after the parent folder's spin-up protocol of
+2026-10-24; the tool is a copy under this repository's own process, adapted
+after that playbook's click test was found never to fire here, because it
+looked for an attachment this harness does not write, and nothing is imported
+from the parent folder.
+
 The surfaces a closeout moves, in addition to whatever the change touched:
 
 | Surface | What it carries |

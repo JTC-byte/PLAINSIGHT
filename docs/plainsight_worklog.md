@@ -15,321 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-09-11, the harvest closes a gap, the fires_when fix lands, and Step 8 is drafted unratified.
-
-**Class:** B for the Step 8 policy, schema and conformance artifacts, every one
-hand-authored, drafted UNRATIFIED, and refusing until a doctrine stamp exists;
-B for quoting every `fires_when` value in `spec/layer-model.yaml` and
-regenerating `policy/violation-codes.yaml`; C for
-`tools/validate_authorization.py`, `tools/validate_retention.py`, check L-34 in
-`tools/validate_layer_model.py`, the aggregator's three new entries, the hook
-and the Makefile; A for the sibling repoint, the `.gitignore` line, the CI
-action pins and the records. No doctrine file was edited, no conclusion was
-amended, and no basis was stamped. The pushes of `4e6abda` and `38c93cc` are
-Class E, publication outside the team, executed by the agent on the operator's
-instruction for those acts, with the operator as author, per R6 as amended.
-
-### The harvest
-
-This session refreshed and harvested seven Claude app sessions across two
-accounts. One of them had never been read. Team-account session `83d21a8e` was
-worked on 2026-09-09 from 22:33 to 22:44, after that day's harvest session had
-closed at 17:40, so no record written that day could have seen it. It produced
-a cost rollup and a request for a visualizer, and it changed nothing in the
-repository.
-
-The rollup prices four shapes: the test kit at 244 dollars non-recurring and 59
-a month, three personas at 732 and 153, five personas at 1,220 and 199, and six
-personas at 1,464 and 222. With the unpriced items estimated, five personas is
-about 1,720 non-recurring and 205 a month. The rollup also puts the SS-14 item
-6 fork at about 1,040 dollars in year one.
-
-The desktop app's session metadata has moved. It now sits under
-`AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude-code-sessions\`,
-which is where the next harvest looks first.
-
-### The fires_when fix, and the hole it exposed
-
-`38c93cc` quotes all 57 `fires_when` values in `spec/layer-model.yaml`,
-regenerates `policy/violation-codes.yaml`, and adds check L-34,
-`CODE_ENTRY_KEYS`, to `tools/validate_layer_model.py`. The numstat is 25 added
-and 17 removed in the policy file, 57 and 57 in the layer model, and 55 and 1
-in the validator, which carries the check and the fixture correction together.
-
-Two prior sessions recorded that fix as green. It was not.
-`tools/validate_layer_model.py --self-test` exited 1: the `dead_code` fixture
-appended a code entry with no `fires_when`, so L-34 fired alongside
-`LM_CODE_UNREFERENCED` and broke that row's `expect_only`. This session gave
-the fixture a `fires_when` value, and the self-test now reports 62 deliberate
-breaks, 62 refused, 50 by the expected code alone, 12 cascading, and 44
-distinct codes exercised.
-
-The reason two sessions missed it is worth recording, because it is a hole in
-the gate battery rather than a lapse of attention. No gate in the repository
-runs that self-test. `tools/validate_conformance.py` invokes the validator with
-`--quiet`, `.githooks/pre-commit` runs seven plain commands, `make preflight`
-runs eight, and `.github/workflows/ci.yml` runs one self-test, hygiene's. Only
-`make validate-layer-model` runs it. A self-test that no gate runs is
-documentation rather than a mechanism, which is design gate 1 failing in the
-place it is hardest to see, inside a tool whose other modes are green.
-
-### The sibling repoint, the ignore line, and the action pins
-
-`../zisr-recon/` ceased to exist on 2026-09-10, when four producer repositories
-were consolidated into `../zisr-producers/`. PLAINSIGHT was not in scope and
-did not move. Nineteen citations across eight files named the old path.
-`ff016af` repoints the three that describe the current tree, `README.md` and
-two `AGENTS.md` pointers, to `../zisr-producers/recon/`. The dated measurements
-in `doctrine/` and `docs/` and the worklog archive keep the old path, because
-rewriting a record falsifies what was true when it was written.
-
-`tools/validate_hygiene.py` cannot see this class of breakage. Its
-`PATH_REF_RE` is anchored to in-repo prefixes and skips sibling paths by
-design, so a sibling citation that moves is invisible to the whole battery. The
-missing mechanism is the real item, and `ff016af` does not close it.
-
-The same commit carries three smaller corrections. `LOCAL_*.md` is now in
-`.gitignore`, because the operator's account and provisioning checklist lives
-in the working tree and carries operator identity that no existing rule
-covered. CI pinned `actions/checkout@v4` and `actions/setup-python@v5`, both of
-which run on Node 20, and GitHub removes Node 20 from the runners on
-2026-09-16; they are now v5 and v6. `AGENTS.md` said the pre-commit hook runs
-six commands, and it runs seven. `ff016af` is one commit ahead of `origin/main`
-and its push has not been instructed.
-
-### Step 8, eight artifacts, all of them refusing
-
-Step 8 compiles doctrine to policy. It is drafted, every artifact is marked
-UNRATIFIED, and every artifact refuses until a doctrine stamp exists. Eight
-artifacts, 9,342 lines:
-
-| Path | Lines |
-|---|---|
-| `policy/subject-authorization.yaml` | 1,403 |
-| `policy/retention.yaml` | 1,617 |
-| `schema/subject-authorization.schema.json` | 393 |
-| `conformance/gate/decisions.jsonl` | 21 |
-| `conformance/gate/README.md` | 548 |
-| `conformance/retention/shred-roundtrip.yaml` | 542 |
-| `tools/validate_authorization.py` | 2,713 |
-| `tools/validate_retention.py` | 2,105 |
-
-Both policy files are hand-authored. `tools/generate_pse.py` owns exactly five
-outputs and neither of these is among them, so each file carries a header
-saying so; a policy file that looks generated and is not is the kind of thing a
-later session regenerates over. `tools/validate_retention.py` replaces the
-D-001 stub.
-
-The kernel gate now holds sixteen entries: eight implemented, three unratified,
-five pending. Implemented are doctrine, hygiene, layer-model, cast, telemetry,
-retention-repo-scan, schema and ontology. Unratified are authorization,
-retention-policy and retention-shred-roundtrip. Pending are
-authorization-dispatch-paths, authorization-disjointness, retention-finding,
-divergence-register and connector-conformance.
-
-`retention-repo-scan` moved out of STUB. It enforces three of RT-15's four
-parts. The code RT-15 names, `FIXTURE_CONTAINS_LIVE_SELECTOR`, is not in the
-wire vocabulary, and git history is out of reach of any commit-time check, so
-the fourth part stays open and is recorded as open rather than counted as done.
-
-### Step 8's done-when is not met
-
-`docs/THE-GAMEPLAN.md` Step 8's done-when asks that
-`tools/validate_authorization.py --fixtures` and
-`tools/validate_retention.py --policy --shred-roundtrip` be green, including
-the check that an unratified criterion refuses rather than permits. All three
-modes exit 1. Step 8 is not done by its own criterion, and nothing in this
-entry writes around that.
-
-Every refusal is the designed one. `doctrine/DOCTRINE_STATUS.md` carries no
-dated row for any of the eight artifacts, so the gates that read the stamp
-table find nothing to permit on and refuse. That is the posture the design
-asks for rather than a defect in the artifacts. The one part that is green is
-the part the criterion names: a criterion absent from the stamp table refuses,
-a missing artifact refuses, and a fully stamped state permits, exercised both
-ways by `--self-test`. Closing the done-when is the operator's stamp, and no
-agent edit reaches it.
-
-### The kernel gate is red on one check
-
-`tools/validate_conformance.py --kernel-gate` is red, on `retention-repo-scan`
-alone. `tools/validate_retention.py --repo-scan` refuses on two filled handle
-selectors that predate Step 8: a worked example at line 87 of
-`docs/PLAINSIGHT-FOUNDATION.md`, introduced in `1abb354`, which is a rank-7
-record of intent, and a designed value at line 894 of
-`tools/validate_ontology.py`, introduced in `f4e00e1`, inside that validator's
-own negative fixture. Both are true on shape and false in
-substance. `docs/PLAINSIGHT-design.md` and `docs/THE-GAMEPLAN.md` already carry
-`repo_scan.document_exemptions` rows of exactly this kind, and
-`docs/PLAINSIGHT-FOUNDATION.md` does not.
-
-Adding those two rows was proposed and refuted. The proposal cited a rank-1
-document above its lane, and narrowing an RT-15 scan is a reach decision, which
-belongs to the operator. The question is open at this closeout. The pre-commit
-hook is unaffected, because it runs the same mode over the index rather than
-over the working tree.
-
-### The decision register
-
-66 unratified placeholders were compiled from the stack. They collapse to 51
-distinct decisions, because 15 entries are second or third copies of a question
-asked elsewhere. Twenty-two of the 51 are grounded in the stack's own
-documentation. Twenty-nine are the operator's, and 25 of those arrive with at
-least one option already foreclosed.
-
-The grading was adversarial by construction, and it needed to be. Eight lenses
-claimed grounded on 45 entries and the refuters overturned 15, a 33 per cent
-over-report. Every overturn ran one direction: a lens produced a real rank-1
-quote that settled a neighbouring question, or eliminated two options and
-declared the survivor grounded. The register is at
-`Z-ISR/_session-artifacts/2026-09-11-plainsight-step8/DECISION_REGISTER.md`,
-outside the repository.
-
-### Defects found and not fixed
-
-- **`tools/validate_conformance.py`, lines 137 to 139.** The comment says "six
-  of the nine paths" where the tool prints seven refusals.
-- **`schema/subject-authorization.schema.json`, `evidence_ref`.** It admits
-  only the three pre-R4 evidence kinds, which is what SA-U2 and SA-U11 both
-  land on.
-- **SA-U16's `decided_at_step` placement.** It is not wire-legal. Line 607 of
-  `spec/layer-model.yaml` requires the field on every REFUSED.
-
-### Patch 4b no longer applies
-
-`patch-4b-obligation-drafts-CLASS-F.post-patch-3.patch` does not apply. `git
-apply --check` exits 1 on `doctrine/DOCTRINE_STATUS.md`. The cause is a
-fifteen-minute race: the patch was regenerated at 2026-09-08 18:40:19 and
-`4e6abda` was committed at 18:55:58, adding three rows to the table the patch
-anchors on. `git apply --3way` applies the CREDENTIAL_LIFECYCLE.md and
-EGRESS.md hunks cleanly and the DOCTRINE_STATUS.md hunk with conflicts, and
-union-resolving that one table conflict yields 59 criteria. Line 192 of
-`docs/plainsight_handoff.md` asserted that the patch applies, which this
-session measured as false.
-
-### The gate battery at the closeout
-
-Green: doctrine at 58 criteria, hygiene and its self-test, layer-model and its
-self-test, ontology and its self-test, cast and its self-test, the validator's
-self-test, `tools/validate.py --kernel` with 44 must-pass clean and 98
-must-fail refused, `tools/generate_pse.py --check`, `tools/build_corpus.py`
-with `--check`, the gate-log tests, both forms of `git diff --check`, and the
-pre-commit hook.
-
-Red: `tools/validate_conformance.py --kernel-gate`, on `retention-repo-scan`
-alone, for the reason given above. The battery is not green at this closeout,
-and calling it green would hide the one decision this session leaves open.
-
-Doctrine stands at 58 criteria, every conclusion recorded and every basis
-unstamped, unchanged this session.
-
-### The archive
-
-The worklog was at ten live entries, so the 2026-08-27 entry titled "the
-doctrine gates. Written before the first commit." moved to
-`docs/plainsight_worklog_archive.md` without edit, after the five already
-there, and this entry took its place. Six entries are archived; ten are live.
-
-### Agent involvement, stated precisely
-
-The Step 8 artifacts were written by subagents in a workflow. The parent
-session ran every gate itself. The parent also did the harvest, the `dead_code`
-fixture fix, the two commits and the two pushes, the sibling repoint, the
-record edits and this entry.
-
-The grading in the decision register ran eight lenses and eight refuters. Four
-of the refuters failed on exhausted Fable usage credits and were re-run on
-Opus, and the re-run is the reason the grading can be trusted: before it, the
-same groups reported 31 entries grounded; after it, 17. A refuter that cannot
-run returns the same silence as a refuter that found nothing, which is the
-failure mode the re-run caught.
-
-Step 8 has had no adversarial review. No lens has been run over the eight
-artifacts, and nothing in this entry says one has.
-
-**Refused this session:** nothing collected, no connector executed, no platform
-touched, no doctrine file edited, no conclusion amended or stamped, patch 4b
-not applied, no generated file edited by hand, and no `document_exemptions` row
-added to narrow the RT-15 scan.
-
-**Not done:** Step 8's done-when, which only the operator's stamp reaches; the
-adversarial review of Step 8, which has not happened; the three defects above;
-the patch 4b decision; the repo-scan exemption decision; the push of `ff016af`;
-the five pending kernel gate entries; `doctrine/RETENTION_LEDGER.md` and
-`doctrine/DISCLOSURE.md`; `tools/validate_ontology.py --corpus`; a gate that
-runs the layer-model self-test; a check that sees a moved sibling path; every
-basis stamp.
-
-**Next:** the review Step 8 is owed, on the 2026-09-04 method, which is lenses
-that run the mechanism and quote the result, each paired with a refuter. Then
-Step 9, the divergence register and its validator.
-
-### Postscript, 2026-09-12: the pre-push review, the push, and a CI failure nobody had looked at
-
-The operator asked for a full closeout checkpoint: review what is about to be
-pushed, push it, then record everything. This postscript is the record, written
-after the push because the push is part of what it records.
-
-**The review.** Six lenses over `ff016af` and `0e0c840` before either left the
-machine, each finding paired with a refuter whose default was REFUTED. Fourteen
-agents. The lenses were permanence and disclosure, Class F by effect, record
-accuracy re-measured from scratch, commit messages against their commits, what
-CI would do, and reversibility. Five findings survived refutation, all MINOR,
-none a blocker.
-
-Two lenses returned clean. The permanence lens found no selector value, no
-credential, no absolute machine path and no personal datum in either commit. The
-Class F lens answered the question AGENTS.md section 8 raises, whether a closeout
-may carry these artifacts at all: it may, because section 3 rule 2 defines Class
-F by effect and nothing can be reached after these commits that could not be
-reached before. No doctrine file moved, no stamp was added, the authorization
-gate refuses every run, and `retention-repo-scan` became stricter rather than
-looser. Compiling doctrine into refusing policy narrows reach.
-
-**Four corrections landed as `132eef0` before the push.** The handoff said five
-of SS-14 item 6's eight artifacts exist where seven do, an error inherited from
-the previous handoff's counting basis rather than introduced here. The
-over-report statistic read 44 claimed and 14 overturned across three records
-where the grading artifact measures 45 and 15, a rate of 33 per cent rather than
-32; one bad intermediate in the session's fact sheet reached all three records,
-and its arithmetic closed against a correct survivor count, which is why it read
-as sound. The sibling citation count was eighteen and is nineteen. The worklog
-and the changelog cited different lines for the same superseded sentence.
-
-The fifth finding is a defect rather than a figure and is recorded in the
-handoff's known gaps: bare `--repo-scan` catches `UnicodeDecodeError` and
-continues, so it silently skips any tracked file it cannot decode as UTF-8, and
-its own disclosure block does not name that gap. The count is zero today and the
-staged mode the hook runs does not share it.
-
-**The push.** `38c93cc..132eef0`, three commits, on the operator's instruction.
-`origin/main` and `main` agree. Every commit is authored to the operator and the
-history carries no `Co-Authored-By` trailer, which CI refuses.
-
-**What the push found, which is the part worth keeping.** CI had already failed
-on `4e6abda` and on `38c93cc`, both pushed earlier the same day, and nobody had
-looked. The cause is not the red kernel gate this session documented at length.
-It is `DEPENDENCY_MISSING` on `tools/validate.py`: Step 7 introduced a
-`jsonschema` import and the workflow's install step names only PyYAML, so that
-one check has failed on every run since Step 7 landed. `AGENTS.md` stated the
-dependency set as PyYAML alone, so the document and the workflow agreed with each
-other and both were wrong.
-
-The lesson is narrow and worth stating plainly. This session verified the battery
-locally more thoroughly than any before it, ran a six-lens review before pushing,
-and still pushed twice into a red build, because local green and CI green are
-different measurements and only one of them was taken. A CI-fetching lens was in
-the review and reported what the workflow would do from a fresh clone, which is
-how the gap surfaced at all, one push too late. Check the runs after a push, not
-only the battery before one.
-
-**Corrected here:** the workflow installs `jsonschema`, and `AGENTS.md` names
-both dependencies. The kernel gate stays red on `retention-repo-scan` by design,
-so this commit does not turn CI green; it removes a failure that was never
-intended and leaves the one that is disclosed.
-
----
-
 ## 2026-09-28, every validator self-test joins every automated path, and CI stops skipping the steps after a red one.
 
 **Class:** B and C, and not F. The corrected count in the docstring of
@@ -2457,3 +2142,163 @@ the session he starts on his word "start the credentials session"; the message
 to the new team parent correcting what the 2026-10-18 reports told the personal
 parent, a send on his word if he wants it sent; the 33 merged branches on `origin` and in this checkout, deleted only on
 his words naming that act.
+
+---
+
+## 2026-10-25, the since-last-record extraction joins the closeout rule, and pull request 34 is merged, under the maintainer's selections of 2026-10-25.
+
+**Class:** C, the highest the change touches: `tools/since_last_record.py`, a
+new tool, and the Makefile target `since-last-record` that runs its self-test.
+Under it, the dated amendment to `AGENTS.md` section 8 is governed prose at
+rank 4, and `CHANGELOG.md`, which takes an entry because a governed file
+changed, the handoff, this record and its archive are Class A. The change is
+not Class F under rule 2 of `AGENTS.md` section 3: it reads only the session's
+own transcript, adds no connector, selector, allowlist, retention value or
+egress path, and writes on the same machine outside the tree, which the tool
+refuses to cross. No runtime exists, so the Class C design-record rule has
+nothing to move. No doctrine, spec, schema, policy, ontology, corpus, hook or
+CI line changed, and `preflight` is unchanged.
+
+**The words this entry acts on.** The maintainer typed in the team-account
+PLAINSIGHT session at 13:36:04 EDT on 2026-10-25: "go ahead and give me those
+interactive selections so I can decide these for you". Asked the two decisions
+as selections, he chose at 13:36:19 "Merge now (Recommended)" for pull request
+34 and "Add to AGENTS.md (Recommended)" for the extraction, the second option
+reading: "A rank-4 change on your stamp: draft a records commit adding the
+extraction step (run the script from the last record's stamp, file the output
+beside the closeout record, read its lines before writing any message of yours
+as typed). Drafted and staged for your separate commit word; no agent needed."
+His typed sentence asked for the selections as his way of deciding, which is
+the ground this entry rests on; the session's reading, put to him and not
+settled here, is that a selection of an offered option is his instruction for
+that act in the way his sentence of 01:30:58 on 2026-10-24 made a click one.
+This record says selection, never typed. Behind it, information rather than
+instruction, the team parent's relay of 13:32 quoting his words typed in the
+parent's chat at 13:31:34 ("go ahead and instruct the other sessions to do the
+above mentioned work") and 13:19:05 ("we have 15 percent usage left so lets get
+done what we can before we cap out the weekly usage since the refresh is
+tomorrow"), and its earlier relay of 01:48 on 2026-10-24 carrying his 01:43:38
+words that asked every repository session to add the extraction to its
+closeout. The commit of this draft is his separate word for that act, and the
+paragraph after the battery records it when it is given.
+
+**The merge, 13:36:54 to 13:39:50 EDT on 2026-10-25.** After a fetch, with
+`main` equal to `origin/main` at `d51ce06` and the records branch at `37dbcee`,
+`main` was fast-forwarded to `37dbcee` and pushed at 13:36:56; pull request 34
+reads merged at 13:36:57 with `37dbcee` as its merge commit; the CI run on
+`main` succeeded on all twenty steps, read step by step at 13:39. The branch
+docs/records-2026-10-23 stays on `origin` like the 33 before it, so `origin`
+holds 35 heads, `main` and 34 merged branches, and this checkout 35 local
+branches each equal to its origin ref. The team parent had one completion line.
+
+**The amendment.** `AGENTS.md` section 8 now says, in a dated paragraph after
+the rule that a closeout runs the battery, updates the records and commits,
+that a closeout first runs `tools/since_last_record.py` from the stamp of its
+last record (a moment with a zone) to the end of its own transcript and files
+the output beside the closeout record, outside the tree, which the tool
+enforces by refusing a path inside the repository; that the file marks each of
+the maintainer's lines as typed, as a click on an action offered in the most
+recent wrap-up call before it, or as a selection on an offered question, and
+carries every message sent and received and the last assistant texts; that
+the session reads it once before writing the records, writes in any
+maintainer line the records lack, and never writes a click or a selection as
+typed; that a resumer reads the record and the file and re-reads the
+transcript only when the file shows substantive entries after the closeout;
+that the file is a verbatim copy no retention mechanism reaches, so a closeout
+does not run it over a span in which case material was discussed until
+`doctrine/RETENTION.md` says how such a copy is held; and that the extraction
+is a records aid, not a gate, whose self-test runs at closeout through the
+Makefile target and on no automated path, by this session's decision put to
+him, with its joining the battery his separate decision. The rule that a
+closeout commits is unchanged.
+
+**The tool.** `tools/since_last_record.py` is a copy of the parent folder's
+playbook of 2026-10-24 under this repository's own process, adapted after a
+measured gap: in this harness a click on an offered action arrives as an
+ordinary user record (origin human, promptSource sdk) with no attachment that
+names it a click, and a question's answer arrives as a tool result, so the
+reference's click test never fired here and marked his commit word of 01:30:58
+on 2026-10-24 as typed. The copy detects a click by comparing the text with the
+actions offered in the most recent wrap-up call before the line, reads a
+message the app cut at 300 characters as the same click, and reads an answer
+to an AskUserQuestion call as a selection on an offered question, printed with
+the result text that carries each question and the chosen option verbatim. It
+refuses a since without a zone, because a zone guessed wrong empties the span
+silently, and an output path inside the repository; it exits 2 on a file that
+is not a transcript and 3 when the output cannot be written. Its `--self-test`
+writes a synthetic transcript under a temporary directory and runs fourteen
+checks: a typed line, a click, a cut click, a selection, a sent message, a
+received message and an assistant text each classified as what it is; a typed
+line equal to an offer from a superseded wrap-up call, and one equal to an
+offer made after it, each left typed; no click or selection written as typed;
+and four controls seen refusing, a since past the last entry (zero entries,
+four sections saying "none in the span"), a file that is not a transcript, a
+since without a zone, and an output path inside the repository, with nothing
+written there. The self-test ran at 14:05 on 2026-10-25: fourteen checks ok. A
+live run at 14:03 over this session's transcript from the stamp of its 2026-10-24
+closeout read two typed lines, one selection (the 13:36:19 answer), two
+messages sent and one received, which matches the transcript read by hand; the
+first version of the tool, reviewed at 13:51, had dropped the selection, which
+is why that class of input was added. The hygiene gate refused the first
+battery run of this draft at 13:45 (HYGIENE_TOOL_NOT_IN_ANY_GATE: a tool no
+Makefile target runs), so the target `since-last-record` runs the self-test;
+the extraction itself takes a transcript and is not a gate, and by this
+session's decision, put to him with the commit word, the self-test runs on no
+automated path, which is stated in the amendment. The
+parent folder's playbook README carries a dated note of 14:32 on 2026-10-24
+that it was corrected the same way after this session reported the gap.
+Removing the offered-action comparison fails the click checks; removing the
+tool-result branch fails the selection check; widening the comparison past the
+most recent wrap-up call fails the superseded-offer check; removing the since
+filter, the record check, the zone check or the path check fails its control.
+
+**The handoff** is brought level with this entry at its 400-line cap: the Date
+paragraph names this commit on `37dbcee` and the merge that put `main` there,
+Resume here opens with the extraction as the resumer's first act, section 0
+describes this commit in two fewer lines, and the cross-session records row
+says `37dbcee` carries the 2026-10-22 record's corrections. Nothing else moved.
+`docs/THE-GAMEPLAN.md`, the artifact register, is a rank-7 record of intent
+moved in unchanged and takes no row; the tool is cited by a path that exists.
+
+**Agents.** The main loop ran on Mythos 5.1, his model choice for the session,
+and drafted the tool, the amendment and the records. Two agents then read the
+staged diff, one at a time, read only: an independent Opus 5.5 review at high
+effort returned fix_first with one blocker (the first tool dropped question
+answers, so his two selections of this very day were invisible to it), four
+majors (a since without a zone emptied the span silently; the comparison
+reached every earlier wrap-up call; nothing enforced "outside the tree"; this
+paragraph was missing) and eight minors; a Sonnet 5.5 factual check at high
+effort found 36 of 38 claims true and one false (a hard-coded count in the
+self-test's last line). Every finding was applied before the battery ran on
+the final text. The option he selected said "no agent needed"; the two review
+legs ran under the standing rule that two models look at every merge-bound
+change, a departure from that text put to him here with the commit word.
+
+**Battery, run on the staged tree at 13:47 EDT on 2026-10-25 and again on the
+final text of this entry, with the same results.** The first run at 13:45 was
+refused by the hygiene gate on the new tool (no Makefile target ran it), and the
+target `since-last-record` answered it. On the runs after it: all sixteen
+preflight commands passed, the authorization self-test with 147 breaks and the
+retention self-test with 184, and both forms of `git diff --check` were clean;
+the hygiene gate, one of the sixteen, passed on this entry, the amendment, the
+changelog entry and the handoff at their caps, and its self-test planted its
+four refusals and saw each fire. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending, the gate's
+own count; the audit of 2026-10-18 saw each of the sixteen fail under its
+control, and no control was re-run here. The new tool's self-test ran apart
+from the battery: fourteen checks ok, four controls seen refusing. The commit
+waits on his word for that act, authored as the maintainer with no
+Co-Authored-By trailer, which CI refuses, whatever the app's reminder asks.
+
+**Open.** The 2026-10-23 entry's item that the new team parent be told what
+the 2026-10-18 reports got wrong closed on 2026-10-23 at 20:44 and 2026-10-24
+at 14:31, when this session's reports carried both corrections to it. Unchanged
+from `37dbcee` otherwise: the 28 queue items, none answered; plan
+item 0.7, trimmed to its synthesis step; the Step 7 fixes and the rest of the
+held agent work the handoff's Resume here lists; the aggregator finding the
+negative-control audit raised, in section 8 of its record; the credentials
+inventory, names only, for the session he starts on his word; the 34 merged
+branches on `origin` and in this checkout, deleted only on his words naming
+that act. About 15 percent of the weekly usage was left at 13:19 on
+2026-10-25, with the reset on 2026-10-26 at noon; the session holds after this
+commit.

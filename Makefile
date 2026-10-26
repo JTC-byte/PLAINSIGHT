@@ -1,4 +1,4 @@
-.PHONY: help validate-doctrine validate-hygiene validate-layer-model validate-ontology validate-cast validate-authorization validate-retention generate validate-schema test validate-kernel preflight gate-telemetry
+.PHONY: help validate-doctrine validate-hygiene validate-layer-model validate-ontology validate-cast validate-authorization validate-retention generate validate-schema test validate-kernel preflight gate-telemetry since-last-record
 
 # The named gates. A gate is a stable token rather than a hand-copied command
 # string, so a new check joins the battery in one place. That place is
@@ -32,6 +32,7 @@ help:
 	@echo "validate-kernel       the full battery, including what is not built yet"
 	@echo "preflight             what must be green before a commit"
 	@echo "gate-telemetry        what each gate has been doing, for adjudication"
+	@echo "since-last-record     the closeout's delta-file tool: its self-test (the extraction takes arguments; see the target)"
 	@echo ""
 	@python tools/validate_conformance.py --list
 
@@ -166,3 +167,16 @@ preflight:
 # fires gets ignored rather than fixed. Thresholds are in doctrine/HYGIENE.md.
 gate-telemetry:
 	python tools/gate_log.py --summary
+
+# The closeout's delta file, AGENTS.md section 8 as amended 2026-10-25. Not a
+# gate and not in preflight, by this session's decision put to the maintainer:
+# the extraction reads a session transcript the closeout names, so this target
+# runs the tool's self-test, which plants one line of each kind (typed, a click
+# on an offered action, a click cut at 300 characters, a selection on an
+# offered question, a message sent, a message received, an assistant text) and
+# sees four controls refuse (a since past the last entry reads zero entries; a
+# file that is not a transcript exits 2; a since without a zone and an output
+# path inside the repository are refused). The extraction itself:
+#   python tools/since_last_record.py <transcript.jsonl> <since with a zone | all> <out.md>
+since-last-record:
+	python tools/since_last_record.py --self-test
