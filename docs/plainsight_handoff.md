@@ -11,10 +11,10 @@ which is the failure mode this cap prevents.
 `0e0c840`. Eight Step 8 artifacts, 9,342 lines at `0e0c840`, are in the tree, every
 one drafted UNRATIFIED and refusing until stamped, which is why Step 8 does not
 meet its own done-when. Section 1 states that plainly.
-**Date:** 2026-10-25. The commit that carries this file sits on `37dbcee`, which
-`main` reached by the fast-forward merge of pull request 34 at 13:36 that day,
-and adds the since-last-record extraction to the closeout rule (`AGENTS.md`
-section 8) with `tools/since_last_record.py`, on the maintainer's selection here.
+**Date:** 2026-10-26. `main` == `origin/main` == `12e9d55`, which added the
+since-last-record extraction to the closeout rule (`AGENTS.md` section 8) with
+`tools/since_last_record.py`, pushed 19:35 with CI green on every step; the
+commit that carries this file is a Class A records commit on top of it.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
