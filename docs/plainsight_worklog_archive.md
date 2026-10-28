@@ -2565,3 +2565,95 @@ are safe once that session is archived and the telemetry is kept or its loss is
 accepted.
 
 ---
+
+## 2026-09-30, the stale documentation the handoff and the 2026-09-30 harvest listed is corrected, and the records catch up with the worktree.
+
+**Class:** A. `README.md`, `docs/THE-GAMEPLAN.md`, the handoff, this entry, and
+the oldest live entry moved to the archive unedited. No doctrine file, stamp,
+schema, policy file, generated artifact, corpus, fixture, validator, hook or
+workflow changed, so `CHANGELOG.md` carries no entry.
+
+**Agent involvement.** An agent in a personal-account PLAINSIGHT session drafted
+every edit in this commit and ran the battery. The personal-account
+parent-folder session dispatched the work with the operator's concurrence of
+2026-09-30 17:50 quoted: "I concur with all your recommendations, so lets do
+that first. Lets make sure everything is clean and up to date across the board
+and then we will hold and discuss up next priorities." The dispatch named this
+bundle and said the commit waits on the operator's word in this session, per
+`CLAUDE.md` section 5. The operator gave it in this session on 2026-09-30,
+answering "Commit and push" when asked whether to commit the staged bundle as
+the operator with no agent trailer, push it to GitHub `main`, and read every CI
+step. The agent executes the commit and the push on that instruction.
+
+**What changed.**
+
+- `README.md`. The status paragraph stops saying no schema and no policy pack
+  exist. Both landed in `4e6abda` and `0e0c840`, and the false sentence survived
+  the `ff016af` edit. The Next action section described patch 2 and Step 7 as
+  future work, and both are done. It now names the next work in outline and
+  points at the handoff, which is rewritten at every closeout, so the section
+  restates less that can go stale. The closing paragraph called the repo scan a
+  stub tracked as D-001, which Step 8 closed. The ZISR COP pointer named
+  `../ZISR COP/`, which no longer exists beside this repository; the sibling is
+  `../zisr-cop/`. The 2026-09-29 handoff listed the first two of these; the last
+  two were found while correcting them.
+- `docs/THE-GAMEPLAN.md`. Step 8 was tagged "BLOCKED on Step 3 ratification"
+  although it was built in `0e0c840` on 2026-09-11. The tag now says built and
+  unratified, and that the done-when is unmet by design.
+- `docs/plainsight_handoff.md`. Its last line carried the app's
+  session-metadata directory, a machine path, in a public file, and now says the
+  path stays out. The second Resume path gains the `Z-ISR/` prefix every other
+  citation uses. Section 4 loses the README gap and the worktree gap, and its
+  sibling-citation gap names the two doctrine citations below. Section 6 names
+  the 2026-09-20 and 2026-09-30 records, and its Sherlock row, which cited
+  `../Sherlock/`, now names `Z-ISR/Sherlock/`. The file is 399 lines against its
+  cap of 400.
+
+**Facts this tree did not know, measured outside it.**
+
+- On 2026-09-14 the repository moved with its siblings under a new parent folder
+  by a same-volume rename, with git intact at `4a5c788`. No tracked file recorded
+  the move until this entry. The sibling citations to `../ZMeta/` and
+  `../zisr-producers/` resolve from the new place. Others did not. The
+  README's ZISR COP pointer and the handoff's Sherlock row are repointed in this
+  commit. `doctrine/RETENTION.md:381` and `doctrine/CREDENTIAL_LIFECYCLE.md:138`
+  still cite `../ZISR COP/docs/OPERATIONAL_CONTRACT.md`, which exists at
+  `../zisr-cop/docs/OPERATIONAL_CONTRACT.md`. Repointing them is a rank-1 edit
+  outside this Class A commit, so they stay open in the handoff's section 4.
+- On 2026-09-30 a team-account session harvested and archived two PLAINSIGHT
+  sessions, one of them the session that built `b378cd8` in the worktree
+  `claude/hopeful-maxwell-69bb46`. On the
+  operator's answers in that session, the worktree's 751 gate-log records,
+  spanning 2026-09-28T19:58:06Z to 2026-09-29T21:15:28Z, were appended byte for
+  byte to this checkout's ignored `.gate-log/gates.jsonl`, which went from 3,188
+  records to 3,939. The worktree was then removed and its branch deleted.
+  `b378cd8` is on `main`, so nothing in git was lost. The log has no field naming
+  the checkout that wrote a row, so this entry is the repository's record that
+  those 751 rows came from the worktree. They include the self-test wiring's
+  deliberate-break runs, and that session measured how they move the refusal
+  rates `tools/gate_log.py --summary` reports: authorization from 147 runs at 82
+  per cent to 220 at 65 per cent, and `retention-repo-scan` from 101 at 76 per
+  cent to 136 at 72 per cent. The overdue telemetry review reads its rates with
+  that in mind. The record is
+  `Z-ISR/_session-artifacts/2026-09-30-plainsight-harvest-and-archive/HARVEST.md`.
+- On 2026-09-28 and again on 2026-09-30 the operator named a parent-folder
+  session, one on each of the operator's two accounts, whose relayed decision
+  quoting the operator's dated concurrence is the operator's word for this
+  repository. Neither delegation has yet carried an act on its own.
+
+**Battery.** All fourteen preflight commands passed on the staged tree, among
+them the six validator self-tests and the repo scan over the index. Both forms
+of `git diff --check` were clean. The kernel gate was red on
+`retention-repo-scan` alone, with 14 implemented, 1 failed, 3 unratified and
+refusing, 2 stubbed and 5 pending, the disclosed state.
+
+**Not done, and held.** The operator held the rest for a priorities discussion:
+the adversarial review Step 8 is owed, the repo-scan exemption and the cast
+seal, the shared pin-of-record reader, and the overdue telemetry review. Whether
+GitHub still serves the pre-rewrite initial commit by hash has not been
+re-measured.
+
+**Refused this session:** nothing collected, no connector executed, no platform
+touched, no doctrine landed.
+
+---

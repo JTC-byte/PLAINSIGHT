@@ -9,13 +9,14 @@ which is the failure mode this cap prevents.
 
 **Wave:** 0 committed, Step 7 committed in `4e6abda`, Step 8 built in
 `0e0c840` and still UNRATIFIED, and the build night of 2026-10-28 committed in
-this commit: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
+`8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-10-28. The commit that carries this file sits on `41badf7`,
-which was `main` == `origin/main` when the night began; it carries about a
-hundred files and 26,000 lines, built under the maintainer's typed release of
-01:47 that day and reviewed adversarially phase by phase. It is Class C.
+**Date:** 2026-10-28. `main` == `origin/main` == `8583132`, the build night's
+commit (106 files, built under the maintainer's typed release of 01:47 and
+reviewed adversarially phase by phase, Class C), merged by fast-forward on his
+click at 15:00:34 with CI green on every step; the commit that carries this
+file is a Class A records commit on top of it.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -41,33 +42,37 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Five pieces of the gameplan, each built because his
-release of 2026-10-28 asked for everything that needs nothing from him: the
-divergence register and its validator (Step 9), the connector manifest schema,
-its validator and the harness fixture schema (Step 12 part one), the subject
-guard and the dispatch-path check (Step 10, drafted), the Sherlock connector on
-hand-built cassettes with the rung-4 harness (Step 12 part two), and the
-application's store, ingest, server and social web view (the first slice of
-Step 13), and on his click of the same day at 12:09 the three pieces that
-cleared the two designed refusals and wired the application in (section 3). Every agent
-reading is recorded in the artifact that carries it and awaits him.
+**What changed and why.** A worklog entry recording the build night's commit,
+push, merge and three CI runs, which the night's own commit could not know,
+and this file's header and section 0. The night's commit, `8583132`, carried
+five pieces of the gameplan, each built because his release of 2026-10-28
+asked for everything that needs nothing from him: the divergence register and
+its validator (Step 9), the connector manifest schema, its validator and the
+harness fixture schema (Step 12 part one), the subject guard and the
+dispatch-path check (Step 10, drafted), the Sherlock connector on hand-built
+cassettes with the rung-4 harness (Step 12 part two), the application's store,
+ingest, server and social web view (the first slice of Step 13), and on his
+click of 12:09 the three pieces that cleared the two designed refusals and
+wired the application in (section 3). Every agent reading is recorded in the
+artifact that carries it and awaits him.
 
-**Which surfaces moved.** `spec/`, `schema/`, `conformance/connector-harness/`,
+**Which surfaces moved.** In this commit: the worklog and its archive, and this
+file. In `8583132`: `spec/`, `schema/`, `conformance/connector-harness/`,
 `runner/`, `connectors/`, `app/`, eight tools, the Makefile, the hook, CI,
 `.gitattributes`, `AGENTS.md` section 5, `CONFORMANCE.md` sections 1 to 4,
 `docs/PLAINSIGHT-design.md` section 9 (appended, never edited), one word of
-`policy/retention.yaml` on his instruction, `CHANGELOG.md`, the worklog and its
-archive, and this file. No doctrine, ontology, synthetic, generated or corpus
-file.
+`policy/retention.yaml` on his instruction, `CHANGELOG.md`, the records. No
+doctrine, ontology, synthetic, generated or corpus file in either.
 
-**What validation ran and what passed.** Each phase's battery one command at a
-time with every negative control seen failing (the record folder has each). On
-the staged tree, the whole battery by the session: the kernel gate at 24
-implemented and none red, the hook, the repo scan (148 tracked files, no filled
-selector), both diff checks.
+**What validation ran and what passed.** On this commit's staged tree: hygiene
+and its self-test, the repo scan, the kernel gate, the hook, both diff checks.
+On `8583132`: each phase's battery one command at a time with every negative
+control seen failing (the record folder has each), the whole battery on the
+staged tree, and three CI runs green on every step.
 
-**Whether a release baseline changed.** No. `main` gains this commit by a pull
-request after his word, and PSE still has no tag.
+**Whether a release baseline changed.** No. `main` gained `8583132` by pull
+request 35 on 2026-10-28, this commit follows by the same route on his word,
+and PSE still has no tag.
 
 **What remains open or deferred.** Section 3: the classes he confirms (the
 emit's platform move, VA-R6, the line 870 edit), DA-R2's stamp, the readings;
@@ -138,7 +143,7 @@ exists and has never run.
 
 | Path | State |
 |---|---|
-| `LICENSE`, `NOTICE`, `.gitattributes` | Committed in `ac60ac4`; `.gitattributes` gains one line in this commit so connector cassettes keep their recorded bytes. |
+| `LICENSE`, `NOTICE`, `.gitattributes` | Committed in `ac60ac4`; `.gitattributes` gains one line in `8583132` so connector cassettes keep their recorded bytes. |
 | `CLAUDE.md` | Committed. Advisory. R6 amended 2026-08-27. |
 | `AGENTS.md` | Committed. Section 5 names the gate commands, the twenty-one hook commands, the twenty-two preflight commands and the paths every validator self-test runs on; section 8 sets the handoff standard and the closeout extraction. |
 | `CHANGELOG.md` | Committed. One entry per governed commit, newest first. Entries below the 2026-09-07 rewrite entry cite pre-rewrite hashes; that entry translates them. |
@@ -146,30 +151,30 @@ exists and has never run.
 | `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md` | SS-1 to SS-21 and RT-1 to RT-19. Patches 1, 2 and 3c in. Sentences at SS-14 items 3, 5 and 6 describe mechanisms as unwritten that now exist (section 4). |
 | `doctrine/EGRESS.md`, `doctrine/CREDENTIAL_LIFECYCLE.md`, `doctrine/HYGIENE.md` | EG-1 to EG-6, CR-1 to CR-8, HY-1 to HY-4. EG-7 is drafted in patch 4b, not applied. |
 | `doctrine/RETENTION_LEDGER.md`, `doctrine/DISCLOSURE.md` | **Both missing.** The ledger is required at v0.1 (RT-10) and Step 11 delivers it. DISCLOSURE.md is owed since RT-18 created a second egress path. |
-| `CONFORMANCE.md` | Committed; sections 1 to 4 rewritten in this commit to the tree as it is: the register exists and is unreviewed, one connector passes DECLARE and rungs 1, 2 and 4 with the live canaries unperformed, the gate exits 0. |
+| `CONFORMANCE.md` | Committed; sections 1 to 4 rewritten in `8583132` to the tree as it is: the register exists and is unreviewed, one connector passes DECLARE and rungs 1, 2 and 4 with the live canaries unperformed, the gate exits 0. |
 | `spec/layer-model.yaml` | Committed in `f4e00e1`. Eleven readings await confirmation. |
 | `spec/pse-semantics-contract.md` | Committed in `4e6abda`. **UNRATIFIED.** `pse-event-0.1`, Unlocked. Its sections 5 and 12 are SS-14 item 6 stamp targets. Lines 33 to 34, 65 to 66, 695 to 696 and 732 to 736 now describe the register, the store and the connector in a tense the tree has passed; rank 2, his to amend. |
-| `spec/divergence-register.yaml`, `spec/divergence-register.md` | **Committed in this commit.** 30 entries (REPLACE 16, NEW 7, DROP 5, INVERT 1, KEEP 1), 8 identical pointers, readings DR-R1 to DR-R4 and entry readings on DR-10, DR-22 and DR-23; the Markdown is generated by `tools/render_divergence_register.py` and checked for drift. |
+| `spec/divergence-register.yaml`, `spec/divergence-register.md` | **Committed in `8583132`.** 30 entries (REPLACE 16, NEW 7, DROP 5, INVERT 1, KEEP 1), 8 identical pointers, readings DR-R1 to DR-R4 and entry readings on DR-10, DR-22 and DR-23; the Markdown is generated by `tools/render_divergence_register.py` and checked for drift. |
 | `schema/pse-event-0.1.schema.json` | Committed in `4e6abda`. **Generated.** |
 | `schema/subject-authorization.schema.json` | Committed in `0e0c840`. Hand-authored, UNRATIFIED. Its `read_by` sentence says `evaluate()` validates the record against it, which the draft guard does not (SG-R13). |
-| `schema/connector-manifest.schema.json` | **Committed in this commit.** Hand-authored, draft 2020-12, every object closed; five kinds, emits at layer observation only, both canaries required with placeholder inputs, `canary_subject_class` from {synthetic, institutional}, a bystanders block with SS-10's three classes and dispositions {count_only, refuse}, lineage with a stratum and no duration, render strings refusing markup, `interaction_class` closed to R7's two values. Readings MF-R1 to MF-R17 in the validator's docstring; `platform_from_item` on an endpoint-unit connector since 2026-10-28. |
+| `schema/connector-manifest.schema.json` | **Committed in `8583132`.** Hand-authored, draft 2020-12, every object closed; five kinds, emits at layer observation only, both canaries required with placeholder inputs, `canary_subject_class` from {synthetic, institutional}, a bystanders block with SS-10's three classes and dispositions {count_only, refuse}, lineage with a stratum and no duration, render strings refusing markup, `interaction_class` closed to R7's two values. Readings MF-R1 to MF-R17 in the validator's docstring; `platform_from_item` on an endpoint-unit connector since 2026-10-28. |
 | `policy/semantics.yaml`, `policy/lineage.yaml`, `policy/producer-authority.yaml`, `policy/violation-codes.yaml` | Committed in `4e6abda`. **Generated.** 57 codes. |
 | `policy/subject-authorization.yaml`, `policy/retention.yaml` | Committed in `0e0c840`. Hand-authored, UNRATIFIED. `policy/retention.yaml` line 870 reads `present: true` for `canary_subject_class` since 2026-10-28, on his instruction (section 3). `policy/subject-authorization.yaml` lines 121 to 123 and 469 call `--dispatch-paths` deferred. |
 | `conformance/must-pass.jsonl`, `conformance/must-fail.jsonl` | Committed in `4e6abda`. **Generated.** 44 events, 98 fixtures. No value appears in either. |
 | `conformance/gate/`, `conformance/retention/` | Committed in `0e0c840`. The gate corpus uses the pre-Step-12 bystander shape while the guard reads the Step 12 block (VA-U1 open). |
-| `conformance/connector-harness/fixture.schema.json`, `README.md` | **Committed in this commit.** The fixture shape: `event_count` and `cassette` on an events fixture, `refusal_code` on a refusal, the fixed adapter-state enum, placeholder-only inputs. |
+| `conformance/connector-harness/fixture.schema.json`, `README.md` | **Committed in `8583132`.** The fixture shape: `event_count` and `cassette` on an events fixture, `refusal_code` on a refusal, the fixed adapter-state enum, placeholder-only inputs. |
 | `ontology/selectors.yaml` | Committed in `f4e00e1`. 19 selectors, 5 proposed and unstamped. Lines 89 to 90 and 96 to 99 describe the guard and `interaction_class` in a tense the tree has passed. |
 | `synthetic/CAST.md`, `synthetic/GROUND_TRUTH.yaml` | Committed in `f4e00e1`. DRAFT, UNSEALED, placeholders only. |
-| `runner/subject_guard.py`, `runner/tests/` | **Committed in this commit, drafted UNRATIFIED.** `evaluate()` returns a Decision that serializes as a COLLECT_EVENT; the live pin refuses at step 1; 22 tests under pytest and as a script; readings SG-R1 to SG-R18 in the docstring. `runner/dispatch_allowlist.yaml` does not exist. |
-| `connectors/sherlock/` | **Committed in this commit.** `manifest.yaml`, `adapter.py` (parse, emit, permit-gated invoke), `site_facts.json` (481 sites from `data.json` at 9100f9d), three hand-built cassettes, `fixtures.jsonl`, 51 tests, `README.md` with SH-R1 to SH-R18. Never run. |
-| `app/` | **Committed in this commit.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. |
-| `tools/generate_pse.py`, `tools/build_corpus.py`, `tools/validate.py`, `tools/validate_layer_model.py`, `tools/validate_doctrine.py`, `tools/validate_hygiene.py`, `tools/validate_ontology.py`, `tools/validate_cast.py`, `tools/since_last_record.py`, `gate_log.py` | Committed earlier, unchanged in this commit. |
-| `tools/validate_authorization.py` | **Extended in this commit** to 5,767 lines: `--dispatch-paths` implemented with 61 planted self-test cases; VA-R5 recorded; VA-R6 applied as the session's reading (section 3); VA-U2 and VA-U3 stay open. |
-| `tools/validate_retention.py` | **Touched in this commit:** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. Its self-test passes. |
-| `tools/pin_of_record.py` | **Extended in this commit** with PIN-R9 (`Pin.decisions`, `decision_stamped`); 35 self-test cases. |
-| `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in this commit.** Self-tests of 103 cases, 39 breaks, a drift check, and 26 plants. |
-| `tools/validate_conformance.py` | **Extended in this commit.** `KERNEL_GATE` carries thirty-two entries, `app-tests` among them. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in this commit.** `make preflight` runs twenty-two commands and the hook twenty-one, the eleven self-tests among them. CI runs ten self-tests as named steps before the kernel gate, clones the public `zmeta-spec` at v1.1.27 for the register's diff, installs pytest, runs the guard tests in its Mechanism tests step and the adapter and application tests as named steps. |
+| `runner/subject_guard.py`, `runner/tests/` | **Committed in `8583132`, drafted UNRATIFIED.** `evaluate()` returns a Decision that serializes as a COLLECT_EVENT; the live pin refuses at step 1; 22 tests under pytest and as a script; readings SG-R1 to SG-R18 in the docstring. `runner/dispatch_allowlist.yaml` does not exist. |
+| `connectors/sherlock/` | **Committed in `8583132`.** `manifest.yaml`, `adapter.py` (parse, emit, permit-gated invoke), `site_facts.json` (481 sites from `data.json` at 9100f9d), three hand-built cassettes, `fixtures.jsonl`, 51 tests, `README.md` with SH-R1 to SH-R18. Never run. |
+| `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. |
+| `tools/generate_pse.py`, `tools/build_corpus.py`, `tools/validate.py`, `tools/validate_layer_model.py`, `tools/validate_doctrine.py`, `tools/validate_hygiene.py`, `tools/validate_ontology.py`, `tools/validate_cast.py`, `tools/since_last_record.py`, `gate_log.py` | Committed earlier, unchanged in `8583132`. |
+| `tools/validate_authorization.py` | **Extended in `8583132`** to 5,767 lines: `--dispatch-paths` implemented with 61 planted self-test cases; VA-R5 recorded; VA-R6 applied as the session's reading (section 3); VA-U2 and VA-U3 stay open. |
+| `tools/validate_retention.py` | **Touched in :** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. Its self-test passes. |
+| `tools/pin_of_record.py` | **Extended in `8583132`** with PIN-R9 (`Pin.decisions`, `decision_stamped`); 35 self-test cases. |
+| `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in `8583132`.** Self-tests of 103 cases, 39 breaks, a drift check, and 26 plants. |
+| `tools/validate_conformance.py` | **Extended in `8583132`.** `KERNEL_GATE` carries thirty-two entries, `app-tests` among them. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `8583132`.** `make preflight` runs twenty-two commands and the hook twenty-one, the eleven self-tests among them. CI runs ten self-tests as named steps before the kernel gate, clones the public `zmeta-spec` at v1.1.27 for the register's diff, installs pytest, runs the guard tests in its Mechanism tests step and the adapter and application tests as named steps. |
 
 ## 3. What blocks
 
