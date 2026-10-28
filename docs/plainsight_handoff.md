@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-10-28. `main` == `origin/main` == `8583132`, the build night's
-commit (106 files, built under the maintainer's typed release of 01:47 and
-reviewed adversarially phase by phase, Class C), merged by fast-forward on his
-click at 15:00:34 with CI green on every step; the commit that carries this
-file is a Class A records commit on top of it.
+**Date:** 2026-10-28. `main` == `origin/main` == `356c1f7`: the build night's
+commit `8583132` (106 files, built under his typed release of 01:47, reviewed
+adversarially phase by phase, Class C) merged on his click at 15:00:34, then
+its records commit `356c1f7` merged on his click at 16:29:45, each with CI
+green on every step; this file's commit is the closeout's Class A commit.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -42,37 +42,37 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** A worklog entry recording the build night's commit,
-push, merge and three CI runs, which the night's own commit could not know,
-and this file's header and section 0. The night's commit, `8583132`, carried
-five pieces of the gameplan, each built because his release of 2026-10-28
-asked for everything that needs nothing from him: the divergence register and
-its validator (Step 9), the connector manifest schema, its validator and the
-harness fixture schema (Step 12 part one), the subject guard and the
-dispatch-path check (Step 10, drafted), the Sherlock connector on hand-built
-cassettes with the rung-4 harness (Step 12 part two), the application's store,
-ingest, server and social web view (the first slice of Step 13), and on his
-click of 12:09 the three pieces that cleared the two designed refusals and
-wired the application in (section 3). Every agent reading is recorded in the
-artifact that carries it and awaits him.
+**What changed and why.** The closeout entry in the worklog (the records
+commit's merge and CI run, his go word of 17:07:57, the checkpoint) and this
+file's header. `356c1f7` recorded the commit, push, merge and CI runs of
+`8583132`, which carried five pieces of the gameplan built under his release
+of 2026-10-28: the divergence register and its validator (Step 9), the
+connector manifest schema, its validator and the harness fixture schema (Step
+12 part one), the subject guard and the dispatch-path check (Step 10, drafted),
+the Sherlock connector on hand-built cassettes with the rung-4 harness (Step 12
+part two), the application's store, ingest, server and social web view (the
+first slice of Step 13), and on his click of 12:09 the three pieces that
+cleared the two designed refusals and wired the application in (section 3).
+Every agent reading awaits him in the artifact that carries it.
 
 **Which surfaces moved.** In this commit: the worklog and its archive, and this
-file. In `8583132`: `spec/`, `schema/`, `conformance/connector-harness/`,
+file; the same three in `356c1f7`. In `8583132`: `spec/`, `schema/`, `conformance/connector-harness/`,
 `runner/`, `connectors/`, `app/`, eight tools, the Makefile, the hook, CI,
 `.gitattributes`, `AGENTS.md` section 5, `CONFORMANCE.md` sections 1 to 4,
 `docs/PLAINSIGHT-design.md` section 9 (appended, never edited), one word of
 `policy/retention.yaml` on his instruction, `CHANGELOG.md`, the records. No
 doctrine, ontology, synthetic, generated or corpus file in either.
 
-**What validation ran and what passed.** On this commit's staged tree: hygiene
-and its self-test, the repo scan, the kernel gate, the hook, both diff checks.
-On `8583132`: each phase's battery one command at a time with every negative
+**What validation ran and what passed.** On the clean tree at `356c1f7`, the
+whole battery of 33 commands, then on this commit's staged tree hygiene and
+its self-test, the repo scan, the kernel gate, the hook, both diff checks. On
+`8583132`: each phase's battery one command at a time with every negative
 control seen failing (the record folder has each), the whole battery on the
 staged tree, and three CI runs green on every step.
 
 **Whether a release baseline changed.** No. `main` gained `8583132` by pull
-request 35 on 2026-10-28, this commit follows by the same route on his word,
-and PSE still has no tag.
+request 35 and `356c1f7` by pull request 36 on 2026-10-28; this commit follows
+by the same route under his go word, and PSE still has no tag.
 
 **What remains open or deferred.** Section 3: the classes he confirms (the
 emit's platform move, VA-R6, the line 870 edit), DA-R2's stamp, the readings;
