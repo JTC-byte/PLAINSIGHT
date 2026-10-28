@@ -268,8 +268,15 @@ RT15_PART_CLAUSES = (
 
 #: Whether a connector-manifest validator refuses a manifest without
 #: canary_subject_class, which is the "required" half of RT-15's second part.
-#: None exists, so that part is absent whatever the manifests carry.
-MANIFEST_VALIDATOR_REQUIRES_CANARY = False
+#: tools/validate_manifest.py does since Step 12, under the code
+#: MANIFEST_CANARY_SUBJECT_CLASS, and its self-test asserts the refusal. The part
+#: measured absent while connectors/ held no manifest, because the other half is
+#: a manifest that declares the field. connectors/sherlock/manifest.yaml declares
+#: it, so the part measures present, and policy/retention.yaml's flag for it reads
+#: present since the maintainer's instruction of 2026-10-28, a one-word edit of
+#: that flag whose class he confirms. Until then the flag read absent and the self-test refused on
+#: the disagreement.
+MANIFEST_VALIDATOR_REQUIRES_CANARY = True
 
 #: The Execution Limits sentence RT-15's first part is, read from section 4.
 RT15_CLAUSE_SENTENCE = (
@@ -3428,8 +3435,12 @@ def _mutations():
     def reconcile_claimed(ctx):
         ctx["policy"]["retention"]["connector_floor"]["enforcement"][1]["present"] = True
 
-    def canary_claimed(ctx):
-        ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"][1]["present"] = True
+    def canary_flag_flipped(ctx):
+        # Flipped rather than set, so the mutation contradicts the tree whichever
+        # way the flag reads. Until 2026-10-28 the flag read absent while the
+        # part was not yet measured present, and this mutation set it to True.
+        parts = ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"]
+        parts[1]["present"] = not parts[1]["present"]
 
     def canary_moved_first(ctx):
         parts = ctx["policy"]["retention"]["repo_scan"]["enforcement_parts_all_required"]
@@ -3552,7 +3563,7 @@ def _mutations():
         ("claim RT-16's undecided code exists", "policy", rt16_code_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("write a strata row's stratum as true", "policy", strata_row_stratum_as_true, "RETENTION_POLICY_STRATA_ROW_DRIFT", True),
         ("write a duration as a float", "policy", duration_as_a_float, "RETENTION_POLICY_TTL_DRIFT", True),
-        ("claim canary_subject_class is required on manifests", "policy", canary_claimed, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
+        ("flip the canary_subject_class flag away from the tree", "policy", canary_flag_flipped, "RETENTION_POLICY_ENFORCEMENT_MISSTATED", True),
         ("stop failing check 1 on a successful decrypt", "policy", check1_forgets_success, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),
         ("hold the witness inside the delete path", "policy", witness_inside_the_delete_path, "RETENTION_POLICY_WITNESS_UNDESIGNATED", True),
         ("let check 4 pass always", "policy", check4_passes_always, "RETENTION_POLICY_FALSE_PASS_UNGUARDED", True),

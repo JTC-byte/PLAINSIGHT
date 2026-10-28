@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app/http/notice.schema.json",
+  "title": "PLAINSIGHT invalidation notice",
+  "description": "One Server-Sent Events frame: a sequence number, a kind, the case id and opaque ids, never a payload or a value (docs/PLAINSIGHT-design.md amendment 9.3). A frame that does not validate is dropped and counted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["seq", "kind", "case_id", "ids"],
+  "properties": {
+    "seq": {"type": "integer", "minimum": 0},
+    "kind": {"enum": ["claims", "nodes", "edges", "runs", "coverage", "case"]},
+    "case_id": {"$ref": "#/$defs/uuid"},
+    "ids": {"type": "array", "maxItems": 50, "items": {"$ref": "#/$defs/uuid"}}
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    }
+  }
+}

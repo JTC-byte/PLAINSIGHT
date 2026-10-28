@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLAINSIGHT</title>
+<link rel="stylesheet" href="/static/app.css">
+<script type="module" src="/static/app.js"></script>
+</head>
+<body>
+<header id="bar">
+  <div id="bar-title">PLAINSIGHT</div>
+  <div id="bar-focus" aria-live="polite"></div>
+  <div id="bar-lines"></div>
+  <nav id="bar-views" aria-label="views"></nav>
+</header>
+<div id="halt" role="alert" hidden></div>
+<main id="shell">
+  <nav id="roster" aria-label="ROSTER"></nav>
+  <section id="view" aria-label="view"></section>
+  <aside id="inspector" aria-label="INSPECTOR"></aside>
+</main>
+<div id="runs" aria-label="RUNS"></div>
+<section id="lineage" aria-label="LINEAGE" hidden></section>
+<div id="legend" role="dialog" aria-label="legend" hidden></div>
+<div id="status" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+A problem occurred while checking for an update: 'tag_name'
+[*] Checking username <random_nonexistent_string> on:
+
+[-] 1337x: Blocked by bot detection (proxy may help)
+[-] Discord: Not Found!
+[-] GitHub: Not Found!
+[-] GitLab: Not Found!
+[-] Instagram: Not Found!
+[-] Kik: Not Found!
+[-] ResearchGate: Illegal Username Format For This Site!
+[-] Slides: Not Found!
+[-] Twitter: Timeout Error 
+
+[*] Search completed with 0 results

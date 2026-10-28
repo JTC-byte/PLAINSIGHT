@@ -10,3 +10,9 @@
 *.sh text eol=lf
 .githooks/* text eol=lf
 *.bundle binary
+
+# Connector cassettes are recorded bytes. Sherlock's CSV is CRLF-terminated and
+# its Unknown line ends in a space, and the adapter is tested against both, so
+# git stores and checks out a cassette unchanged and does not report those
+# bytes as whitespace errors.
+connectors/*/cassettes/** -text -whitespace

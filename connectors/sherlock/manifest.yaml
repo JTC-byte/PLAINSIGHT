@@ -1,0 +1,161 @@
+# connectors/sherlock/manifest.yaml
+#
+# DRAFT, written by an agent at Step 12 on 2026-10-28, UNRATIFIED. Sherlock
+# 0.16.1 at sherlock-project commit 9100f9d, run as the local Docker image
+# sherlock-local:0.16.1. Every fact below about the tool is read from the
+# capability audit of that commit, which lives outside this repository beside
+# the Sherlock clone, and from its data.json, summarized in site_facts.json.
+#
+# THE HANDLE'S PLATFORM COMES FROM THE ITEM. A handle's registry form binds a
+# platform, and Sherlock's handle claims land on whichever of the probed sites
+# answered, a different platform on every item. Until 2026-10-28 this manifest
+# was refused under MANIFEST_SELECTOR_PLATFORM at emits.0 for that reason
+# (reading SH-R5 in README.md). The emit now declares platform_from_item, the
+# schema field reading MF-R17 in tools/validate_manifest.py adds for an endpoint
+# sweep, and the adapter writes each claim's platform token from the site the
+# PROBE_EVENT ITEM locator names, by the rule reading SH-R18 states. No invented
+# token such as sherlock_site is written, because a platform that does not exist
+# would be read later by the handle matcher as a character set. The schema move
+# is a Class B change recorded as amendment 9.14 of docs/PLAINSIGHT-design.md,
+# and the maintainer decides whether it stands.
+#
+# NOTHING HERE MAY RUN. adapter.py invoke() refuses without a permitted decision
+# from runner.subject_guard.evaluate(), and the guard refuses every request while
+# the artifacts SS-14 item 6 lists carry no dated row. The live canaries, design
+# section 6.5's Prove It, are an operator act that has not been performed.
+
+manifest_schema: plainsight-connector-manifest-0.1
+id: sherlock
+version: 0.16.1
+capability: username.enumerate
+kind: one_shot
+# One input yields one item per probed site, 414 on a default run at the audit.
+cardinality: one_to_many
+
+consumes:
+  # username_string is a proposed registry key. A proposed key may be consumed
+  # and may not be emitted until the registry is stamped (MF-R6), and its form
+  # binds no platform, which is exactly a sweep's input (ONT-R4).
+  required:
+    - selector: username_string
+      as: username
+
+emits:
+  # The honest observation: per Claimed row, the string is registered on that
+  # site. The adapter emits a handle claim only for a Claimed row with a 2xx
+  # status on a site outside the measured false-positive exclusion list; a
+  # Claimed row with any other status is an item with outcome throttled or
+  # ambiguous and no claim (README.md, SH-R6 and SH-R7). The platform is the
+  # site the item's locator names, written into the claim value as a token by
+  # SH-R18; a site whose name yields no legal token emits no claim.
+  - selector: handle
+    platform_from_item: true
+    layer: observation
+    fp_mode: "Sherlock reads no content and scores each site by one rule. status_code sites, 327 of 481, score any 2xx as Claimed and only 6 define an errorCode, so a soft-404 or a redirect to a 200 page is a false hit. The 303 HEAD-probed sites carry no body, so a WAF block cannot be fingerprinted there: a 200 challenge page scores Claimed and a 403 scores Available. A message site scores a rate-limit page as Claimed, measured on Steam Community (User) at HTTP 429. A message site matches its errorMsg as a raw substring, so a change in the site's formatting of its not-found text misses the match and scores Claimed, proven on the GitHub API's message field. On the 21 sites whose urlProbe names another host, the answer is that third party's, so a mirror that is down, stale or wrong decides the row: Instagram is answered by imginn.com and Twitter by a public Nitter instance that failed in the audit. Trakt returned Claimed for a random nonexistent string in independent runs, 1 false hit in 414 default sites. A hit is the same string, never the same person."
+    fp_mode_basis: reported
+    observation_statement: "One unauthenticated request to the site, or to the third-party host its urlProbe names in site_facts.json, scored Claimed by the site's errorType rule at the pinned commit; the username was not read from any profile content."
+    inference_hint:
+      proposes: same_entity
+      rationale_template: "handle string identical to {username} on the site the item names; same string, not same person"
+
+# SH-R1. inconclusive. Available is reported for a rate-limited or blocked
+# probe as confidently as for a missing account: LinkedIn at HTTP 999 and
+# HackerNews at HTTP 429 in the audit's real sweep, and every HEAD-probed site
+# turns a 403 challenge into Available. 24 of 414 sites, 5.8 percent, produced
+# no verdict at all on that sweep, and 131 removed sites and Facebook are not
+# probed. A zero result therefore says no site's rule claimed the string, which
+# is not evidence the account does not exist.
+zero_means: inconclusive
+
+# The two negatives Sherlock tells apart, named for what Sherlock decided rather
+# than for what is true of the account. The adapter, not this file, decides which
+# one a row is (design section 6.3). A WAF row and an Unknown row are not
+# negatives: each is an error item, a request that returned no answer, and
+# spec/layer-model.yaml draws negative_class only for an item whose outcome is
+# miss. The WAF-versus-Unknown distinction stays on the parsed item.
+distinguishable_negatives:
+  - site_rule_reports_available
+  - username_format_illegal_for_site
+
+cost:
+  class: free
+  units: "one unauthenticated request per probed site, 414 on a default run, plus an update check to api.github.com, the pinned manifest fetch and the exclusions fetch"
+  credits_per_call: 0
+
+# SH-R2. logged. No account is used, and every probed site and every probe host
+# records the request against the egress identity. The username is disclosed to
+# the hosts urlProbe sends it to rather than to the displayed site.
+exposure:
+  level: logged
+  detail: "Unauthenticated, so no account is attributable, and the request is logged by every probed site against the egress IP and a fixed Firefox 129 user agent. urlProbe sends the username to a host other than the one displayed on 21 sites at the pinned commit: Instagram to imginn.com, an unofficial mirror; Twitter to nitter.privacydev.net, a public Nitter instance; BoardGameGeek to api.geekdo.com; Kik to ws2.kik.com; and 17 more listed in site_facts.json. The update check, manifest fetch and exclusions fetch bypass any proxy and carry no username."
+
+# Sherlock has zero retry, zero backoff and 20 fixed concurrent requests. This
+# budget is the runner's, per connector: ten sweeps an hour is about ten
+# requests an hour to each probed host.
+rate_limit:
+  scope: per_connector
+  calls: 10
+  per: 1h
+
+# SH-R3. No auth block: the schema does not require one, and Sherlock never
+# authenticates, so interaction_class is passive_unauthenticated.
+
+health:
+  probe_unit: endpoint
+  canaries:
+    # The operator resolves this outside the tree to an institutional account,
+    # an upstream project's own handle, never a person's.
+    known_positive:
+      input:
+        username: "<institutional_handle>"
+      expect:
+        result_count_min: 1
+        always_present_fields: all
+    # Resolved at run time to a freshly generated random string that cannot
+    # exist on any site. Trakt fails it at onboarding, which is the canary
+    # working: that endpoint renders SUSPECT and the others pass.
+    known_negative:
+      input:
+        username: "<random_nonexistent_string>"
+      expect:
+        result_count: 0
+        negative_class: site_rule_reports_available
+  cadence: round_robin
+  golden_fixture: cassettes/known_positive/result.csv
+  refusal_fixtures:
+    - input_field: username
+      fixtures: fixtures.jsonl
+      id: refuse-no-username
+
+canary_subject_class: institutional
+
+lineage:
+  # The site set is Sherlock's default: the manifest pinned to commit 9100f9d by
+  # --json, the upstream false-positive exclusions applied, and the NSFW sites
+  # removed, which was 414 sites at the audit. No --local, no
+  # --ignore-exclusions and no --site, because each changes the set: --site
+  # un-excludes the site it names. The exclusion list is fetched live and
+  # changes daily, so two runs on different days can probe different sets, and
+  # the adapter records which sites ran. The runner runs this from a fresh
+  # scratch directory, so ./out is that run's alone, and -- ends option parsing
+  # so a username cannot be read as a flag.
+  command_template: "docker run --rm -v ./out:/sherlock sherlock-local:0.16.1 --json https://raw.githubusercontent.com/sherlock-project/sherlock/9100f9d/sherlock_project/resources/data.json --csv --print-all --no-color --timeout 20 -fo run -- {username}"
+  capture: [stdout, stderr, exit_code, duration_ms]
+  retention_stratum: raw_capture
+
+render:
+  shape: table
+  title_template: "{username}"
+  columns: [handle]
+
+interaction_class: passive_unauthenticated
+
+# SH-R4. named_selector_only. SS-10 names populations a connector reaches beyond
+# its named selector, such as a channel's members, an account's followers and an
+# organization's staff. Sherlock's argv carries the one string and its output
+# names only that string, per site. The accounts that hold the same string
+# belong to whoever registered it, which is the false-positive mode the registry
+# records on username_string, not a population reached past the selector. The
+# alternative reading is in README.md.
+bystanders:
+  reach: named_selector_only

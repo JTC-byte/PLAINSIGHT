@@ -1,0 +1,624 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:plainsight:connector-manifest.schema.json",
+  "title": "PLAINSIGHT connector manifest",
+  "description": "One connector's declarations: identity, what it consumes, what it emits, what a zero result means, what it costs and exposes, how its health is proven, what lineage the runner captures, how the platform renders it, how it touches a platform, and which people it reaches beyond its named selector. Connectors contribute declarations and the platform owns every pixel (docs/PLAINSIGHT-design.md section 6). A manifest carries no selector value, no credential value and no retention duration.",
+  "$comment": "HAND-WRITTEN at Step 12. tools/generate_pse.py does not write this file. AUTHORITY: rank 3, Class B, and Class F by effect wherever a change widens reach: a new kind, a new bystander class, a disposition beyond count_only and refuse, and a new interaction_class value are each Class F under CLAUDE.md design gate 2. Rank 1 doctrine wins every conflict with this file. SELF-LINT: tools/validate_manifest.py checks this file against the draft 2020-12 metaschema and reconciles its enums against spec/layer-model.yaml, policy/retention.yaml and tools/validate_cast.py on every run, and its --self-test breaks a manifest in memory and asserts each break is refused by its own code. WHAT THIS FILE DOES NOT CHECK, because JSON Schema cannot: registry membership of a selector key, whether a platform qualifier or platform_from_item agrees with the key's registry form and with health.probe_unit, whether a proposed key is stamped, whether R7 carries a dated row, the refusal fixtures on disk, an enum default against its values, whether a placeholder is a slot name or a cast token, a repeated YAML key, and the agreement between kind and the selectors consumed. tools/validate_manifest.py checks each of those. upstream is not a key here, and a manifest declaring it is refused as an unknown key (MF-R13). READINGS: MF-R1 to MF-R17 are listed in tools/validate_manifest.py's docstring, and the descriptions below state the ones that bind a field. MF-R17, added 2026-10-28 for reading SH-R5 in connectors/sherlock/README.md, lets an emit of a platform-bound key take its platform from the item: emits.platform_from_item, permitted only where health.probe_unit is endpoint, so each item is one endpoint and the PROBE_EVENT ITEM locator names the platform (docs/PLAINSIGHT-design.md sections 6.2 and 9.14). Each is an agent reading awaiting the operator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_schema",
+    "id",
+    "version",
+    "capability",
+    "kind",
+    "cardinality",
+    "consumes",
+    "emits",
+    "interaction_class",
+    "bystanders",
+    "canary_subject_class",
+    "render"
+  ],
+  "properties": {
+    "manifest_schema": {
+      "description": "The manifest format this file is written against. Per-case version pinning (docs/PLAINSIGHT-design.md section 6.4) records the manifest hash, and this token says which reader that hash was taken under.",
+      "const": "plainsight-connector-manifest-0.1"
+    },
+    "id": {
+      "description": "The connector id. The runner emits as producer connector-<id>, which policy/producer-authority.yaml grants PROBE_EVENT ITEM and EXTRACT_EVENT CLAIM. Equal to the name of the directory under connectors/ that holds this file.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{1,62}$"
+    },
+    "version": {
+      "description": "Semantic version of this connector. A case pins it with the manifest hash, and doctrine/RETENTION.md RT-16 keeps a pinned version's manifest, cassette and adapter while any case pinned to it can be reopened.",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "capability": {
+      "description": "The redundancy grouping key, dotted, such as a platform segment and a capability segment. Connectors that declare the same capability are offered as one row in the pivot menu and compared by differential health (docs/PLAINSIGHT-design.md sections 4.2 and 7.2).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+    },
+    "kind": {
+      "description": "One of the five shapes. A connector whose output fits no shape is refused until the platform adds one, and adding one is a platform release reviewed by the platform team (docs/PLAINSIGHT-design.md section 6, CLAUDE.md design gate 8). The set equals spec/layer-model.yaml PROBE_EVENT connector_kind, and tools/validate_manifest.py reconciles the two.",
+      "enum": ["one_shot", "expansion", "continuous", "reference", "geo"]
+    },
+    "cardinality": {
+      "description": "Whether one input yields one record or many. MF-R9: the design shows one_to_one only; one_to_many is the narrowest addition that lets an expansion or an endpoint sweep declare itself, and no other value is defined.",
+      "enum": ["one_to_one", "one_to_many"]
+    },
+    "consumes": {
+      "description": "The selectors this connector takes. tools/validate_manifest.py refuses a manifest whose required and optional lists name no selector at all, and a key that is not in ontology/selectors.yaml.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "description": "Inputs the adapter cannot run without. Each one carries a refusal fixture under health.refusal_fixtures, which is the ZMeta harness rule of one refusal fixture per schema-required field (docs/PLAINSIGHT-FOUNDATION.md section 4.3).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/consumed_selector" }
+        },
+        "optional": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/consumed_selector" }
+        },
+        "preconditions": {
+          "description": "Conditions checked before dispatch, each with the message the pivot menu shows when it is unmet. An ineligible tool is shown with its unmet precondition and never filtered out (docs/PLAINSIGHT-design.md section 4.2).",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["expr", "unmet_message"],
+            "properties": {
+              "expr": { "type": "string", "minLength": 1 },
+              "unmet_message": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" }
+            }
+          }
+        }
+      }
+    },
+    "params": {
+      "description": "Run-form parameters, from the frozen vocabulary of eight types. The run form is generated from this list and nothing else. A geo_area parameter reaches the people inside an area, so tools/validate_manifest.py counts it as reach exactly as a consumed geo_area (MF-R14).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "type", "label"],
+        "properties": {
+          "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "type": {
+            "enum": ["string", "int", "bool", "enum", "selector_ref", "geo_area", "time_window", "secret_ref"]
+          },
+          "default": {
+            "description": "A default the run form prefills, of the type its parameter names: a boolean for bool, an integer for int, a string for string and enum. tools/validate_manifest.py refuses an enum default outside values. A selector_ref, geo_area, time_window or secret_ref parameter carries none, because each default would be a value in a tracked file.",
+            "type": ["string", "integer", "boolean"]
+          },
+          "values": {
+            "description": "The closed set an enum parameter offers.",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+          },
+          "label": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "type": { "const": "enum" } } },
+            "then": { "required": ["values"] },
+            "else": { "properties": { "values": false } }
+          },
+          {
+            "if": { "properties": { "type": { "enum": ["selector_ref", "geo_area", "time_window", "secret_ref"] } } },
+            "then": { "properties": { "default": false } }
+          },
+          {
+            "if": { "properties": { "type": { "const": "bool" } }, "required": ["type"] },
+            "then": { "properties": { "default": { "type": "boolean" } } }
+          },
+          {
+            "if": { "properties": { "type": { "const": "int" } }, "required": ["type"] },
+            "then": { "properties": { "default": { "type": "integer" } } }
+          },
+          {
+            "if": { "properties": { "type": { "enum": ["string", "enum"] } }, "required": ["type"] },
+            "then": { "properties": { "default": { "type": "string" } } }
+          }
+        ]
+      }
+    },
+    "emits": {
+      "description": "What the connector emits. CONNECTORS EMIT ONLY layer observation, and this is structural: layer is a constant here, so a manifest declaring any other layer is refused by schema. A connector that wants to assert identity declares an inference_hint, which the platform materializes as a PROPOSED, UNACCEPTED inference and never as an assertion.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/emit" }
+    },
+    "zero_means": {
+      "description": "What a zero result means analytically. The adapter decides which state occurred and the manifest declares what that state means (docs/PLAINSIGHT-design.md section 6.3).",
+      "enum": ["absence_evidence", "inconclusive", "never_conclusive"]
+    },
+    "distinguishable_negatives": {
+      "description": "The negative classes this source can tell apart. The known_negative canary names one of them, and PROBE_EVENT ITEM negative_class draws from this list.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+    },
+    "cost": {
+      "description": "MF-R9: class is taken from the design's pivot menu groups FREE and SESSION and from section 7.3's metered connectors, and no other value is defined.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "units", "credits_per_call"],
+      "properties": {
+        "class": { "enum": ["free", "session", "metered"] },
+        "units": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" },
+        "credits_per_call": { "type": "number", "minimum": 0 }
+      }
+    },
+    "exposure": {
+      "description": "What the platform records about the looking account. MF-R9: level is taken from the design's pivot menu groups NO EXPOSURE and LOGGED EXPOSURE. tools/validate_manifest.py refuses level none on a connector that authenticates, because an authenticated read is attributable to the session account (doctrine/SUBJECT_SELECTION.md SS-13).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "detail"],
+      "properties": {
+        "level": { "enum": ["none", "logged"] },
+        "detail": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" }
+      }
+    },
+    "rate_limit": {
+      "description": "MF-R9: scope and backoff are closed to the values the design names and the two an endpoint sweep and a connector-wide budget need. quarantine_credential sets nothing by itself: doctrine/CREDENTIAL_LIFECYCLE.md CR-6 requires the runner to refuse a quarantine set without a written exit criterion.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "calls", "per"],
+      "properties": {
+        "scope": { "enum": ["per_credential", "per_connector", "per_endpoint"] },
+        "calls": { "type": "integer", "minimum": 1 },
+        "per": { "$ref": "#/$defs/interval" },
+        "on_429": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["backoff", "cooldown", "quarantine_credential"],
+          "properties": {
+            "backoff": { "enum": ["exponential", "linear", "fixed"] },
+            "cooldown": { "$ref": "#/$defs/interval" },
+            "quarantine_credential": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "auth": {
+      "description": "A reference to a credential pool and nothing else. Auth acquisition is out of the manifest permanently (docs/PLAINSIGHT-design.md section 6.3), and a credential value never appears in a tracked file (doctrine/CREDENTIAL_LIFECYCLE.md CR-3). The connector contract knows a credential_ref, its state and its heat.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["credential_pool"],
+      "properties": {
+        "credential_pool": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+      }
+    },
+    "health": {
+      "description": "Mandatory on every kind that executes. No manifest merges without both canaries. The known_negative canary is what catches precision drift: if a guaranteed-nonexistent input starts returning a hit, every positive since the last passing run is untrustworthy (docs/PLAINSIGHT-design.md section 7.2).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["probe_unit", "canaries", "cadence", "golden_fixture", "refusal_fixtures"],
+      "properties": {
+        "probe_unit": {
+          "description": "Equal to spec/layer-model.yaml SYSTEM_EVENT probe_unit, and reconciled against it. A continuous connector's health is per subscription.",
+          "enum": ["connector", "endpoint", "subscription"]
+        },
+        "canaries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["known_positive", "known_negative"],
+          "properties": {
+            "known_positive": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["input", "expect"],
+              "properties": {
+                "input": { "$ref": "#/$defs/placeholder_input" },
+                "expect": {
+                  "description": "No expected value is written here. An expected selector value would be a value in a tracked file; the canary runner resolves it from the sealed cast at run time.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["result_count_min", "always_present_fields"],
+                  "properties": {
+                    "result_count_min": { "type": "integer", "minimum": 1 },
+                    "always_present_fields": { "const": "all" }
+                  }
+                }
+              }
+            },
+            "known_negative": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["input", "expect"],
+              "properties": {
+                "input": { "$ref": "#/$defs/placeholder_input" },
+                "expect": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["result_count", "negative_class"],
+                  "properties": {
+                    "result_count": { "const": 0 },
+                    "negative_class": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cadence": {
+          "description": "MF-R9: the three canary schedules docs/PLAINSIGHT-design.md section 7.3 names, round robin across endpoints, canary on use after a hit, and hourly from a dedicated credential for a metered connector.",
+          "enum": ["round_robin", "on_use", "hourly"]
+        },
+        "golden_fixture": {
+          "description": "Path relative to the manifest's directory. Captured during onboarding and replayed in CI.",
+          "$ref": "#/$defs/relative_path"
+        },
+        "refusal_fixtures": {
+          "description": "One entry per required input, naming the harness fixture that withholds that input and asserts a refusal. Each fixture is a line in a JSONL file linted by conformance/connector-harness/fixture.schema.json.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["input_field", "fixtures", "id"],
+            "properties": {
+              "input_field": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+              "fixtures": { "$ref": "#/$defs/relative_path" },
+              "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" }
+            }
+          }
+        }
+      }
+    },
+    "canary_subject_class": {
+      "description": "Who the canaries and cassettes are captured against. doctrine/RETENTION.md RT-15 closes this to synthetic and institutional, and consented is deliberately absent: a consented person's selector in a canary is permanent in git, and the subject cannot revoke it afterwards. docs/THE-GAMEPLAN.md section 5.1 lists consented and rank 1 wins (MF-R5). Top level rather than under health, because tools/validate_retention.py measures RT-15's second part by reading it there.",
+      "enum": ["synthetic", "institutional"]
+    },
+    "continuous": {
+      "description": "Required when kind is continuous and refused otherwise. coverage_proof is a positive read of the target, not a heartbeat; a continuous connector that cannot supply one gets a permanently hatched lane.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coverage_proof"],
+      "properties": {
+        "coverage_proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "interval", "establishes"],
+          "properties": {
+            "method": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+            "interval": { "$ref": "#/$defs/interval" },
+            "establishes": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" }
+          }
+        },
+        "backfill": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["supported"],
+          "properties": {
+            "supported": { "type": "boolean" },
+            "max_depth": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "routing": {
+      "description": "Required when kind is expansion and refused otherwise. An expansion's output lands in the roster and never as arrivals cards.",
+      "const": "roster"
+    },
+    "executable": {
+      "description": "Required when kind is reference and refused otherwise. A reference connector executes nothing.",
+      "const": false
+    },
+    "methods": {
+      "description": "Required when kind is reference and refused otherwise. Each method is a procedure a human performs.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "applies_to", "output_selectors", "steps_ref", "exposure"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+          "title": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" },
+          "applies_to": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/selector_ref" }
+          },
+          "output_selectors": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/selector_key" }
+          },
+          "steps_ref": { "$ref": "#/$defs/relative_path" },
+          "exposure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["level"],
+            "properties": { "level": { "enum": ["none", "logged"] } }
+          }
+        }
+      }
+    },
+    "lineage": {
+      "description": "What the runner captures for every run. Retention durations are never declared here: RT-1 assigns lifetime by stratum, policy/retention.yaml owns every duration, and RT-2 and RT-8 settle the text and media clocks. A manifest naming a duration is refused by schema, because this object carries no property that could hold one (the design's retain block is replaced by retention_stratum).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command_template", "capture", "retention_stratum"],
+      "properties": {
+        "command_template": {
+          "description": "argv with every variable part a {slot}. A slot names a consumed input's as, a params key, or credential_ref, which resolves to a credential id and never to a value (CR-3). The template is recorded with values redacted (RT-1 stratum 2).",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^<>]*$"
+        },
+        "capture": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["stdout", "stderr", "exit_code", "http_status_chain", "duration_ms", "credential_id"] }
+        },
+        "retention_stratum": {
+          "description": "The policy/retention.yaml strata row the raw capture is written under. Connector stdout and stderr and response bytes are stratum 0 under RT-1, so one row is legal, and tools/validate_manifest.py checks that the row exists in the policy at stratum 0.",
+          "const": "raw_capture"
+        }
+      }
+    },
+    "render": {
+      "description": "Slot declarations only. No markup and no CSS: every string here refuses the characters < and >, and the object carries no property that could hold a component. The platform owns every pixel.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shape"],
+      "properties": {
+        "shape": {
+          "description": "MF-R9: the three renderers the design names. A geo or reference connector renders as a table or a record; a new renderer is a platform release.",
+          "enum": ["record", "table", "chat"]
+        },
+        "title_template": { "type": "string", "pattern": "^[^<>]*$" },
+        "columns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+        },
+        "timeline_lane": { "type": "string", "pattern": "^[^<>]*$" }
+      }
+    },
+    "interaction_class": {
+      "description": "How this connector touches a platform, resolved against the R7 line in doctrine/SUBJECT_SELECTION.md SS-14 item 3: authenticating with a team-held credential and reading is permitted, and anything the subject can observe happened is refused. The two tokens are docs/PLAINSIGHT-FOUNDATION.md section 4.3's draft, whose third, induces_disclosure, that draft marks EXCLUDED rather than unimplemented, so it is absent here and refused by schema. MF-R1: docs/THE-GAMEPLAN.md section 3.0 still lists R7 as undrafted, and the pin of record carries R7's conclusion row dated 2026-08-26, so tools/validate_manifest.py permits while that row stands and refuses with a named code when it does not. Whether these two tokens are the encoding of R7's line is a reading awaiting the operator, because the line refuses a view the platform surfaces to the subject and neither token states that the platform does not surface one.",
+      "enum": ["passive_unauthenticated", "passive_authenticated_read"]
+    },
+    "bystanders": {
+      "description": "Required on every manifest. doctrine/SUBJECT_SELECTION.md SS-10: a connector that reaches beyond its named selector declares what it reaches, and an undeclared bystander class is refused at manifest validation. Bystanders never pass through the gate, so this declaration is the control. tools/validate_manifest.py also refuses named_selector_only on an expansion, continuous or geo connector, or on any connector that consumes a geo_area or takes one as a parameter, and refuses every connector that reaches an area while no class for the people inside one is ratified (MF-R2).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reach"],
+      "properties": {
+        "reach": { "enum": ["named_selector_only", "declared"] },
+        "classes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/bystander_class" }
+        }
+      },
+      "if": { "properties": { "reach": { "const": "declared" } } },
+      "then": { "required": ["classes"], "properties": { "classes": { "minItems": 1 } } },
+      "else": { "properties": { "classes": false } }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "continuous" } }, "required": ["kind"] },
+      "then": { "required": ["continuous"] },
+      "else": { "properties": { "continuous": false } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "expansion" } }, "required": ["kind"] },
+      "then": { "required": ["routing"] },
+      "else": { "properties": { "routing": false } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "reference" } }, "required": ["kind"] },
+      "then": {
+        "required": ["executable", "methods"],
+        "properties": {
+          "health": false,
+          "lineage": false,
+          "auth": false,
+          "rate_limit": false,
+          "params": false,
+          "zero_means": false,
+          "distinguishable_negatives": false
+        }
+      },
+      "else": {
+        "required": ["zero_means", "distinguishable_negatives", "cost", "exposure", "health", "lineage"],
+        "properties": { "executable": false, "methods": false }
+      }
+    }
+  ],
+  "$defs": {
+    "selector_key": {
+      "description": "A key in ontology/selectors.yaml. The schema checks the shape and tools/validate_manifest.py checks membership, so the registry stays the one place a selector type is defined (MF-R6).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "platform": {
+      "description": "A platform token qualifying a selector key. The design writes key and platform as one string; they are two fields here so the registry key is never parsed out of a string. tools/validate_manifest.py requires the field exactly where the key's form in ontology/selectors.yaml binds a platform and refuses it everywhere else, except that an emit may instead declare platform_from_item (MF-R17).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "selector_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector"],
+      "properties": {
+        "selector": { "$ref": "#/$defs/selector_key" },
+        "platform": { "$ref": "#/$defs/platform" }
+      }
+    },
+    "consumed_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector", "as"],
+      "properties": {
+        "selector": { "$ref": "#/$defs/selector_key" },
+        "platform": { "$ref": "#/$defs/platform" },
+        "as": {
+          "description": "The input name the adapter and the command template use.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    },
+    "emit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layer"],
+      "oneOf": [
+        { "required": ["selector"] },
+        { "required": ["entity"] }
+      ],
+      "properties": {
+        "selector": { "$ref": "#/$defs/selector_key" },
+        "platform": { "$ref": "#/$defs/platform" },
+        "platform_from_item": {
+          "description": "MF-R17. The emitted key's platform is the one the PROBE_EVENT ITEM locator of each emitted claim names, so one emit declares a platform-bound key for a sweep whose items land on different platforms, which docs/PLAINSIGHT-design.md section 6.2 draws as one selector emitted across about 120 endpoints with probe_unit endpoint. Present only as true. tools/validate_manifest.py requires exactly one of platform and platform_from_item on an emit whose key's registry form binds a platform, refuses both on a key whose form binds none, and permits platform_from_item only where health.probe_unit is endpoint, because only there is each item one endpoint on one platform. The adapter derives the token from the item and writes it into the claim value; a token that names no real platform is laundering (reading SH-R18 in connectors/sherlock/README.md).",
+          "type": "boolean",
+          "const": true
+        },
+        "entity": {
+          "description": "An entity type from ontology/selectors.yaml entities, checked there by tools/validate_manifest.py. MF-R7: an entity field such as a display name is not a registry key, and EXTRACT_EVENT CLAIM requires selector_type to be one, so entity fields are recorded here and have no wire form in pse-event-0.1 yet. tools/validate_manifest.py refuses a field named for a registry key, which is emitted as a selector instead; every other field name is open.",
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z]+$"
+        },
+        "layer": {
+          "description": "Constant. A connector emits observation and nothing else.",
+          "const": "observation"
+        },
+        "collector": {
+          "description": "Present only on a reference connector's ManualTask, whose collector is a person.",
+          "const": "human"
+        },
+        "always_present": {
+          "description": "Must be proven by the known_positive canary. negative_state attempted_and_absent is refused for a field whose always_present is unproven (spec/layer-model.yaml ABSENCE_CLAIMED_WITHOUT_CANARY).",
+          "type": "boolean"
+        },
+        "volatile": {
+          "description": "A field whose disagreement between sources is not a conflict.",
+          "type": "boolean"
+        },
+        "constraint_semantics": {
+          "description": "Must equal the registry entry's constraint_semantics where the registry declares one.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "fp_mode": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" },
+        "fp_mode_basis": {
+          "description": "How the false-positive mode is known (CLAUDE.md design gate 3). The set equals ontology/selectors.yaml fp_mode_bases.",
+          "enum": ["measured", "reported", "reasoned"]
+        },
+        "generation_method": {
+          "description": "Must equal the registry entry's generation_method where the registry declares one. A generated value carries provenance state GENERATED permanently until an analyst promotes it.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "requires_validation_by": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+        },
+        "observation_statement": {
+          "description": "What the observation was, as a template over slots. It states what the tool saw and never what it means.",
+          "type": "string",
+          "pattern": "^[^<>]*$"
+        },
+        "inference_hint": {
+          "description": "A proposal and never an assertion. The platform materializes it as a PROPOSED, UNACCEPTED LINK_EVENT, rendered dashed with a FOR and AGAINST panel, and the connector never asserts that an account is a person. proposes equals a LINK_EVENT subtype in spec/layer-model.yaml, lower-cased.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["proposes", "rationale_template"],
+          "properties": {
+            "proposes": { "enum": ["same_entity", "associated_with", "co_located", "controls"] },
+            "rationale_template": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" }
+          }
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+              "always_present": { "type": "boolean" },
+              "volatile": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "dependentRequired": { "fp_mode": ["fp_mode_basis"] },
+      "dependentSchemas": {
+        "entity": {
+          "properties": {
+            "platform": false,
+            "platform_from_item": false,
+            "constraint_semantics": false,
+            "generation_method": false,
+            "requires_validation_by": false,
+            "inference_hint": false
+          }
+        },
+        "selector": {
+          "properties": { "fields": false, "collector": false }
+        }
+      }
+    },
+    "bystander_class": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "estimate", "disposition"],
+      "properties": {
+        "class": {
+          "description": "MF-R2: doctrine/SUBJECT_SELECTION.md names the populations it means in prose and closes no list, so this is the narrowest closed set its text supports. SS-10 names three: the members of a channel whose messages a subscription collects, the followers a follower-list expansion creates records for, and the staff an organization enumeration returns. docs/PLAINSIGHT-FOUNDATION.md section 4.3's co_appears_in_media, and the people inside a geo_area, are not in doctrine and are absent. None of the three describes the people inside an area, so tools/validate_manifest.py refuses a geo connector, or one taking a geo_area as an input or a parameter, whichever of the three it declares; such a connector cannot pass until a class for those people is added here and to the tool's AREA_CLASSES. Adding a class widens who can be collected on and is Class F.",
+          "enum": ["channel_members", "followers", "organization_staff"]
+        },
+        "estimate": {
+          "description": "How the pre-flight record gets its incidental count (SS-12). A follower list knows its count before dispatch; an organization enumeration does not, and declares unestimable with a reason rather than a blank, which refuses.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method"],
+          "properties": {
+            "method": { "enum": ["platform_reported_count", "unestimable"] },
+            "reason": { "type": "string", "minLength": 1, "pattern": "^[^<>]*$" }
+          },
+          "if": { "properties": { "method": { "const": "unestimable" } } },
+          "then": { "required": ["reason"] }
+        },
+        "disposition": {
+          "description": "Closed at v0.1 to count_only and refuse, the pair R8 stamped on 2026-08-27 (SS-10). retain is defined in doctrine and refused, and it is absent from this enum, so no manifest can declare it. Reaching retain is a dated Class F ratification and a change to this file. A value outside the set is BYSTANDER_DISPOSITION_OUT_OF_SET, the code spec/layer-model.yaml declares for SS-10.",
+          "enum": ["count_only", "refuse"]
+        }
+      }
+    },
+    "placeholder_input": {
+      "description": "Canary inputs carry placeholders only, resolved at run time from the sealed cast or an institutional target. The pattern here is the cast grammar tools/validate_cast.py enforces, which any text in angle brackets matches, so tools/validate_manifest.py also requires each input to be a slot name, a lowercase word in angle brackets, or a typed token synthetic/GROUND_TRUTH.yaml carries. That refuses a bracketed address, phone, URL or at-sign handle; a bare handle written as a slot name has the same shape as a slot name and is not refused, so the inputs are a narrowed selector surface and not a closed one (MF-R8).",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "type": "string", "pattern": "^<[^<>]+>$" }
+    },
+    "relative_path": {
+      "description": "A path relative to the manifest's directory, inside it: no leading slash, no parent segment, no backslash.",
+      "type": "string",
+      "pattern": "^(\\./)?(?!/)(?!.*\\.\\.)[A-Za-z0-9_][A-Za-z0-9_./-]*$"
+    },
+    "interval": {
+      "description": "A rate or polling interval. Never a retention duration, which this file cannot carry.",
+      "type": "string",
+      "pattern": "^[1-9][0-9]*(s|m|h|d)$"
+    }
+  }
+}

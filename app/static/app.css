@@ -1,0 +1,150 @@
+/* PLAINSIGHT shell. Achromatic tokens plus one red, which means only "the system
+   does not vouch" and always sits beside a text token that says which
+   (docs/PLAINSIGHT-design.md section 5.2). Low confidence never lowers text
+   contrast: the chrome degrades, the type does not. No web font, no CDN. */
+
+:root {
+  --bg: #ffffff;
+  --bg-raised: #f4f4f4;
+  --ink: #111111;
+  --ink-soft: #3a3a3a;
+  --rule: #8a8a8a;
+  --red: #b00020;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121212;
+    --bg-raised: #1d1d1d;
+    --ink: #f2f2f2;
+    --ink-soft: #d0d0d0;
+    --rule: #8a8a8a;
+    --red: #ff5c6c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 13px/1.45 var(--mono);
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  min-height: 100vh;
+}
+
+#bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 4px 16px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+#bar-lines { grid-column: 1 / -1; color: var(--ink-soft); }
+#bar-views button { margin-left: 4px; }
+#bar-views button[aria-current="page"] { border-color: var(--ink); text-decoration: underline; }
+
+#halt {
+  padding: 6px 12px;
+  border-bottom: 2px solid var(--red);
+  color: var(--red);
+}
+
+#shell {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(0, 4fr) minmax(240px, 1.6fr);
+  height: 66vh;
+  min-height: 0;
+}
+
+#roster, #inspector {
+  overflow: auto;
+  padding: 8px 10px;
+  border-right: 1px solid var(--rule);
+}
+
+#inspector { border-right: 0; border-left: 1px solid var(--rule); }
+
+#view { overflow: auto; padding: 8px; min-width: 0; }
+
+#runs {
+  padding: 4px 12px;
+  border-top: 1px solid var(--rule);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#lineage {
+  height: 40vh;
+  overflow: auto;
+  padding: 8px 12px;
+  border-top: 2px solid var(--ink);
+  background: var(--bg-raised);
+}
+
+#legend {
+  position: fixed;
+  inset: 10vh 15vw;
+  overflow: auto;
+  padding: 12px 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--ink);
+}
+
+#status { padding: 2px 12px; min-height: 1.5em; color: var(--ink-soft); }
+
+button {
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  padding: 1px 6px;
+  cursor: pointer;
+}
+
+h2, h3 { font-size: 13px; margin: 10px 0 4px; letter-spacing: 0.04em; }
+ul { margin: 0; padding-left: 16px; }
+li { margin: 2px 0; }
+
+.row { padding: 2px 4px; border-left: 3px solid transparent; }
+.row.selected { border-left-color: var(--ink); background: var(--bg-raised); }
+.band { border-top: 3px double var(--ink); margin-top: 10px; }
+.fusion-row { border-left: 2px solid var(--ink); padding-left: 6px; margin: 4px 0; }
+.inference-row { border-left: 2px dashed var(--ink); padding-left: 6px; margin: 4px 0; }
+.observation-row { border-left: 1px solid var(--ink); padding-left: 6px; margin: 4px 0; }
+.generated { font-style: italic; }
+.struck { text-decoration: line-through; }
+.vouch { color: var(--red); }
+.vouch::before { content: "▨ "; }
+.consequence { color: var(--ink); }
+.broken { color: var(--red); }
+.flag { color: var(--red); }
+.kbd { border: 1px solid var(--rule); padding: 0 4px; }
+.card { border: 1px solid var(--rule); padding: 4px 6px; margin: 4px 0; }
+
+/* The WEB canvas. Border geometry carries the epistemic layer only: dash is
+   INFERENCE and nothing else, so no box, card or focus rule sets a dash. */
+svg.web { display: block; max-width: none; background: var(--bg); }
+svg.web text { fill: var(--ink); font: 12px var(--mono); }
+svg.web .box { fill: var(--bg-raised); stroke: var(--ink); stroke-width: 1px; }
+svg.web .node { cursor: pointer; }
+svg.web .node.focus .box { stroke: var(--ink); fill: var(--bg); }
+svg.web .node.selected .box { stroke: var(--ink); fill: var(--bg); }
+svg.web .bracket { fill: none; stroke: var(--ink); stroke-width: 2px; }
+svg.web .vouch-band { stroke: var(--red); }
+svg.web .hatch-ground { fill: var(--bg); }
+svg.web .hatch-line { stroke: var(--red); stroke-width: 2px; }
+svg.web .vouch-token { fill: var(--red); }
+svg.web .edge-line { fill: none; stroke: var(--ink); }
+svg.web .edge-label { fill: var(--ink-soft); font-size: 11px; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+svg.web .generated { font-style: italic; }
+svg.web .struck { text-decoration: line-through; }

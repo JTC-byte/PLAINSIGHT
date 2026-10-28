@@ -1,0 +1,3449 @@
+{
+ "source": "sherlock_project/resources/data.json at sherlock-project commit 9100f9d, version 0.16.1",
+ "source_sha256": "0a0df1768e9ad671abe2291da20fff29d118b555d867bd6f4a75d4bbc31757eb",
+ "fields_read": [
+  "errorType",
+  "errorCode",
+  "request_method",
+  "url host",
+  "url slot",
+  "urlProbe host",
+  "isNSFW"
+ ],
+ "note": "probe_host is set only where urlProbe sends the request to a host other than the displayed one, which discloses the username to that host. method is the verb Sherlock uses: explicit request_method, else HEAD for status_code and GET otherwise. A HEAD probe carries no body, so the WAF fingerprint cannot fire on it.",
+ "fp_exclusions_measured": {
+  "source": "the upstream false_positive_exclusions list as read for the 0.16.1 capability audit, 52 names; it is regenerated upstream daily, so this copy dates from the audit",
+  "names": [
+   "7Cups",
+   "APClips",
+   "Airliners",
+   "Apple Developer",
+   "Apple Discussions",
+   "Archive.org",
+   "Bandcamp",
+   "Chatujme.cz",
+   "Codolio",
+   "Cults3D",
+   "DeviantArt",
+   "Discord.bio",
+   "Eintracht Frankfurt Forum",
+   "Envato Forum",
+   "F3.cool",
+   "GeeksforGeeks",
+   "Giphy",
+   "Hashnode",
+   "Houzz",
+   "Hubski",
+   "Instapaper",
+   "Odysee",
+   "PCGamer",
+   "Patched",
+   "Pornhub",
+   "Rarible",
+   "Realmeye",
+   "Reddit",
+   "Replit.com",
+   "ReverbNation",
+   "RocketTube",
+   "Scribd",
+   "Shelf",
+   "SlideShare",
+   "Splice",
+   "Spotify",
+   "Trovo",
+   "TryHackMe",
+   "Velomania",
+   "Weblate",
+   "YandexMusic",
+   "authorSTREAM",
+   "dailykos",
+   "fixya",
+   "hunting",
+   "igromania",
+   "interpals",
+   "mercadolivre",
+   "opennet",
+   "phpRU",
+   "svidbook",
+   "xHamster"
+  ]
+ },
+ "url_without_username_slot": {
+  "source": "every site whose url field at 9100f9d carries no {} slot, read by the fixer on 2026-10-28 from the same data.json (sha256 above). Sherlock writes that url as url_user on every non-Illegal row, so the CSV cell does not contain the username, and a Claimed row says the name is taken in a registration check rather than that a profile page exists (CAPABILITIES.md A1.5)",
+  "names": [
+   "Discord",
+   "Diskusjon.no",
+   "Kvinneguiden"
+  ]
+ },
+ "site_count": 481,
+ "sites": {
+  "1337x": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "2Dimensions": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "7Cups": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "9GAG": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "About.me": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Academia.edu": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "addons.wago.io": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": 404,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "AdmireMe.Vip": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Airbit": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Airliners": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "akniga": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": 404,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "All Things Worn": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "AllMyLinks": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Anilist": {
+   "error_type": "status_code",
+   "method": "POST",
+   "error_code": null,
+   "probe_host": "graphql.anilist.co",
+   "nsfw": false
+  },
+  "AniWorld": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Aparat": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "APClips": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Apple Developer": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Apple Discussions": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Archive of Our Own": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Archive.org": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Arduino Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ArtStation": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Asciinema": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Ask Fedora": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Atcoder": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Audiojungle": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "authorSTREAM": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Autofrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Avizo": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "AWS Skills Profile": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "babyblogRU": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BabyRu": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Bandcamp": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Bazar.cz": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Behance": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Bezuzyteczna": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BiggerPockets": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BioHacking": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BitBucket": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Bitwarden Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Blipfoto": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Blitz Tactics": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Blogger": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Bluesky": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "public.api.bsky.app",
+   "nsfw": false
+  },
+  "BoardGameGeek": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "api.geekdo.com",
+   "nsfw": false
+  },
+  "BongaCams": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Bookcrossing": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BOOTH": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BraveCommunity": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BreachSta.rs Forum": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BugCrowd": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "BuyMeACoffee": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "www.buymeacoffee.com",
+   "nsfw": false
+  },
+  "BuzzFeed": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Caddy Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Car Talk Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Carbonmade": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Career.habr": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Carrd": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CashApp": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Cfx.re Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CGTrader": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Championat": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Chaos": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "chaos.social": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Chatujme.cz": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ChaturBate": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Chess": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Choice Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Chollometro": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Clapper": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CloudflareCommunity": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Clozemaster": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Clubhouse": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CNET": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Code Snippet Wiki": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codeberg": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codecademy": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codechef": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codeforces": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codepen": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Coders Rank": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Coderwall": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CodeSandbox": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codewars": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Codolio": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Coinvote": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ColourLovers": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Contently": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Coroflot": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "couchsurfing": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Cplusplus": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Cracked": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Cracked Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Credly": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Crevado": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Crowdin": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CryptoHack": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Cryptomator Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CSSBattle": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CTAN": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Cults3D": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CurseForge": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": 404,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "CyberDefenders": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "d3RU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "dailykos": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "DailyMotion": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "datingRU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "dcinside": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Dealabs": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "DEV Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "DeviantArt": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "devRant": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "DigitalSpy": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Discogs": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Discord": {
+   "error_type": "message",
+   "method": "POST",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Discord.bio": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Discuss.Elastic.co": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Diskusjon.no": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Disqus": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "DMOJ": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Docker Hub": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Dribbble": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "drive2": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Duolingo": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "eGPU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "eintracht": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Eintracht Frankfurt Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Empretienda AR": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Envato Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Erome": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "exophase": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Exposure": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "EyeEm": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "F3.cool": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Fameswap": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Fandom": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Fanpop": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Finanzfrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "fixya": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "fl": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Flickr": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Flightradar24": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Flipboard": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Football": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "FortniteTracker": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Forum Ophilia": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "forum_guns": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Fosstodon": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Framapiaf": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "freecodecamp": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.freecodecamp.org",
+   "nsfw": false
+  },
+  "Freelancer": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Freesound": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "furaffinity": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GaiaOnline": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GameFAQs": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gamespot": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GeeksforGeeks": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Genius (Artists)": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Genius (Users)": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "geocaching": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gesundheitsfrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GetMyUni": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Giant Bomb": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Giphy": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GitBook": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gitea": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gitee": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GitHub": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GitLab": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GNOME VCS": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "GoodReads": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Google Play": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gradle": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Grailed": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gravatar": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gumroad": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Gutefrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "habr": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Hackaday": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackenProof (Hackers)": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackerEarth": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackerNews": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackerOne": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackerRank": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackerSploit": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackMD": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "hackster": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HackTheBox": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Harvard Scholar": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Hashnode": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Heavy-R": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Hive Blog": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Holopin": {
+   "error_type": "message",
+   "method": "POST",
+   "error_code": null,
+   "probe_host": "www.holopin.io",
+   "nsfw": false
+  },
+  "HotUKdeals": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Houzz": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HubPages": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Hubski": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "HudsonRock": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Hugging Face": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "hunting": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Icons8 Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "IFTTT": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Ifunny": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "igromania": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Image Fap": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "ImgUp.cz": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Imgur": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.imgur.com",
+   "nsfw": false
+  },
+  "imood": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Instagram": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "imginn.com",
+   "nsfw": false
+  },
+  "Instapaper": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Instructables": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "interpals": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Intigriti": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "api.intigriti.com",
+   "nsfw": false
+  },
+  "Ionic Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "IRC-Galleria": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "irecommend": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Issuu": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Itch.io": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Itemfix": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "jbzd.com.pl": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Jellyfin Weblate": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "jeuxvideo": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Jimdo": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Joplin Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Jupyter Community Forum": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Kaggle": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "kaskus": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Keybase": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Kick": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Kik": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "ws2.kik.com",
+   "nsfw": false
+  },
+  "kofi": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Kongregate": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Kvinneguiden": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "kwork": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Laracast": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "last.fm": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Launchpad": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "leasehackr": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LeetCode": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LemmyWorld": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LessWrong": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Letterboxd": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LibraryThing": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Lichess": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LinkedIn": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Linktree": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LinuxFR.org": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Listed": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LiveJournal": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "livelib": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Lobsters": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LOR": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LottieFiles": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "LushStories": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Mamot": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "mastodon.cloud": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "mastodon.social": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "mastodon.xyz": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Medium": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Memrise": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "mercadolivre": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "minds": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Minecraft": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "MixCloud": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.mixcloud.com",
+   "nsfw": false
+  },
+  "MMORPG Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "moikrug": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Monkeytype": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.monkeytype.com",
+   "nsfw": false
+  },
+  "Motherless": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Motorradfrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "mstdn.io": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "mstdn.social": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "MuseScore": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "MyAnimeList": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Mydealz": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Mydramalist": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "MyMiniFactory": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Myspace": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "n8n Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "nairaland.com": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "namuwiki": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "NationStates Nation": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "NationStates Region": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Naver": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Needrom": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Newgrounds": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Nextcloud Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "NICommunityForum": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Nightbot": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.nightbot.tv",
+   "nsfw": false
+  },
+  "Ninja Kiwi": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "NintendoLife": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "NitroType": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "nnRU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "NotABug.org": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "note": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Nothing Community": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "npm": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Nyaa.si": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ObservableHQ": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Odysee": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "omg.lol": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "api.omg.lol",
+   "nsfw": false
+  },
+  "Open Collective": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "OpenGameArt": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "opennet": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Opensource": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "OpenStreetMap": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "osu!": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "OurDJTalk": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Outgress": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Packagist": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pastebin": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Patched": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Patreon": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PCGamer": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PentesterLab": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pepperdeals": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PepperealsUS": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PepperNL": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PepperPL": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Periscope": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "phpRU": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "pikabu": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pinkbike": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pinterest": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "pixelfed.social": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Platzi": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": 404,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PlayStore": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Playstrategy": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Plurk": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PocketStars": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Pokemon Showdown": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Polarsteps": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.polarsteps.com",
+   "nsfw": false
+  },
+  "Polygon": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Polymart": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pornhub": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "pr0gramm": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Preisjaeger": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ProductHunt": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "prog.hu": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "programming.dev": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Promodescuentos": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PromoDJ": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pronouns.page": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PSNProfiles.com": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Pychess": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "PyPi": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Python.org Discussions": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Rajce.net": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Rarible": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Rate Your Music": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Rclone Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Realmeye": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Redbubble": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Reddit": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "RedTube": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Reisefrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Replit.com": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ResearchGate": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ReverbNation": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Roblox": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "RocketTube": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "RoyalCams": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Ruby Forums": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "RubyGems": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Rumble": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "RuneScape": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "satsisRU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Sbazar.cz": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Scratch": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Scribd": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SEOForum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "sessionize": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Shelf": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ShitpostBot5000": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Signal": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Sketchfab": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Slack": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Slant": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Slashdot": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Slides": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": 204,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SlideShare": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SmugMug": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Smule": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Snapchat": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "social.tchncs.de": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SOOP": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api-channel.sooplive.co.kr",
+   "nsfw": false
+  },
+  "SoundCloud": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SourceForge": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SoylentNews": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SpaceHey": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SpeakerDeck": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Speedrun.com": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Spells8": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "spletnik": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Splice": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Splits.io": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Sporcle": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Sportlerfrage": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SportsRU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Spotify": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Star Citizen": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Status Cafe": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Steam Community (Group)": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Steam Community (User)": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Strava": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SublimeForum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Substack": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "svidbook": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "SWAPD": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Telegram": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Tellonym.me": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Tenor": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Terraria Forums": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TETR.IO": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "ThemeForest": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TheMovieDB": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "threads": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Tiendanube": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TikTok": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "tistory": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TnAFlix": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Topcoder": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": "api.topcoder.com",
+   "nsfw": false
+  },
+  "Topmate": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "toster": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TradingView": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Trakt": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TRAKTRAIN": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TrashboxRU": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Trawelling": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Trello": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Trovo": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "TryHackMe": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "tumblr": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Tuna": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Tweakers": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Twitch": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Twitter": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "nitter.privacydev.net",
+   "nsfw": false
+  },
+  "Typeracer": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "uid": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Ultimate-Guitar": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Unsplash": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Untappd": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Valorant Forums": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Velog": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Velomania": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Venmo": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "test1.venmo.com",
+   "nsfw": false
+  },
+  "Vero": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Vimeo": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "VirusTotal": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Vjudge": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "VK": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "VLR": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "VSCO": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wakatime": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Warframe Market": {
+   "error_type": "status_code",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "api.warframe.market",
+   "nsfw": false
+  },
+  "Warrior Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wattpad": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Weblate": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "WebNode": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Weebly": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "WICG Forum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wikidot": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wikipedia": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Windy": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wix": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "WolframalphaForum": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wordnik": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "WordPress": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "WordPressOrg": {
+   "error_type": "response_url",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wowhead": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": 404,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "write.as": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Wykop": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "Xbox Gamertag": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "xHamster": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "Xvideos": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "YandexMusic": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "YouNow": {
+   "error_type": "message",
+   "method": "GET",
+   "error_code": null,
+   "probe_host": "api.younow.com",
+   "nsfw": false
+  },
+  "YouPic": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "YouPorn": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": true
+  },
+  "YouTube": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  },
+  "znanylekarz.pl": {
+   "error_type": "status_code",
+   "method": "HEAD",
+   "error_code": null,
+   "probe_host": null,
+   "nsfw": false
+  }
+ }
+}

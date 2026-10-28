@@ -145,14 +145,14 @@ python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
 
-`make preflight` runs the pre-commit hook's fifteen commands plus the telemetry
-test, which the hook leaves to CI, and `make validate-kernel` runs the
+`make preflight` runs the pre-commit hook's twenty-one commands plus the
+telemetry test, which the hook leaves to CI, and `make validate-kernel` runs the
 aggregator. The gate battery is defined once, in
 `KERNEL_GATE` inside `tools/validate_conformance.py`, so a new check joins it
 there rather than in every document that quotes a command.
 
 **Every validator self-test runs on all four automated paths**: the hook,
-`make preflight`, the kernel gate, and CI, where seven have a named step of their
+`make preflight`, the kernel gate, and CI, where ten have a named step of their
 own and hygiene's runs in the Housekeeping step. A self-test breaks its governed
 artifact in memory and asserts each break is refused, so it is the test that
 fails when a check is removed. Until 2026-09-28 five of the six that then existed
@@ -160,7 +160,10 @@ ran on no path, and the fires_when fix was reported green in two sessions while
 the layer-model self-test exited 1. `tools/validate.py` runs its own inside
 `--kernel`. `tools/validate_doctrine.py` gained one on 2026-10-01, and so did
 `tools/pin_of_record.py`, the one reader of the pin of record the doctrine,
-authorization and retention gates share. The kernel gate's exit code shows a
+authorization and retention gates share. `tools/validate_divergence_register.py`
+joined with its own at Step 9, and `tools/validate_manifest.py` and
+`tools/validate_connector_conformance.py` with theirs at Step 12. The kernel
+gate's exit code shows a
 self-test failure only while no other entry holds it red, and its entry line
 always shows it, which is why CI also runs each self-test as a step of its own.
 
@@ -177,31 +180,85 @@ registry in `ontology/selectors.yaml` (the closed vocabulary, anchor
 eligibility, the constraint rule, prohibitions, matchers, and its codes
 reconciled against the layer model), the cast draft in `synthetic/` (the
 checkable half of SS-3, the confuser pair, the partition, the seal, and no
-filled value while unsealed), and the telemetry recorder in `tools/gate_log.py`
-(HY-1 and RT-19 exercised by `tools/tests/test_gate_log.py`). The schema,
+filled value while unsealed), the telemetry recorder in `tools/gate_log.py`
+(HY-1 and RT-19 exercised by `tools/tests/test_gate_log.py`), and the
+divergence register in `spec/divergence-register.yaml` (every pointer a diff of
+the PSE schema and zmeta-event-1.0 produces covered once or listed identical,
+both pins holding, dispositions from a closed five that fit the diff, entries
+that cite the contract, test_refs that resolve to a fixture touching what the
+entry names, the compatibility claim in no file of the tree, and its rendering
+current). The divergence gate reads the upstream schema from the sibling
+checkout `../ZMeta/zmeta-spec`, pinned by sha256; CI clones the pinned release
+there, and a checkout without it exits 2 rather than passing. The schema,
 policy and authorization checks now exist. The schema check grades the generated
 schema, the policy pack and both corpora against `spec/layer-model.yaml`, and the
 authorization and retention checks are implemented and refuse, because the
-artifacts they grade carry no dated row in `doctrine/DOCTRINE_STATUS.md`. The
-connector checks do not exist, because no connector does. `--kernel-gate` prints
+artifacts they grade carry no dated row in `doctrine/DOCTRINE_STATUS.md`. Step 12
+added the connector manifest check: `tools/validate_manifest.py --all` grades
+every `connectors/*/manifest.yaml` against `schema/connector-manifest.schema.json`,
+the selector registry, both canaries, one refusal fixture per required input
+linted against `conformance/connector-harness/fixture.schema.json`, SS-10's
+bystander declaration, and the R7 stamp. The first connector,
+`connectors/sherlock/`, refused under `MANIFEST_SELECTOR_PLATFORM`, which is
+reading SH-R5 in its README, until its handle emit declared `platform_from_item`
+on 2026-10-28 (MF-R17, amendment 9.14 of `docs/PLAINSIGHT-design.md`). The
+operator decides whether that move stands, and reverting it returns this check,
+the pre-commit hook and `make preflight`, which run it, to refusing.
+`tools/validate_connector_conformance.py --all` is rung 4: it runs the manifest
+gate first, replays every cassette through the adapter, grades every emitted
+event with `tools/validate.py`, asserts each fixture's exact event count, or its
+refusal code and the input it withholds, the known negative's zero hits and the
+known positive's hits, and asserts that `invoke()` reaches no process or network
+call without a permit. It refuses whenever the manifest does. Every
+cassette it replays is hand-built in a recorded shape, and the live canaries are
+an operator act that has not been performed. Step 10 drafted
+`runner/subject_guard.py`, which refuses every request while the artifacts
+SS-14 item 6 lists carry no dated row, and its tests,
+`runner/tests/test_subject_guard.py`, which run on the kernel gate, in
+`make test` and in CI's Mechanism tests step. The Sherlock adapter's own tests
+run under pytest in `make prove` and in CI's connector adapter tests step.
+The application's tests under `app/tests/` run under pytest on the kernel gate
+as its app-tests entry, in `make test` and in CI's Application tests step, and
+not in the pre-commit hook or `make preflight`, which reading APP-R30 in
+`app/README.md` explains.
+`tools/validate_authorization.py --dispatch-paths` reads every Python file under
+`runner/`, `connectors/` and `app/` for a site that dispatches outside the gate
+and refuses, because `runner/dispatch_allowlist.yaml` does not exist and the
+bypass check has nothing to compare against. Its reading VA-R6, which reads a
+patch target and its kept original in a test module as no site, narrows what it
+reports; it is applied as the session's reading of 2026-10-28, and whether it
+is a Class B precision rule or a Class F exemption is the operator's to
+confirm, with the rule removed and the four references listed in the allowlist
+draft if he reads it as F. `--kernel-gate` prints
 an unimplemented check as PENDING with the step that delivers it, prints an
 implemented check whose artifact carries no stamp as UNRATIFIED and asserts that
 it refused, and never counts a pending, stubbed or unratified check as a pass.
-The three YAML validators need PyYAML and `tools/validate.py` needs jsonschema.
-CI installs both and a local checkout must have both.
+Every validator that parses YAML needs PyYAML, the divergence register's among
+them, and `tools/validate.py`, `tools/validate_manifest.py`,
+`tools/validate_connector_conformance.py` and
+`runner/tests/test_subject_guard.py` need jsonschema.
+CI installs both and a local checkout must have both. The connector adapter
+tests and the application's tests need pytest, which CI installs, and a local
+checkout needs it for the kernel gate, whose app-tests entry runs
+`python -m pytest app`.
 
 `tools/validate_retention.py --repo-scan` is implemented as of Step 8, which
 closed D-001. It reads every tracked file in the working tree for a filled
 selector in its typed form, or written as a type beside a value in a JSON line,
 a .json file or a .yaml file, against thirteen shapes reconciled with
 `ontology/selectors.yaml` in both directions, and the pre-commit hook runs the
-same mode over the index. Two of RT-15's four enforcement parts are in place,
-this file's Execution Limits clause and the scan in the hook. The other two are
-not: `canary_subject_class` is required on no connector manifest, because no
-connector exists, and the violation code RT-15 names is not in the wire
-vocabulary, so the scan emits a tool-local code. Separately, git history is out
+same mode over the index. Three of RT-15's four enforcement parts are in place:
+this file's Execution Limits clause, the scan in the hook, and
+`canary_subject_class`, required by the manifest schema and refused when absent
+since Step 12 and declared on `connectors/sherlock/manifest.yaml`. The fourth is
+not: the violation code RT-15 names is not in the wire vocabulary, so the scan
+emits a tool-local code. Separately, git history is out
 of reach of any check that runs at commit time, so a selector deleted from the
-working tree and still present in an earlier commit is not found. It refused on two values that predate Step 8
+working tree and still present in an earlier commit is not found. The retention
+self-test refused with `RETENTION_POLICY_ENFORCEMENT_MISSTATED` while
+`policy/retention.yaml` recorded the `canary_subject_class` part as absent. On
+the operator's instruction of 2026-10-28 that flag reads present, a one-word
+edit of that flag whose class he confirms, and the self-test's mutation now flips it. The scan refused on two values that predate Step 8
 until both were replaced with placeholders under the operator's overnight grant
 of 2026-09-30, and `CONFORMANCE.md` section 4 records what they were and why no
 exemption was added.

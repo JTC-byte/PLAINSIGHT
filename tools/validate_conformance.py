@@ -21,9 +21,11 @@ and exit 0, the handoff and `CONFORMANCE.md` recorded `--corpus` and
 `docs/THE-GAMEPLAN.md` recorded `--matchers`, and nothing called either until
 2026-09-28, when both joined the list as STUB.
 
-Eight self-tests are entries of their own, IMPLEMENTED: six as of
-2026-09-28, and the doctrine gate's and the pin-of-record reader's as of
-2026-10-01. `tools/validate.py` runs its own inside the schema entry. A
+Eleven self-tests are entries of their own, IMPLEMENTED: six as of
+2026-09-28, the doctrine gate's and the pin-of-record reader's as of
+2026-10-01, the divergence register's as of Step 9, and the manifest
+validator's and the connector conformance runner's as of Step 12.
+`tools/validate.py` runs its own inside the schema entry. A
 self-test breaks the governed artifact in memory and asserts each break is
 refused, which is the test design gate 1 asks for. Before that date only the
 hygiene self-test and the one inside `tools/validate.py --kernel` ran on any
@@ -80,7 +82,7 @@ UNRATIFIED = "unratified"
 #:
 #: The self-test and stub entries are the exception, because no tool records a
 #: run under their tokens. Each takes its tool's token with the mode appended.
-#: Six of the eight self-tests record nothing to telemetry. The cast and
+#: Nine of the eleven self-tests record nothing to telemetry. The cast and
 #: authorization self-tests record under the entry's own token since
 #: 2026-10-01; until then they recorded under the tool's token, so each run
 #: counted in that gate's telemetry as a run of the gate.
@@ -169,10 +171,11 @@ KERNEL_GATE = (
         "tree read for a filled selector in its typed form, or as a type beside "
         "a value in a JSON line, a .json file or a .yaml file, against thirteen "
         "shapes reconciled with ontology/selectors.yaml in both directions. "
-        "Two of RT-15's four enforcement parts are in place: canary_subject_class "
-        "on a connector manifest and the code the criterion names are not, and git "
-        "history is out of reach of any commit-time check. The pre-commit hook runs "
-        "the same mode over the index",
+        "Three of RT-15's four enforcement parts are in place: since Step 12 "
+        "canary_subject_class is required by schema/connector-manifest.schema.json "
+        "and declared on connectors/sherlock/manifest.yaml. The code the criterion "
+        "names is not in the vocabulary, and git history is out of reach of any "
+        "commit-time check. The pre-commit hook runs the same mode over the index",
     ),
     (
         "retention-self-test",
@@ -243,18 +246,52 @@ KERNEL_GATE = (
         IMPLEMENTED,
         "--self-test. Breaks the gate corpus, the policy, the record shape and the "
         "pin of record in memory and asserts each break is refused, including a "
-        "permit asserted under a stamp state missing a criterion. It is green while "
-        "--fixtures refuses, because it grades the checks rather than the stamps, "
+        "permit asserted under a stamp state missing a criterion, and since Step 10 "
+        "plants dispatch sources and fixture allowlists for --dispatch-paths. It is "
+        "green while --fixtures refuses, because it grades the checks rather than the stamps, "
         "with one exception: completing SS-14 item 6 leaves row 8 of "
         "conformance/gate/decisions.jsonl asserting a refusal that no longer "
         "arises, so the commit that completes the set edits that row too",
     ),
     (
         "authorization-dispatch-paths",
-        None,
-        PENDING,
-        "Step 10. SS-6's subject is runner/, which is empty, so the scan would "
-        "find zero ungated call sites and exit clean while nothing is gated",
+        [PY, "tools/validate_authorization.py", "--dispatch-paths", "--quiet"],
+        UNRATIFIED,
+        "--dispatch-paths, drafted at Step 10. Every Python file under runner/, "
+        "connectors/ and app/, tracked or untracked, read for a site that constructs "
+        "argv, runs a process, opens a connection, a listener or a subscription, starts "
+        "a container, draws a credential, resolves a callable at run time or forges a "
+        "Decision, each required to sit behind a permits check on a decision "
+        "runner.subject_guard.evaluate() returned or to be listed in "
+        "runner/dispatch_allowlist.yaml with a reason. It refuses because that "
+        "allowlist, item 8 of SS-14 item 6, does not exist, so the bypass check has "
+        "nothing to compare against; the drafted allowlist waits outside the tree for "
+        "the operator. Its self-test cases run in the authorization self-test",
+    ),
+    (
+        "subject-guard-tests",
+        [PY, "runner/tests/test_subject_guard.py"],
+        IMPLEMENTED,
+        "Step 10. runner/subject_guard.py against SS-5, SS-8, SS-9, SS-10, SS-12 and "
+        "SS-14 item 6: the live pin refuses a valid request at step 1, a present valid "
+        "record unlocks no hard refusal, each of SS-5's three fields is read, values "
+        "and sentences come from the compiled policy, no selector value escapes, and "
+        "only a fully stamped fixture pin permits. Runs under pytest and as a script",
+    ),
+    (
+        "app-tests",
+        [PY, "-m", "pytest", "app", "-q", "--tb=short", "-p", "no:cacheprovider"],
+        IMPLEMENTED,
+        "Joined 2026-10-28, on the precedent SG-R15 set for subject-guard-tests. "
+        "app/tests under pytest: the store and its triggers, the ingest door, the "
+        "projections, rebuild and replay, the retention sweep's refusals, the loopback "
+        "server, its routes, the egress guard and the notice stream, and the static "
+        "front end, each over the must-pass corpus and claiming coverage rather than "
+        "correctness. app/tests/test_controls.py runs the 91 paired negative controls "
+        "inside the suite and fails it when a check stays green with its mechanism "
+        "removed. --tb=short keeps a failure to its assertion line. It runs about "
+        "three minutes, so it is on this path, in make test and in CI, and not in the "
+        "pre-commit hook or make preflight (reading APP-R30)",
     ),
     (
         "authorization-disjointness",
@@ -297,17 +334,93 @@ KERNEL_GATE = (
     ),
     (
         "divergence-register",
-        None,
-        PENDING,
-        "Step 9. spec/divergence-register.yaml does not exist",
+        [PY, "tools/validate_divergence_register.py", "--quiet"],
+        IMPLEMENTED,
+        "Step 9. spec/divergence-register.yaml against a JSON-pointer diff of "
+        "schema/pse-event-0.1.schema.json and zmeta-event-1.0, read from "
+        "../ZMeta/zmeta-spec and pinned by sha256: every pointer the diff produces "
+        "covered once or listed identical, no stale pointer and both pins holding, "
+        "dispositions from the closed five that fit the diff, complete entries citing "
+        "the contract and every divergence its section 13.2 names, test_refs that "
+        "resolve to a fixture touching what the entry names, the compatibility claim "
+        "in no file of the tree, and the rendering current",
+    ),
+    (
+        "divergence-register-self-test",
+        [PY, "tools/validate_divergence_register.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Breaks the register, the two derived tables, the corpora and "
+        "the tree in memory and asserts each of the six checks and the rendering "
+        "check refuses by its own code, among them a deleted entry and a dangling "
+        "test_ref",
+    ),
+    (
+        "connector-manifest",
+        [PY, "tools/validate_manifest.py", "--all", "--quiet"],
+        IMPLEMENTED,
+        "Step 12. Every connectors/*/manifest.yaml against "
+        "schema/connector-manifest.schema.json, the selector registry, both canaries, "
+        "one refusal fixture per required input linted against "
+        "conformance/connector-harness/fixture.schema.json, kind agreement, the SS-10 "
+        "bystander declaration, and the R7 stamp read through tools/pin_of_record.py. "
+        "With zero manifests it validates none and passes on the two schemas checked "
+        "against the draft 2020-12 metaschema and their copied enums reconciled "
+        "(MF-R3); it is no claim about any connector",
+    ),
+    (
+        "connector-manifest-self-test",
+        [PY, "tools/validate_manifest.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Breaks a placeholder-only manifest in memory and its fixtures on a "
+        "scratch disk outside the repository, and asserts each break is refused by its "
+        "own code, among them an undeclared bystander block, a retain disposition, an "
+        "emit at layer inference and a retention duration in lineage, that an "
+        "unstamped R7 refuses and a stamped one permits, and that a file that is not "
+        "YAML or is absent exits 2",
     ),
     (
         "connector-conformance",
-        None,
-        PENDING,
-        "Step 12. No connector exists",
+        [PY, "tools/validate_connector_conformance.py", "--all", "--quiet"],
+        IMPLEMENTED,
+        "Step 12, rung 4 of CONFORMANCE.md section 3. Every connectors/<id>/: "
+        "tools/validate_manifest.py's full mode first, then each fixture linted "
+        "against conformance/connector-harness/fixture.schema.json, each cassette "
+        "replayed through the adapter's parse and emit, every emitted event graded "
+        "by tools/validate.py check_event, event_count asserted exactly, each "
+        "refusal fixture refused with its code from the check of the input it "
+        "withholds, the known negative yielding no hit in its stated class, the "
+        "known positive yielding its hits, a vacuous pass refused, and invoke() "
+        "refusing with no process or network call reached unless the gate "
+        "permitted, run only when no dispatch site sits outside it. It refused while "
+        "connectors/sherlock/manifest.yaml refused on reading SH-R5, until the "
+        "platform_from_item move of 2026-10-28 (MF-R17), which the maintainer decides. "
+        "The live canaries are an operator act it never performs",
+    ),
+    (
+        "connector-conformance-self-test",
+        [PY, "tools/validate_connector_conformance.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Plants each defect in a scratch copy of connectors/sherlock "
+        "outside the repository and asserts each is refused by its own code, among "
+        "them a known negative altered to a hit, an event_count off by one, an "
+        "emitted event carrying confidence, a filled value in a fixture and in a "
+        "cassette, invoke reachable without a permit, a process call and a socket "
+        "connect the static scan cannot resolve, a refusal fixture refused for the "
+        "wrong reason, and an adapter that refuses everything",
     ),
 )
+
+
+def _named_path(cmd: list[str]) -> tuple[str, bool]:
+    """The path an entry's command names, and whether it exists. A script is
+    argv[1] and must be a file; `python -m <module> <path>` names the path after
+    the module, the directory pytest collects from, which must exist. An empty
+    directory passes here and fails when it runs, because pytest exits 5 when it
+    collects no test."""
+    if len(cmd) > 1 and cmd[1] == "-m":
+        named = next((a for a in cmd[3:] if not a.startswith("-")), "")
+        return named or "no path after the module", bool(named) and (ROOT / named).exists()
+    return cmd[1], (ROOT / cmd[1]).is_file()
 
 
 def run(argv: list[str]) -> tuple[int, str]:
@@ -344,11 +457,12 @@ def main(argv: list[str]) -> int:
     # The gate list must agree with the tree, in both directions.
     for token, cmd, state, _ in KERNEL_GATE:
         if state in (IMPLEMENTED, STUB, UNRATIFIED) and cmd is not None:
-            if not (ROOT / cmd[1]).is_file():
+            named, present = _named_path(cmd)
+            if not present:
                 print(
                     f"REFUSED GATE_LIST_INCONSISTENT\n"
                     f"  where: {token}\n"
-                    f"  what:  the gate list marks this {state} and names {cmd[1]}, "
+                    f"  what:  the gate list marks this {state} and names {named}, "
                     f"which does not exist, so the gate would fail for the wrong reason\n"
                     f"  moves: write the tool, or move the entry to {PENDING}",
                     file=sys.stderr,

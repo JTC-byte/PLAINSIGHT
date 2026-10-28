@@ -1,0 +1,13 @@
+username,name,url_main,url_user,exists,http_status,response_time_s
+<institutional_handle>,1337x,https://www.1337x.to/,https://www.1337x.to/user/<institutional_handle>/,WAF,403,0.0881000760000461
+<institutional_handle>,Discord,https://discord.com/,https://discord.com,Claimed,200,0.2817305560000337
+<institutional_handle>,GitHub,https://www.github.com/,https://www.github.com/<institutional_handle>,Claimed,200,0.369737005999923
+<institutional_handle>,GitLab,https://gitlab.com/,https://gitlab.com/<institutional_handle>,Available,200,0.1506193989998792
+<institutional_handle>,HackerNews,https://news.ycombinator.com/,https://news.ycombinator.com/user?id=<institutional_handle>,Available,429,0.4127790450002
+<institutional_handle>,Instagram,https://instagram.com/,https://instagram.com/<institutional_handle>,Claimed,200,0.7104471360000208
+<institutional_handle>,LinkedIn,https://linkedin.com/,https://linkedin.com/in/<institutional_handle>,Available,999,0.3301938749999863
+<institutional_handle>,ResearchGate,https://www.researchgate.net/,,Illegal,,
+<institutional_handle>,Slides,https://slides.com/,https://slides.com/<institutional_handle>,Available,204,0.2519862470000065
+<institutional_handle>,Steam Community (User),https://steamcommunity.com/,https://steamcommunity.com/id/<institutional_handle>/,Claimed,429,0.5521087389999845
+<institutional_handle>,Trakt,https://www.trakt.tv/,https://www.trakt.tv/users/<institutional_handle>,Claimed,200,0.6208914160000075
+<institutional_handle>,Twitter,https://x.com/,https://x.com/<institutional_handle>,Unknown,?,

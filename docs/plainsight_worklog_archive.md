@@ -2477,3 +2477,91 @@ as `GATE_LIST_UNRATIFIED_PERMITTED`. Every gate accepts a dated stamp row for a
 path that does not exist, such as `runner/dispatch_allowlist.yaml`.
 
 ---
+
+## 2026-09-29, checkpoint closeout. Two defects measured outside the tree are recorded, and the handoff is corrected to match `b378cd8`.
+
+**Class:** A. Records only: this entry, the oldest live entry moved to the
+archive unedited, and the handoff. No doctrine file, stamp, schema, policy file,
+generated artifact, corpus, fixture, validator, hook, workflow or README changed,
+so `CHANGELOG.md` carries no entry.
+
+**Agent involvement.** An agent in the plainsight session wrote this entry and
+the handoff at the checkpoint closeout the operator called on 2026-09-29, which
+the parent-folder session relayed. The relay authorized nothing, and no
+instruction to commit these records had been given when they were written. Under
+`CLAUDE.md` section 5, R6, the commit waits for the operator's instruction for
+that act, and its message names that instruction.
+
+**The battery, at `b378cd8`, before these records.** All fourteen preflight
+commands exit 0, the six self-tests among them. Both forms of `git diff --check`
+are clean. The kernel gate exits 1 on `retention-repo-scan` alone, with fourteen
+implemented entries, that one failing, three unratified and refusing, two stubbed
+and five pending. That is the disclosed state, and nothing else in the battery is
+red.
+
+**CI on GitHub confirmed the wiring.** Run 36501081165 on `b378cd8` ran every
+step the workflow defines. The five named self-test steps passed, the kernel gate
+failed on `retention-repo-scan` alone, and the hook step and the co-authorship
+trailer check both ran after it and passed. That is the first run since
+2026-09-08 in which those two steps ran. The handoff's known gap saying the
+wiring had not run on GitHub is closed, and so is its instruction to read that
+run.
+
+**Two defects measured outside the repository and never recorded here.**
+
+- The public README says a schema and a policy pack do not exist.
+  `README.md:10-11` reads "No schema, no policy pack, and no collection mechanism
+  exists." `git log --diff-filter=A` dates `schema/pse-event-0.1.schema.json` and
+  `policy/semantics.yaml` to `4e6abda` on 2026-09-08, and
+  `schema/subject-authorization.schema.json`, `policy/subject-authorization.yaml`
+  and `policy/retention.yaml` to `0e0c840` on 2026-09-11. The README was last
+  edited in `ff016af` on 2026-09-11, kept the sentence, and stands unchanged at
+  `b378cd8`. Its "Next action" section also still describes Step 7 as future
+  work. The collection-mechanism and connector clauses are still true. A
+  different plainsight session first recorded the defect on 2026-09-14, in the
+  crossings reply named below, and this session dated the additions with
+  `git log` on 2026-09-15.
+- The pin of record has three independent readers, and two of them disagree.
+  `tools/validate_authorization.py` parses `doctrine/DOCTRINE_STATUS.md` with its
+  `Pin` class and `tools/validate_retention.py` with `stamped_path()`, and
+  `tools/validate_doctrine.py` checks that each criterion has a row and that its
+  marker agrees, and reads no artifact path. No parser is shared. Instantiating
+  the first two against the live file at `b378cd8` gives opposite answers for
+  `spec/pse-semantics-contract.md`. `Pin.artifact_stamped` returns false, because
+  the Pending table lists that path as a stamp target. `stamped_path` returns
+  true, because it counts only the Ratified section and never subtracts the
+  Pending table's stamp-target rows. The other paths tested all agree. The
+  disagreement is latent, because `stamped_path` has two call sites, at
+  `tools/validate_retention.py:1041` and `:1290`, and they pass the retention
+  policy and the shred fixture, never the contract. This session first measured
+  it on 2026-09-17 at `4a5c788`.
+
+**Session context kept outside this repository.** This session answered three
+fact requests from the ecosystem research sessions, on 2026-09-15, 2026-09-16 and
+2026-09-17, and reviewed and re-reviewed the self-test wiring on 2026-09-28,
+which the entry above records. The replies are kept under
+`Z-ISR/_session-artifacts/2026-09-15-plainsight-harvest-of-c45e1214/` and the
+reviews under `Z-ISR/_session-artifacts/2026-09-28-plainsight-selftest-wiring-review/`.
+The crossings classing of 2026-09-14, which a different plainsight session made
+and then corrected by erratum, is kept at
+`Z-ISR/_session-artifacts/2026-09-14-plainsight-harvest-c45e1214/CLASS_F_CROSSINGS_REPLY.md`.
+Its durable finding is that EG-1 defines exactly two environments, and no
+criterion defines a third environment or a holder for this repository's material
+in a shared picture. The one outside destination doctrine names is RT-18's
+disclosure export to an agency. A crossing into a shared picture is therefore
+unadjudicated until a rank-1 EGRESS decision defines one. The ecosystem register
+states its own boundary, that person-centric outputs do not enter the ISR
+picture, and that boundary appears nowhere in this tree. None of this changed a
+file here, and none of it is a ruling.
+
+**The worktree is left in place.** The branch `claude/hopeful-maxwell-69bb46`
+stands at `b378cd8`, merged into `main`, and its worktree under
+`.claude/worktrees/` is clean. It was not removed, for three reasons. The session
+working in it is still open. Removing it also deletes its ignored `.gate-log/`,
+the record of the gate runs made there, which RT-19 gives a 90-day lifetime so
+that `doctrine/HYGIENE.md` can adjudicate the checks. A delete is an act this
+closeout has no instruction for. `git worktree remove` and then `git branch -d`
+are safe once that session is archived and the telemetry is kept or its loss is
+accepted.
+
+---

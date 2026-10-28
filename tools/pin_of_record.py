@@ -61,6 +61,10 @@ NAMESPACE_FILE = {
     "HY": "doctrine/HYGIENE.md",
 }
 
+#: A decision row's Item cell opens with its D or R token and a space, as in
+#: "R7 interaction line". Read by `Pin.decision_stamped` (PIN-R9).
+DECISION_RE = re.compile(r"^([DR][1-9]\d*)\s")
+
 PATH_RE = re.compile(r"`([A-Za-z0-9_./-]+\.(?:md|ya?ml|json|py|jsonl))`")
 CRITERION_RE = re.compile(r"((?:SS|RT|EG|CR|HY)-\d+)\b")
 CONCLUSION_RE = re.compile(
@@ -111,6 +115,11 @@ READINGS = {
     "header, as validate_authorization.py read it before this module. Reading such a "
     "row as a stamp would accept rows this reader now refuses, which is class F, so "
     "the heuristic stays until the operator decides it.",
+    "PIN-R9": "A decision is stamped when a Ratified row whose Item cell opens with its "
+    "token and a space, such as 'R7 interaction line', passes PIN-R2 and is not "
+    "withdrawn under PIN-R3. The decision stamp is read beside the path stamps and "
+    "never changes them: a decision row stamps no artifact. Added at Step 12 for "
+    "tools/validate_manifest.py, whose interaction_class check keys on R7.",
 }
 
 
@@ -170,6 +179,7 @@ class Pin:
         self.named: dict[str, set[str]] = {}
         self.stamp_targets: set[str] = set()
         self.criteria: dict[str, str] = {}
+        self.decisions: dict[str, str] = {}
         self.parsed = False
 
         ratified = _slice(text, RATIFIED_START, RATIFIED_END)
@@ -187,6 +197,9 @@ class Pin:
             date = _conclusion_date(conclusion)
             if not date or ratifier.strip().lower() not in RATIFIERS:
                 continue
+            decision = DECISION_RE.match(item.strip())
+            if decision:
+                self.decisions.setdefault(decision.group(1), date)
             paths = PATH_RE.findall(file_cell)
             if not paths:
                 continue
@@ -263,6 +276,12 @@ class Pin:
             return False
         in_range = any(r_ns == ns and 1 <= n <= top for r_ns, top in self.ranges.get(path, []))
         return in_range or cid in self.named.get(path, set())
+
+    def decision_stamped(self, token: str) -> str:
+        """The stamp date of decision `token`, such as 'R7', or '' when unstamped (PIN-R9)."""
+        if not self.parsed:
+            return ""
+        return self.decisions.get(token, "")
 
 
 def read(root: Path = ROOT, sections: dict[str, set[str]] | None = None) -> Pin:
@@ -391,6 +410,17 @@ def _cases():
         ("a pin without its Ratified heading stamps nothing",
          lambda t: t.replace(RATIFIED_START + "\n", "## Ratifed\n", 1),
          lambda p: not p.parsed and not p.artifact_stamped("doctrine/SUBJECT_SELECTION.md")),
+        ("the real pin stamps decision R7 (PIN-R9)", lambda t: t,
+         lambda p: p.decision_stamped("R7") == "2026-08-26"),
+        ("a pin without R7's row leaves R7 unstamped",
+         lambda t: re.sub(r"(?m)^\| R7 [^\n]*\n", "", t, count=1),
+         lambda p: p.decision_stamped("R7") == "" and p.decision_stamped("R4") != ""),
+        ("a withdrawn R7 row stamps nothing",
+         lambda t: re.sub(r"(?m)^\| R7 interaction line", "| R7 interaction line (withdrawn)", t, count=1),
+         lambda p: p.decision_stamped("R7") == ""),
+        ("a decision row stamps no artifact",
+         lambda t: _add(t, _row("R99 a planted decision", f"`{POLICY}`")),
+         lambda p: p.decision_stamped("R99") != "" and not p.artifact_stamped(POLICY)),
     ]
 
 

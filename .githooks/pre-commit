@@ -17,6 +17,11 @@
 # `--repo-scan --staged` is that check, reading the index rather than the
 # working tree, and `make validate-kernel` runs the working-tree scan where a
 # refusal can be read rather than blocking a commit.
+#
+# The application's tests under app/ are not run here either, by reading
+# APP-R30 of 2026-10-28: they take about three minutes and guard runtime
+# behaviour rather than what enters the history. The kernel gate, make test and
+# CI's Application tests step run them.
 
 set -e
 
@@ -72,12 +77,68 @@ python tools/validate.py --kernel --quiet || {
   exit 1
 }
 
+# Step 9. The register's entry list is derived from a diff of the PSE schema
+# and zmeta-event-1.0, read from the sibling checkout ../ZMeta/zmeta-spec, so a
+# schema change that moves the diff, or a stale rendering, refuses here rather
+# than after the commit. Exit 2 means that checkout or another input is absent.
+python tools/validate_divergence_register.py --quiet || {
+  echo ""
+  echo "pre-commit refused: the divergence register disagrees with the schema diff, or an input it reads is absent."
+  echo "  rule:  docs/THE-GAMEPLAN.md Step 9, AGENTS.md section 1 and the Schema row of section 6"
+  echo "  moves: fix the entry, pointer, pin, test_ref or line named above and re-render with"
+  echo "         python tools/render_divergence_register.py; or check out zmeta-spec at"
+  echo "         ../ZMeta/zmeta-spec as the refusal names; then commit again."
+  exit 1
+}
+
+# Step 12. Every connector manifest against the manifest schema, the selector
+# registry, both canaries, one refusal fixture per required input, SS-10's
+# bystander declaration and the R7 stamp. connectors/sherlock/manifest.yaml was
+# refused under MANIFEST_SELECTOR_PLATFORM at emits.0 on reading SH-R5 in
+# connectors/sherlock/README.md, which blocked every commit, until the
+# platform_from_item move of 2026-10-28 (MF-R17), built on the maintainer's
+# instruction; whether that move stands is his decision, and reverting it
+# returns this command and the next to refusing.
+python tools/validate_manifest.py --all --quiet || {
+  echo ""
+  echo "pre-commit refused: a connector manifest, or a schema it is graded against, is refused."
+  echo "  rule:  docs/PLAINSIGHT-design.md section 6.4, doctrine/SUBJECT_SELECTION.md SS-10,"
+  echo "         doctrine/RETENTION.md RT-15"
+  echo "  moves: fix the manifest, fixture or schema line named above; or run"
+  echo "         python tools/validate_manifest.py --shape <path> for structure-only feedback,"
+  echo "         which makes no conformance claim; then commit again."
+  exit 1
+}
+
+# Step 12, rung 4. Every connector's adapter against its own cassettes and
+# fixtures: the manifest gate first, every cassette replayed through parse and
+# emit, every emitted event graded by tools/validate.py, event_count exact, each
+# refusal fixture refused with its code, the known negative yielding no hit, and
+# invoke() starting no process without a permit. It never runs a connector
+# against a platform. It refuses whenever connectors/sherlock/manifest.yaml does.
+python tools/validate_connector_conformance.py --all --quiet || {
+  echo ""
+  echo "pre-commit refused: a connector's adapter does not hold against its cassettes and fixtures."
+  echo "  rule:  CONFORMANCE.md section 3 rung 4, docs/PLAINSIGHT-design.md sections 6.3 and 7.2,"
+  echo "         doctrine/SUBJECT_SELECTION.md SS-6"
+  echo "  moves: fix the adapter, fixture or cassette line named above; or, where the manifest"
+  echo "         refusal is held on a reading, put it to the operator; then commit again."
+  exit 1
+}
+
 # Every validator's self-test. Each breaks its governed artifact in memory and
 # asserts that every break is refused, so a check that has stopped refusing is
 # caught before the commit rather than read as green after it. The fires_when
 # fix was reported green in two sessions while the layer-model self-test exited
 # 1, because nothing on this path ran it. Unlike the Step 8 artifact modes named
-# above, the eight are green today and grade the checks rather than the stamps.
+# above, the eleven grade the checks rather than the stamps. All eleven are
+# green today. The retention self-test refused with
+# RETENTION_POLICY_ENFORCEMENT_MISSTATED from Step 12 until 2026-10-28, while
+# policy/retention.yaml recorded the canary_subject_class part of RT-15 as
+# absent and the Sherlock manifest declared it; that flag now reads present, a
+# one-word edit made on the maintainer's instruction, whose class he confirms,
+# and the self-test's
+# mutation for that part flips the flag rather than setting it.
 # Two ratifying acts reach them anyway. Sealing the cast did, until the cast
 # self-test was fixed on 2026-09-28 to construct its own seal state. Completing
 # SS-14 item 6 still does: row 8 of conformance/gate/decisions.jsonl asserts the
@@ -85,9 +146,11 @@ python tools/validate.py --kernel --quiet || {
 # stops being clean and the commit that completes the set edits that row too. A
 # self-test's output is printed only when it refuses. The doctrine self-test and
 # the self-test of tools/pin_of_record.py, the pin-of-record reader three gates
-# share, joined on 2026-10-01.
+# share, joined on 2026-10-01. The divergence register's joined at Step 9, and
+# the manifest validator's and the connector conformance runner's at Step 12.
 for tool in validate_hygiene validate_layer_model validate_ontology validate_cast \
-            validate_authorization validate_retention validate_doctrine pin_of_record; do
+            validate_authorization validate_retention validate_doctrine pin_of_record \
+            validate_divergence_register validate_manifest validate_connector_conformance; do
   out=$(python "tools/$tool.py" --self-test 2>&1) || {
     rc=$?
     printf '%s\n' "$out"

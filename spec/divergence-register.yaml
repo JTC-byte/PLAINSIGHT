@@ -1,0 +1,864 @@
+# ---------------------------------------------------------------------------
+# PSE DIVERGENCE REGISTER: pse-event-0.1 against zmeta-event-1.0
+# ---------------------------------------------------------------------------
+# Rank 3, Class B (CLAUDE.md section 2, AGENTS.md sections 2 and 3). This file
+# is the documentation condition of the license AGENTS.md section 1 quotes: the
+# governed record of every place schema/pse-event-0.1.schema.json departs from
+# zmeta-event-1.0. It is hand-authored. spec/divergence-register.md is its
+# rendering, written by tools/render_divergence_register.py and never edited by
+# hand.
+#
+# How it is checked. tools/validate_divergence_register.py does not read the
+# prose in spec/layer-model.yaml or in the contract to decide what this file
+# must contain. It evaluates both schemas once per event type and subtype each
+# binds, records every pointer an event can carry a value at with its type,
+# enum, required-ness, format and pattern, bounds and closure, and refuses this
+# file when it disagrees with that diff. Its docstring states the six checks.
+#
+# Pointers. A pointer is an RFC 6901 pointer into an event. The payload's shape
+# is bound by event type and subtype in both schemas, so a payload pointer names
+# the pair it is read under: /payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/state. The
+# segment * is every item of an array or every value of an open map. Inside the
+# brackets, and only there, * is a wildcard: /payload[OBSERVATION_EVENT.*] is
+# the five observation subtypes. A pointer present in one schema only covers
+# everything below it; a pointer present in both covers itself alone. An entry
+# with a surface names a policy file in this repository, and its pointers are
+# RFC 6901 pointers into that file.
+#
+# Entry fields. Required: id (DR-NN, never reused), title, disposition,
+# pointers, rationale, mechanism_preserved, test_ref, contract (the section
+# numbers of spec/pse-semantics-contract.md the entry derives from). Optional:
+# divergence (DV ids from spec/layer-model.yaml divergences_from_zmeta, or G-1
+# to G-3 for the three the contract's section 13.2 says surfaced in
+# generation, in the order it lists them), surface, test_gap (what no fixture
+# scores, in those words), and reading (a question awaiting the operator, where
+# the entry takes a reading the contract does not settle).
+#
+# test_ref. conformance/must-pass.jsonl#<fixture name> or
+# conformance/must-fail.jsonl#<fixture name>, resolved by the fixture's name
+# field rather than by line number, because tools/build_corpus.py rewrites both
+# corpora and a line number moves when a fixture is added. The rendering prints
+# the line each name resolves to.
+#
+# Pins. register.upstream.sha256 is the sha256 of the upstream schema with its
+# line endings normalized to LF, which is the hash of the file as git stores it.
+# register.diff_sha256 is the sha256 of the diff this register was last
+# reviewed against. A change to either schema that moves the diff refuses until
+# the entries are reviewed against the new diff and the pin moves in the same
+# change, which is the Schema row of AGENTS.md section 6 as a mechanism.
+#
+# The upstream compatibility claim AGENTS.md section 1 forbids is not written
+# anywhere in this file. The validator assembles it at run time.
+
+register:
+  version: 1
+  status: >-
+    DRAFTED 2026-10-28 by an agent at Step 9. Not reviewed by the operator. The
+    readings recorded below and in three entries are questions awaiting the
+    operator rather than decisions. DR-R4 asks whether KEEP, a disposition
+    Step 9 does not name, should stand.
+  pse_version: pse-event-0.1
+  derived_from: zmeta-event-1.0
+  schema: schema/pse-event-0.1.schema.json
+  upstream:
+    path: ../ZMeta/zmeta-spec/schema/zmeta-event-1.0.schema.json
+    release: v1.1.27
+    sha256: "1d2d84164b3a8986874e932c0e9369be3bf392a483a8ff261d464f34bd16d7b5"
+  diff_sha256: "7e971fc74e3242eb746bdfb9549bfab30360afa8b125386d5aae93ec01ac6376"
+  dispositions:
+    NEW: >-
+      A pointer in pse-event-0.1 only, with no role in zmeta-event-1.0 that it
+      takes over.
+    DROP: >-
+      A pointer in zmeta-event-1.0 only, whose role nothing in pse-event-0.1
+      carries.
+    REPLACE: >-
+      The role of pointers in zmeta-event-1.0 carried by different pointers in
+      pse-event-0.1, or a pointer in both whose accepted values or
+      required-ness changed short of a reversal.
+    INVERT: >-
+      A pointer in both that one schema refuses in every branch and the other
+      accepts: required or permitted there, refused here, or the reverse.
+    KEEP: >-
+      A pointer the two schemas agree on, where the register records what the
+      agreement hides.
+
+readings:
+  - id: DR-R1
+    question: >-
+      The gameplan's Step 9 compares type, enum and required-ness. The
+      validator also compares format and pattern, bounds and closure, so that
+      identical: means both schemas accept the same values and the date-time
+      pattern and the closed payloads the contract names come out of the diff;
+      it compares an envelope pointer's required-ness merged as always, in some
+      branches, or never, and per branch on the one pair both schemas bind,
+      SYSTEM_EVENT SCHEMA_VIOLATION; and it reads each anyOf or oneOf
+      alternative on its own. Is the wider comparison the one the register
+      should be held to?
+  - id: DR-R4
+    question: >-
+      The gameplan's Step 9 names four dispositions, INVERT, REPLACE, DROP and
+      NEW, and lists a pointer the two schemas agree on under identical:. This
+      register adds a fifth, KEEP, for a pointer the schemas agree on where
+      the agreement hides a difference, and uses it once, in DR-12 for
+      /lineage; the validator enforces the five as a closed set. Should KEEP
+      stand as a fifth disposition, or should /lineage be listed under
+      identical: with DR-12's rationale carried as a register comment?
+  - id: DR-R2
+    question: >-
+      The Step 9 done-when sentence in docs/THE-GAMEPLAN.md states the
+      compatibility claim in order to forbid it, so a whole-tree scan with no
+      exemption refuses the sentence that specifies the scan. The register
+      exempts that one line by its sha256 under compat_claim rather than
+      editing a record of intent. Should the exemption stand, or should the
+      gameplan line be reworded so the scan runs with no exemption?
+  - id: DR-R3
+    question: >-
+      The validator reads the upstream schema from the sibling checkout
+      ../ZMeta/zmeta-spec, pinned by sha256, and CI clones release v1.1.27 to
+      the same path so the gate runs there. Should the gate keep reading a
+      sibling checkout, or should a pinned copy of zmeta-event-1.0.schema.json
+      be carried in this repository, which redistributes an upstream file under
+      ZMeta's Apache-2.0 NOTICE?
+
+entries:
+  # -------------------------------------------------------------------------
+  # The envelope
+  # -------------------------------------------------------------------------
+  - id: DR-01
+    title: Version fields
+    disposition: REPLACE
+    divergence: [DV-01]
+    contract: ["2", "4", "13.2"]
+    pointers:
+      - "/zmeta_version"
+      - "/pse_version"
+      - "/derived_from"
+    rationale: >-
+      zmeta-event-1.0 carries one required version field, const 1.0. PSE
+      carries two, the dialect's own version, const pse-event-0.1, and the
+      model it derives from, const zmeta-event-1.0, so the two models are
+      distinguishable on the wire eighteen months from now without a design
+      document (decision D1, contract section 2).
+    mechanism_preserved: >-
+      A required const version field on every event, refused when it differs.
+      The schema error map names the failure VERSION_MISMATCH.
+    test_ref:
+      - "conformance/must-fail.jsonl#version-mismatch"
+
+  - id: DR-02
+    title: The case identifier
+    disposition: NEW
+    divergence: [DV-02]
+    contract: ["4", "12.1", "13.2"]
+    pointers:
+      - "/case_id"
+    rationale: >-
+      ZMeta has no container. Nothing exists outside a case, and decision D4
+      keys the crypto-shred on case_id, so an event without one is an event the
+      retention sweep cannot reach. case_id is required on every event without
+      exception.
+    mechanism_preserved: >-
+      Nothing of ZMeta's carries this role. The required-field refusal ZMeta
+      applies to its envelope is applied to this field and named
+      CASE_ID_MISSING.
+    test_ref:
+      - "conformance/must-fail.jsonl#case-id-missing"
+
+  - id: DR-03
+    title: The event type and subtype vocabulary
+    disposition: REPLACE
+    divergence: [DV-03]
+    contract: ["1", "4", "13.2"]
+    pointers:
+      - "/event/event_type"
+      - "/event/event_subtype"
+    rationale: >-
+      ZMeta's six sensor-layer types and their nineteen subtypes are replaced
+      by nine person-centric types and thirty-seven subtypes (decision D6). The
+      two vocabularies share one pair, SYSTEM_EVENT SCHEMA_VIOLATION. The
+      entries below map each ZMeta type's payload to the PSE types that carry
+      its role.
+    mechanism_preserved: >-
+      A locked event_type enum, a closed subtype set per type, and a payload
+      discriminator that must agree with event_subtype, which is ZMeta's
+      eventSubtypeConsistency carried over unchanged in mechanism. The failures
+      are EVENT_TYPE_UNKNOWN and EVENT_SUBTYPE_MISMATCH.
+    test_ref:
+      - "conformance/must-fail.jsonl#event-type-unknown"
+      - "conformance/must-fail.jsonl#event-subtype-outside-type"
+      - "conformance/must-fail.jsonl#discriminator-disagrees"
+
+  - id: DR-04
+    title: Publish and receive timestamps
+    disposition: DROP
+    divergence: [DV-09]
+    contract: ["4", "13.2"]
+    pointers:
+      - "/event/t_publish"
+      - "/event/t_receive"
+    rationale: >-
+      ZMeta carries publish and receive timestamps because a mesh has hops that
+      can reorder. One store and one consumer have neither, so the two fields
+      would be written and read by nothing. Producer emission time is ts, and
+      platform-asserted time is payload.temporal on EXTRACT_EVENT.
+    mechanism_preserved: >-
+      The event object stays closed, so a carried t_publish or t_receive is
+      refused as an unknown property, which is the refusal ZMeta's own closed
+      event object gives a field it does not declare.
+    test_ref:
+      - "conformance/must-fail.jsonl#schema-invalid-envelope-key"
+    test_gap: >-
+      No fixture plants t_publish or t_receive inside event. The refusal rests
+      on additionalProperties false on the event object, the same closure
+      schema-invalid-envelope-key exercises one level up, at the envelope.
+
+  - id: DR-05
+    title: Node role replaced by environment
+    disposition: REPLACE
+    divergence: [DV-04]
+    contract: ["4", "12.4", "13.2"]
+    pointers:
+      - "/source/node_role"
+      - "/source/environment"
+    rationale: >-
+      doctrine/EGRESS.md EG-1 defines two environments, LOCAL and ISOLATED, and
+      the boundary between them is which one may execute a connector. ZMeta's
+      five node roles describe a mesh this deployment does not have. A
+      RUN_START whose source environment is not ISOLATED is refused rather than
+      annotated.
+    mechanism_preserved: >-
+      A required closed enum on source naming where the event was written,
+      checked by the schema.
+    test_ref:
+      - "conformance/must-fail.jsonl#run-source-local"
+
+  - id: DR-06
+    title: Sensor identifier
+    disposition: DROP
+    divergence: [DV-10]
+    contract: ["4", "6", "13.2"]
+    pointers:
+      - "/source/sensor_id"
+    rationale: >-
+      There is no sensor. The equivalent identity is the connector and its run,
+      which live in the PROBE_EVENT payload as connector_id, connector_version
+      and run_id, where they are per run rather than per node.
+    mechanism_preserved: >-
+      The source object stays closed, so a carried sensor_id is refused as an
+      unknown property.
+    test_ref:
+      - "conformance/must-fail.jsonl#schema-invalid-envelope-key"
+    test_gap: >-
+      No fixture plants sensor_id inside source. The refusal rests on
+      additionalProperties false on the source object, the same closure
+      schema-invalid-envelope-key exercises at the envelope.
+
+  - id: DR-07
+    title: Profiles
+    disposition: DROP
+    divergence: [DV-07]
+    contract: ["10", "13.2"]
+    pointers:
+      - "/profile"
+    rationale: >-
+      One Postgres, one consumer, no wire budget. Profiles L, M and H and
+      profile thinning never un-defer (docs/THE-GAMEPLAN.md section 2.2), and
+      every lineage mode is reject with no per-profile mode, because one store
+      makes an unresolved parent an error rather than a tolerated link loss.
+    mechanism_preserved: >-
+      The envelope stays closed, so a carried profile is refused as an unknown
+      key. The fixture plants profile L and expects SCHEMA_INVALID.
+    test_ref:
+      - "conformance/must-fail.jsonl#schema-invalid-envelope-key"
+
+  - id: DR-08
+    title: Confidence, from required to refused
+    disposition: INVERT
+    divergence: [DV-06]
+    contract: ["4", "11", "13.2"]
+    pointers:
+      - "/confidence"
+    rationale: >-
+      ZMeta requires a confidence between 0 and 1 on its inference, fusion and
+      state events and refuses it on observation, command and system events.
+      PSE refuses it on every event, because there is no calibration ground
+      truth anywhere in this system and a number would be a guess. The decision
+      is LM-R2, and the contract's section 11 records it as open and
+      unratified, with the five sites a reversal touches.
+    mechanism_preserved: >-
+      ZMeta's own refusal of confidence on its observation, command and system
+      events, a false schema at the key, extended to every type. The key stays
+      declared as false rather than left undefined, so a permissive validator
+      cannot admit it as an unknown property.
+    test_ref:
+      - "conformance/must-fail.jsonl#envelope-confidence-refused"
+      - "conformance/must-fail.jsonl#envelope-confidence-on-extract"
+
+  - id: DR-09
+    title: The date-time pattern
+    disposition: REPLACE
+    divergence: [G-1]
+    contract: ["4", "13.2"]
+    pointers:
+      - "/event/ts"
+    rationale: >-
+      zmeta-event-1.0's timestamp is format date-time with the pattern Z$,
+      which accepts any string ending in Z wherever the format keyword is not
+      checked, and the jsonschema stack checks it only with an extra package
+      installed. PSE takes the full RFC 3339 UTC pattern zmeta-event-1.1.0
+      corrected. The same pattern is on every PSE timestamp, and every other
+      one sits in a payload that has no ZMeta counterpart, so /event/ts is the
+      one pointer where the diff compares the two.
+    mechanism_preserved: >-
+      A UTC timestamp with a trailing Z, matched by pattern rather than by the
+      format keyword alone.
+    test_ref:
+      - "conformance/must-pass.jsonl#authorize-grant"
+    test_gap: >-
+      No fixture plants a timestamp that ends in Z and is otherwise malformed,
+      which is the value 1.0's pattern accepts and this one refuses.
+
+  - id: DR-10
+    title: Identifier versions
+    disposition: REPLACE
+    contract: ["4", "13.3"]
+    pointers:
+      - "/event/event_id"
+      - "/lineage/based_on/*"
+    rationale: >-
+      ZMeta's uuid definition admits version 7 only. PSE's admits versions 1
+      to 8 and adds format uuid. The corpus's identifiers are version 5, each
+      derived from a label (contract section 13.3), and ZMeta's pattern refuses
+      them. The contract says identifiers are matched by pattern (section 4)
+      and does not say which versions, and section 13.2 does not name this
+      divergence. The diff found it.
+    mechanism_preserved: >-
+      An identifier matched by a pattern and not by the format keyword alone,
+      on every event id and every lineage parent.
+    test_ref:
+      - "conformance/must-pass.jsonl#authorize-grant"
+    reading: >-
+      PSE accepts uuid versions 1 to 8 where zmeta-event-1.0 accepts version 7
+      only. Is the wider set intended for every event, or should the envelope
+      require version 7 as ZMeta does, with the corpus's label-derived
+      identifiers moved to version 7 or exempted?
+
+  - id: DR-11
+    title: Closed payloads
+    disposition: REPLACE
+    divergence: [G-2]
+    contract: ["3", "4", "13.2"]
+    pointers:
+      - "/payload"
+      - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]"
+    rationale: >-
+      ZMeta leaves five of its six payload definitions open and closes only its
+      command payload. PSE emits one closed object per subtype, with
+      additionalProperties false at every declared level. The diff sees the
+      closure at the two pointers both schemas carry: the envelope's payload,
+      merged across branches, and the payload of the one shared pair.
+    mechanism_preserved: >-
+      ZMeta's prohibited payload names, written in its payloads as false
+      schemas, kept as the recursive denylist in policy/semantics.yaml. The
+      closure narrows it further: a prohibited name at depth zero is refused as
+      an unknown property and named by its group's code (S7-R5).
+    test_ref:
+      - "conformance/must-fail.jsonl#denylist-system_event-value"
+    test_gap: >-
+      No fixture plants an unknown payload key that no denylist names. Every
+      depth-zero planting in the corpus is also refused by the policy denylist
+      under the same code, so the closure itself is unscored. Setting
+      additionalProperties to true on every payload leaves must-fail green.
+      The owed fixture plants a key no denylist names, such as ZMeta's own
+      metrics object on a SCHEMA_VIOLATION, and expects SCHEMA_INVALID.
+
+  - id: DR-12
+    title: Lineage, required per subtype
+    disposition: KEEP
+    contract: ["10", "13.1"]
+    pointers:
+      - "/lineage"
+    rationale: >-
+      Both schemas carry the same closed lineage object, one or more parents in
+      based_on and an optional transform, and both require it in some branches
+      and not in others. ZMeta requires it on every inference, fusion and state
+      event. PSE requires it per subtype, from lineage.required_by_subtype,
+      where S7-R6 takes the subtype statement over the type's. The diff
+      compares an envelope pointer's required-ness merged as always, some or
+      never, and per branch on SYSTEM_EVENT SCHEMA_VIOLATION, the one pair both
+      schemas bind, where neither requires lineage. It finds the two agreeing,
+      and this entry records what that agreement hides: each schema requires
+      lineage on pairs the other does not bind, so no per-branch comparison
+      reaches them.
+    mechanism_preserved: >-
+      A child names its parents by event id, and a subtype that needs parents
+      has them, refused as LINEAGE_MISSING.
+    test_ref:
+      - "conformance/must-fail.jsonl#extract-no-lineage"
+
+  # -------------------------------------------------------------------------
+  # The one shared pair: SYSTEM_EVENT SCHEMA_VIOLATION
+  # -------------------------------------------------------------------------
+  - id: DR-13
+    title: The schema-violation diagnostic's code and event
+    disposition: REPLACE
+    contract: ["9"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/metrics"
+      - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/reason_code"
+      - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/original_event_id"
+    rationale: >-
+      A SCHEMA_VIOLATION names the offending event by id and its reason by a
+      declared code drawn from the closed vocabulary (contract section 9).
+      ZMeta carries both under a required metrics object, with original_event_id
+      a non-empty string and reason_code one of 55 ZMeta codes, beside a free
+      path and error. PSE carries both at the payload's top level, types
+      original_event_id as a uuid, draws reason_code from its own 57 declared
+      codes, and declares neither path nor error. Section 9 says free text in a
+      diagnostic is the failure the closed vocabulary exists to prevent.
+    mechanism_preserved: >-
+      A diagnostic that names its event by id and its reason by a code from a
+      closed enum, both required, refused when the code is undeclared.
+    test_ref:
+      - "conformance/must-fail.jsonl#reason-code-undeclared"
+      - "conformance/must-pass.jsonl#system-schema-violation"
+
+  - id: DR-14
+    title: The schema-violation state, required to optional
+    disposition: REPLACE
+    contract: ["9", "13.1"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/state"
+    rationale: >-
+      ZMeta requires a non-empty state on every system payload. The layer model
+      does not require one on SCHEMA_VIOLATION, and S7-R1, the generator's
+      reading of which optional fields a subtype may carry, makes state legal
+      and optional there. The contract lists S7-R1 as unratified in section
+      13.1, so reversing it would move this entry.
+    mechanism_preserved: >-
+      The field and its type, a string, are kept. The requirement is not.
+    test_ref:
+      - "conformance/must-pass.jsonl#system-schema-violation"
+    test_gap: >-
+      The clean SCHEMA_VIOLATION fixture carries no state and passes, which
+      shows the field is optional here. No fixture asserts anything about a
+      state on this subtype.
+
+  - id: DR-15
+    title: The schema-violation reason
+    disposition: NEW
+    contract: ["9", "12.2", "13.1"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/reason"
+    rationale: >-
+      The layer model declares a reason sentence on SYSTEM_EVENT, required on
+      the retention extension and freeze, and S7-R1 makes it legal and
+      optional on SCHEMA_VIOLATION. A reason on a stratum-2 payload survives
+      the shred, and the rule that it describes no person is a review rule,
+      REASON_NAMES_SUBJECT, with no mechanism (contract section 12.2).
+    mechanism_preserved: >-
+      Nothing of ZMeta's carries this role. The payload stays closed around it.
+    test_ref:
+      - "conformance/must-pass.jsonl#system-schema-violation"
+    test_gap: >-
+      No fixture carries a reason on a SCHEMA_VIOLATION, so the field's
+      presence on this subtype is unscored.
+
+  # -------------------------------------------------------------------------
+  # ZMeta's payload layers and the PSE layers that carry their roles
+  # -------------------------------------------------------------------------
+  - id: DR-16
+    title: Observation becomes run, item and claim
+    disposition: REPLACE
+    divergence: [DV-03]
+    contract: ["1", "6"]
+    pointers:
+      - "/payload[OBSERVATION_EVENT.*]"
+      - "/payload[PROBE_EVENT.*]"
+      - "/payload[EXTRACT_EVENT.CLAIM]"
+    rationale: >-
+      ZMeta's observation layer is one sensor measurement per event, with its
+      modality, features, quality, geometry and timing. PSE's observation layer
+      is a tool invocation recorded as three append-only events, RUN_START,
+      ITEM and RUN_END, plus one claim per field an item asserts, named by its
+      datum at the decode boundary (contract section 6). Run, Item, Claim
+      replaces the measurement because retrofitting the item level later
+      rewrites every adapter (docs/PLAINSIGHT-design.md section 8.2).
+    mechanism_preserved: >-
+      The observation layer carries no identity, no inference and no
+      confidence. ZMeta refuses track_id, entity_class, classification,
+      class_name, label and confidence on its observation payload, and PSE
+      refuses the same classes of field on probe and claim events under
+      OBSERVATION_HAS_IDENTITY, OBSERVATION_HAS_INFERENCE and
+      EXTRACT_HAS_CONFIDENCE. Raw bytes stay by reference, a data_ref in ZMeta
+      and a sha256 in PSE.
+    test_ref:
+      - "conformance/must-pass.jsonl#probe-run-start"
+      - "conformance/must-pass.jsonl#extract-claim-handle"
+      - "conformance/must-fail.jsonl#denylist-extract_event-cluster_id"
+
+  - id: DR-17
+    title: Timing quality replaced by temporal
+    disposition: REPLACE
+    divergence: [DV-05]
+    contract: ["6", "13.2", "13.3"]
+    pointers:
+      - "/payload[*.*]/timing_quality"
+      - "/payload[EXTRACT_EVENT.CLAIM]/temporal"
+    rationale: >-
+      ZMeta's timing_quality describes clock sync, with a time source, a sync
+      state and an error estimate, and is optional on fifteen of its nineteen
+      payload pairs. PSE's temporal carries observed_at, the time the program
+      saw the datum, asserted_at, the time the platform claimed or null, and a
+      time_provenance from a closed set, on every claim. The fields describe
+      platform-asserted time rather than clock sync (docs/PLAINSIGHT-design.md
+      section 2.2).
+    mechanism_preserved: >-
+      Time quality is mandatory, degraded by default, and never repaired.
+    test_ref:
+      - "conformance/must-pass.jsonl#extract-claim-handle"
+    test_gap: >-
+      The layer model promises a fixture for a producer that fills asserted_at
+      from observed_at, under temporal_never_repaired, and the fixture map does
+      not carry one (contract section 13.3), so never-repaired is unscored.
+
+  - id: DR-18
+    title: Inference becomes the link proposal
+    disposition: REPLACE
+    divergence: [DV-03]
+    contract: ["7", "10"]
+    pointers:
+      - "/payload[INFERENCE_EVENT.*]"
+      - "/payload[LINK_EVENT.*]"
+    rationale: >-
+      ZMeta's inference layer classifies, associates and flags anomalies and
+      behaviour over observations. PSE's inference layer is a matcher's
+      proposal that two things are the same entity, associated, co-located, or
+      in control of one another, and it is always unaccepted: accepted is
+      required and const false, because acceptance is a separate human act
+      (contract section 7).
+    mechanism_preserved: >-
+      An inference names its model and the events it is based on, through the
+      same three fields, claim, model and based_on, and the payload's based_on
+      stays a subset of lineage.based_on. The inference layer carries no
+      fusion state: ZMeta refuses track_id, members and estimated_state, and
+      PSE refuses cluster_id, members and the other fusion fields under
+      INFERENCE_HAS_FUSION_STATE.
+    test_ref:
+      - "conformance/must-pass.jsonl#link-same_entity"
+      - "conformance/must-fail.jsonl#link-arrives-accepted"
+
+  - id: DR-19
+    title: Fusion becomes the identity assertion
+    disposition: REPLACE
+    divergence: [DV-03]
+    contract: ["7", "11"]
+    pointers:
+      - "/payload[FUSION_EVENT.TRACK_FUSION]"
+      - "/payload[IDENTITY_EVENT.*]"
+    rationale: >-
+      ZMeta fuses observations into a track with a numeric stability and a
+      required confidence. PSE's fusion layer is an analyst's assertion, made
+      by a named human, that accounts are one identity, CLUSTER, or that a
+      candidate is affirmatively excluded, EXCLUDE. A CLUSTER carries at least
+      two members, rationale codes, a seam per member and a band, the one
+      ordinal in the model (contract sections 7 and 11). An EXCLUDE requires
+      its candidate_ref, asserted_by and basis, carries no members, and may
+      carry a band and rationale codes.
+    mechanism_preserved: >-
+      A fusion event requires lineage, and its payload-level provenance,
+      basis_claims on a CLUSTER, must be a subset of lineage.based_on, refused
+      as LINEAGE_PAYLOAD_BASED_ON_NOT_SUBSET. A CLUSTER carries the time of its
+      last support, last_seen_ts in ZMeta and last_supporting_ts in PSE.
+      ZMeta's check that fusion members appear in lineage is not carried,
+      because a PSE member is an account reference and not an event id.
+    test_ref:
+      - "conformance/must-pass.jsonl#identity-cluster"
+      - "conformance/must-fail.jsonl#cluster-carries-rollup-confidence"
+
+  - id: DR-20
+    title: Track state becomes the assessment sentence
+    disposition: REPLACE
+    divergence: [DV-03]
+    contract: ["8", "12.4"]
+    pointers:
+      - "/payload[STATE_EVENT.TRACK_STATE]"
+      - "/payload[ASSESS_EVENT.SENTENCE]"
+    rationale: >-
+      ZMeta's state layer is a track's current position, heading, speed and
+      validity window. PSE's state layer is one assessment sentence with live
+      citations, carrying the subject class it came from, and it is the DRAFT
+      export boundary's only input (contract section 8).
+    mechanism_preserved: >-
+      The state layer re-carries no raw. ZMeta refuses features, raw_features,
+      modality, measurements and data_ref on its state payload, and PSE
+      refuses raw above the observation layer under RAW_ABOVE_OBSERVATION.
+    test_ref:
+      - "conformance/must-pass.jsonl#assess-sentence"
+      - "conformance/must-fail.jsonl#denylist-assess_event-raw"
+
+  - id: DR-21
+    title: Position on the state layer, required to optional
+    disposition: REPLACE
+    divergence: [DV-08]
+    contract: ["8", "13.1", "13.2"]
+    pointers:
+      - "/payload[STATE_EVENT.TRACK_STATE]/geo"
+      - "/payload[ASSESS_EVENT.SENTENCE]/geo"
+    rationale: >-
+      TrackStatePayload requires geo. ASSESS_EVENT makes it optional, because a
+      person-centric assessment usually has no position, and a place-name
+      inference with no coordinate is a list entry, never a pin. PSE's geo has
+      no declared shape and is emitted open (S7-R3), where ZMeta's is a closed
+      latitude, longitude and altitude object.
+    mechanism_preserved: >-
+      geo stays a payload field of the state layer. Its requirement and its
+      declared shape change.
+    test_ref:
+      - "conformance/must-pass.jsonl#assess-sentence"
+    test_gap: >-
+      assess-sentence carries geo as null, which satisfies a required geo as
+      well as an optional one, so the change from required to optional is
+      unscored. No fixture omits geo or carries a geo object, so the open shape
+      is unscored too. The owed fixture is an ASSESS_EVENT SENTENCE with no geo
+      key.
+
+  - id: DR-22
+    title: The command layer and the task acknowledgement
+    disposition: DROP
+    divergence: [DV-03]
+    contract: ["1", "5.2"]
+    pointers:
+      - "/payload[COMMAND_EVENT.*]"
+      - "/payload[SYSTEM_EVENT.TASK_ACK]"
+    rationale: >-
+      ZMeta's command layer orders a platform to go to, orbit, hold at or
+      search a place, and TASK_ACK acknowledges an order. PSE orders no
+      platform. The contract's section 1 names seven layers and no command
+      layer, and the nearest act, a dispatch, is decided by the subject gate
+      and recorded as a COLLECT_EVENT, which is a decision about whether to
+      collect rather than an order.
+    mechanism_preserved: >-
+      The closed event_type enum refuses a COMMAND_EVENT as EVENT_TYPE_UNKNOWN,
+      as ZMeta's closed enum refuses a type outside its six, and the closed
+      SYSTEM_EVENT subtype set refuses TASK_ACK. Nothing of the command layer
+      itself is carried, including its deconfliction requirement.
+    test_ref:
+      - "conformance/must-fail.jsonl#event-type-unknown"
+    test_gap: >-
+      No fixture plants a COMMAND_EVENT or a TASK_ACK. event-type-unknown
+      plants a type outside the nine, which is the refusal a COMMAND_EVENT
+      meets.
+    reading: >-
+      Is COLLECT_EVENT the replacement of COMMAND_EVENT, a dispatch decision in
+      place of a tasking order, which would make this entry a REPLACE with the
+      authorization layer, or is the command layer dropped with no
+      counterpart, as this entry reads it?
+
+  - id: DR-23
+    title: Link status and time status
+    disposition: DROP
+    contract: ["9"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.LINK_STATUS]"
+      - "/payload[SYSTEM_EVENT.TIME_STATUS]"
+    rationale: >-
+      LINK_STATUS reports a mesh link's health and TIME_STATUS a node's clock
+      sync. This deployment has one store, one consumer and no mesh, and DV-05
+      moved time quality off the node and onto the claim. The contract's
+      section 9 lists PSE's system events and names neither.
+    mechanism_preserved: >-
+      The closed subtype set per type refuses either as
+      EVENT_SUBTYPE_MISMATCH. Health as a rendered state survives in
+      CONNECTOR_HEALTH, which grades a connector rather than a link.
+    test_ref:
+      - "conformance/must-fail.jsonl#event-subtype-outside-type"
+    test_gap: >-
+      No fixture plants LINK_STATUS or TIME_STATUS. event-subtype-outside-type
+      plants a SYSTEM_EVENT subtype outside the eleven, which is the refusal
+      either meets.
+    reading: >-
+      Does CONNECTOR_HEALTH carry LINK_STATUS's role, which would make that
+      half of this entry a REPLACE, and is TIME_STATUS dropped because DV-05
+      moved time provenance onto the claim, as this entry reads it?
+
+  # -------------------------------------------------------------------------
+  # PSE layers and system events with no ZMeta counterpart
+  # -------------------------------------------------------------------------
+  - id: DR-24
+    title: The authorization layer
+    disposition: NEW
+    divergence: [DV-03]
+    contract: ["5", "5.1", "5.2"]
+    pointers:
+      - "/payload[AUTHORIZE_EVENT.*]"
+      - "/payload[COLLECT_EVENT.*]"
+    rationale: >-
+      AUTHORIZE_EVENT records the authorization act by reference to the SS-4
+      record, and COLLECT_EVENT records the subject gate's decision at
+      dispatch, so a run is parented on a permission and decision D5's gate is
+      a structural boundary rather than a function call (contract section 5).
+      ZMeta has no subject and no gate.
+    mechanism_preserved: >-
+      ZMeta's producer-authority check, run before any semantic check, is what
+      keeps the gate single here: only runner-subject-guard may emit a
+      COLLECT_EVENT, and only a named human an AUTHORIZE_EVENT.
+    test_ref:
+      - "conformance/must-pass.jsonl#authorize-grant"
+      - "conformance/must-pass.jsonl#collect-permitted"
+      - "conformance/must-fail.jsonl#permitted-by-human"
+
+  - id: DR-25
+    title: The adjudication layer
+    disposition: NEW
+    divergence: [DV-03]
+    contract: ["8"]
+    pointers:
+      - "/payload[ADJUDICATE_EVENT.*]"
+    rationale: >-
+      Decision D3 made analyst acts events rather than columns, so a review
+      state is a projection over the latest VERIFY or DISPUTE and never a
+      stored field. Nine dispositions, each naming its target by reference and
+      re-carrying none of its content (contract section 8). ZMeta has no
+      adjudication layer.
+    mechanism_preserved: >-
+      Lineage carries the target: the first parent in based_on is the act's
+      target, checked against the disposition's allowed target types.
+    test_ref:
+      - "conformance/must-pass.jsonl#adjudicate-verify"
+      - "conformance/must-fail.jsonl#verify-targets-a-cluster"
+
+  - id: DR-26
+    title: Connector health and coverage
+    disposition: NEW
+    contract: ["9"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.CONNECTOR_HEALTH]"
+      - "/payload[SYSTEM_EVENT.COVERAGE_INTERVAL]"
+    rationale: >-
+      CONNECTOR_HEALTH carries one of five states for a connector, and
+      COVERAGE_INTERVAL records a window against a target with the method and
+      whether it was verified (contract section 9). ZMeta defines neither.
+    mechanism_preserved: >-
+      ZMeta's system payload discriminator, system_type const per subtype.
+    test_ref:
+      - "conformance/must-pass.jsonl#system-connector-health"
+      - "conformance/must-pass.jsonl#system-coverage-interval"
+
+  - id: DR-27
+    title: Retention acts, shred proof and heartbeats
+    disposition: NEW
+    contract: ["9", "12.3"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.RETENTION_EXTENSION]"
+      - "/payload[SYSTEM_EVENT.RETENTION_FREEZE]"
+      - "/payload[SYSTEM_EVENT.RETENTION_RENEWAL]"
+      - "/payload[SYSTEM_EVENT.SHRED_RECEIPT]"
+      - "/payload[SYSTEM_EVENT.SHRED_FAILED]"
+      - "/payload[SYSTEM_EVENT.SWEEP_HEARTBEAT]"
+      - "/payload[SYSTEM_EVENT.RECONCILE_HEARTBEAT]"
+    rationale: >-
+      Retention is part of the event vocabulary here and absent from ZMeta:
+      three retention acts emitted by a named human only, the shred receipt
+      carrying all five of RT-9's checks each once, the shred failure that
+      halts every run, and two heartbeats whose absence renders as a degraded
+      state (contract sections 9 and 12.3).
+    mechanism_preserved: >-
+      ZMeta's system payload discriminator, and its producer-authority check
+      before any semantic check, which here keeps a wildcard producer from
+      authoring a retention act.
+    test_ref:
+      - "conformance/must-pass.jsonl#system-shred-receipt"
+      - "conformance/must-fail.jsonl#freeze-by-runner"
+      - "conformance/must-fail.jsonl#renewal-without-obligation"
+
+  - id: DR-28
+    title: Credential state
+    disposition: NEW
+    contract: ["9"]
+    pointers:
+      - "/payload[SYSTEM_EVENT.CREDENTIAL_STATE]"
+    rationale: >-
+      A collection credential's state is a system event here, one of active,
+      quarantined and burned per CR-2, with a written exit criterion on a
+      quarantine and a finding reference on a burn (contract section 9). ZMeta
+      has no credential pool.
+    mechanism_preserved: >-
+      ZMeta's system payload discriminator. The credential is named by id and
+      never by value (CR-3).
+    test_ref:
+      - "conformance/must-pass.jsonl#system-credential-state"
+      - "conformance/must-fail.jsonl#quarantine-without-exit"
+      - "conformance/must-fail.jsonl#burn-without-finding"
+
+  # -------------------------------------------------------------------------
+  # Policy surfaces the contract's section 13.2 names
+  # -------------------------------------------------------------------------
+  - id: DR-29
+    title: Lineage policy at subtype granularity
+    disposition: REPLACE
+    divergence: [DV-11]
+    surface: policy/lineage.yaml
+    contract: ["5.2", "10", "13.2"]
+    pointers:
+      - "/lineage/allowed_parents"
+      - "/lineage/required_parents"
+    rationale: >-
+      ZMeta's lineage policy has one type-granular parent structure,
+      allowed_parent_event_types, and no subtype key anywhere. PSE needs
+      subtype granularity, because decision D5's requirement is a subtype
+      pair, a PROBE_EVENT RUN_START parented on a COLLECT_EVENT PERMITTED, and
+      a type-granular policy cannot express it. The type-granular matrix
+      survives as a rendering reconciled against the per-subtype source.
+    mechanism_preserved: >-
+      A policy of allowed parents per child, checked with mode reject, which
+      is ZMeta's allowed_parent_event_types and parent_type_mismatch_mode
+      carried at subtype granularity.
+    test_ref:
+      - "conformance/must-fail.jsonl#run-start-without-permitted"
+      - "conformance/must-fail.jsonl#lineage-parent-type-invalid"
+
+  - id: DR-30
+    title: Producer authority composed per subtype
+    disposition: REPLACE
+    divergence: [G-3]
+    surface: policy/producer-authority.yaml
+    contract: ["10", "13.2"]
+    pointers:
+      - "/producer_authority/producers"
+      - "/producer_authority/effective"
+    rationale: >-
+      The contract lists this among the divergences from zmeta-event-1.0, and
+      the departure it names is from the FOUNDATION sketch, which keyed
+      authority by event type. ZMeta's policy keys by producer, as PSE's does,
+      with a list of allowed event types per producer. PSE grants per type and
+      subtype and adds an effective table that composes each type's wildcards,
+      named producers and human-identity flag per subtype, because read
+      without that composition a connector became a legal producer of
+      RUN_START, which LM-R6 refuses by name (contract section 10).
+    mechanism_preserved: >-
+      Every type requires a producer match, checked before any semantic check
+      and fail-closed, refused as PRODUCER_NOT_ALLOWED.
+    test_ref:
+      - "conformance/must-fail.jsonl#run-start-by-connector"
+
+identical:
+  - "/event"
+  - "/lineage/based_on"
+  - "/lineage/transform"
+  - "/payload[SYSTEM_EVENT.SCHEMA_VIOLATION]/system_type"
+  - "/source"
+  - "/source/platform_id"
+  - "/source/producer"
+  - "/source/sw_version"
+
+compat_claim:
+  exemptions:
+    - file: docs/THE-GAMEPLAN.md
+      line_sha256: "5b311dd682b9e3482309b8cff420493cc3dfc576215648f4c5f07adfdd80c895"
+      reason: >-
+        The Step 9 done-when sentence, which names the claim in order to forbid
+        it. The gameplan is a voice-exempt record of intent, so the line is
+        exempted by its hash rather than reworded, and DR-R2 asks the operator
+        which it should be.

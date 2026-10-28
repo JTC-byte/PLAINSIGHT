@@ -1,0 +1,18 @@
+Update available! 0.16.1 --> 0.16.0
+https://github.com/sherlock-project/sherlock/releases/tag/v0.16.0
+[*] Checking username <institutional_handle> on:
+
+[-] 1337x: Blocked by bot detection (proxy may help)
+[+] Discord: https://discord.com
+[+] GitHub: https://www.github.com/<institutional_handle>
+[-] GitLab: Not Found!
+[-] HackerNews: Not Found!
+[+] Instagram: https://instagram.com/<institutional_handle>
+[-] LinkedIn: Not Found!
+[-] ResearchGate: Illegal Username Format For This Site!
+[-] Slides: Not Found!
+[+] Steam Community (User): https://steamcommunity.com/id/<institutional_handle>/
+[+] Trakt: https://www.trakt.tv/users/<institutional_handle>
+[-] Twitter: Error Connecting 
+
+[*] Search completed with 5 results

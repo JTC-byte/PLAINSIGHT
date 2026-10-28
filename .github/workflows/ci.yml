@@ -33,9 +33,20 @@ jobs:
       # failure instead of a green run, so the dependency is explicit here.
       # tools/validate.py additionally needs jsonschema, which Step 7 introduced
       # and this step did not install, so every run from 4e6abda to 132eef0
-      # failed with DEPENDENCY_MISSING on that one check.
+      # failed with DEPENDENCY_MISSING on that one check. pytest joined at Step
+      # 12 for the connector adapters' rung 1 tests, which use its fixtures.
       - name: Install validator dependencies
-        run: pip install pyyaml jsonschema
+        run: pip install pyyaml jsonschema pytest
+
+      # Step 9. tools/validate_divergence_register.py derives the register's
+      # entry list from a diff of the PSE schema and zmeta-event-1.0, and reads
+      # the upstream schema from ../ZMeta/zmeta-spec, the sibling layout of the
+      # maintainer's machine. This step puts the pinned release there. The
+      # register pins the file's sha256 as well, so a different copy is refused
+      # rather than diffed. Without this step every divergence-register check
+      # below exits 2, because the input it diffs against is absent.
+      - name: Fetch the upstream schema the divergence register diffs against
+        run: git clone --depth 1 --branch v1.1.27 https://github.com/JTC-byte/zmeta-spec ../ZMeta/zmeta-spec
 
       # Every gate step from here on carries `if: ${{ !cancelled() }}`, so it
       # runs whatever an earlier step returned. A step's default condition is
@@ -62,12 +73,39 @@ jobs:
 
       # The mechanisms that exist, exercised against the criteria that claim
       # them. Design gate 1 counts a constraint as done only when a test fails
-      # if it is removed.
+      # if it is removed. The subject guard's tests joined at Step 10 and run
+      # here as well as inside the kernel gate, so a guard regression turns this
+      # step red rather than joining a kernel gate already red for a disclosed
+      # reason.
       - name: Mechanism tests
         if: ${{ !cancelled() }}
-        run: python tools/tests/test_gate_log.py
+        run: |
+          python tools/tests/test_gate_log.py
+          python runner/tests/test_subject_guard.py
 
-      # The five validator self-tests no other step runs, one named step each.
+      # Rung 1 of the conformance ladder for every connector: the adapter
+      # against its own cassettes, replay only. No test runs a connector, Docker
+      # or a network request; every test that calls invoke() replaces the
+      # process call first.
+      - name: Connector adapter tests
+        if: ${{ !cancelled() }}
+        run: python -m pytest connectors -q -p no:cacheprovider
+
+      # Joined 2026-10-28 (reading APP-R30). The store, the ingest door, the
+      # loopback server and its routes, the egress guard, the notice stream and
+      # the static front end, over the must-pass corpus, with each check's
+      # paired negative control run inside the suite by app/tests/test_controls.py.
+      # --tb=short keeps a failure's report to the failing line and its
+      # assertion message rather than each frame's full source, so a failing run
+      # prints as little of the fixtures as pytest allows; the corpus it reads is
+      # synthetic and holds placeholders only. Every store lives under a temporary
+      # directory, and the only listener and the only connections are on
+      # 127.0.0.1. The kernel gate below runs the same command again.
+      - name: Application tests
+        if: ${{ !cancelled() }}
+        run: python -m pytest app -q --tb=short -p no:cacheprovider
+
+      # The ten validator self-tests no other step runs, one named step each.
       # Hygiene's runs in the Housekeeping step and tools/validate.py's inside
       # the kernel gate step. A self-test breaks the governed artifact in memory and
       # asserts that each break is refused, so it is the test that fails when a
@@ -76,7 +114,7 @@ jobs:
       # two sessions because nothing ran it. These run as named steps before
       # the kernel gate, so a self-test that breaks turns its own step red
       # rather than joining a kernel gate that is already red for a disclosed
-      # reason. The kernel gate runs all eight again.
+      # reason. The kernel gate runs all eleven again.
       - name: Layer-model self-test
         if: ${{ !cancelled() }}
         run: python tools/validate_layer_model.py --self-test
@@ -107,6 +145,28 @@ jobs:
       - name: Pin-of-record self-test
         if: ${{ !cancelled() }}
         run: python tools/pin_of_record.py --self-test
+
+      # Joined at Step 9. Breaks the divergence register, the two derived
+      # tables, the corpora and the tree in memory and asserts each of the six
+      # checks refuses by its own code.
+      - name: Divergence-register self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_divergence_register.py --self-test
+
+      # Joined at Step 12. Breaks a placeholder-only manifest in memory and its
+      # fixtures on a scratch disk, and asserts each break is refused by its own
+      # code, among them a retain disposition and an unstamped R7.
+      - name: Manifest self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_manifest.py --self-test
+
+      # Joined with the first connector at Step 12. Plants each defect in a
+      # scratch copy of connectors/sherlock outside the repository, among them a
+      # known negative altered to a hit and invoke reachable without a permit,
+      # and asserts each is refused by its own code. It runs no connector.
+      - name: Connector conformance self-test
+        if: ${{ !cancelled() }}
+        run: python tools/validate_connector_conformance.py --self-test
 
       - name: Kernel gate
         if: ${{ !cancelled() }}

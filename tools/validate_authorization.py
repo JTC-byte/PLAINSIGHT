@@ -162,11 +162,25 @@ Modes:
         A-19 result is reported separately from the certification, because the
         mechanism being green and the corpus being certifiable are two different
         facts.
-  --dispatch-paths  DEFERRED. SS-6's subject is `runner/`, which is empty, and
-        `runner/subject_guard.py` is Step 10. A scan over an empty directory
-        finds zero ungated call sites and exits clean, which would make
-        docs/THE-GAMEPLAN.md's public claim true by construction while nothing is
-        gated. The mode says what it will check and which step delivers it.
+  --dispatch-paths  SS-6, drafted at Step 10. Reads every Python file under
+        `runner/`, `connectors/` and `app/`, tracked or untracked and not
+        ignored, finds each site that constructs argv, runs a process, opens a
+        connection, a listener or a subscription, starts a container, draws a
+        credential, resolves a callable at run time, or forges a Decision, and
+        asserts each is reached only through `runner.subject_guard.evaluate()`
+        or is listed in `runner/dispatch_allowlist.yaml` with a written reason.
+        The site patterns, the reachability rule and the one exemption are
+        stated above `DISPATCH_PATTERNS`. It refuses while the allowlist is
+        absent, which is today's state, because the bypass check then has
+        nothing to compare against, and it refuses while the allowlist carries
+        no dated row, because a Class F exemption list binds nothing unstamped.
+        This takes VA-U2's third option and VA-U3's first and third together,
+        recorded as VA-R5 and awaiting the operator. VA-R6, applied 2026-10-28
+        as the session's reading and awaiting the operator's class (B as a
+        precision rule of this scanner, or F), reads three references
+        in a test module under tests/ as not sites: a patch target, the object
+        of an attribute assigned over, and a patch's kept original that is not
+        called where it is read.
   --disjointness  DEFERRED. SS-20 and CR-1 name this tool as the mechanism that
         compares the credential pool against `synthetic/CAST.md` and refuses on
         any intersection, including a shared recovery selector.
@@ -198,10 +212,16 @@ Reader defects in the permit direction, a range ignored or a doctrine path read
 as stamped with no row, are refused by tools/pin_of_record.py --self-test, which
 runs on every path, rather than by this tool.
 
-Exit codes: 0 clean, or a DEFERRED mode that checked nothing (--dispatch-paths,
---disjointness), which is not a pass and must not satisfy SS-14 item 6's
-preflight; 1 violations found; 2 a governed input could not be read, or modes
-combined that run one at a time.
+The --dispatch-paths codes, AUTH_DISPATCH_SITE_UNGATED, _ALLOWLIST_ABSENT,
+_ALLOWLIST_UNSTAMPED, _ALLOWLIST_MALFORMED, _ALLOWLIST_REASON_MISSING,
+_ALLOWLIST_ENTRY_STALE, _ALLOWLIST_COUNT_MISMATCH and _FILE_UNREADABLE, are
+outside the count above: --self-test reaches each through a planted source or a
+fixture allowlist in `_dispatch_cases`, and asserts each by its own code alone.
+
+Exit codes: 0 clean, or a DEFERRED mode that checked nothing (--disjointness),
+which is not a pass and must not satisfy SS-14 item 6's preflight; 1 violations
+found, which --dispatch-paths returns today; 2 a governed input could not be
+read, or modes combined that run one at a time.
 
 One deliberate departure from --quiet, on the `tools/validate_cast.py`
 precedent. The unratified state prints even under --quiet, because it is neither
@@ -218,9 +238,13 @@ renders when it reaches one.
 from __future__ import annotations
 
 import argparse
+import ast
+import collections
 import copy
+import fnmatch
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -859,7 +883,43 @@ READINGS = {
     "VA-R4": (
         "One gate token per tool, matching every sibling and matching the entry "
         "tools/validate_conformance.py already carries under this name. HY-1 fixes the "
-        "code field as the violation code, so a mode cannot ride there."
+        "code field as the violation code, so a mode cannot ride there. --self-test and, "
+        "since Step 10, --dispatch-paths record under the kernel gate entry's own token, so "
+        "neither dilutes the designed refusal rate of --fixtures."
+    ),
+    "VA-R5": (
+        "--dispatch-paths, drafted at Step 10, takes VA-U2's third option, refusing on the "
+        "absence of runner/dispatch_allowlist.yaml, and VA-U3's first and third together: a "
+        "syntactic walk that requires each site to sit behind a permits check on a decision "
+        "evaluate() returned in the same function, and a reconcile of the allowlist against the "
+        "sites in both directions, with a count per function so a second call cannot ride on "
+        "one entry. Both entries stay open until the operator stamps them, and VA-U2's and "
+        "VA-U3's sentences describe the state before this draft."
+    ),
+    "VA-R6": (
+        "Applied 2026-10-28 as the session's reading, in code, beside the DA-R2 allowlist "
+        "draft, and awaiting the operator's class: B as a precision rule of this scanner (a "
+        "patch target in a test module opens nothing, and the plants prove a patch whose "
+        "replacement dispatches is still a site), or F as an exemption from the bypass check, "
+        "in which case the rule comes out and the four patch references in "
+        "app/tests/test_http.py join the allowlist draft. --dispatch-paths, "
+        "amended for the application's tests and applied only in a test module, which is a "
+        "test_*.py file or conftest.py under a tests/ directory: a reference to a dispatch "
+        "pattern is not a site when it is the object a patch replaces an attribute on (the first "
+        "argument or target keyword of the builtin setattr or delattr, of a method so named on a "
+        "receiver named monkeypatch or mp, or of unittest.mock.patch.object or mock.patch.object "
+        "resolved through the imports), the object of an attribute assigned or deleted, or a read "
+        "of a non-dunder attribute that the same function or module body patches or assigns by "
+        "its literal name and that is not called where it is read, which is the patch keeping the "
+        "original it replaces. None of the three stores the pattern or calls it in place. Outside "
+        "a test module every such reference stays a site, so a module under runner/, connectors/ "
+        "or app/ that swaps a dispatch attribute and keeps its original is refused. A reference "
+        "passed as any other argument, the value a patch installs and functools.partial's "
+        "argument included, a capture of the dispatch callable itself, a dunder, and any "
+        "reference to runner.subject_guard.Decision stay sites. The builtin names count only "
+        "where the scope does not rebind them, and a monkeypatch-named receiver whose setattr "
+        "calls its first argument would pass, which the block comment above DISPATCH_PATTERNS "
+        "states."
     ),
 }
 
@@ -4379,10 +4439,15 @@ def self_test(model: dict, quiet: bool = False) -> int:
         mark = "refused" if ok else "PASSED  "
         print(f"  {mark}  {desc:62} expected {expected}{note}")
 
+    # --dispatch-paths, on planted sources and fixture allowlists. Nothing here
+    # reads the tree or runs the planted code; each source is parsed only.
+    dispatch_cases, dispatch_failures = dispatch_self_test(quiet)
+    failures += dispatch_failures
+
     if failures:
         print(
             "REFUSED AUTH_SELF_TEST_FAILED\n"
-            "  where: tools/validate_authorization.py > _mutations\n"
+            "  where: tools/validate_authorization.py > _mutations and _dispatch_cases\n"
             f"  what:  {failures} deliberate break(s) were not refused as claimed, so a\n"
             "         clean run against the real artifacts proves nothing about the checks\n"
             "         those breaks name\n"
@@ -4404,7 +4469,9 @@ def self_test(model: dict, quiet: bool = False) -> int:
             f"validate_authorization --self-test ok: {len(muts)} deliberate breaks, "
             f"{len(muts)} refused, {len(muts) - cascading} of them by the expected code "
             f"alone, {cascading} cascading with a stated reason. {len(exercised)} distinct "
-            "codes exercised."
+            f"codes exercised. --dispatch-paths: {dispatch_cases} planted cases, each refused "
+            f"by its own code or read clean as claimed, {len(CASCADES)} of the refusals "
+            "cascading with a stated reason."
         )
     if dirty:
         print(
@@ -4443,28 +4510,1054 @@ def _deferred(
     return 0
 
 
-def dispatch_paths() -> int:
-    return _deferred(
-        "--dispatch-paths",
-        "that every call site constructing argv, opening a subscription, or drawing from "
-        "the credential pool is reached only through subject_guard.evaluate(), or is listed "
-        "in runner/dispatch_allowlist.yaml with a written reason (SS-6). The credential "
-        "clause is not decorative: a draft of this check covered argv and subscriptions "
-        "only, which would have passed a call site that draws a credential before the gate",
-        "nothing. runner/ holds no Python file, runner/dispatch_allowlist.yaml does not "
-        "exist, and no dispatch path exists to be gated or ungated. A scan over an empty "
-        "directory would report zero ungated call sites and exit clean, which is the "
-        "vacuous green this notice exists instead of",
-        "Step 10 of docs/THE-GAMEPLAN.md, which delivers runner/subject_guard.py and the "
-        "dispatch path. runner/dispatch_allowlist.yaml is item 8 of SS-14 item 6's list and "
-        "may land before it",
-        "VA-U2 on whether this mode should refuse rather than defer, and VA-U3 on how an "
-        "ungated call site is detected at all",
-        "SS-14 item 6 names this mode as one of its four preflight checks, so a runner "
-        "reading this notice as a pass would satisfy that condition with a check that ran "
-        "nothing. The runner reads a deferred mode as not passed, and until Step 10 the "
-        "SS-6 property is unproven rather than proven",
-    )
+# ---------------------------------------------------------------------------
+# --dispatch-paths. SS-6, Step 10.
+#
+# WHAT IS A DISPATCH SITE. Every Python file under runner/, connectors/ and app/
+# that git tracks, plus every untracked one `git ls-files --others
+# --exclude-standard` lists there, is parsed, and its imports are resolved to
+# dotted names (`import subprocess as sp`, `from os import system`, and relative
+# imports inside a package). A site is:
+#
+#   - a call whose resolved name matches a pattern in DISPATCH_PATTERNS by
+#     fnmatch: a process (subprocess, os.system, os.popen, os.exec*, os.spawn*,
+#     os.posix_spawn*, pty.spawn, asyncio.create_subprocess_*), a network
+#     connection or listener (socket, urllib.request, requests, http.client,
+#     httpx, aiohttp, asyncio.open_connection and start_server, http.server and
+#     socketserver servers), a subscription (websocket, websockets, telethon),
+#     or a container (the docker SDK);
+#   - a reference to one of the patterns that carries no wildcard, outside call
+#     position, because binding `run = subprocess.run` moves the call out of
+#     sight. Such a reference is outside the gate wherever it sits, inside a
+#     permits region included, because the stored callable, or a
+#     functools.partial built on it, can be called later from anywhere. In a
+#     test module only, meaning a test_*.py file or conftest.py under a tests/
+#     directory, three references are not sites, because none stores the
+#     pattern or calls it in place (reading VA-R6, applied as the session's
+#     reading and awaiting the operator's class, B as a precision rule or F as
+#     an exemption): the object a patch replaces an attribute on, which is the first
+#     argument, or the target keyword, of a call to the builtin setattr or
+#     delattr, of a method so named on a receiver named monkeypatch or mp such
+#     as a test's monkeypatch.setattr, or of unittest.mock.patch.object or
+#     mock.patch.object resolved through the imports; the object of an
+#     attribute assigned or deleted, as in `socket.socket.connect = guard`; and
+#     the object of a read of an attribute whose name is not a dunder and which
+#     is not called where it is read, where the same function or module body
+#     also patches or assigns that attribute of that object by its literal
+#     name, which is the patch keeping the original it replaces. Outside a test
+#     module each of the three is a site, so a production module that swaps a
+#     dispatch attribute and keeps its original is refused. A reference passed
+#     as any other argument, functools.partial's included, is still a site;
+#   - a class statement whose base matches a pattern, such as a server class
+#     that inherits http.server.ThreadingHTTPServer, because instantiating the
+#     subclass later is a call the scan cannot resolve;
+#   - argv construction: shlex.split, shlex.join or shlex.quote, a call to a
+#     function named in ARGV_BUILDERS, or .format or .format_map on a name or
+#     attribute ending in command_template;
+#   - a credential draw: a call to a function named in CREDENTIAL_DRAWS, or any
+#     call through a name containing credential_pool. The pool has no API yet,
+#     so these names are the ones it will be required to expose;
+#   - dynamic resolution a static check cannot follow: exec, eval, getattr on a
+#     dispatch module, and importlib.import_module or __import__ unless the
+#     argument is a string literal naming a module outside DISPATCH_ROOTS;
+#   - a runner.subject_guard.Decision constructed outside runner/subject_guard.py,
+#     which forges the gate's answer.
+#
+# THE REACHABILITY RULE. A site is reached only through
+# runner.subject_guard.evaluate() when, in the innermost function that contains
+# it, a name D is bound by `D = evaluate(...)` resolving to that function, or is
+# a parameter annotated as runner.subject_guard.Decision, and the site sits
+# either in the body of `if D.permits:` or in the same statement list after
+# `if not D.permits:` whose body ends in return, raise, continue or break. A
+# rebinding of D, in that block or in a nested one, ends the region. Nothing
+# crosses a function boundary: a nested function, a class body and a lambda's
+# later caller are not reached by an outer check, so a lambda's body is read
+# with no permits region at all. The name evaluate resolves to the gate only
+# through an import the scope does not shadow: a module that binds the imported
+# name again by def, class or assignment, and a function whose parameter or
+# local store carries the name its call starts from, are not calling the gate.
+# The rule is syntactic and intra-procedural on purpose, so a reviewer can see
+# from the call site alone that the gate ran.
+#
+# THE ONE EXEMPTION. A network site in a test file, named test_*.py or
+# conftest.py under a directory named tests, is exempt when its destination,
+# the first positional argument or the host, address, url or server_address
+# keyword (the first element where it is an address tuple), is the string
+# literal 127.0.0.1 or a URL literal whose host is 127.0.0.1; no destination or
+# routing keyword (proxies, proxy, source_address, base_url) is supplied by an
+# expression rather than a literal; and no other host literal appears: not
+# localhost, 0.0.0.0, ::, an empty host, another address, a dotted hostname or
+# another URL. That is a loopback stub server a test starts, and nothing else.
+# A helper module beside the tests is not a test file and needs an allowlist
+# entry.
+#
+# WHAT IT CANNOT SEE, stated so a green run is not read as more. A call through
+# an object whose type the scan cannot resolve (a session made elsewhere, a
+# module loaded by path and exec_module), code built at run time without exec
+# or eval, a C extension, an untracked file that .gitignore excludes, because
+# the file list is git's tracked files plus the untracked ones it does not
+# ignore, and anything outside the three directories. A connector adapter that dispatches through such a path
+# passes this check, which is why the allowlist and the review rule remain. VA-R6
+# trusts a name inside a test module: a receiver named monkeypatch or mp whose
+# setattr or delattr calls its first argument rather than patching it would hide
+# that reference, and the builtin names count only where the scope does not
+# rebind them.
+# ---------------------------------------------------------------------------
+
+DISPATCH_DIRS = ("runner", "connectors", "app")
+GUARD_REL = "runner/subject_guard.py"
+EVALUATE = "runner.subject_guard.evaluate"
+DECISION = "runner.subject_guard.Decision"
+ALLOWLIST_REL = "runner/dispatch_allowlist.yaml"
+
+#: The configurable pattern list: (fnmatch pattern on a resolved dotted name, act).
+DISPATCH_PATTERNS = (
+    ("subprocess.run", "process"), ("subprocess.Popen", "process"), ("subprocess.call", "process"),
+    ("subprocess.check_call", "process"), ("subprocess.check_output", "process"),
+    ("subprocess.getoutput", "process"), ("subprocess.getstatusoutput", "process"),
+    ("os.system", "process"), ("os.popen", "process"), ("os.exec*", "process"),
+    ("os.spawn*", "process"), ("os.posix_spawn*", "process"), ("os.startfile", "process"),
+    ("pty.spawn", "process"), ("asyncio.create_subprocess_*", "process"),
+    ("socket.socket", "network"), ("socket.create_connection", "network"),
+    ("socket.create_server", "network"), ("urllib.request.urlopen", "network"),
+    ("urllib.request.urlretrieve", "network"), ("urllib.request.build_opener", "network"),
+    ("requests.*", "network"), ("http.client.*", "network"), ("httpx.*", "network"),
+    ("aiohttp.*", "network"), ("asyncio.open_connection", "network"),
+    ("asyncio.open_unix_connection", "network"), ("asyncio.start_server", "network"),
+    ("http.server.*Server", "network"), ("socketserver.*Server", "network"),
+    ("ftplib.*", "network"), ("smtplib.*", "network"),
+    ("websocket.*", "subscription"), ("websockets.*", "subscription"), ("telethon.*", "subscription"),
+    ("docker.*", "container"),
+    ("shlex.split", "argv"), ("shlex.join", "argv"), ("shlex.quote", "argv"),
+)
+ARGV_BUILDERS = ("build_argv", "construct_argv", "fill_command_template")
+CREDENTIAL_DRAWS = ("draw_credential", "checkout_credential")
+DISPATCH_ROOTS = frozenset(p.split(".")[0] for p, _ in DISPATCH_PATTERNS)
+LOOPBACK = "127.0.0.1"
+LOOPBACK_URL_RE = re.compile(r"^https?://127\.0\.0\.1(?:[:/]|$)")
+OTHER_HOST_RE = re.compile(r"^(?:localhost|0\.0\.0\.0|::|\d{1,3}(?:\.\d{1,3}){3}|(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,})$")
+#: Keywords that name a call's destination, and keywords that route or bind it.
+LOOPBACK_DEST_KEYWORDS = ("host", "address", "url", "server_address")
+LOOPBACK_ROUTE_KEYWORDS = ("proxies", "proxy", "source_address", "base_url")
+REASON_MIN_WORDS = 5
+ENTRY_KEYS = ("path", "function", "call", "count", "reason")
+#: VA-R6, test modules only. Calls whose first argument, or target keyword, is the
+#: object a patch replaces an attribute on: the builtins, a method of that name on
+#: a receiver whose last name is in PATCH_METHOD_RECEIVERS, and patch.object by its
+#: exact resolved name, so a name that merely ends in "patch", such as dispatch,
+#: is not one.
+PATCH_CALL_NAMES = ("setattr", "delattr")
+PATCH_METHOD_RECEIVERS = ("monkeypatch", "mp")
+PATCH_OBJECT_NAMES = ("unittest.mock.patch.object", "mock.patch.object")
+PATCH_TARGET_KEYWORDS = ("target",)
+
+ACT_PHRASE = {
+    "process": "runs a process",
+    "network": "opens a network connection or listener",
+    "subscription": "opens a subscription",
+    "container": "starts or drives a container",
+    "argv": "constructs argv",
+    "credential": "draws a credential",
+    "dynamic": "resolves a callable or a module at run time, which no static check can follow",
+    "forgery": "constructs a Decision outside runner/subject_guard.py, which forges the gate's answer",
+}
+
+
+class Site:
+    __slots__ = ("rel", "line", "function", "call", "act", "guarded", "exempt")
+
+    def __init__(self, rel, line, function, call, act, guarded, exempt):
+        self.rel, self.line, self.function, self.call = rel, line, function, call
+        self.act, self.guarded, self.exempt = act, guarded, exempt
+
+    @property
+    def key(self) -> tuple:
+        return (self.rel, self.function, self.call)
+
+
+def _package(rel: str) -> list[str]:
+    """The package a file's relative imports resolve against."""
+    parts = rel[:-3].split("/")
+    return parts[:-1]
+
+
+def _aliases(tree, rel: str) -> dict:
+    out: dict = {}
+    pkg = _package(rel)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                if a.asname:
+                    out[a.asname] = a.name
+                else:
+                    root = a.name.split(".")[0]
+                    out[root] = root
+        elif isinstance(node, ast.ImportFrom):
+            base = node.module or ""
+            if node.level:
+                head = pkg[: len(pkg) - (node.level - 1)] if node.level > 1 else pkg
+                base = ".".join(head + ([base] if base else []))
+            for a in node.names:
+                out[a.asname or a.name] = f"{base}.{a.name}" if base else a.name
+    return out
+
+
+def _dotted(node, aliases: dict) -> str | None:
+    if isinstance(node, ast.Name):
+        return aliases.get(node.id, node.id)
+    if isinstance(node, ast.Attribute):
+        head = _dotted(node.value, aliases)
+        return f"{head}.{node.attr}" if head else None
+    return None
+
+
+def _stores(nodes) -> set[str]:
+    names: set[str] = set()
+    for n in nodes:
+        for sub in ast.walk(n):
+            if isinstance(sub, ast.Name) and isinstance(sub.ctx, (ast.Store, ast.Del)):
+                names.add(sub.id)
+            elif isinstance(sub, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                names.add(sub.name)
+    return names
+
+
+def _exits(stmt) -> bool:
+    return isinstance(stmt, (ast.Return, ast.Raise, ast.Continue, ast.Break))
+
+
+def _module_stores(body) -> set[str]:
+    """Names a module binds at its top level other than by import."""
+    names: set[str] = set()
+    for st in body:
+        if isinstance(st, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names.add(st.name)
+        elif not isinstance(st, (ast.Import, ast.ImportFrom)):
+            names |= _stores([st])
+    return names
+
+
+def _head(node) -> str | None:
+    """The Name an attribute chain starts from, or None."""
+    while isinstance(node, ast.Attribute):
+        node = node.value
+    return node.id if isinstance(node, ast.Name) else None
+
+
+class _Scan:
+    """One file's sites. See the block comment above for every rule applied."""
+
+    def __init__(self, rel: str, tree):
+        self.rel, self.aliases, self.sites = rel, _aliases(tree, rel), []
+        parts = rel.split("/")
+        self.in_tests = "tests" in parts[:-1] and (
+            (parts[-1].startswith("test_") and parts[-1].endswith(".py")) or parts[-1] == "conftest.py")
+        # A module that imports the gate's evaluate and binds the same name again
+        # by def, class or assignment has replaced the gate, so the name no
+        # longer resolves to it anywhere in the file.
+        self._module_bound = _module_stores(tree.body)
+        for name in self._module_bound:
+            if self.aliases.get(name) == EVALUATE:
+                del self.aliases[name]
+        self._shadow: list[frozenset] = [frozenset()]
+        # VA-R6: per scope, the (object, attribute) pairs the scope patches or
+        # assigns by a literal attribute name.
+        self._patched: list[frozenset] = [frozenset()]
+        self._scope(tree.body, "<module>", set())
+
+    def _scope(self, body, qual: str, bound: set, shadow: frozenset | None = None) -> None:
+        self._shadow.append(self._shadow[-1] if shadow is None else shadow)
+        self._patched.append(self._patched_pairs(body))
+        try:
+            self._block(body, qual, set(bound), set())
+        finally:
+            self._patched.pop()
+            self._shadow.pop()
+
+    def _is_patch_call(self, call) -> bool:
+        """VA-R6, in a test module only: the builtin setattr or delattr where nothing
+        rebinds the name, a method so named on a receiver named monkeypatch or mp, or
+        patch.object by its exact resolved name."""
+        if not self.in_tests:
+            return False
+        func = call.func
+        if isinstance(func, ast.Name):
+            return (func.id in PATCH_CALL_NAMES and func.id not in self._shadow[-1]
+                    and func.id not in self._module_bound and func.id not in self.aliases)
+        if isinstance(func, ast.Attribute):
+            if func.attr in PATCH_CALL_NAMES:
+                recv = func.value
+                last = recv.id if isinstance(recv, ast.Name) else (
+                    recv.attr if isinstance(recv, ast.Attribute) else None)
+                return last in PATCH_METHOD_RECEIVERS
+            if func.attr == "object":
+                return _dotted(func, self.aliases) in PATCH_OBJECT_NAMES
+        return False
+
+    @staticmethod
+    def _patch_target(call):
+        if call.args:
+            return call.args[0]
+        return next((k.value for k in call.keywords if k.arg in PATCH_TARGET_KEYWORDS), None)
+
+    def _patched_pairs(self, body) -> frozenset:
+        """(object, attribute) for each patch call with a literal attribute name and
+        each attribute assigned or deleted, in this body and not in a nested def,
+        class or lambda. Empty outside a test module, where VA-R6 does not apply."""
+        pairs: set = set()
+        if not self.in_tests:
+            return frozenset()
+        todo = collections.deque(body)
+        while todo:
+            n = todo.popleft()
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+                continue
+            todo.extend(ast.iter_child_nodes(n))
+            if isinstance(n, ast.Call) and self._is_patch_call(n):
+                target = self._patch_target(n)
+                attr = n.args[1] if len(n.args) > 1 else next(
+                    (k.value for k in n.keywords if k.arg in ("name", "attribute")), None)
+                obj = _dotted(target, self.aliases) if target is not None else None
+                if obj and isinstance(attr, ast.Constant) and isinstance(attr.value, str):
+                    pairs.add((obj, attr.value))
+            elif isinstance(n, ast.Attribute) and isinstance(n.ctx, (ast.Store, ast.Del)):
+                obj = _dotted(n.value, self.aliases)
+                if obj:
+                    pairs.add((obj, n.attr))
+        return frozenset(pairs)
+
+    def _not_a_site(self, n, parents: dict, patch_targets: set) -> bool:
+        """VA-R6, in a test module only: a reference a patch replaces an attribute
+        on, the object of an attribute assigned over, or the patch's own read of the
+        original it replaces where that read is not called in place. Never a
+        reference passed as any other argument."""
+        if not self.in_tests:
+            return False
+        if id(n) in patch_targets:
+            return True
+        parent = parents.get(id(n))
+        if not (isinstance(parent, ast.Attribute) and parent.value is n and isinstance(parent.ctx, ast.Load)):
+            return False
+        if parent.attr.startswith("__") and parent.attr.endswith("__"):
+            return False
+        grand = parents.get(id(parent))
+        if isinstance(grand, ast.Call) and grand.func is parent:
+            return False
+        return (_dotted(n, self.aliases), parent.attr) in self._patched[-1]
+
+    def _is_evaluate(self, func) -> bool:
+        """func resolves to runner.subject_guard.evaluate, and no enclosing
+        function scope rebinds the name it starts from (a parameter or a local
+        store shadows the import)."""
+        return _head(func) not in self._shadow[-1] and _dotted(func, self.aliases) == EVALUATE
+
+    def _permits_test(self, test, bound: set):
+        neg = isinstance(test, ast.UnaryOp) and isinstance(test.op, ast.Not)
+        inner = test.operand if neg else test
+        if isinstance(inner, ast.Attribute) and inner.attr == "permits" and isinstance(inner.value, ast.Name) \
+                and inner.value.id in bound:
+            return inner.value.id, not neg
+        return None, False
+
+    def _block(self, stmts, qual: str, bound: set, permitted: set) -> None:
+        bound, permitted = set(bound), set(permitted)
+        for st in stmts:
+            if isinstance(st, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                args = st.args
+                for e in st.decorator_list + args.defaults + [d for d in args.kw_defaults if d]:
+                    self._expr(e, qual, permitted)
+                params = args.posonlyargs + args.args + args.kwonlyargs
+                given = {a.arg for a in params if a.annotation is not None
+                         and (_dotted(a.annotation, self.aliases) == DECISION
+                              or (isinstance(a.annotation, ast.Constant) and a.annotation.value in ("Decision", DECISION)))}
+                local = {a.arg for a in params + [args.vararg, args.kwarg] if a is not None} | _stores(st.body)
+                self._scope(st.body, st.name if qual == "<module>" else f"{qual}.{st.name}", given,
+                            self._shadow[-1] | frozenset(local))
+                bound.discard(st.name)
+                permitted.discard(st.name)
+                continue
+            if isinstance(st, ast.ClassDef):
+                for e in st.decorator_list + [k.value for k in st.keywords]:
+                    self._expr(e, qual, permitted)
+                for base in st.bases:
+                    # Instantiating a subclass is a call the scan cannot follow, so
+                    # the class statement that inherits a dispatch class is the site.
+                    name = _dotted(base, self.aliases)
+                    act = self._classify(name, True) if name else ""
+                    if act:
+                        self.sites.append(Site(self.rel, st.lineno, qual, name, act, bool(permitted), False))
+                    else:
+                        self._expr(base, qual, permitted)
+                self._scope(st.body, st.name if qual == "<module>" else f"{qual}.{st.name}", set())
+                continue
+            if isinstance(st, ast.If):
+                self._expr(st.test, qual, permitted)
+                name, positive = self._permits_test(st.test, bound)
+                if name and positive:
+                    self._block(st.body, qual, bound, permitted | {name})
+                    self._block(st.orelse, qual, bound, permitted)
+                elif name:
+                    self._block(st.body, qual, bound, permitted)
+                    self._block(st.orelse, qual, bound, permitted | {name})
+                else:
+                    self._block(st.body, qual, bound, permitted)
+                    self._block(st.orelse, qual, bound, permitted)
+                changed = _stores(st.body + st.orelse)
+                bound -= changed
+                permitted -= changed
+                if name and not positive and st.body and _exits(st.body[-1]) and name in bound:
+                    permitted.add(name)
+                continue
+            if isinstance(st, (ast.Assign, ast.AnnAssign)) and isinstance(st.value, ast.Call) \
+                    and self._is_evaluate(st.value.func):
+                targets = st.targets if isinstance(st, ast.Assign) else [st.target]
+                self._expr(st.value, qual, permitted)
+                changed = _stores(targets)
+                bound -= changed
+                permitted -= changed
+                if len(targets) == 1 and isinstance(targets[0], ast.Name):
+                    bound.add(targets[0].id)
+                continue
+            nested = []
+            for _, value in ast.iter_fields(st):
+                items = value if isinstance(value, list) else [value]
+                if items and all(isinstance(v, ast.stmt) for v in items):
+                    nested.append(items)
+                    continue
+                for v in items:
+                    if isinstance(v, ast.ExceptHandler):
+                        if v.type is not None:
+                            self._expr(v.type, qual, permitted)
+                        nested.append(v.body)
+                    elif isinstance(v, ast.match_case):
+                        if v.guard is not None:
+                            self._expr(v.guard, qual, permitted)
+                        nested.append(v.body)
+                    elif isinstance(v, ast.withitem):
+                        self._expr(v.context_expr, qual, permitted)
+                    elif isinstance(v, ast.AST):
+                        self._expr(v, qual, permitted)
+            for body in nested:
+                self._block(body, qual, bound, permitted)
+            changed = _stores([st])
+            bound -= changed
+            permitted -= changed
+
+    def _classify(self, name: str, call: bool) -> str:
+        last = name.rsplit(".", 1)[-1]
+        if name == DECISION:
+            return "" if self.rel == GUARD_REL else "forgery"
+        for pattern, act in DISPATCH_PATTERNS:
+            if fnmatch.fnmatchcase(name, pattern) and (call or not any(c in pattern for c in "*?[")):
+                return act
+        if not call:
+            return ""
+        if last in ARGV_BUILDERS or (last in ("format", "format_map") and name[: -len(last) - 1].endswith("command_template")):
+            return "argv"
+        if last in CREDENTIAL_DRAWS or "credential_pool" in name:
+            return "credential"
+        if name in ("exec", "eval"):
+            return "dynamic"
+        return ""
+
+    def _dynamic(self, node) -> bool:
+        name = _dotted(node.func, self.aliases)
+        if name == "getattr" and node.args:
+            target = _dotted(node.args[0], self.aliases) or ""
+            return target.split(".")[0] in DISPATCH_ROOTS
+        if name in ("importlib.import_module", "__import__"):
+            arg = node.args[0] if node.args else None
+            literal = isinstance(arg, ast.Constant) and isinstance(arg.value, str)
+            return not literal or arg.value.split(".")[0] in DISPATCH_ROOTS
+        return False
+
+    def _loopback_only(self, node) -> bool:
+        """The call's destination is the 127.0.0.1 literal, and nothing else in it
+        names a host or supplies one from an expression."""
+        dest = node.args[0] if node.args else next(
+            (k.value for k in node.keywords if k.arg in LOOPBACK_DEST_KEYWORDS), None)
+        if isinstance(dest, ast.Tuple) and dest.elts:
+            dest = dest.elts[0]
+        if not (isinstance(dest, ast.Constant) and isinstance(dest.value, str)
+                and (dest.value == LOOPBACK or LOOPBACK_URL_RE.match(dest.value))):
+            return False
+        for k in node.keywords:
+            if k.arg in LOOPBACK_DEST_KEYWORDS + LOOPBACK_ROUTE_KEYWORDS and any(
+                    isinstance(sub, (ast.Name, ast.Attribute, ast.Call, ast.JoinedStr)) for sub in ast.walk(k.value)):
+                return False
+        consts = [c.value for a in list(node.args) + [k.value for k in node.keywords]
+                  for c in ast.walk(a) if isinstance(c, ast.Constant) and isinstance(c.value, str)]
+        loop = [c for c in consts if c == LOOPBACK or LOOPBACK_URL_RE.match(c)]
+        other = [c for c in consts if c not in loop and (c in ("", "::") or "://" in c or OTHER_HOST_RE.match(c))]
+        return bool(loop) and not other
+
+    @staticmethod
+    def _walk(node, lambdas: list):
+        """ast.walk's order, stopping at each lambda, which is collected instead."""
+        todo = collections.deque([node])
+        while todo:
+            n = todo.popleft()
+            if isinstance(n, ast.Lambda):
+                lambdas.append(n)
+                continue
+            todo.extend(ast.iter_child_nodes(n))
+            yield n
+
+    def _expr(self, node, qual: str, permitted: set) -> None:
+        lambdas: list = []
+        nodes = list(self._walk(node, lambdas))
+        call_funcs = {id(n.func) for n in nodes if isinstance(n, ast.Call)}
+        parents = {id(c): n for n in nodes for c in ast.iter_child_nodes(n)}
+        patch_targets = set()
+        for n in nodes if self.in_tests else ():
+            if isinstance(n, ast.Call) and self._is_patch_call(n):
+                target = self._patch_target(n)
+                if target is not None:
+                    patch_targets.add(id(target))
+            elif isinstance(n, ast.Attribute) and isinstance(n.ctx, (ast.Store, ast.Del)):
+                patch_targets.add(id(n.value))
+        for n in nodes:
+            reference = False
+            if isinstance(n, ast.Call):
+                name = _dotted(n.func, self.aliases)
+                if isinstance(n.func, ast.Attribute) and name is None:
+                    name = f"<object>.{n.func.attr}"
+                act = "dynamic" if self._dynamic(n) else (self._classify(name, True) if name else "")
+            elif isinstance(n, (ast.Attribute, ast.Name)) and id(n) not in call_funcs \
+                    and isinstance(getattr(n, "ctx", None), ast.Load):
+                name = _dotted(n, self.aliases)
+                act = self._classify(name, False) if name else ""
+                reference = True
+                # VA-R6 reaches dispatch patterns only: a patch of the gate's own
+                # Decision type is a forgery whatever form it takes.
+                if act and act != "forgery" and self._not_a_site(n, parents, patch_targets):
+                    continue
+            else:
+                continue
+            if not act:
+                continue
+            # A stored reference to a dispatch callable, bound or passed as
+            # functools.partial's argument, can be called later from anywhere,
+            # so no permits region reaches it. A Decision reference is a read of
+            # the gate's type and keeps the region it sits in.
+            guarded = bool(permitted) and not (reference and act != "forgery")
+            exempt = self.in_tests and act == "network" and isinstance(n, ast.Call) and self._loopback_only(n)
+            self.sites.append(Site(self.rel, getattr(n, "lineno", 0), qual, name, act, guarded, exempt))
+        for lam in lambdas:
+            # A lambda's body runs when its later caller calls it, which no
+            # outer permits check reaches: it is read with no region.
+            for d in lam.args.defaults + [d for d in lam.args.kw_defaults if d]:
+                self._expr(d, qual, permitted)
+            self._expr(lam.body, qual, set())
+
+
+def dispatch_sources() -> tuple[list[tuple[str, str]], list[Finding]]:
+    """Every Python file the mode reads, as (path, text), and any it could not read."""
+    def _ls(*extra) -> list[str]:
+        # -z and core.quotePath=false: git C-quotes a path carrying a non-ASCII
+        # byte, and a quoted line ends in .py" rather than .py, so a line filter
+        # would drop that file without a word.
+        proc = subprocess.run(["git", "-c", "core.quotePath=false", "ls-files", "-z", *extra, "--",
+                               *DISPATCH_DIRS], cwd=ROOT, capture_output=True)
+        if proc.returncode != 0:
+            raise OSError("git ls-files failed")
+        return [p for p in proc.stdout.decode("utf-8").split("\0") if p.endswith(".py")]
+
+    unread: list[Finding] = []
+    try:
+        rels = sorted(set(_ls()) | set(_ls("--others", "--exclude-standard")))
+    except (OSError, ValueError) as exc:
+        return [], [Finding(
+            "AUTH_DISPATCH_FILE_UNREADABLE", "git ls-files",
+            f"the file list for runner/, connectors/ and app/ could not be read ({exc.__class__.__name__}), "
+            "so no dispatch site can be found and a clean result would mean nothing was read",
+            "run this mode from a git checkout of the repository with git on PATH")]
+    out = []
+    for rel in rels:
+        path = ROOT / rel
+        if not path.is_file():
+            unread.append(Finding(
+                "AUTH_DISPATCH_FILE_UNREADABLE", rel,
+                "git lists this Python file and it is not a file on disk, so it was not read and a "
+                "dispatch site in it would go unseen",
+                "restore the file; or remove it from the index with git rm --cached"))
+            continue
+        try:
+            out.append((rel, path.read_text(encoding="utf-8")))
+        except (OSError, UnicodeDecodeError) as exc:
+            unread.append(Finding(
+                "AUTH_DISPATCH_FILE_UNREADABLE", rel,
+                f"the file could not be read ({exc.__class__.__name__}), so a dispatch site in it would go unseen",
+                "re-save the file as UTF-8; or remove it"))
+    return out, unread
+
+
+def scan_sources(sources: list[tuple[str, str]]) -> tuple[list[Site], list[Finding]]:
+    sites: list[Site] = []
+    unread: list[Finding] = []
+    for rel, text in sources:
+        try:
+            tree = ast.parse(text, filename=rel)
+        except SyntaxError as exc:
+            unread.append(Finding(
+                "AUTH_DISPATCH_FILE_UNREADABLE", f"{rel}:{exc.lineno}",
+                "the file does not parse as Python, so a dispatch site in it would go unseen and a clean "
+                "result would claim a file nobody read",
+                "fix the syntax error at that line; or remove the file"))
+            continue
+        sites += _Scan(rel, tree).sites
+    return sites, unread
+
+
+def check_dispatch(sites: list[Site], allow, present: bool, stamped: bool) -> tuple[list[Finding], list[Finding]]:
+    """(findings, certification). allow is the parsed allowlist document."""
+    open_sites = [s for s in sites if not s.guarded and not s.exempt]
+    if not present:
+        return [Finding(
+            "AUTH_DISPATCH_ALLOWLIST_ABSENT", ALLOWLIST_REL,
+            "--dispatch-paths was asked to prove that every call site constructing argv, running a "
+            "process, opening a connection or a subscription, or drawing a credential is reached only "
+            "through runner.subject_guard.evaluate() or listed with a written reason (SS-6), and the "
+            "allowlist it compares against does not exist. SS-14 item 6 lists the file as item 8, and "
+            "docs/THE-GAMEPLAN.md section 4 states the consequence: the bypass check has nothing to "
+            f"compare against, and gate coverage becomes a claim. {len(open_sites)} site(s) outside "
+            "the gate were found and none can be adjudicated",
+            "the operator ratifies a drafted allowlist, which lands at runner/dispatch_allowlist.yaml "
+            "with a dated row in doctrine/DOCTRINE_STATUS.md as one Class F act; or gate each site "
+            "listed below inside if decision.permits: after decision = evaluate(request); or remove "
+            "the site")], []
+
+    findings: list[Finding] = []
+    entries = _d(allow, "dispatch_allowlist", "entries")
+    if not isinstance(entries, list):
+        findings.append(Finding(
+            "AUTH_DISPATCH_ALLOWLIST_MALFORMED", ALLOWLIST_REL,
+            "the file carries no dispatch_allowlist.entries list, so no entry can be read and every "
+            "site outside the gate is unadjudicated",
+            "restore the dispatch_allowlist wrapper key with an entries list; or remove the file, which "
+            "this mode then refuses as absent"))
+        entries = []
+    usable: dict[tuple, dict] = {}
+    for n, e in enumerate(entries, 1):
+        where = f"{ALLOWLIST_REL} entry {n}"
+        if not isinstance(e, dict) or set(e) - set(ENTRY_KEYS) or set(ENTRY_KEYS) - set(e) - {"reason"}:
+            findings.append(Finding(
+                "AUTH_DISPATCH_ALLOWLIST_MALFORMED", where,
+                f"an entry carries exactly {', '.join(ENTRY_KEYS)}, and this one does not, so what it "
+                "exempts cannot be read",
+                "write the entry with those five keys and nothing else; or delete it"))
+            continue
+        reason = e.get("reason")
+        if not isinstance(reason, str) or len(reason.split()) < REASON_MIN_WORDS:
+            findings.append(Finding(
+                "AUTH_DISPATCH_ALLOWLIST_REASON_MISSING", where,
+                "the entry exempts a dispatch site from the gate with no written reason, or with fewer "
+                f"than {REASON_MIN_WORDS} words, which is a token rather than a reason. SS-6 permits an "
+                "exemption only with a written reason",
+                "write the reason: what the call does, why it reaches no subject, and why it cannot "
+                "sit behind evaluate(); or gate the site and delete the entry"))
+            continue
+        if not (isinstance(e["count"], int) and not isinstance(e["count"], bool) and e["count"] > 0):
+            findings.append(Finding(
+                "AUTH_DISPATCH_ALLOWLIST_MALFORMED", where,
+                "the entry's count is not a positive integer, so a second call added to the same "
+                "function could ride on it unseen",
+                "set count to the number of such calls in that function"))
+            continue
+        usable[(str(e["path"]), str(e["function"]), str(e["call"]))] = e
+
+    groups: dict[tuple, list[Site]] = {}
+    for s in open_sites:
+        groups.setdefault(s.key, []).append(s)
+    for key, group in groups.items():
+        entry = usable.get(key)
+        if entry is None:
+            for s in group:
+                findings.append(Finding(
+                    "AUTH_DISPATCH_SITE_UNGATED", f"{s.rel}:{s.line}, in {s.function}, calling {s.call}",
+                    f"this call {ACT_PHRASE[s.act]} and is not reached through "
+                    "runner.subject_guard.evaluate(): it is not inside if D.permits: or after "
+                    "if not D.permits: returns, with D bound by evaluate() in the same function or "
+                    "passed in annotated as Decision, and runner/dispatch_allowlist.yaml lists no "
+                    "entry for it. SS-6 puts the gate before argv, before a credential is drawn and "
+                    "before a subscription opens",
+                    "gate the call inside if decision.permits: after decision = evaluate(request); "
+                    "or draft an allowlist entry naming the path, the function, the call, the count "
+                    "and a written reason, which is a Class F change the operator ratifies; or "
+                    "remove the call"))
+        elif entry["count"] != len(group):
+            findings.append(Finding(
+                "AUTH_DISPATCH_ALLOWLIST_COUNT_MISMATCH", f"{key[0]}, in {key[1]}, calling {key[2]}",
+                f"the entry exempts {entry['count']} such call(s) and the function makes {len(group)}, "
+                "so an exemption written for one call would cover another nobody reviewed",
+                "set count to the number of calls after reviewing each; or gate the new call"))
+    for key in usable:
+        if key not in groups:
+            findings.append(Finding(
+                "AUTH_DISPATCH_ALLOWLIST_ENTRY_STALE", f"{ALLOWLIST_REL}: {key[0]}, in {key[1]}, calling {key[2]}",
+                "the entry exempts a call that no file makes outside the gate, so it would silently "
+                "exempt the next call written there",
+                "delete the entry; or, if the call moved, move the entry with it"))
+
+    certification = [] if stamped else [Finding(
+        "AUTH_DISPATCH_ALLOWLIST_UNSTAMPED", ALLOWLIST_REL,
+        "the allowlist exists and carries no whole-artifact dated row in doctrine/DOCTRINE_STATUS.md. "
+        "It is Class F, so its exemptions bind nothing until the operator stamps it, and a clean "
+        "comparison against it would certify gate coverage on an unratified list",
+        "the operator stamps runner/dispatch_allowlist.yaml in the pin of record; or gate the "
+        "exempted sites and delete their entries")]
+    return findings, certification
+
+
+def dispatch_paths(quiet: bool = False) -> int:
+    sources, unread = dispatch_sources()
+    sites, unparsed = scan_sources(sources)
+    unread += unparsed
+    path = ROOT / ALLOWLIST_REL
+    present = path.is_file()
+    allow = None
+    if present:
+        try:
+            allow = yaml.safe_load(path.read_text(encoding="utf-8")) if yaml is not None else None
+        except Exception as exc:
+            unread.append(Finding(
+                "AUTH_DISPATCH_FILE_UNREADABLE", ALLOWLIST_REL,
+                f"the allowlist could not be parsed ({exc.__class__.__name__}), so no entry can be read",
+                "fix the YAML; or restore the file from git"))
+    stamped = present and pin_of_record.read(ROOT, {k: set(v) for k, v in RATIFY_SECTIONS.items()}).artifact_stamped(ALLOWLIST_REL)
+    findings, certification = check_dispatch(sites, allow, present, stamped)
+    every = unread + findings + certification
+    _telemetry("error" if unread else ("refuse" if every else "pass"), every, gate=f"{GATE}-dispatch-paths")
+    for f in every:
+        print(f.render(), file=sys.stderr)
+        print(file=sys.stderr)
+    outside = [s for s in sites if not s.guarded and not s.exempt]
+    if every:
+        print("  sites outside the gate, by path, line, function, call and act:", file=sys.stderr)
+        for s in outside:
+            print(f"    {s.rel}:{s.line}  {s.function}  {s.call}  {s.act}", file=sys.stderr)
+    if not quiet or every:
+        print(
+            f"validate_authorization --dispatch-paths: {len(sources)} file(s) under "
+            f"{', '.join(d + '/' for d in DISPATCH_DIRS)} read, {len(sites)} site(s), "
+            f"{sum(s.guarded for s in sites)} behind evaluate(), {sum(s.exempt for s in sites)} exempt "
+            f"as loopback test servers, {len(outside)} outside the gate"
+        )
+    if unread:
+        return 2
+    return 1 if every else 0
+
+
+# Planted sources for the dispatch self-test. Each is parsed and never run.
+_GATED = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def dispatch(request):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        subprocess.run(['tool', '--flag'])\n"
+)
+_UNGATED = "import subprocess\n\ndef dispatch(request):\n    subprocess.run(['tool'])\n"
+_TWICE = "import subprocess\n\ndef dispatch(request):\n    subprocess.run(['tool'])\n    subprocess.run(['tool'])\n"
+_AFTER_BRANCH = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def dispatch(request):\n    decision = evaluate(request)\n    if decision.permits:\n        pass\n"
+    "    subprocess.run(['tool'])\n"
+)
+_EARLY_EXIT = (
+    "from runner import subject_guard\nimport subprocess as sp\n\n"
+    "def dispatch(request):\n    decision = subject_guard.evaluate(request)\n"
+    "    if not decision.permits:\n        return decision\n    sp.Popen(['tool'])\n"
+)
+_REBOUND = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def dispatch(request, other):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        decision = other\n        subprocess.run(['tool'])\n"
+)
+_PARAMETER = (
+    "from runner.subject_guard import Decision\nimport socket\n\n"
+    "def connect(decision: Decision, host):\n    if decision.permits:\n"
+    "        socket.create_connection((host, 443))\n"
+)
+_FROM_ALIAS = "from os import system as run_it\n\ndef go():\n    run_it('tool')\n"
+_REFERENCE = "import subprocess\n\ndef go():\n    fn = subprocess.run\n    return fn\n"
+_URLOPEN = "from urllib.request import urlopen\n\ndef fetch(url):\n    return urlopen(url)\n"
+_LOOPBACK = "import socket\n\ndef test_stub_server():\n    srv = socket.create_server(('127.0.0.1', 0))\n    srv.close()\n"
+_ALL_INTERFACES = "import socket\n\ndef test_stub_server():\n    srv = socket.create_server(('0.0.0.0', 0))\n    srv.close()\n"
+_ARGV = "import shlex\n\ndef build(template):\n    return shlex.split(template)\n"
+_CREDENTIAL = "def go(pool):\n    return pool.draw_credential('collection')\n"
+_FORGERY = (
+    "from runner.subject_guard import Decision\n\ndef fake():\n"
+    "    return Decision(value='PERMITTED', permits=True, consequence='', connector_id='c', "
+    "target_selector_type='handle')\n"
+)
+_DYNAMIC = "import importlib\n\ndef go(name):\n    return importlib.import_module(name)\n"
+_LITERAL_IMPORT = "import importlib\n\ndef go():\n    return importlib.import_module('json')\n"
+_GETATTR = "import subprocess\n\ndef go(name):\n    return getattr(subprocess, name)(['tool'])\n"
+_DOCKER = "import docker\n\ndef go():\n    return docker.from_env()\n"
+_SUBCLASS = "from http.server import ThreadingHTTPServer\n\n\nclass Server(ThreadingHTTPServer):\n    pass\n"
+_RELATIVE = "from . import subject_guard\nimport subprocess\n\ndef go(r):\n    d = subject_guard.evaluate(r)\n    if d.permits:\n        subprocess.run(['tool'])\n"
+_NESTED = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def dispatch(request):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        def later():\n            subprocess.run(['tool'])\n        return later\n"
+)
+_BROKEN = "def go(:\n    pass\n"
+_SHADOWED_MODULE = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def evaluate(request):\n    return request\n\n"
+    "def dispatch(request):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        subprocess.run(['tool'])\n"
+)
+_SHADOWED_PARAMETER = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def dispatch(request, evaluate):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        subprocess.run(['tool'])\n"
+)
+_LAMBDA = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\nHOOKS = {}\n\n"
+    "def setup(request):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        HOOKS['run'] = lambda argv: subprocess.run(argv)\n"
+)
+_PARTIAL = (
+    "from runner.subject_guard import evaluate\nimport functools\nimport subprocess\n\nHOOKS = {}\n\n"
+    "def setup(request):\n    decision = evaluate(request)\n    if decision.permits:\n"
+    "        HOOKS['run'] = functools.partial(subprocess.run, ['tool'])\n"
+)
+_NO_EXIT = (
+    "from runner.subject_guard import evaluate\nimport subprocess\n\n"
+    "def dispatch(request):\n    decision = evaluate(request)\n    if not decision.permits:\n"
+    "        print(decision.consequence)\n    subprocess.run(['tool'])\n"
+)
+_LOOPBACK_AND_OTHER = (
+    "import socket\n\ndef test_stub_client():\n"
+    "    socket.create_connection(('127.0.0.1', 0), source_address=('10.0.0.5', 0))\n"
+)
+_VARIABLE_HOST = (
+    "import socket\n\ndef test_stub_client(host):\n"
+    "    socket.create_connection((host, 443), source_address=('127.0.0.1', 0))\n"
+)
+_LOOPBACK_PROXY = (
+    "import requests\n\ndef test_stub_client(url):\n"
+    "    requests.get(url, proxies={'https': 'http://127.0.0.1:9050'})\n"
+)
+_LOOPBACK_ROUTED = (
+    "import socket\n\ndef test_stub_client(src):\n"
+    "    socket.create_connection(('127.0.0.1', 0), source_address=(src, 0))\n"
+)
+
+# VA-R6. A patch target and its kept original are not sites; every other
+# argument a patch takes, and a capture of a dispatch callable itself, still are.
+_PATCH_TARGET = (
+    "import socket\n\ndef test_guard(monkeypatch):\n"
+    "    monkeypatch.setattr(socket.socket, 'connect', lambda sock, address: None)\n"
+)
+_PATCH_OBJECT = (
+    "import socket\nfrom unittest import mock\n\ndef test_guard():\n"
+    "    with mock.patch.object(socket.socket, 'connect_ex', return_value=111):\n        pass\n"
+)
+_ASSIGNED_OVER = "import socket\n\ndef guard(fn):\n    socket.socket.connect = fn\n"
+_ORIGINAL_KEPT = (
+    "import socket\n\ndef test_guard(monkeypatch):\n    real = socket.socket.connect\n"
+    "    monkeypatch.setattr(socket.socket, 'connect', lambda sock, address: real(sock, address))\n"
+)
+_PATCH_WITH_PARTIAL = (
+    "import functools\nimport socket\nimport subprocess\n\ndef test_guard(monkeypatch):\n"
+    "    monkeypatch.setattr(socket.socket, 'connect', functools.partial(subprocess.run, ['tool']))\n"
+)
+_PATCH_VALUE_IS_A_DISPATCH = (
+    "import subprocess\n\nHOOKS = type('Hooks', (), {})\n\ndef setup():\n"
+    "    setattr(HOOKS, 'run', subprocess.run)\n"
+)
+_CALLABLE_KEPT = (
+    "import subprocess\n\ndef test_guard(monkeypatch):\n    real = subprocess.run\n"
+    "    monkeypatch.setattr(subprocess, 'run', lambda *a, **k: None)\n    return real\n"
+)
+_DUNDER_KEPT = (
+    "import socket\n\ndef test_guard(monkeypatch):\n    make = socket.socket.__call__\n"
+    "    monkeypatch.setattr(socket.socket, '__call__', lambda *a: None)\n    return make\n"
+)
+_ORIGINAL_UNPATCHED = "import socket\n\ndef keep():\n    return socket.socket.connect\n"
+_SETATTR_REBOUND = (
+    "import socket\n\ndef setattr(obj, name, value):\n    return obj(value)\n\n"
+    "def go():\n    setattr(socket.socket, 'connect', None)\n"
+)
+_DECISION_PATCHED = (
+    "from runner.subject_guard import Decision\n\ndef test_open(monkeypatch):\n"
+    "    monkeypatch.setattr(Decision, 'permits', True)\n"
+)
+# The review of 2026-10-28: VA-R6 reaches test modules only, matches patch.object by
+# its exact resolved name and a patch method by its receiver, and never exempts a
+# kept original that is called in place.
+_POPEN_SWAPPED = (
+    "import subprocess\n\n_orig = subprocess.Popen._execute_child\n\n"
+    "def _swap(self, args, *rest):\n    return _orig(self, ['tool'], *rest)\n\n"
+    "subprocess.Popen._execute_child = _swap\n"
+)
+_CONNECT_REDIRECTED = (
+    "import socket\n\n_real = socket.socket.connect\n\n"
+    "def _dial(sock, address):\n    return _real(sock, address)\n\n"
+    "socket.socket.connect = _dial\n"
+)
+_DISPATCH_DOT_OBJECT = (
+    "import subprocess\nfrom runner import dispatch\n\ndef test_go():\n"
+    "    dispatch.object(subprocess.run, ['tool'])\n"
+)
+_OTHER_PATCH_OBJECT = (
+    "import subprocess\nfrom runner.tests import helpers\n\ndef test_go():\n"
+    "    helpers.patch.object(subprocess.run, ['tool'])\n"
+)
+_HOOKS_SETATTR = (
+    "import subprocess\n\nclass Hooks:\n    pass\n\ndef test_go():\n"
+    "    Hooks.setattr(subprocess.run, 'run', None)\n"
+)
+_KEPT_AND_CALLED = (
+    "import socket\n\ndef test_dial(s, address):\n"
+    "    socket.socket.connect = socket.socket.connect\n    socket.socket.connect(s, address)\n"
+)
+
+_ENTRY = {"path": "runner/planted.py", "function": "dispatch", "call": "subprocess.run", "count": 1,
+          "reason": "A planted entry for the self-test, naming one call that reaches no subject."}
+
+
+def _allow(*entries) -> dict:
+    return {"dispatch_allowlist": {"entries": [dict(e) for e in entries]}}
+
+
+def _dispatch_cases():
+    """(description, sources, allowlist or None for absent, stamped, expected code or None for clean).
+
+    Three cases fire a second code, and the cascade is the designed behaviour
+    rather than noise: an entry that cannot be read exempts nothing, so the site
+    it names is also ungated. Those cases are listed in CASCADES.
+    """
+    p = "runner/planted.py"
+    t = "runner/tests/test_planted.py"
+    clean = _allow()
+    no_reason = dict(_ENTRY)
+    del no_reason["reason"]
+    return [
+        ("a dispatch site with no guard", [(p, _UNGATED)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a fixture allowlist naming that site with a reason", [(p, _UNGATED)], _allow(_ENTRY), True, None),
+        ("the allowlist absent", [(p, _UNGATED)], None, True, "AUTH_DISPATCH_ALLOWLIST_ABSENT"),
+        ("the allowlist absent over a gated tree", [(p, _GATED)], None, True, "AUTH_DISPATCH_ALLOWLIST_ABSENT"),
+        ("an allowlist entry with no reason", [(p, _UNGATED)], _allow(no_reason), True,
+         "AUTH_DISPATCH_ALLOWLIST_REASON_MISSING"),
+        ("an allowlist entry whose reason is a token", [(p, _UNGATED)], _allow(dict(_ENTRY, reason="ok")), True,
+         "AUTH_DISPATCH_ALLOWLIST_REASON_MISSING"),
+        ("a loopback-only test server under tests/", [(t, _LOOPBACK)], clean, True, None),
+        ("the same loopback server outside tests/", [(p, _LOOPBACK)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a test server bound to every interface", [(t, _ALL_INTERFACES)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a site inside if decision.permits after evaluate()", [(p, _GATED)], clean, True, None),
+        ("a site after the permits branch rather than in it", [(p, _AFTER_BRANCH)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a site after an early return on not permits", [(p, _EARLY_EXIT)], clean, True, None),
+        ("a site after the decision is rebound", [(p, _REBOUND)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a site behind a Decision parameter's permits", [(p, _PARAMETER)], clean, True, None),
+        ("a site in a function defined inside the permits branch", [(p, _NESTED)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a relative import of the guard inside runner/", [("runner/planted.py", _RELATIVE)], clean, True, None),
+        ("os.system imported under another name", [(p, _FROM_ALIAS)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("subprocess.run bound to a name rather than called", [(p, _REFERENCE)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("urlopen imported from urllib.request", [(p, _URLOPEN)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("argv built with shlex", [(p, _ARGV)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a credential drawn before the gate", [(p, _CREDENTIAL)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a Decision constructed outside the guard", [(p, _FORGERY)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a module imported by a computed name", [(p, _DYNAMIC)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a module imported by a literal outside the dispatch roots", [(p, _LITERAL_IMPORT)], clean, True, None),
+        ("getattr on subprocess", [(p, _GETATTR)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("the docker SDK", [(p, _DOCKER)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a class that inherits a server class", [(p, _SUBCLASS)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("an entry naming a call no file makes", [(p, _GATED)], _allow(_ENTRY), True,
+         "AUTH_DISPATCH_ALLOWLIST_ENTRY_STALE"),
+        ("a second call riding on a count of one", [(p, _TWICE)], _allow(_ENTRY), True,
+         "AUTH_DISPATCH_ALLOWLIST_COUNT_MISMATCH"),
+        ("an entry with an undeclared key", [(p, _UNGATED)], _allow(dict(_ENTRY, line=4)), True,
+         "AUTH_DISPATCH_ALLOWLIST_MALFORMED"),
+        ("an allowlist with no entries list", [(p, _GATED)], {"dispatch_allowlist": {}}, True,
+         "AUTH_DISPATCH_ALLOWLIST_MALFORMED"),
+        ("a valid allowlist the pin does not stamp", [(p, _UNGATED)], _allow(_ENTRY), False,
+         "AUTH_DISPATCH_ALLOWLIST_UNSTAMPED"),
+        ("a file that does not parse", [(p, _BROKEN)], clean, True, "AUTH_DISPATCH_FILE_UNREADABLE"),
+        ("evaluate rebound by a module-level def", [(p, _SHADOWED_MODULE)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("evaluate shadowed by a parameter", [(p, _SHADOWED_PARAMETER)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a lambda stored inside the permits branch", [(p, _LAMBDA)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("functools.partial on subprocess.run inside the permits branch", [(p, _PARTIAL)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a site after if not permits whose body does not exit", [(p, _NO_EXIT)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a test call naming 127.0.0.1 and another host", [(t, _LOOPBACK_AND_OTHER)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a test call to a host held in a variable", [(t, _VARIABLE_HOST)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a test call to a variable url through a loopback proxy", [(t, _LOOPBACK_PROXY)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a loopback test call whose source address is a variable", [(t, _LOOPBACK_ROUTED)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a loopback server in a helper module under tests/", [("runner/tests/helper.py", _LOOPBACK)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        # VA-R6, 2026-10-28.
+        ("a patch target passed to monkeypatch.setattr", [(t, _PATCH_TARGET)], clean, True, None),
+        ("a patch target passed to mock.patch.object", [(t, _PATCH_OBJECT)], clean, True, None),
+        ("the object of an attribute assigned over in a test", [(t, _ASSIGNED_OVER)], clean, True, None),
+        ("the object of an attribute assigned over outside a test", [(p, _ASSIGNED_OVER)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("the original of the attribute the same function patches", [(t, _ORIGINAL_KEPT)], clean, True, None),
+        ("functools.partial on subprocess.run as the value a patch installs", [(t, _PATCH_WITH_PARTIAL)], clean,
+         True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("subprocess.run as the value setattr stores", [(p, _PATCH_VALUE_IS_A_DISPATCH)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("subprocess.run kept before the same function patches it", [(t, _CALLABLE_KEPT)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a dunder of socket.socket kept before the same function patches it", [(t, _DUNDER_KEPT)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a method of socket.socket kept with no patch beside it", [(p, _ORIGINAL_UNPATCHED)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a module that rebinds setattr", [(p, _SETATTR_REBOUND)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a patch of the gate's Decision type", [(t, _DECISION_PATCHED)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        # The review of 2026-10-28.
+        ("a connector module that swaps Popen's launcher and keeps the original",
+         [("connectors/planted/adapter.py", _POPEN_SWAPPED)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("an app module that redirects socket connect and keeps the original",
+         [("app/store/planted.py", _CONNECT_REDIRECTED)], clean, True, "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a module named dispatch whose object() takes subprocess.run", [(t, _DISPATCH_DOT_OBJECT)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a patch.object that is not unittest.mock's", [(t, _OTHER_PATCH_OBJECT)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a setattr method on a receiver that is not monkeypatch", [(t, _HOOKS_SETATTR)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+        ("a kept original called in place after a self-assignment", [(t, _KEPT_AND_CALLED)], clean, True,
+         "AUTH_DISPATCH_SITE_UNGATED"),
+    ]
+
+
+#: Cases whose expected code brings a second one with it, and why.
+CASCADES = {
+    "an allowlist entry with no reason": "AUTH_DISPATCH_SITE_UNGATED",
+    "an allowlist entry whose reason is a token": "AUTH_DISPATCH_SITE_UNGATED",
+    "an entry with an undeclared key": "AUTH_DISPATCH_SITE_UNGATED",
+}
+
+
+def dispatch_self_test(quiet: bool = False) -> tuple[int, int]:
+    """(cases, failures). Each case asserted by its own code, and by that code alone."""
+    failures = 0
+    cases = _dispatch_cases()
+    for desc, sources, allow, stamped, expected in cases:
+        try:
+            sites, unread = scan_sources(sources)
+            findings, cert = check_dispatch(sites, allow, allow is not None, stamped)
+            fired = {f.code for f in unread + findings + cert}
+            want = ({expected} if expected else set()) | ({CASCADES[desc]} if desc in CASCADES else set())
+            ok = fired == want
+            note = "" if ok else f", fired {sorted(fired)}"
+            if ok and desc in CASCADES:
+                note = f", cascading to {CASCADES[desc]}: an unusable entry exempts nothing"
+        except Exception as exc:  # a crash is a failure of the case, never a pass
+            ok, note = False, f", crashed ({exc!r})"
+        failures += 0 if ok else 1
+        mark = ("refused" if expected else "clean  ") if ok else "WRONG  "
+        print(f"  {mark}  {'dispatch: ' + desc:62} expected {expected or 'no refusal'}{note}")
+    return len(cases), failures
 
 
 def disjointness() -> int:
@@ -4551,7 +5644,9 @@ def main(argv: list[str]) -> int:
     ap.add_argument(
         "--dispatch-paths",
         action="store_true",
-        help="DEFERRED until Step 10. Prints what it will check and what stands in.",
+        help="SS-6. Every dispatch site under runner/, connectors/ and app/ is behind "
+        "runner.subject_guard.evaluate() or listed in runner/dispatch_allowlist.yaml with a "
+        "reason. Refuses while the allowlist is absent or unstamped.",
     )
     ap.add_argument(
         "--disjointness",
@@ -4580,7 +5675,7 @@ def main(argv: list[str]) -> int:
         )
 
     if args.dispatch_paths and not (args.fixtures or args.self_test):
-        rc = dispatch_paths()
+        rc = dispatch_paths(quiet=args.quiet)
         if args.disjointness:
             rc = max(rc, disjointness())
         return rc
@@ -4659,9 +5754,11 @@ def main(argv: list[str]) -> int:
             )
         print(
             "  not covered by this gate: what the gate returns, because where the "
-            "evaluator lives is VA-U1 and runner/subject_guard.py is Step 10; that a "
-            "dispatch path reaches the gate at all (SS-6), which is --dispatch-paths and "
-            "is deferred; disjointness from the credential pool (SS-20, CR-1), which is "
+            "evaluator lives is VA-U1 and runner/subject_guard.py, drafted at Step 10, is "
+            "not graded against this corpus; that a dispatch path reaches the gate at all "
+            "(SS-6), which is --dispatch-paths and refuses while "
+            "runner/dispatch_allowlist.yaml is absent; disjointness from the credential "
+            "pool (SS-20, CR-1), which is "
             "--disjointness and is deferred because the pool lives only in ISOLATED per "
             "EG-4; and whether a purpose sentence names a person, which is a review rule "
             "with no mechanism"

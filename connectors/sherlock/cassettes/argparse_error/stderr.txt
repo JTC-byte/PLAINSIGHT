@@ -1,0 +1,4 @@
+usage: sherlock [-h] [--version] [--verbose] [--folderoutput FOLDEROUTPUT]
+                [--output OUTPUT] [--csv] [--xlsx] [--site SITE_NAME]
+                USERNAMES [USERNAMES ...]
+sherlock: error: unrecognized arguments: --bogus-flag

@@ -1,0 +1,31 @@
+{
+  "source": "docs/PLAINSIGHT-design.md section 8.6, with the additions of amendment 9.10",
+  "note": "One source, read by the app and by the docs. Nothing in 8.6 is rebound. There is no d, and Enter stays promote. A key whose built flag is false answers that it is not built in this slice and records nothing.",
+  "keys": [
+    {"key": "j", "design": "j/k row", "origin": "8.6", "slice": 1, "built": true, "action": "row_next", "label": "next node or row"},
+    {"key": "k", "design": "j/k row", "origin": "8.6", "slice": 1, "built": true, "action": "row_prev", "label": "previous node or row"},
+    {"key": "Tab", "design": "Tab/⇧Tab selector chip", "origin": "8.6", "slice": 1, "built": true, "action": "chip_next", "label": "next selector node"},
+    {"key": "Shift+Tab", "design": "Tab/⇧Tab selector chip", "origin": "8.6", "slice": 1, "built": true, "action": "chip_prev", "label": "previous selector node"},
+    {"key": "l", "design": "l lineage", "origin": "8.6", "slice": 1, "built": true, "action": "lineage", "label": "open the Lineage Drawer on the selection (also Ctrl+click)"},
+    {"key": "Shift+L", "design": "⇧L forward lineage", "origin": "8.6", "slice": 1, "built": true, "action": "lineage_forward", "label": "what depends on the selection"},
+    {"key": "Escape Escape", "design": "esc esc", "origin": "8.6", "slice": 1, "built": true, "action": "clear_scopes", "label": "focus back to the seed, hops back to 2, drawer closed"},
+    {"key": "? ?", "design": "?? legend", "origin": "8.6", "slice": 1, "built": true, "action": "legend", "label": "legend over the view"},
+    {"key": "7", "design": null, "origin": "9.10", "slice": 1, "built": true, "action": "view_web", "label": "WEB"},
+    {"key": "1", "design": "1–6 view", "origin": "8.6", "slice": 2, "built": true, "action": "view_dossier", "label": "DOSSIER"},
+    {"key": "8", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "view_paths", "label": "PATHS between the two marked nodes"},
+    {"key": "f", "design": "f set focus", "origin": "8.6", "slice": 2, "built": true, "action": "refocus", "label": "recentre the web on the selection; collects nothing"},
+    {"key": "v", "design": "v multi-select", "origin": "8.6", "slice": 2, "built": true, "action": "mark", "label": "mark the selection for PATHS (two marks)"},
+    {"key": "+", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "hops_more", "label": "one more hop, at most 3"},
+    {"key": "-", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "hops_less", "label": "one hop fewer, at least 1"},
+    {"key": "t", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "list_twin", "label": "the list twin of the web"},
+    {"key": "p", "design": "p pivot", "origin": "8.6", "slice": 2, "built": true, "action": "pivot", "label": "Pivot Bar for one node; a deep dive is NOT DISPATCHED until the subject gate is connected to this route"},
+    {"key": "Enter", "design": "⏎ promote", "origin": "8.6", "slice": 3, "built": false, "action": "promote", "label": "promote item to entity"},
+    {"key": "e", "design": "e exclude", "origin": "8.6", "slice": 3, "built": false, "action": "exclude", "label": "exclude (affirmative)"},
+    {"key": "i", "design": "i ignore", "origin": "8.6", "slice": 3, "built": false, "action": "ignore", "label": "ignore (soft, reversible)"},
+    {"key": "n", "design": "n note", "origin": "8.6", "slice": 3, "built": false, "action": "note", "label": "note"},
+    {"key": "?", "design": "? open question", "origin": "8.6", "slice": 3, "built": false, "action": "question", "label": "open question"},
+    {"key": "m", "design": "m assert identity", "origin": "8.6", "slice": 3, "built": false, "action": "merge", "label": "assert identity (Merge Sheet)"},
+    {"key": "x", "design": "x revoke", "origin": "8.6", "slice": 3, "built": false, "action": "revoke", "label": "revoke"},
+    {"key": "Backspace", "design": "Backspace undo", "origin": "8.6", "slice": 3, "built": false, "action": "undo", "label": "undo last disposition"}
+  ]
+}

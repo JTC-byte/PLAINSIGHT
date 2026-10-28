@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:plainsight:connector-harness-fixture.schema.json",
+  "title": "PLAINSIGHT connector harness fixture",
+  "description": "Lints one harness fixture: one line of a connector's fixtures JSONL file. A fixture names the connector at a version, gives the adapter an input made of placeholders, and pins what the adapter must return: events with an exact count, or a refusal with a declared code. An unknown key is a caught typo rather than a silent no-op (docs/PLAINSIGHT-FOUNDATION.md section 4.4).",
+  "$comment": "HAND-WRITTEN at Step 12. Rank 3, Class B. Read by tools/validate_manifest.py, which checks every line of every fixtures file a manifest's refusal_fixtures name, and by tools/validate_connector_conformance.py, which arrives with the first connector and calls the adapter. event_count is required whenever result is events, because without it a refusing adapter satisfies every expectation vacuously (docs/THE-GAMEPLAN.md section 2.1). adapter_state equals spec/layer-model.yaml PROBE_EVENT error_class, canary_subject_class equals the manifest schema's, and the input pattern equals tools/validate_cast.py PLACEHOLDER_RE; tools/validate_manifest.py reconciles all three on every run. That tool also refuses a line that repeats a key and an input that is neither a slot name nor a typed token synthetic/GROUND_TRUTH.yaml carries (MF-R8). MF-R15: a fixture pins an event count or a refusal code and nothing else; docs/PLAINSIGHT-FOUNDATION.md section 4.4 also names presence, absence, lineage and forbidden_paths, which have no key here yet and are refused as unknown keys until the runner that reads them adds them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "connector", "input", "result", "adapter_state", "canary_subject_class"],
+  "properties": {
+    "id": {
+      "description": "Unique within the fixtures file. A manifest's refusal_fixtures entry names it.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "connector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,62}$" },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+        }
+      }
+    },
+    "input": {
+      "description": "Keyed by the consumed input's as name. Every value is a placeholder in the cast grammar, or null to assert refusal on a present but empty input. tools/validate_manifest.py narrows the placeholder to a slot name or a typed token the cast carries (MF-R8). A fixture never carries a selector value, because a fixture is a tracked file and git history is the one store a crypto-shred cannot reach (doctrine/RETENTION.md RT-15).",
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": {
+        "anyOf": [
+          { "type": "string", "pattern": "^<[^<>]+>$" },
+          { "type": "null" }
+        ]
+      }
+    },
+    "result": {
+      "description": "events: the adapter returns events and event_count pins how many, including zero. refusal: the adapter refuses with [] because the input cannot honestly become an event, and refusal_code names why.",
+      "enum": ["events", "refusal"]
+    },
+    "event_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "adapter_state": {
+      "description": "The adapter's classification of what occurred, from the fixed enum. Adapter code decides it and never a YAML regex (docs/PLAINSIGHT-design.md section 6.3).",
+      "enum": ["ok", "empty", "throttled", "auth_failed", "blocked", "malformed", "error"]
+    },
+    "refusal_code": {
+      "description": "A code declared in spec/layer-model.yaml violation_codes. tools/validate_manifest.py checks membership, so the vocabulary is read from the layer model rather than copied.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)+$"
+    },
+    "cassette": {
+      "description": "Path to the recorded exchange the adapter replays, relative to the connector's directory. Captured against an S2 or N0 target only, where it is stratum 4 (doctrine/RETENTION.md RT-1).",
+      "type": "string",
+      "pattern": "^(\\./)?(?!/)(?!.*\\.\\.)[A-Za-z0-9_][A-Za-z0-9_./-]*$"
+    },
+    "canary_subject_class": {
+      "description": "Who the cassette was captured against. synthetic or institutional only (RT-15); consented is deliberately absent.",
+      "enum": ["synthetic", "institutional"]
+    },
+    "note": {
+      "type": "string",
+      "pattern": "^[^<>]*$"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "const": "events" } }, "required": ["result"] },
+      "then": {
+        "required": ["event_count", "cassette"],
+        "properties": { "refusal_code": false }
+      }
+    },
+    {
+      "if": { "properties": { "result": { "const": "refusal" } }, "required": ["result"] },
+      "then": {
+        "required": ["refusal_code"],
+        "properties": { "event_count": { "const": 0 } }
+      }
+    }
+  ]
+}

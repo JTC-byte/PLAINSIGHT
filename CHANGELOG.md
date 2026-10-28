@@ -22,6 +22,74 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-10-28. Step 9, Step 12's schema and harness, Step 10 drafted, the
+  Sherlock connector on cassettes, and the application's first slice.**
+
+  **What changed.** `spec/divergence-register.yaml` exists with 30 entries and
+  `tools/validate_divergence_register.py` derives the required entry list from
+  a JSON-pointer diff of the PSE schema and `zmeta-event-1.0`, so the register
+  cannot go stale silently; `tools/render_divergence_register.py` writes the
+  Markdown rendering and refuses when it drifts. `schema/connector-manifest.schema.json`
+  and `tools/validate_manifest.py` define and check what a connector may
+  declare, with `conformance/connector-harness/fixture.schema.json` for its
+  fixtures. `runner/subject_guard.py` drafts Step 10: `evaluate()` runs SS-8's
+  order with the NEVER list first, reads every value from the compiled policy,
+  and refuses every request while the pin of record carries no dated row for
+  the SS-14 item 6 artifacts; `tools/validate_authorization.py --dispatch-paths`
+  reads every Python file under `runner/`, `connectors/` and `app/` for a site
+  that runs a process, opens a connection or constructs argv and refuses while
+  `runner/dispatch_allowlist.yaml` is absent. `connectors/sherlock/` is the
+  first connector, on hand-built cassettes with placeholders only, and
+  `tools/validate_connector_conformance.py` is rung 4 of the ladder. `app/` is
+  the application's first slice: the SQLite store with the Postgres DDL as its
+  record, the ingest door through `tools/validate.py`, rebuild and replay, a
+  loopback-only server with an egress guard, the case-scoped social web view,
+  the Lineage Drawer, PATHS, DOSSIER and the SSE stream, with amendments 9.1 to
+  9.15 appended to `docs/PLAINSIGHT-design.md`. On the maintainer's instruction
+  of the same day (his click at 12:09 on the offered action labelled "Build
+  them now"), three more pieces: an emit of a platform-bound selector may declare
+  `platform_from_item` on an endpoint-unit connector, the shape the design's
+  section 6.2 draws (MF-R17), which the Sherlock manifest uses with a platform
+  token derived from the site name (SH-R18); `policy/retention.yaml` line 870
+  reads `present: true` for the `canary_subject_class` part the tree now
+  requires and declares, with the retention self-test's mutation flipping the
+  flag rather than setting it; and the application's tests join the kernel
+  gate, `make test` and CI (APP-R30), with a scanner rule that a patch target
+  in a test module is not a dispatch site (VA-R6) and the allowlist draft
+  re-measured at four sites (DA-R2, outside the tree). Every reading an agent
+  took is recorded in the artifact that carries it (DR, MF, PIN-R9, APP, SG,
+  VA, DA, SH, CC) and awaits the maintainer. Built under his typed release of
+  2026-10-28 01:47 by six adversarially reviewed Workflow runs; the worklog
+  entry of the same date carries the counts.
+
+  **Which surfaces moved.** `spec/`, `schema/`, `conformance/connector-harness/`,
+  `runner/`, `connectors/`, `app/`, eight files under `tools/`, the Makefile,
+  the hook, CI (which now clones the public `zmeta-spec` at v1.1.27, installs
+  pytest and runs the guard, adapter and application tests), `.gitattributes`
+  (cassette bytes), `policy/retention.yaml` (one line, 870), `AGENTS.md`
+  section 5, `CONFORMANCE.md` sections 1 to 4, `README.md` (one sentence on
+  RT-15's parts), `docs/PLAINSIGHT-design.md` section 9 (appended), this file,
+  the worklog and its archive, and the handoff.
+
+  **What validation ran.** Each run's builder, fixer and verifier ran its
+  battery one command at a time with every negative control seen failing; on
+  the staged tree, the whole battery once more by the session: every validator
+  and self-test, the repo scan (148 tracked files, no filled selector), the
+  guard, adapter and application suites (22, 51 and 195 passed, 1 skipped, 91
+  paired controls), the pre-commit hook, both diff checks, and the kernel gate
+  at 32 entries: 24 implemented and passing, 4 unratified and refusing, 2
+  stubbed, 2 pending. `--dispatch-paths` refuses by design while the allowlist
+  is absent, with four sites outside the gate (two subprocess calls in the
+  ingest door, the loopback listener, the operator-gated docker test), all in
+  DA-R2.
+
+  **What did not change.** No doctrine file, stamp, ontology entry, synthetic
+  file, generated schema or policy file, or corpus row; in `policy/` one word
+  on one line, on the maintainer's instruction. No allowlist was created: DA-R2
+  is a draft outside the tree. No connector, adapter or runner ran against a
+  platform, and no cassette carries a filled value. Nothing was committed or
+  pushed by the session.
+
 - **2026-10-25. The since-last-record extraction joins the closeout rule.**
 
   **What changed.** `AGENTS.md` section 8 gains a dated amendment: before the

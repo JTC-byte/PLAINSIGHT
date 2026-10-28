@@ -867,7 +867,7 @@ retention:
       - clause: an Execution Limits clause in AGENTS.md
         present: true
       - clause: canary_subject_class as a required connector manifest field
-        present: false
+        present: true
         values: [synthetic, institutional]
         refused_when_missing: true
         note: >

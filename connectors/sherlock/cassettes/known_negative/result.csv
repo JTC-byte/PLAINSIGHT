@@ -1,0 +1,10 @@
+username,name,url_main,url_user,exists,http_status,response_time_s
+<random_nonexistent_string>,1337x,https://www.1337x.to/,https://www.1337x.to/user/<random_nonexistent_string>/,WAF,403,0.0912873330000312
+<random_nonexistent_string>,Discord,https://discord.com/,https://discord.com,Available,200,0.2650481920000273
+<random_nonexistent_string>,GitHub,https://www.github.com/,https://www.github.com/<random_nonexistent_string>,Available,404,0.3554412060000208
+<random_nonexistent_string>,GitLab,https://gitlab.com/,https://gitlab.com/<random_nonexistent_string>,Available,200,0.1622845990000081
+<random_nonexistent_string>,Instagram,https://instagram.com/,https://instagram.com/<random_nonexistent_string>,Available,404,0.6630918770000137
+<random_nonexistent_string>,Kik,https://kik.me/,https://kik.me/<random_nonexistent_string>,Available,200,0.2847712199999984
+<random_nonexistent_string>,ResearchGate,https://www.researchgate.net/,,Illegal,,
+<random_nonexistent_string>,Slides,https://slides.com/,https://slides.com/<random_nonexistent_string>,Available,204,0.2403311500000075
+<random_nonexistent_string>,Twitter,https://x.com/,https://x.com/<random_nonexistent_string>,Unknown,?,
