@@ -120,14 +120,16 @@ script on this path and under pytest by hand; and with the first connector,
 joined. The manifest gate and the conformance runner refused while
 `connectors/sherlock/manifest.yaml` refused under `MANIFEST_SELECTOR_PLATFORM`,
 which is reading SH-R5 in that connector's README, until the
-`platform_from_item` move of 2026-10-28 (MF-R17, amendment 9.14); the maintainer
-decides whether that move stands, and reverting it returns both entries to
-refusing. The retention-self-test entry refused with
+`platform_from_item` move of 2026-10-28 (MF-R17, amendment 9.14), which the
+maintainer kept the same day on his click on the offered action in the
+PLAINSIGHT chat; reverting it would return both entries to refusing. The
+retention-self-test entry refused with
 `RETENTION_POLICY_ENFORCEMENT_MISSTATED` while `policy/retention.yaml` recorded
 RT-15's `canary_subject_class` part as absent and the Sherlock manifest
 declared it. On the maintainer's instruction of 2026-10-28 that flag reads
-present, a one-word edit of that flag whose class (B as a statement of
-enforcement state, or F) he confirms, and the self-test's mutation for that
+present, a one-word edit of that flag, Class B as a statement of enforcement
+state by the operator's decision of the same day (his click on the offered
+action in the PLAINSIGHT chat), and the self-test's mutation for that
 part now flips the flag rather than setting it. The
 divergence-register entry reads the upstream schema from the sibling checkout
 `../ZMeta/zmeta-spec`, which CI clones at the pinned release, and exits 2 where
@@ -168,10 +170,10 @@ allowlist is Class F and its draft waits outside the tree for the operator.
 Reading VA-R6 in `tools/validate_authorization.py`, of 2026-10-28, reads a
 patch target, an attribute assigned over and a patch's kept original as no
 site, in a test module under `tests/` only. It narrows what the bypass check
-reports; the session applies it as a Class B precision rule of the scanner, and
-whether it is that or a Class F exemption is the operator's to confirm beside
-the allowlist draft, with the rule removed and the four references listed in
-that draft if he reads it as F.
+reports; the session applied it as a Class B precision rule of the scanner,
+and the operator decided it Class B on 2026-10-28, on his click on the offered
+action in the PLAINSIGHT chat, so it stands and the allowlist draft keeps its
+four sites.
 
 Two entries are pending, and each names what does not exist:
 authorization-disjointness, which needs a credential pool that no inventory

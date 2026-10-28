@@ -274,7 +274,7 @@ RT15_PART_CLAUSES = (
 #: a manifest that declares the field. connectors/sherlock/manifest.yaml declares
 #: it, so the part measures present, and policy/retention.yaml's flag for it reads
 #: present since the maintainer's instruction of 2026-10-28, a one-word edit of
-#: that flag whose class he confirms. Until then the flag read absent and the self-test refused on
+#: that flag he decided Class B the same day. Until then the flag read absent and the self-test refused on
 #: the disagreement.
 MANIFEST_VALIDATOR_REQUIRES_CANARY = True
 

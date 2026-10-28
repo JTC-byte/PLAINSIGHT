@@ -207,7 +207,9 @@ operator:
          platform, and neither is permitted where it binds none. Nothing here
          checks that the token the adapter writes names a real platform; the
          connector's own reading states its rule (SH-R18 for Sherlock), and
-         amendment 9.14 of the design records the change for the maintainer.
+         amendment 9.14 of the design records the change. The maintainer kept
+         the move on 2026-10-28, on his click on the offered action in the
+         PLAINSIGHT chat, as Class B.
 
 What this tool does not catch: SS-14 item 3's check of read verbs against an
 adapter's methods waits for an adapter. A repeated key in a YAML manifest or a

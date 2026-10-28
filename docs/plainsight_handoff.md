@@ -74,9 +74,8 @@ staged tree, and three CI runs green on every step.
 request 35 and `356c1f7` by pull request 36 on 2026-10-28; this commit follows
 by the same route under his go word, and PSE still has no tag.
 
-**What remains open or deferred.** Section 3: the classes he confirms (the
-emit's platform move, VA-R6, the line 870 edit), DA-R2's stamp, the readings;
-the queue.
+**What remains open or deferred.** Section 3: the three classes are decided;
+DA-R2's stamp, the readings; the queue.
 
 ---
 
@@ -115,7 +114,7 @@ schema and the rung-4 harness exist and run. The Sherlock connector replays
 hand-built cassettes through rungs 1, 2 and 4 (6 of 6 fixtures held, 30 events
 graded, none refused, `invoke()` refusing without a permit and reaching no
 process or network call) and passes DECLARE since the `platform_from_item`
-move of 2026-10-28 (MF-R17, his to confirm). The live
+move of 2026-10-28 (MF-R17, kept by him). The live
 canaries, which `docs/PLAINSIGHT-design.md` calls Prove It, are an operator act
 never performed; no connector is registered for live use.
 
@@ -180,23 +179,23 @@ exists and has never run.
 
 Everything in this section is the operator's, and none of it is an agent act.
 
-**Three classes he confirms, each applied on his click of 2026-10-28 as the
-session's reading.** First, the emit's platform: a handle's registry form is
+**Three classes, each applied on his click of 2026-10-28 as the session's
+reading, each decided by him the same day on his click on the offered action
+in this chat.** First, the emit's platform, kept: a handle's registry form is
 `handle:<platform>/<string>` and Sherlock's platform differs per site, so an
 emit of a platform-bound key may declare `platform_from_item` on an
 endpoint-unit connector, the shape `docs/PLAINSIGHT-design.md` section 6.2
 draws (MF-R17, amendment 9.14), with the claim's platform token derived from
 the site name alone (SH-R18, amendment 9.15; nine sites give no token and a hit
-there is ambiguous with no claim). Second, VA-R6: the dispatch scanner reads a
-patch target, a patched attribute's kept original and an attribute assigned
-over as no site, in test modules only, with plants proving a patch whose
-replacement dispatches is still a site; the session applies it as a Class B
-precision rule, the widening lens read it as a Class F exemption, and if he
-reads it so the rule comes out and the four `test_http.py` references join the
-allowlist draft. Third, the one-word edit at `policy/retention.yaml` line 870,
-which he instructed: a statement of enforcement state reaching no subject,
-retention period or egress path (Class B by the session's reading), or Class F,
-which would need his dated row in the pin.
+there is ambiguous with no claim). Second, VA-R6, decided: he read it as
+Class B on 2026-10-28 (his click on the offered action in this chat), a
+precision rule of the dispatch scanner (a patch target, a patched attribute's
+kept original and an attribute assigned over are no site, in test modules
+only, with plants proving a patch whose replacement dispatches is still a
+site), so the rule stands and the allowlist draft keeps its four sites. Third, the one-word edit at `policy/retention.yaml` line 870,
+which he instructed, decided Class B by him on 2026-10-28 (his click on the
+offered action in this chat): a statement of enforcement state reaching no
+subject, retention period or egress path, needing no row in the pin.
 
 **DA-R2, the dispatch allowlist.** Class F by `AGENTS.md` section 3. The
 re-measured draft is in the record folder beside DA-R1 and its argument, never

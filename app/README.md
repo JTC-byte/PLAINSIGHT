@@ -95,6 +95,6 @@ hook's repository scan guards. The test client's two connections are made in
 `tools/validate_authorization.py --dispatch-paths` reads them as loopback test
 connections, and the no-socket check keeps each original it patches beside the
 patch, which the scan reads as no dispatch in a test module only (VA-R6,
-applied as the session's reading of 2026-10-28 and awaiting the maintainer's
-class; without it the scan lists those four references outside the gate, and
-if he reads it as Class F they join the allowlist draft instead).
+applied as the session's reading of 2026-10-28 and decided Class B by the
+maintainer the same day; without it the scan would list those four references
+outside the gate).

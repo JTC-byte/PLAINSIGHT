@@ -136,8 +136,8 @@ python tools/validate_connector_conformance.py --all --quiet || {
 # RETENTION_POLICY_ENFORCEMENT_MISSTATED from Step 12 until 2026-10-28, while
 # policy/retention.yaml recorded the canary_subject_class part of RT-15 as
 # absent and the Sherlock manifest declared it; that flag now reads present, a
-# one-word edit made on the maintainer's instruction, whose class he confirms,
-# and the self-test's
+# one-word edit made on the maintainer's instruction and decided Class B by him
+# the same day, and the self-test's
 # mutation for that part flips the flag rather than setting it.
 # Two ratifying acts reach them anyway. Sealing the cast did, until the cast
 # self-test was fixed on 2026-09-28 to construct its own seal state. Completing

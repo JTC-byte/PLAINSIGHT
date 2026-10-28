@@ -393,7 +393,7 @@ KERNEL_GATE = (
         "refusing with no process or network call reached unless the gate "
         "permitted, run only when no dispatch site sits outside it. It refused while "
         "connectors/sherlock/manifest.yaml refused on reading SH-R5, until the "
-        "platform_from_item move of 2026-10-28 (MF-R17), which the maintainer decides. "
+        "platform_from_item move of 2026-10-28 (MF-R17), which the maintainer kept the same day. "
         "The live canaries are an operator act it never performs",
     ),
     (
