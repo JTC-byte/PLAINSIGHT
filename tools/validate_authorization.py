@@ -176,8 +176,8 @@ Modes:
         no dated row, because a Class F exemption list binds nothing unstamped.
         This takes VA-U2's third option and VA-U3's first and third together,
         recorded as VA-R5 and awaiting the operator. VA-R6, applied 2026-10-28
-        as the session's reading and awaiting the operator's class (B as a
-        precision rule of this scanner, or F), reads three references
+        as the session's reading and decided Class B by the operator the same
+        day (a precision rule of this scanner), reads three references
         in a test module under tests/ as not sites: a patch target, the object
         of an attribute assigned over, and a patch's kept original that is not
         called where it is read.
@@ -898,11 +898,10 @@ READINGS = {
     ),
     "VA-R6": (
         "Applied 2026-10-28 as the session's reading, in code, beside the DA-R2 allowlist "
-        "draft, and awaiting the operator's class: B as a precision rule of this scanner (a "
-        "patch target in a test module opens nothing, and the plants prove a patch whose "
-        "replacement dispatches is still a site), or F as an exemption from the bypass check, "
-        "in which case the rule comes out and the four patch references in "
-        "app/tests/test_http.py join the allowlist draft. --dispatch-paths, "
+        "draft, and decided Class B by the operator the same day, on his click on the offered "
+        "action in the PLAINSIGHT chat: a precision rule of this scanner (a patch target in a "
+        "test module opens nothing, and the plants prove a patch whose replacement dispatches "
+        "is still a site), not an exemption from the bypass check. --dispatch-paths, "
         "amended for the application's tests and applied only in a test module, which is a "
         "test_*.py file or conftest.py under a tests/ directory: a reference to a dispatch "
         "pattern is not a site when it is the object a patch replaces an attribute on (the first "
@@ -4534,8 +4533,8 @@ def _deferred(
 #     test module only, meaning a test_*.py file or conftest.py under a tests/
 #     directory, three references are not sites, because none stores the
 #     pattern or calls it in place (reading VA-R6, applied as the session's
-#     reading and awaiting the operator's class, B as a precision rule or F as
-#     an exemption): the object a patch replaces an attribute on, which is the first
+#     reading and decided Class B by the operator on 2026-10-28, a precision
+#     rule rather than an exemption): the object a patch replaces an attribute on, which is the first
 #     argument, or the target keyword, of a call to the builtin setattr or
 #     delattr, of a method so named on a receiver named monkeypatch or mp such
 #     as a test's monkeypatch.setattr, or of unittest.mock.patch.object or

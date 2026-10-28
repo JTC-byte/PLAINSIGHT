@@ -25,7 +25,7 @@
 # instruction, the Sherlock manifest stopped refusing on reading SH-R5 through
 # the manifest schema's platform_from_item (MF-R17), and policy/retention.yaml's
 # canary_subject_class part was set to present by a one-word edit of that
-# flag, whose class he confirms, so the retention self-test no longer refuses; the maintainer decides
+# flag, Class B by his decision of the same day, so the retention self-test no longer refuses; the maintainer decides
 # whether each stands. The same day the application's tests under app/ joined
 # the kernel gate and the test target below, and not preflight (APP-R30). The
 # deferred disjointness mode and the retention
@@ -148,7 +148,7 @@ render-divergence-register:
 # canary_subject_class, one refusal fixture per required input, and the R7 stamp
 # read through tools/pin_of_record.py. connectors/sherlock/manifest.yaml refused
 # under MANIFEST_SELECTOR_PLATFORM on reading SH-R5 until the platform_from_item
-# move of 2026-10-28 (MF-R17), which the maintainer decides. Use
+# move of 2026-10-28 (MF-R17), which the maintainer kept the same day. Use
 # `python tools/validate_manifest.py --shape <path>` while authoring; it makes no
 # conformance claim.
 validate-manifest:

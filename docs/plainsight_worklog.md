@@ -15,404 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-01, resumed at 12:24 after the hold, under the grant as renewed.
-
-**The authority this entry acts on.** The maintainer stopped the overnight work
-at about 01:56 ("we are actually about to hit usage limits to find a stopping
-point and hold") and resumed it at 12:24: "alright, game on. lets get back
-after it. Full send, I am back on". Both were relayed by the parent session and
-are recorded verbatim in the parent folder's `WORKLOG.md`. This session reads the
-resume as lifting the hold and continuing under the grant of 2026-09-30 23:28 as
-renewed at the 01:26 handover: stricter-only class B fixes, each on its own
-branch and pull request, fast-forwarded only when green. That reading was sent
-to the parent at the start so it could be corrected. No class F item, stamp or
-rank-1 edit moves without the maintainer's named answer. The tree was found as
-the closeout left it: `6decf30` everywhere, clean, one worktree.
-
-This entry could not be added at ten live entries, so the 2026-09-04 entry
-"the tense rule becomes a gate" moved to `plainsight_worklog_archive.md` without
-edit. No tracked file cites the worklog by line number.
-
-**First: every enforcement entry states whether it exists, Class B.** Two review
-findings, doctrine-fidelity-retention:10 and 11. The compiled crossing rule,
-`strata.crossing_to_local`, is EG-5's table, and the policy cited RT-1 and RT-2
-only; `strata` and `disclosure_export` now cite EG-5, and a comment names RT-18
-as the exception EG-5 states. RT-16's reconcile entry in
-`connector_floor.enforcement` carried no `present` flag and read as implemented,
-while the tool printed on every run that it does not exist. It now says
-`present: false`, and `--policy` refuses any enforcement entry that does not
-state its presence (`RETENTION_POLICY_ENFORCEMENT_UNSTATED`), RT-16's reconcile
-flag that disagrees with `RT16_RECONCILE_WRITTEN` in the tool, and any of
-RT-15's four flags that disagrees with the parts measured in the tree
-(`RETENTION_POLICY_ENFORCEMENT_MISSTATED`). The RT-15 comparison ran only inside
-the self-test before. RT-16 reads pinned versions from the ledger, and RT-10's
-six columns carry none; the policy now says so in a note, and the question goes
-to the maintainer as plainsight-21 rather than into U-08's wording. Three
-self-test breaks are new and pass when the checks are disabled; `--policy`
-output is byte-identical to `6decf30`. The review table now carries 61 findings
-closed, eight in part, eighteen open and one the operator's, recounted from the
-table.
-
-**Battery for the first change.** All sixteen preflight commands passed on the
-staged tree, the retention self-test with 84 breaks, and both forms of `git
-diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Second: the authorization schema's bounds and refusing forms are pinned,
-Class B.** Three review findings, schema:2, 4 and 6. The schema's governance
-block names `tools/validate_authorization.py` as the self-lint that refuses its
-drift, and the tool compared the required list, the property names and the
-closure and nothing else. Opening `selector_type`'s empty enum would answer
-SAS-U1 by edit, replacing `evidence_ref`'s `not {}` with any value would answer
-SA-U2 and SA-U11, and dropping `minItems` or `minimum` would admit what SAS-R4
-and SS-4 refuse, each with every gate green and, once stamped, still stamped.
-`SCHEMA_PINS` now holds seventeen of them by value and refuses a difference as
-`AUTH_SCHEMA_BOUND_DRIFT`, each with a generated break; disabling the check lets
-all seventeen pass. SAS-R4 reads "Blank is a refusal", and `minLength 1` admitted
-a string of spaces, so purpose, authorized_by and the selector value carry a
-pattern requiring one character that is not white space, and SAS-R4's reading
-says so. SAS-R4's cost sentence said a corpus row carries the empty-selectors
-refusal; none does, and it now says what holds instead, that the bound is pinned
-in the tool and no row exercises it until something validates a record against
-the schema. That validation is schema:1, held with the evaluator, and the
-calendar half of schema:6, a date such as the 31st of February, waits on it, so
-schema:6 is closed in part. `--fixtures` output is byte-identical to `559ef06`.
-Recounted from the review table: 63 closed, nine in part, fifteen open and one
-the operator's.
-
-**Battery for the second change.** All sixteen preflight commands passed on the
-staged tree, the authorization self-test with 84 breaks, and both forms of `git
-diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Third: A-08 finds a selector shape under any key, Class B.** One review
-finding, authorization-mechanism:12. A-08's docstring said it refuses "a
-selector-shaped value that is not a bracketed placeholder", and its walk read
-only the values of ten selector keys, so an email-shaped string in
-`dispatch.motivated_by` or in a row's description passed. A second pass now
-reads every string in a row, removes bracketed placeholders, and refuses an
-email or E.164 phone shape that remains, as `AUTH_VALUE_NOT_PLACEHOLDER`. Those
-two shapes cannot occur by accident in a fixture's prose; a handle or an id is
-an ordinary word, so those are still found only under a selector key, and the
-docstring now says both. Two self-test breaks are new, assembled at run time so
-this tracked file carries no address, and both pass when the second pass is
-disabled. `--fixtures` output is byte-identical to `69b182d`. Recounted from the
-review table: 64 closed, nine in part, fourteen open and one the operator's.
-
-**Battery for the third change.** All sixteen preflight commands passed on the
-staged tree, the authorization self-test with 86 breaks, and both forms of `git
-diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Fourth: the generated policies stop naming an evaluator that does not exist,
-Class A.** One review finding, self-description:11. `policy/lineage.yaml`'s two
-chain rules carried `evaluated_by: tools/validate_authorization.py at Step 8,
-over the composed chain`, `policy/violation-codes.yaml` described the gate
-category the same way, and `tools/validate.py`'s header said the chain rules
-belong to that tool at Step 8. `--fixtures` grades wire form, enums and the stamp
-read and produces no gate decision, and every chain row is held. The sentences
-come from `tools/generate_pse.py`, not from `spec/layer-model.yaml`, so the
-generator's two sentences were corrected and both files regenerated; the other
-three generated artifacts and both corpora are byte-identical, which both
-`--check` modes confirm. The header now says that rows in `conformance/gate/`
-assert the rules, that the rows are held, and that no tool evaluates a chain
-until VA-U1 decides where the evaluator lives and Step 10 delivers it. No rule,
-code or fixture changed. Recounted from the review table: 65 closed, nine in
-part, thirteen open and one the operator's.
-
-**Battery for the fourth change.** All sixteen preflight commands passed on the
-staged tree, both drift checks among them, and both forms of `git diff
---check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Fifth: the retention policy's last unpinned rules, Class B.** One review
-finding, retention-mechanism:1, closed now in full; most of it was closed
-overnight by `8bedba1`'s `STRATA_ROWS` and `INVARIANTS` and `b24ae5d`'s
-`PINNED_RULES`. Nine compiled values were still read by no tool:
-`strata.cassette_rule`'s live-subject stratum 0, persisting stratum 4, capture
-targets S2 and N0, and its statement that a cassette cannot satisfy RT-16's
-floor; `strata.permanent`; `encryption.per_case_data_key`; and
-`full_text_index`'s stratum 1, `per_case` and `shared_across_cases`. Each was
-checked against RT-1, RT-2, RT-4 and RT-7 and pinned by value in `PINNED_RULES`,
-with a generated break each. Flipping each of the nine in memory, the tool at
-`9e17ec9` refused none and this one refuses all nine. **A correction.** The
-sixteenth paragraph of the overnight entry says the review's cassette-rule path
-does not exist in the policy. It does, under `strata`; that paragraph looked for
-it at the top level. It stays as written. `--policy` output is byte-identical to
-`9e17ec9`. Recounted from the review table: 66 closed, nine in part, twelve open
-and one the operator's, and none of the twelve is work an agent can take alone.
-
-**Battery for the fifth change.** All sixteen preflight commands passed on the
-staged tree, the retention self-test with 93 breaks, and both forms of `git
-diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**The maintainer's word at 12:37.** Relayed by the parent session and recorded
-verbatim in its dispatch record of 2026-09-30, line 58: "you have my grant on
-the merges. Demo is 1630 EDT so lets do as much as we possibly can up to it".
-The parent's limit with it: from 16:15 local until the demo is over, no test
-runs, builds or agents on this workstation. A commit runs the hook's validators,
-so the last commit lands before 16:15.
-
-**The second adversarial pass.** The closeout said nothing reviewed PRs 13 to
-19. Four lenses ran over PRs 13 to 24, each paired with an Opus 5.5 refuter that
-defaults to refuted and must reproduce: retention mechanism on Opus 5.5 in
-memory, doctrine fidelity of every pinned value on Fable 5.1 read-only, and
-self-description on Sonnet 5.5 read-only, with authorization mechanism to
-follow. The record is `REVIEW2.md` in the overnight artifacts folder. Doctrine
-fidelity found no pinned value that disagrees with rank 1 and three refusals
-that name the wrong criterion, all confirmed. The retention lens found eleven
-defects, nine confirmed and two downgraded, none refuted, most of them in this
-session's own work of today. The lens created four temporary directories in the
-repository root and removed them at once; they were never staged.
-
-**Sixth: the retention enforcement checks keyed and measured, Class B.** RT-15's
-table was compared with the measured parts by position and only at length four,
-so the canary entry moved first could claim the clause's measurement, and a
-fifth entry or a deleted table turned the comparison off; it is now keyed by the
-four clauses in `RT15_PART_CLAUSES`, each once. RT-16's reconcile could be
-reworded past a substring test, hidden behind a decoy deferral, or deleted with
-its block, and the AGENTS.md clause entry was never read; the three entries are
-now pinned by key in `RT16_ENFORCEMENT`, with `RT16_CLAUSE_WRITTEN` false, and a
-deferral excuses an entry only when it is the whole entry. `rt15_parts` counted
-the words "Execution Limits" anywhere, a commented hook line and a commented
-manifest field; it now reads the section 4 sentence, an uncommented hook command
-not swallowed by `|| true`, and parsed manifests, and the canary part also
-needs a manifest validator that requires the field, which does not exist. It
-read a manifests/ directory and a non-UTF-8 file into an uncaught traceback, and
-now measures them as absent. RT-9 checks 2 and 3 are pinned in both artifacts.
-The pins compare type as well as value, so a stratum of `true` refuses. The pair
-walk visits each node once, so a self-referential YAML anchor no longer recurses
-without end. The halt refusal names RET-R5, U-03 and U-17 where it said RT-11,
-and the cassette pins cite RT-1. Twelve self-test breaks and two measured cases
-are new. `--policy` and `--repo-scan` output are byte-identical to `78131d7`.
-
-**Battery for the sixth change.** All sixteen preflight commands passed on the
-staged tree, the retention self-test with 105 breaks, and both forms of `git
-diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Seventh: the rest of the second review's retention findings, and this
-session's records corrected, Class B.** Second-review findings rm2:5, rm2:6,
-sd2:3 and sd2:10, and the handoff halves of sd2:1, 2, 6, 7, 12 and 14. **A
-correction to the fifth paragraph above.** It and its CHANGELOG entry say the
-retention policy's last nine unpinned rules were pinned, and that
-retention-mechanism:1 closed in full. Both statements were false: the second
-review flipped twenty more compiled rules with `--policy` green. Those
-statements stay as written, and this paragraph and the handoff carry the
-correction. Twenty-three more rules are now pinned, each checked against RT-1,
-RT-2, RT-4, RT-5, RT-8, RT-9, RT-10, RT-13, RT-14, RT-17, RT-18 or the pin of
-record. These include RT-17's seven freeze booleans and the ledger's stratum
-and subject-value flag. More to the point, "the last" is now a fact a check
-holds. `UNPINNED_BY_NAME` names the twenty-eight booleans and strata that remain
-unpinned, each because it has not been checked against doctrine by value or
-because it states a fact about the tree. `--policy` refuses any compiled boolean
-or stratum that is neither pinned nor named, and any named one that no longer
-exists, as `RETENTION_POLICY_RULE_UNCLASSIFIED`. The pair reader now:
-- reads YAML with every scalar a string, so a phone written by hand is no
-  longer an int;
-- keeps every value of a repeated key;
-- drops a UTF-8 byte-order mark;
-- reads the strings in a list;
-- reads a `.json` file of JSON lines line by line;
-- reads keys in any case.
-
-The handoff's Step 8 sizes are labelled at `0e0c840`, its case count reads 31,
-two doctrine items are stated as stamped, its review heading and row are in
-the right tense, and its hash note and SAS-U1 sentence are exact. The
-second-review findings the refuters refuted or downgraded on the README, the
-kernel-gate note and the layer-model comment are left as they stand. The
-contract's stale sentence is the operator's (rank 2), and the schema's citation
-waits on plainsight-22. Thirty self-test breaks are new. `--policy` and
-`--repo-scan` output are byte-identical to `c82ed28`.
-
-**Battery for the seventh change.** All sixteen preflight commands passed on
-the staged tree, the retention self-test with 135 breaks, and both forms of
-`git diff --check` were clean. The kernel gate exited 0, with 16 implemented
-checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Eighth: the second review's authorization findings, Class B.** The
-authorization lens on Opus 5.5 found thirteen, and its refuter confirmed all
-thirteen and found one more. The changes, by check:
-- **A-12.** It flags a reference copied from the baseline that names no event
-  in the fixture's own chain. It flags a field copy present in one chain payload
-  and absent from the other. It compares each leaf with its type, so true and 1
-  differ. It reads an empty list or mapping as a value, so a key holding one
-  cannot be added or removed unseen.
-- **A-17.** It now refuses a criterion that has a Step 3 row and no dated range
-  or row naming it. RT-19 was that case once its item row was removed, and both
-  modes passed. That also closes the matched-pair gap: a reader that stamps no
-  criterion refuses here. The item 6 reason names the cause.
-- **SCHEMA_PINS.** It holds the root type, the three references, the string
-  types, and the absence of patternProperties and unevaluatedProperties at the
-  root and in a selector. A separate check refuses a selector field beyond
-  selector_type and value. Five owners now name SAS-R5 and SAS-R6, not SS-4.
-- **A-08.** It reads the raw string, so an address in angle brackets refuses. A
-  bracketed placeholder that carries a shape refuses too. The pass also reads
-  mapping keys, a phone grouped with spaces or hyphens, and a selector written as
-  a number. A number with a 00 prefix is not read, and the docstring says so.
-- **A-13.** It keeps every register row and refuses a repeated name as
-  `AUTH_REGISTER_NAME_DUPLICATE`.
-- **The refuter's extra finding.** A-01's refusals quoted an unexpected key,
-  which could print an address in the gate's own output. They now mask a key
-  that carries a shape.
-- **Docstrings and messages.** The docstring counts nine unreachable codes and
-  says that reader defects in the permit direction rest on
-  `tools/pin_of_record.py --self-test`. The criterion refusal no longer tells an
-  RT id's author that the subject policy compiles it.
-
-Two findings go to the maintainer: the register notation (am2:13) and the
-contract's stale evaluator sentence (sd2:11). Thirteen self-test breaks are new,
-each one a mutation the refuter showed passed the previous tool. `--fixtures`
-output is byte-identical to `53da6ce`.
-
-**Battery for the eighth change.** All sixteen preflight commands passed on the
-staged tree, the authorization self-test with 113 breaks, and both forms of
-`git diff --check` were clean. The kernel gate exited 0, with 16 implemented
-checks passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Ninth: a third pass over this afternoon's retention fixes, Class B.** Each
-review has found holes in the previous round's fixes, so a third lens on Opus
-5.5 ran over `c82ed28` and `53da6ce` before the 16:15 stop. It found twelve, and
-its refuter confirmed all twelve. Two corrections to the seventh paragraph above
-belong here.
-- "The last" was still false, because the classification walk skipped lists.
-  It now reads list items by index and reads a boolean spelled as a string.
-  List items read by a name-keyed check are recognized as read; the rest are
-  pinned or named. The case narrative's `survives: false` (RT-13, RT-2) and
-  RT-9's cached-read flag in the cadence are among the nine new pins.
-  `gate_telemetry.stratum` moves from named to pinned.
-- 53da6ce's YAML reader regressed. On a self-referential anchor and on a "<<"
-  merge key it read the whole file as nothing, where `c82ed28` read both. On a
-  sequence used as a key it crashed, and the crash was reported against the
-  wrong file. The reader now builds a mapping before filling it, so an anchor
-  constructs. It flattens merge keys at the node level, routes a tagged mapping
-  through the same constructor, keeps repeated keys across case variants and
-  nested lists, and falls back to the safe loader when its own read fails.
-
-The other fixes:
-- RT-15's clause is measured as a rendered, unwithdrawn bullet under a
-  level-two "## 4. Execution Limits" heading. HTML comments and fenced blocks
-  are stripped first.
-- RT-15's hook part is measured as the scan stanza at the start of a line whose
-  failure block ends in `exit 1`, with no `exit 0` before it.
-- RT-16's code entry must be exactly the U-07 deferral.
-- STRATA_ROWS and DURATIONS compare type.
-- A recursion in the governed policy is reported as malformed rather than as a
-  traceback.
-- The self-test's synthetic tree now carries a real section 4 heading with the
-  bullet commented out. It measures the canary field by parse, with the
-  validator flag set for the case. Its anchor case puts a live pair beside the
-  anchor and requires it to be read.
-
-Twenty self-test breaks are new, each a mutation the refuter showed passed the
-previous tool, and one measured case is new and two are reworked. `--policy` and `--repo-scan` output are byte-identical
-to `9fad18e`.
-
-**Battery for the ninth change.** All sixteen preflight commands passed on the
-staged tree, the retention self-test with 155 breaks, and both forms of `git
-diff --check` were clean. The kernel gate exited 0, with 16 implemented checks
-passing, 3 unratified and refusing, 2 stubbed and 5 pending.
-
-**Tenth: the third pass over the authorization fixes and the records, Class B.**
-Two more lenses ran before the stop: the authorization fixes of `9fad18e` on
-Opus 5.5, in memory, and the records of PRs 25 to 27 on Sonnet 5.5, read-only.
-Each was paired with an Opus 5.5 refuter. The authorization lens found eleven,
-ten confirmed and one downgraded; the records lens found sixteen, fifteen
-confirmed and one downgraded. **Corrections to the eighth paragraph above, and
-to records of this afternoon, left as written where they stand:**
-- the eighth paragraph says thirteen self-test breaks were new; twenty-seven
-  were, fourteen of them generated by the new schema pins;
-- its CHANGELOG entry counts fourteen findings decided; seventeen were;
-- the sixth paragraph says a non-UTF-8 file now measures as absent; it is
-  decoded with replacement and measured by its text, and only a directory or
-  an unreadable path measures as absent;
-- the second-pass paragraph says the retention lens found eleven defects; it
-  found eleven findings, seven of them defects.
-
-What changed:
-- **Masking at the source.** "A refusal no longer echoes a shaped key" was true
-  of A-01 alone: an undeclared record field, a pending id, a register cell and
-  an SS-5 delta could still print an address, and the gate log would have kept
-  it with "@" turned into ".". Every Finding now passes its where, what and
-  moves through `_masked_text`. The self-test fails any break whose refusal
-  prints an email or phone shape; with the masking removed, the two new leak
-  breaks fail.
-- **Whole selector nodes.** Pinning keywords one by one missed `prefixItems`,
-  which in draft 2020-12 takes `selectors[0]` out of the selector's closure and
-  SAS-U1's empty enum. `SCHEMA_NODE_PINS` holds `properties.selectors` and
-  `$defs.selector` whole, comments stripped at every depth.
-- **A-08.** A record selector must be an object of exactly selector_type and
-  value. A mapping, or a list of non-strings, under a selector key refuses. A
-  value under a selector key must be a typed placeholder `<type:label>`, which
-  every corpus value already is; `conformance/gate/README.md` section 5 now
-  states that rule. The phone shape reads dots, slashes and parentheses, and a
-  percent-encoded address is read.
-- **Crashes.** A chain that is not a list, and selector properties that are not
-  a mapping, are named refusals rather than tracebacks.
-- **The register.** The two register breaks edit the register's text and parse
-  it again, so they test the parser. A row indented by up to three spaces is
-  read.
-- **Prose.** A pin that requires a key to be absent says so, and the item 6
-  reason reads plainly. The docstring counts ten unreachable codes, adding
-  AUTH_MODES_COMBINED, and states the 00-prefix limit. The root type's owner is
-  the closed record of SS-4 and A-10.
-- **The retention tool's comments.** The cassette pins cite RT-1, the
-  PINNED_RULES comments sit over the entries they describe, the
-  UNPINNED_BY_NAME comment counts forty-eight, and the `selector_pairs`
-  docstring states the `.json` fallback.
-
-`--fixtures` output is byte-identical to `23d041a`. No further pass ran on
-this commit or on `23d041a` before the stop, which the closeout states.
-
-**Battery for the tenth change.** All sixteen preflight commands passed on the
-staged tree, the authorization self-test with 124 breaks and the retention
-self-test with 155, and both forms of `git diff --check` were clean. The kernel
-gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
-stubbed and 5 pending.
-
-**Eleventh: the fourth pass, and the checkpoint closeout before the 16:15 stop,
-Class B.** One combined lens on Opus 5.5 ran over `23d041a` and `46beb98`; it
-found twelve. Its refuter ran as a one-agent workflow under the ultracode
-setting the operator turned on, and confirmed eleven and downgraded one (f4:3).
-Eight are closed here:
-- **f4:1.** The indexed survivability and cadence pins now name their item, so
-  swapping two labels refuses.
-- **f4:2.** A self-referential sequence anchor sent the whole file to the safe
-  reader. Sequences now build lazily, and a file only the safe reader can read
-  refuses rather than being read under its weaker semantics.
-- **f4:3.** A merged value overridden by an explicit one is kept as a repeat.
-- **f4:5.** A record written as a list, selectors written as a string, and a
-  selector type outside the registry refuse.
-- **f4:6, in part.** An undeclared field name and a pending id outside the id
-  grammar are no longer printed, and the phone shape reads any space or dash.
-- **f4:8 and f4:9.** Each now has a break of its own: the whole-node pins are
-  the only check that refuses a selectors node given its own $id and $defs, and
-  a live pair beside a sequence key is read only because of the hash guard.
-- **f4:12.** Every YAML 1.1 boolean spelling is a leaf. That surfaced RT-1's
-  text "No" in the skeleton row, which is now named as unpinned.
-
-**Open, for the next session**, each confirmed and recorded in `REVIEW2.md`:
-- **f4:4.** A typed placeholder's label is not yet bound to a cast id.
-- **f4:7.** RT-15's clause and hook measures still miss a tilde fence and a
-  never-taken conditional.
-- **f4:10.** A register row without its leading pipe is not read.
-- **f4:11.** The pair scan does not read a value nested in a mapping.
-- **f4:6, the other half.** The register-drift and certification texts can
-  still quote a pending id.
-
-**This commit is the checkpoint closeout.** The pattern held at every round:
-each pass found holes in the previous round's fixes, one of them a regression.
-This last commit, reviewed by nobody, is therefore the one most likely to hold
-a defect. `--policy`, `--repo-scan` and `--fixtures` output are
-byte-identical to `46beb98`.
-
-**Battery for the closeout.** All sixteen preflight commands passed on the
-staged tree, the authorization self-test with 129 breaks and the retention
-self-test with 163, and both forms of `git diff --check` were clean. The kernel
-gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
-stubbed and 5 pending.
-
 ## 2026-10-02, morning, under the maintainer's words of 10:14.
 
 The maintainer at 10:14 EDT, in the parent session, as the parent relayed it and
@@ -1590,3 +1192,55 @@ the night made stale, the 28 queue items, plan item 0.7, the Step 7 fixes, the
 audit's section 8 finding, the credentials inventory, the 36 merged branches.
 The extraction tool's two misreads named in the first 2026-10-28 entry await a
 Class B fix with its own self-test cases.
+
+---
+
+## 2026-10-28, three classes decided, under the maintainer's clicks of 17:45 to 19:49.
+
+**Class:** A. This entry records three decisions of his and changes the
+sentences that said each was his to confirm; no governed value, gate, rule or
+mechanism changes.
+
+**Agent involvement.** The same personal-account session as the three previous
+entries, on Fable 5.1, no sub-agent. Each decision arrived as his click on an
+action the session offered in this chat after the closeout report, as the
+parent's reading of his words of 17:30:21 allowed; each button's message is the
+session's words he accepted, and his record carries the label.
+
+**The decisions.**
+
+- 17:45:23, "Class B, keep it": VA-R6, the dispatch scanner's rule that a
+  patch target, a patched attribute's kept original and an attribute assigned
+  over are no site in a test module, is Class B, a precision rule of the
+  scanner and not an exemption from the bypass check; it stands as applied,
+  and the allowlist draft DA-R2 keeps its four sites. Recorded in the scanner's
+  docstring, READINGS entry and block comment, `AGENTS.md` section 5,
+  `CONFORMANCE.md` section 4, `app/README.md` and the handoff.
+- 18:00:28, "Class B": the one-word edit of `policy/retention.yaml` line 870
+  (`present: true` for the `canary_subject_class` part), made on his
+  instruction of 12:09, is Class B, a statement of enforcement state reaching
+  no subject, retention period or egress path, needing no row in the pin.
+  Recorded in `CONFORMANCE.md` section 4, the Makefile header, the hook's
+  comment, `tools/validate_retention.py`'s comment, `AGENTS.md` section 5 and
+  the handoff.
+- 19:49:50, "Keep it": the emit's platform move stands, Class B with its
+  design amendments 9.14 and 9.15: an emit of a platform-bound key may declare
+  `platform_from_item` on an endpoint-unit connector (MF-R17), and the Sherlock
+  claim's platform token is derived from the site name alone (SH-R18).
+  Recorded in `tools/validate_manifest.py`'s MF-R17 reading, the kernel gate's
+  connector-conformance note, the Makefile, `CONFORMANCE.md` section 4,
+  `AGENTS.md` section 5, `connectors/sherlock/README.md` and the handoff.
+
+**What changed in state.** Nothing in any gate, rule or value; the tree's
+prose now states each class as decided rather than as his to confirm. Ground
+for each: his click, which is his instruction for an act and his decision for
+an item by his own words of 2026-10-24 01:30:58. Revert: his word, with the
+same sentences rewritten.
+
+**Open.** His, unchanged: the DA-R2 stamp outside the tree, the readings each
+artifact carries (DR, MF, PIN-R9, SG, VA-R5, SH, CC, APP), the design
+amendments 9.1 to 9.15 as records of departures, the R8-row pipe, the
+sentences in rank 1 to 3 files the night made stale, the 28 queue items, plan
+item 0.7, the Step 7 fixes, the audit's section 8 finding, the credentials
+inventory, the 37 merged branches. This entry's commit follows his go word of
+17:07:57 by the usual route.

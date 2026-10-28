@@ -90,10 +90,11 @@ and an Unknown line in stdout ends in a space, because Sherlock writes both, so
 
 ## What the operator does at onboarding
 
-1. Decide whether the SH-R5 move built on 2026-10-28 stands: the manifest
-   schema's `platform_from_item` (MF-R17), amendment 9.14 of
-   `docs/PLAINSIGHT-design.md`, and the token rule SH-R18. Reverting it returns
-   the manifest to a refusal under `MANIFEST_SELECTOR_PLATFORM`, and with it
+1. Decided 2026-10-28, on the maintainer's click on the offered action in the
+   PLAINSIGHT chat: the SH-R5 move stands, the manifest schema's
+   `platform_from_item` (MF-R17), amendment 9.14 of `docs/PLAINSIGHT-design.md`,
+   and the token rule SH-R18. Reverting it would return the manifest to a
+   refusal under `MANIFEST_SELECTOR_PLATFORM`, and with it
    `make validate-manifest`, `make validate-connector`, the pre-commit hook and
    the kernel gate.
 2. Build `sherlock-local:0.16.1` from the clone at `9100f9d`, outside this tree.

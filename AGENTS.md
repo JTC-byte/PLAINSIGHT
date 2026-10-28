@@ -201,9 +201,10 @@ linted against `conformance/connector-harness/fixture.schema.json`, SS-10's
 bystander declaration, and the R7 stamp. The first connector,
 `connectors/sherlock/`, refused under `MANIFEST_SELECTOR_PLATFORM`, which is
 reading SH-R5 in its README, until its handle emit declared `platform_from_item`
-on 2026-10-28 (MF-R17, amendment 9.14 of `docs/PLAINSIGHT-design.md`). The
-operator decides whether that move stands, and reverting it returns this check,
-the pre-commit hook and `make preflight`, which run it, to refusing.
+on 2026-10-28 (MF-R17, amendment 9.14 of `docs/PLAINSIGHT-design.md`), a move
+the operator kept the same day on his click on the offered action in the
+PLAINSIGHT chat; reverting it would return this check, the pre-commit hook and
+`make preflight`, which run it, to refusing.
 `tools/validate_connector_conformance.py --all` is rung 4: it runs the manifest
 gate first, replays every cassette through the adapter, grades every emitted
 event with `tools/validate.py`, asserts each fixture's exact event count, or its
@@ -226,10 +227,9 @@ not in the pre-commit hook or `make preflight`, which reading APP-R30 in
 and refuses, because `runner/dispatch_allowlist.yaml` does not exist and the
 bypass check has nothing to compare against. Its reading VA-R6, which reads a
 patch target and its kept original in a test module as no site, narrows what it
-reports; it is applied as the session's reading of 2026-10-28, and whether it
-is a Class B precision rule or a Class F exemption is the operator's to
-confirm, with the rule removed and the four references listed in the allowlist
-draft if he reads it as F. `--kernel-gate` prints
+reports; applied as the session's reading of 2026-10-28 and decided Class B
+by the operator the same day (a precision rule of the scanner, not an
+exemption), on his click on the offered action in the PLAINSIGHT chat. `--kernel-gate` prints
 an unimplemented check as PENDING with the step that delivers it, prints an
 implemented check whose artifact carries no stamp as UNRATIFIED and asserts that
 it refused, and never counts a pending, stubbed or unratified check as a pass.
@@ -258,7 +258,7 @@ working tree and still present in an earlier commit is not found. The retention
 self-test refused with `RETENTION_POLICY_ENFORCEMENT_MISSTATED` while
 `policy/retention.yaml` recorded the `canary_subject_class` part as absent. On
 the operator's instruction of 2026-10-28 that flag reads present, a one-word
-edit of that flag whose class he confirms, and the self-test's mutation now flips it. The scan refused on two values that predate Step 8
+edit of that flag he decided Class B the same day, and the self-test's mutation now flips it. The scan refused on two values that predate Step 8
 until both were replaced with placeholders under the operator's overnight grant
 of 2026-09-30, and `CONFORMANCE.md` section 4 records what they were and why no
 exemption was added.
