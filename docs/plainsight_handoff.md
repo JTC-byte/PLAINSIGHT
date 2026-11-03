@@ -12,11 +12,12 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-10-28. `main` == `origin/main` == `356c1f7`: the build night's
-commit `8583132` (106 files, built under his typed release of 01:47, reviewed
-adversarially phase by phase, Class C) merged on his click at 15:00:34, then
-its records commit `356c1f7` merged on his click at 16:29:45, each with CI
-green on every step; this file's commit is the closeout's Class A commit.
+**Date:** 2026-11-02. `main` == `origin/main` == `0aac3b9`: the build night's
+commit `8583132` (Class C) merged on his click of 2026-10-28, its records in
+`356c1f7` and `069d483`, and his three class decisions in `0aac3b9`, merged on
+his click in this chat at 17:44 EST today with CI green on every step; this
+file's commit is Class B, the extraction tool's three misreads corrected,
+carrying the records of that merge.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -33,7 +34,8 @@ push, merge and Class F decision takes his own typed word in the PLAINSIGHT
 chat, per act, and no parent is delegated (his decision of 2026-10-23). The
 record of the build night, with every lens finding, refuter verdict, fixer and
 verifier report, the DA-R2 allowlist draft and the design brief for the
-application, is `Z-ISR/_session-artifacts/2026-10-28-plainsight-build/`. His
+application, is `Z-ISR/_session-artifacts/2026-10-28-plainsight-build/`; the
+2026-11-02 resumption's is `Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/`. His
 queue is `MAINTAINER_QUEUE.md` in
 `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/`, 28 items, none
 answered.
@@ -42,40 +44,39 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** The closeout entry in the worklog (the records
-commit's merge and CI run, his go word of 17:07:57, the checkpoint) and this
-file's header. `356c1f7` recorded the commit, push, merge and CI runs of
-`8583132`, which carried five pieces of the gameplan built under his release
-of 2026-10-28: the divergence register and its validator (Step 9), the
-connector manifest schema, its validator and the harness fixture schema (Step
-12 part one), the subject guard and the dispatch-path check (Step 10, drafted),
-the Sherlock connector on hand-built cassettes with the rung-4 harness (Step 12
-part two), the application's store, ingest, server and social web view (the
-first slice of Step 13), and on his click of 12:09 the three pieces that
-cleared the two designed refusals and wired the application in (section 3).
-Every agent reading awaits him in the artifact that carries it.
+**What changed and why.** `tools/since_last_record.py` corrects three misreads
+the records of 2026-10-28 and the brief of 2026-11-02 named: a click the app
+delivered as its button's label read as typed, a harness record in the user
+role (a compaction summary, a classifier notice) read as typed, and every
+stamp converted with the offset of the day the tool runs rather than the
+offset at that instant. Each has a self-test case and a control, and
+`AGENTS.md` section 8's description follows. The worklog gains the 2026-11-02
+entry: the merge of `0aac3b9` (his three class decisions) on his click in this
+chat with its CI run on main, the second-model review of `8583132` (item 1 of
+the 10-28 list: no defect in the six mechanisms read, four readings for him),
+and the negative-control audit prepared. Every agent reading awaits him in
+the artifact that carries it.
 
-**Which surfaces moved.** In this commit: the worklog and its archive, and this
-file; the same three in `356c1f7`. In `8583132`: `spec/`, `schema/`, `conformance/connector-harness/`,
-`runner/`, `connectors/`, `app/`, eight tools, the Makefile, the hook, CI,
-`.gitattributes`, `AGENTS.md` section 5, `CONFORMANCE.md` sections 1 to 4,
-`docs/PLAINSIGHT-design.md` section 9 (appended, never edited), one word of
-`policy/retention.yaml` on his instruction, `CHANGELOG.md`, the records. No
-doctrine, ontology, synthetic, generated or corpus file in either.
+**Which surfaces moved.** In this commit: `tools/since_last_record.py`,
+`AGENTS.md` section 8, `CHANGELOG.md`, the worklog and its archive, and this
+file. No doctrine, spec, schema, policy, ontology, runtime, synthetic,
+generated or corpus file; no gate, battery or CI step.
 
-**What validation ran and what passed.** On the clean tree at `356c1f7`, the
-whole battery of 33 commands, then on this commit's staged tree hygiene and
-its self-test, the repo scan, the kernel gate, the hook, both diff checks. On
-`8583132`: each phase's battery one command at a time with every negative
-control seen failing (the record folder has each), the whole battery on the
-staged tree, and three CI runs green on every step.
+**What validation ran and what passed.** On this commit's staged tree: the
+tool's self-test (21 checks, 15 planted lines, 4 controls refusing), the tool
+over the 2026-10-28 transcript (its nine clicks read as clicks, seven harness
+records listed) and a Sonnet 5.5 verifier's two reads, three controls failing
+on a copy and one defect found and closed; hygiene and its self-test, the repo scan, the kernel gate, the hook
+and both diff checks. On `0aac3b9`: both branch CI runs read
+step by step before the merge, and run 41539769592 on main after it, success
+on every step.
 
-**Whether a release baseline changed.** No. `main` gained `8583132` by pull
-request 35 and `356c1f7` by pull request 36 on 2026-10-28; this commit follows
-by the same route under his go word, and PSE still has no tag.
+**Whether a release baseline changed.** No. `main` gained `0aac3b9` by pull
+request 38 on 2026-11-02; this commit follows by the same route on his word,
+and PSE still has no tag.
 
-**What remains open or deferred.** Section 3: the three classes are decided;
-DA-R2's stamp, the readings; the queue.
+**What remains open or deferred.** Section 3: DA-R2's stamp, the readings, the
+queue; items 2 and 4 to 8 of the 10-28 list, in the 2026-11-02 record folder.
 
 ---
 

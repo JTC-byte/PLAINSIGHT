@@ -15,191 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-02, morning, under the maintainer's words of 10:14.
-
-The maintainer at 10:14 EDT, in the parent session, as the parent relayed it and
-recorded it in its own records: "same deal as before, I am stepping for a bit so
-go ahead and orchestrate the other sessions and get their work items complete.
-If they complete all their work items (whether that be all of them or all they
-can do without need for my direct input) before I get back, go ahead and have
-that session run a full closeout checkpoint. ZMeta is final authority of Zmeta
-stuff, you have the conn". The parent's list for this session: one review pass
-over `77fe6da`, the fourth review's open findings, Step 7's owed review and the
-next telemetry review where neither needs a stamp, a queue item for anything
-that needs him, and a closeout checkpoint.
-
-**The review record repaired.** On 2026-10-01 a helper that set refuter verdicts
-in `REVIEW2.md`, beside the overnight records, wrote the verdict into the
-finding column of 28 rows. The finding texts were restored from the session
-transcript, and the verdicts moved to their own column.
-
-**The fifth pass, over `77fe6da`.** One lens on Opus 5.5 ran the checks in
-memory with telemetry off and found ten. Its refuter on Opus 5.5 confirmed nine
-and downgraded one: r5:1, an unpinned rule rewritten as the string "no", is a
-note, because flipping those rules to true is accepted by design and no Python
-reader consumes them. For about one minute at 10:30 the main checkout's
-`tools/validate_authorization.py` held an unreviewed draft of this change,
-written there in error while the lens was running. It was restored, the lens
-was told and re-ran every authorization result from the `77fe6da` blob with a
-hash check, and the drafting moved to a separate worktree.
-
-**One claim of `77fe6da` was false.** Its commit message, its CHANGELOG entry and
-the eleventh paragraph of the 2026-10-01 entry say the phone shape reads any
-space or dash. It read seven of the 28 characters Unicode files as a dash or a
-minus sign, and a phone separated by U+2212, U+FF0D or U+FE63 passed A-08 (r5:5).
-It now reads all 28.
-
-**What this commit closes**, each with a break that the code at `77fe6da`
-lets pass:
-- **f4:4.** A typed placeholder is one of the tokens `synthetic/GROUND_TRUTH.yaml`
-  carries as a value, or the corpus-local token README section 5 names.
-- **f4:6, the rest, with r5:3 and r5:4.** A refusal prints a key, a pending id,
-  a register cell or a fixture value only when a vocabulary the gate reads holds
-  it: the two schemas, the layer model, the row contract or the code and enum
-  vocabularies. The self-test plants a word in no vocabulary and fails any break
-  whose refusal, certification refusal included, prints it.
-- **f4:7.** The clause measure removes tilde fences and a comment or fence left
-  open, and reads a withdrawal anywhere in section 4. The hook measure is
-  described under the sixth pass below, in the form this commit carries.
-- **f4:10.** The register is read as GitHub renders its table, and a row with no
-  fixture name is refused as `AUTH_REGISTER_ROW_UNNAMED`.
-- **f4:11.** A pair's value is read inside a mapping, as a key, in a set and
-  without its padding.
-- **r5:1 and r5:8.** A rule leaf is written as a boolean, refused otherwise as
-  `RETENTION_POLICY_RULE_NOT_A_BOOLEAN`, and a 0 or 1 is a leaf. Five such
-  values are not rules and are named with their types.
-- **r5:2.** The six cadence steps are pinned by when, and the sweep by its act.
-- **r5:6 and r5:7.** An empty selector registry refuses every record selector,
-  and a registry key that is not a string is a named refusal.
-- **r5:9.** A scan row whose sample cannot be read fails as that row rather than
-  ending the self-test.
-- **r5:10.** The handoff now says that `77fe6da` left half of f4:6 open.
-
-**The sixth pass, over the first version of these fixes, before any merge.**
-One lens on Opus 5.5 ran over the staged change and found nineteen, two of them
-regressions against `77fe6da`. Its refuter on Opus 5.5 ran over the same staged
-tree, which nobody edited while it worked; the drafting moved to a second
-worktree. Closed here:
-- **r6:1, a regression, with r6:2, r6:3 and r6:15.** The first shell-aware hook
-  measure accepted an exit 0 inside an always-true if or a called function
-  before the stanza, and exit 256, exit 1 & and exit 1 | cat in its block, all
-  of which the line test of `77fe6da` refused. The measure now walks every word
-  in command position. Before the stanza it refuses an exit with any status but
-  a literal 1 to 255, any exit at the top level, exec, trap, alias, hash, eval,
-  source, a PATH assignment, a function named python, and a command named
-  through quotes or an escape. In the block it refuses exec, return and any
-  other exit status, and it counts an exit only when nothing pipes or
-  backgrounds it. It also refuses a shebang whose interpreter is not a shell and
-  reads a here-document opened with an escaped or digit delimiter. Fifteen
-  measure cases were added, one of them guarding the exec rule.
-- **r6:4, a regression.** The first GitHub-style register reader skipped a
-  contradicting row written as a second table's header, after a line opening
-  with HTML, or alone after a blank line, all of which `77fe6da` read. Every
-  line the earlier reader took as a row is now read as well, so this reader
-  reads a superset of what it read.
-- **r6:6 and r6:7.** A-18 no longer prints a fixture's decision value, step or
-  absent criterion, and A-12 names a key path only from the key vocabulary.
-- **r6:9 and r6:10.** The phone shape reads the soft hyphen, the zero-width
-  space and joiners, the byte-order mark, middle dots, fullwidth and
-  ideographic stops, parentheses and slash, and a fullwidth plus. The pair scan drops format
-  characters from a value before matching it.
-- **r6:11.** Every cadence step is pinned by its act as well as its when.
-- **r6:16.** The withdrawal phrases gain eight more; the list stays closed.
-- **r6:19.** A measure case that cannot find its anchor is a named failure
-  rather than a traceback.
-- **r6:12, r6:13 and r6:17.** The telemetry review's count of merges, the
-  description of the hook measure, and the handoff's account of this review are
-  corrected below and in the handoff.
-
-**Open from the sixth pass**, each recorded in `REVIEW2.md`:
-- **r6:5.** `tools/validate_cast.py --placeholder-scan` accepts any bracketed
-  text under a persona key, so a live handle written as a typed token in the
-  truth file would pass it and be admitted as a cast token.
-- **r6:8.** A fixture or register name is printed in refusals and written to the
-  gate log. A name is how a reader finds the row, so masking it is a trade the
-  operator may want to weigh.
-- **r6:14.** A cast token of the wrong type for its key is accepted.
-- **r6:18.** In a chain payload, a capitalised pair key or a registry type
-  outside SELECTOR_KEYS is not read by A-08, as at `77fe6da`.
-- **r6:4's other half and r6:11's.** A register table inside a blockquote
-  is not read, and a seventh cadence step is not refused.
-
-**The seventh pass, over the sixth pass's fixes, before any merge.** One lens on
-Opus 5.5 read the delta and found twenty, six of them regressions. Four were in
-the shell-aware hook measure: a "<<" in a comment or an arithmetic shift read as
-a here-document, a closing brace piped or backgrounded, a here-document body the
-shell runs, and a second stanza. The fifth was the alias form the sixth version
-dropped from SHADOWS_PYTHON_RE. The last was a fullwidth plus added to the phone
-lookbehind, which hid a phone `77fe6da` found. The parent's rule stops a round
-where its fixes would go unreviewed, so the regressions were backed out rather
-than fixed with new logic. The hook measure now also requires the line test of
-`77fe6da`, restored verbatim as `_stanza_lines_in_place`, so whatever either
-refuses is refused. The alias alternative and the lookbehind of the earlier
-versions are restored. Each regression shape was then checked and refused, and
-two measure cases that only the line test refuses guard the composition. The
-condition that counted a block's exit only as the first word of its command
-guarded nothing a defect needs and was dropped. Seven rules the lens found
-unguarded each gained a case or a break: return and a quoted name in the block,
-eval, source and "." before the stanza, the digit-led delimiter, A-18's value
-and step, and the fullwidth plus. These last changes were checked by the
-self-tests and by hand, and no eighth pass reviewed them. The refuter's verdicts
-are in `REVIEW2.md`.
-
-**Open from the seventh pass**, r7:7 to r7:17: a wrapper such as command or
-builtin, or an assignment or redirection prefix, hides an exit before the
-stanza; trap or eval in the block; an exit continued from the line before or
-inside a subshell; set -n and a shebang flag; a quoted PATH assignment; a
-here-document delimiter with a space; a subshell around the stanza; a "#" after
-a brace; invisible characters outside category Cf in the pair scan; and the
-bidirectional and other format characters PHONE_STOPS does not list. The hook
-measure reads a shell script with a line reader, and every pass has found more
-that it misses. It is a stricter heuristic than the line test it extends, and it
-is not a shell parser.
-
-**A false positive caught before the commit.** The first draft of f4:11 read
-into mappings on both sides of a pair and under keys named for a type. The
-working-tree scan then refused `ontology/selectors.yaml` and
-`schema/pse-event-0.1.schema.json`, which write each type as a key over its
-definition and write selector_type as a schema property. The type side and
-type-named keys now read strings and lists only, which the pair-scan docstring
-states, and `--repo-scan` output is byte-identical to `77fe6da`.
-
-**The second telemetry review, under HY-2.** The first review read records 1 to
-4,078. This one reads the 1,430 records written after it, from
-2026-10-01T03:50Z to 18:36Z, and leaves out records 4,079 to 4,099, the 21 a
-mistaken test run wrote that night. The window covers the 28 pull requests,
-#2 to #29, merged in it.
-- `authorization`, 50 runs, every one refused, with `AUTH_ARTIFACT_UNSTAMPED`
-  seven times a run. HY-2's second row, accepted for its stated reason: the
-  artifacts carry no dated row and a stamp clears it. The third row does not
-  apply, since the code is one rule read once for each of seven paths. Kept.
-- `retention-policy`, 45 runs, and `retention-shred-roundtrip`, 31 runs, every
-  one refused by design. `RETENTION_POLICY_RULE_UNCLASSIFIED` fired twice while
-  rules were being named, each a real catch answered in the same change. Kept.
-- `authorization-self-test`, 115 runs and 12 refusals, each a break drafted
-  that day that failed until its claim was corrected, before any commit. Kept.
-- `hygiene`, 103 runs and two refusals, both `HYGIENE_CADENCE_OPENER` on a
-  worklog sentence and both answered. HY-2's fourth row. Kept.
-- `cast`, `cast-self-test`, `doctrine`, `layer-model` and `ontology`, 91 runs
-  each, and the two repo-scan modes, 41 and 60 runs, with no refusal. HY-2's
-  first row asks for a deliberate break, and each gate's self-test breaks it on
-  every hook, preflight, kernel-gate and CI run. Kept.
-
-**One gap the review found.** Six self-tests, those of the layer model, the
-ontology, hygiene, retention, doctrine and the pin-of-record reader, run on
-every path and write no record. Only the authorization and cast self-tests do.
-The log therefore cannot show the deliberate breaks that HY-2's first row rests
-on for five gates with no refusal. Recording them is Class B work and is open.
-HY-2's basis stamp stays the operator's.
-
-**Battery.** All sixteen preflight commands passed on the staged tree, the
-authorization self-test with 147 breaks and the retention self-test with 184,
-and both forms of `git diff --check` were clean. The kernel gate exited 0, with
-16 implemented checks passing, 3 unratified and refusing, 2 stubbed and 5
-pending.
-
----
-
 ## 2026-10-12, six false passages corrected and two delegations recorded, under the maintainer's words of 17:02.
 
 **Class:** A (`README.md`, `docs/THE-GAMEPLAN.md`, the handoff and the two
@@ -1244,3 +1059,121 @@ sentences in rank 1 to 3 files the night made stale, the 28 queue items, plan
 item 0.7, the Step 7 fixes, the audit's section 8 finding, the credentials
 inventory, the 37 merged branches. This entry's commit follows his go word of
 17:07:57 by the usual route.
+
+## 2026-11-02, resumed on the personal account: pull request 38 merged on the maintainer's click, the second-model review of 8583132, and the extraction tool's three misreads corrected.
+
+**Class:** B. `tools/since_last_record.py` changes behaviour (three misreads
+corrected, each with a self-test case and a control) and `AGENTS.md` section
+8's description of it follows; `CHANGELOG.md` takes an entry. No doctrine,
+spec, schema, policy, ontology, runtime, gate or value changes.
+
+**Agent involvement.** Personal-account session c941f6e6, started at about
+17:35 EST by the parent of 11-02 (local_a7b08618) on his words of today, which
+research/inputs/resume_briefs_2026-11-02/README.md section 1 in the parent
+folder records verbatim; the refresh ran on Opus 5.5 from records with no
+agent; Fable 5.1 in the main loop from the parent's go at 17:36. Every agent
+slot of the estate was held by other lanes until 18:17 and the heavy-run lock
+by zisr-producers from 17:41, so the review and the fix below were done in
+the main loop; one Sonnet 5.5 verifier (agent-slot-2, 18:17 to 18:20,
+read-only, then again 18:23 to 18:25 on the deltas) read the staged fix as
+its second model, found every checked claim true with three controls seen
+failing on a copy, named three weaknesses, each answered below, and on its
+re-check found one defect the answer had introduced, closed below with a
+plant and a control. One lapse, recorded as the 2026-10-08 rule asks: the kernel
+gate ran once on the checkout at 17:5x before this session had the estate's
+heavy-run rule in its loop; every later battery-sized run waits on the lock.
+
+**His line of the day in this chat.** At about 17:44 EST, a click on the
+offered action labelled "Merge it" (the button's message, the session's words
+he accepted: fast-forward main from 069d483 to 0aac3b9, push main, read every
+CI step on main and report back before anything else). The go word of
+17:07:57 on 10-28 lived in the predecessor's chat and named that day's parent,
+and under the brief of 11-02 a delegation naming an earlier parent does not
+carry over, so the merge took his word here and not that go word.
+
+**Pull request 38 merged.** Its two branch runs on 0aac3b9 (40790532704 push,
+23:54:35Z to 00:01:14Z; 40790538481 pull_request, to 00:05:43Z), which the
+predecessor never read because it ran out of usage at 20:06 EDT on 10-28, were
+read step by step at about 17:40 today: success on every step of each. On his
+click, main was fast-forwarded 069d483..0aac3b9 and pushed at 17:44:21 EST;
+pull request 38 MERGED at 22:44:20Z; CI run 41539769592 on main (22:44:22Z to
+22:52:27Z) concluded success on every step, the 23 named steps read one by one
+at 17:55. State then: HEAD == main == origin/main == GitHub main == 0aac3b9,
+clean, stash 0, one worktree, no open pull request, 38 merged branches on
+origin. The addendum the predecessor owed is section 8 of
+CLOSEOUT_2026-10-28.md in Z-ISR/_session-artifacts/2026-10-28-plainsight-build/,
+with the delta re-run from 2026-10-28T21:40:40Z beside it
+(SINCE_LAST_RECORD_2026-11-02_addendum.md, 263 entries, sha256
+5de796155c9212cf), its self-test and two live controls seen refusing first.
+
+**The second-model review of 8583132 (item 1 of the 10-28 list).** Record:
+Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/REVIEW_8583132.md.
+Fable 5.1 read the six mechanisms the item names against their doctrine and
+design sentences and ran each: the subject guard suite, 22 passed; the
+Sherlock harness, 6 of 6 fixtures, 30 events graded, 0 refused; the manifest
+validator refusing MANIFEST_SELECTOR_PLATFORM on a mutated copy of the real
+manifest and passing the real one; the authorization, manifest and connector
+conformance self-tests green; the application suite, 195 passed with its 91
+paired controls; the kernel gate, 24 implemented, 0 failed. No defect found in
+the six. Four readings for him, none a defect: the run's egress.environment is
+a schema constant the adapter writes as a literal, so EG-6's enforcement is
+preflight and not the field; no two of the 481 Sherlock sites collapse to one
+platform token, a property no test asserts; the egress guard's six-character
+bare-form floor is a design constant he has not read; one dead monkeypatch
+line in a test. The review claims coverage of the six, not correctness of the
+commit.
+
+**The extraction tool's three misreads corrected (item 3).** Named in the
+first 2026-10-28 entry and the closeout's section 3, and a third in the brief
+of 11-02: (1) a click whose record carries the button's label rather than its
+message read as TYPED, which every click of 10-28 did; (2) a harness record in
+the user role, the context-compaction summary of 05:14:45 (its record carries
+isCompactSummary) and the classifier notice of 09:00:55 (isMeta), read as
+TYPED; (3) every stamp converted with the local offset of the day the tool
+runs, so after the daylight-time change of 11-01 every stamp from before it
+printed one hour early (the delta of today's addendum shows 16:45:23 for his
+click of 17:45:23). The fix: the match against the most recent wrap-up call
+also reads an action's label as the click, marked "by its label"; a user
+record carrying either flag is listed under a new section by stamp and kind
+and its text is never copied; each stamp converts with the operating system's
+offset for that instant, written after the stamp. The verifier's three
+weaknesses: a typed word equal to a label of the latest wrap-up call reads as
+that click, and the record fields do not tell them apart (measured: his typed
+release and his clicks carry the same promptSource and turnOrigin), so the
+mark and the docstring now say so and a plant proves a superseded call's
+label stays typed; the harness branch could have hidden a flagged record's
+tool result, so tool results are now read before the flag is applied; stamps
+carried no zone marker, so each now carries its offset. The re-check's
+defect: the harness branch reused the name of the line kind, so a second text
+block of an unflagged record was misfiled as a harness record and its text
+dropped; the name is now the record's own, a record typed in two blocks is
+planted, and the defect re-planted on a copy fails four checks. The self-test
+has 21 checks over 15 planted lines (a label click, a superseded call's
+label, a two-block record, a compaction summary and a harness notice among
+them), a zone check against the
+operating system's clock for two instants on either side of the change, its
+reference read independently of the conversion, with the fixed-offset
+conversion seen to differ on this machine, and the four controls refusing. Over the predecessor's transcript from
+2026-10-28T05:00:00Z the fixed tool reads 1 typed line (his release of
+01:47:22), 9 clicks by label, 7 harness records and 0 lines a reader would
+take for his that are not. `tools/validate_hygiene.py` exits 0 over the edited
+tree.
+
+**Item 2, the negative-control audit, run (20:06 to 20:31 EST).** By the
+2026-10-18 method in a clone at 0aac3b9 beside a clone of ZMeta/zmeta-spec,
+under the estate's heavy-run lock taken with no waiting file present: the six
+gate entries 8583132 added and the three it moved each exit 0 on the tree as
+it stands (the unratified one refuses by design) and each was seen failing
+under one planted break naming its refusal; the aggregator was seen red twice.
+Two findings, neither a defect of 8583132: the harness's cut had a precedence
+bug on a condition with `or`, fixed and the control re-run; and
+`tools/pin_of_record.py --self-test` breaks when runner/dispatch_allowlist.yaml
+exists, because its absent-file example is that real path, so the commit that
+lands DA-R2 stamped must also move that example (Class B, owed then). The
+kernel gate on this commit's staged tree, under the same lock: 24 implemented,
+0 failed. Record: Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/AUDIT_2026-11-02.md.
+
+**Open.** Items 4 to 8 of the list follow, with briefs for 4 and 8 written. His, unchanged: the DA-R2 stamp outside the tree, the readings
+each artifact carries, the 28 queue items, plan item 0.7, every stamp, the 38
+merged branches. This entry's commit follows the usual route on his word in
+this chat.

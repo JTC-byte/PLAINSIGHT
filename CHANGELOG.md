@@ -22,6 +22,39 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-02. The since-last-record extraction's three misreads corrected.**
+
+  **What changed.** `tools/since_last_record.py` reads a click the app
+  delivered as its button's label as that click (marked "by its label"), lists
+  the harness's own records in the user role, a context-compaction summary or a
+  notice such as a classifier stop, by stamp and kind instead of marking them
+  typed, and prints each stamp with the local offset in force at that instant,
+  written after it, instead of the offset of the day it runs. A typed line
+  equal to a label of the latest wrap-up call reads the same as such a click,
+  which the mark and the docstring now say. Its self-test plants the new cases
+  and checks two stamps on either side of a daylight-time change against the
+  operating system's clock, read independently of the conversion, with the
+  fixed-offset conversion seen to differ where the zone observes daylight
+  time, and plants a record typed in two text blocks, because the verifier's
+  re-check found the first draft misfiling a second block as a harness record:
+  21 checks, 15 planted lines, 4 controls refusing. `AGENTS.md` section 8's description of the tool follows
+  the change. Over the 2026-10-28 session's transcript the tool now reads that
+  day's nine clicks as clicks and lists seven harness records.
+
+  **Which surfaces moved.** `tools/since_last_record.py`, `AGENTS.md` section
+  8, the worklog and its archive, the handoff.
+
+  **What validation ran.** The tool's self-test; the tool over the 2026-10-28
+  transcript; a Sonnet 5.5 verifier's two reads of the staged change, with
+  three controls seen failing on a copy and one defect found and closed; hygiene and its self-test, the repo scan, the kernel gate, the
+  pre-commit hook and both diff checks on the staged tree.
+
+  **What did not change.** No doctrine, spec, schema, policy, ontology,
+  synthetic, generated or corpus file; no gate, battery or CI step, because
+  the extraction is a records aid that joins no gate, as the 2026-10-25 entry
+  says. Nothing about who may be a subject, what may be retained or what may
+  leave.
+
 - **2026-10-28. Step 9, Step 12's schema and harness, Step 10 drafted, the
   Sherlock connector on cassettes, and the application's first slice.**
 

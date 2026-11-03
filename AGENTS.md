@@ -348,9 +348,15 @@ output path inside the repository. The file carries the maintainer's lines in
 that span, each marked by how it arrived: typed; a click on an action the
 session offered, which the tool detects by comparing the text with the actions
 offered in the most recent wrap-up call before the line, reading a message the
-app cut at 300 characters as the same click; or a selection on an offered
+app cut at 300 characters as the same click and, since 2026-11-02, reading the
+action's label alone as the same click, because the app delivers the label
+rather than the message for some clicks; or a selection on an offered
 question, read from the answer to an AskUserQuestion call with each question
-and the chosen option verbatim. It carries every message the session sent and
+and the chosen option verbatim. Since 2026-11-02 it lists the harness's own
+records in the user role, a context-compaction summary or a notice such as a
+classifier stop, by stamp and kind and never as his lines, and prints each
+stamp with the local offset in force at that instant, written after it, rather
+than the offset of the day it runs. It carries every message the session sent and
 received, verbatim, and its last assistant texts. The session reads the file
 once before writing the records: a maintainer line it shows that the records
 lack is written in, and a line marked as a click or a selection is never
@@ -361,9 +367,13 @@ after the closeout. The file is a verbatim copy that no retention mechanism in
 this repository reaches, so a closeout does not run the tool over a span in
 which case material was discussed until `doctrine/RETENTION.md` says how such
 a copy is held. The tool's `--self-test` plants a typed line, a click, a click
-cut at 300 characters, a selection, a sent and a received message and an
-assistant text and asserts each is classified as what it is, keeps a line
-equal to a superseded or a later offer typed, and runs four controls that must
+cut at 300 characters, a click delivered as its label, a compaction summary and
+a harness notice in the user role, a selection, a sent and a received message
+and an assistant text and asserts each is classified as what it is, keeps a
+line equal to a superseded or a later offer, or to a superseded call's label,
+typed, keeps both blocks of a record typed in two text blocks his, checks two
+stamps on either side of a daylight-time change against the
+operating system's clock for each instant, and runs four controls that must
 refuse: a since past the last entry (zero entries, every section "none in the
 span"), a file that is not a transcript (exit 2), a since without a zone, and
 an output path inside the repository; a closeout that files an extraction
