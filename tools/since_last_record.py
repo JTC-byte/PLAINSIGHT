@@ -121,6 +121,12 @@ def _harness_kind(o):
 
 
 def _clean(t):
+    # A prompt or content the harness wrote as a list of blocks is read as its text blocks joined;
+    # before 2026-11-02 such a record stopped the tool with a traceback.
+    if isinstance(t, list):
+        t = " ".join(b.get("text", "") if isinstance(b, dict) else str(b) for b in t)
+    if not isinstance(t, str):
+        t = "" if t is None else str(t)
     t = t.strip()
     cut = t.find("<command-name>")
     return t[:cut].strip() if cut > 0 else t
@@ -409,6 +415,7 @@ def self_test():
         _rec(t(6), "assistant", message={"content": [{"type": "tool_use", "name": "SendMessage",
                                                       "input": {"to": "local_peer", "message": planted["sent"]}}]}),
         _rec(t(7), "user", message={"content": planted["received"]}),
+        _rec(t(7, 30), "attachment", attachment={"type": "queued_command", "prompt": [{"type": "text", "text": "A queued line written as blocks."}]}),
         _rec(t(8), "assistant", message={"content": [{"type": "text", "text": planted["assistant text"]}]}),
     ]
     with tempfile.TemporaryDirectory() as d:
@@ -457,6 +464,7 @@ def self_test():
         check("the sent message is listed", r["sent"] == 1 and planted["sent"] in text)
         check("the received message is listed", r["received"] == 1 and "hello" in text)
         check("the last assistant text is listed", r["assistant"] == 1 and planted["assistant text"] in text)
+        check("a queued prompt written as a list of blocks is read as its text, not a crash", r["queued"] == 1 and "A queued line written as blocks." in text)
         check("no click or selection is written as TYPED", text.count("TYPED:") == 6)
         # Control 1: a since-stamp later than the last entry.
         out2 = os.path.join(d, "out2.md")

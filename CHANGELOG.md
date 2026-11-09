@@ -22,6 +22,27 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-09. The since-last-record extraction's list-of-blocks fix.**
+
+  **What changed.** `tools/since_last_record.py` reads a prompt or content the
+  harness wrote as a list of blocks as its text blocks joined, in `_clean`,
+  where the committed tool stopped with a traceback on such a record. Its
+  self-test gains a planted `queued_command` attachment written as blocks and
+  the check that it is read as its text, 21 checks to 22.
+
+  **What did not change.** No classification rule: typed lines, clicks on
+  offered actions, selections, harness records, sent and received messages are
+  told apart as before, so a transcript the committed tool could read gives the
+  same counts. No other tool, doctrine, spec, schema, policy, ontology,
+  runtime, synthetic, generated or corpus file; no hook command, gate command
+  or CI step. PSE has no tag.
+
+  **Validation.** The committed tool seen failing on a planted record (exit 1,
+  `AttributeError` in `_clean`) and the fixed tool reading the same record as a
+  queued line; the self-test's 22 checks with 4 controls refusing; hygiene; the
+  kernel gate on the committed tree under the heavy-run lock, with its counts
+  in the worklog entry of 2026-11-09.
+
 - **2026-11-08. The ontology validator's `--corpus` and `--matchers` modes built.**
 
   **What changed.** `tools/validate_ontology.py --corpus` reads
