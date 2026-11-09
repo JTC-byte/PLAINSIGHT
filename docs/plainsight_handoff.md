@@ -12,26 +12,28 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-02. `main` == `origin/main` == `0aac3b9`: the build night's
-commit `8583132` (Class C) merged on his click of 2026-10-28, its records in
-`356c1f7` and `069d483`, and his three class decisions in `0aac3b9`, merged on
-his click in this chat at 17:44 EST today with CI green on every step; this
-file's commit is Class B, the extraction tool's three misreads corrected,
-carrying the records of that merge.
+**Date:** 2026-11-08. `main` == `origin/main` == `04b358f`: the extraction
+tool's three misreads (class B) merged by pull request 39 on his click of
+2026-11-02, CI run 41562667958 on main green. This file's commit is class B,
+item 4: the ontology validator's `--corpus` and `--matchers` modes, with the
+records of that merge.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
 this tree; section 3 says whose decision it is.
-**Kernel gate:** 32 entries: 24 implemented and passing, 11 of them self-tests;
-4 unratified and refusing as designed; 2 stubbed; 2 pending. `--kernel-gate`
+**Kernel gate:** 32 entries: 25 implemented and passing, 11 of them self-tests;
+4 unratified and refusing as designed; 1 stubbed; 2 pending. `--kernel-gate`
 exits 0 on this tree and the pre-commit hook passes. `CONFORMANCE.md` section 4
 applies.
 
 **Resume here.** Run `tools/since_last_record.py` from the last record's stamp
 over the session's own transcript and read its typed and clicked lines first.
-The maintainer's release of 2026-10-28 01:47 stands for building; every commit,
-push, merge and Class F decision takes his own typed word in the PLAINSIGHT
-chat, per act, and no parent is delegated (his decision of 2026-10-23). The
+The maintainer's release of 2026-10-28 01:47 stands for building, and his click
+"Yes, resume here" of 2026-11-08 lifted the hold of 2026-11-03 and named the
+parent local_88a0656e (Parent 08NOV2026) for this repository: a relay quoting his
+dated words is his word here, merges and pushes go ahead on green gates with
+their controls seen failing, and every commit, Class F decision, deploy, tag,
+mint and secret takes his word in this chat, per act. The
 record of the build night, with every lens finding, refuter verdict, fixer and
 verifier report, the DA-R2 allowlist draft and the design brief for the
 application, is `Z-ISR/_session-artifacts/2026-10-28-plainsight-build/`; the
@@ -44,39 +46,35 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** `tools/since_last_record.py` corrects three misreads
-the records of 2026-10-28 and the brief of 2026-11-02 named: a click the app
-delivered as its button's label read as typed, a harness record in the user
-role (a compaction summary, a classifier notice) read as typed, and every
-stamp converted with the offset of the day the tool runs rather than the
-offset at that instant. Each has a self-test case and a control, and
-`AGENTS.md` section 8's description follows. The worklog gains the 2026-11-02
-entry: the merge of `0aac3b9` (his three class decisions) on his click in this
-chat with its CI run on main, the second-model review of `8583132` (item 1 of
-the 10-28 list: no defect in the six mechanisms read, four readings for him),
-and the negative-control audit prepared. Every agent reading awaits him in
-the artifact that carries it.
+**What changed and why.** `tools/validate_ontology.py` gains `--corpus`, which
+checks the repository's two corpora against the selector registry at every
+field `spec/layer-model.yaml` binds to it, and the structural half of
+`--matchers`, which scores nothing and says so. The `ontology-corpus` gate entry
+moves from STUB to IMPLEMENTED; `ontology-matchers` stays STUB. Thirteen notes
+in `ontology/selectors.yaml` gain "Unexercised at v0.1, since no must-pass row
+carries this type.", which he kept on 2026-11-02 (reading O-R4). The worklog
+gains the 2026-11-08 entry, which also records the merge of `04b358f` and its
+CI run.
 
-**Which surfaces moved.** In this commit: `tools/since_last_record.py`,
-`AGENTS.md` section 8, `CHANGELOG.md`, the worklog and its archive, and this
-file. No doctrine, spec, schema, policy, ontology, runtime, synthetic,
-generated or corpus file; no gate, battery or CI step.
+**Which surfaces moved.** In this commit: `tools/validate_ontology.py`,
+`tools/validate_conformance.py`, `tools/validate_connector_conformance.py`,
+`ontology/selectors.yaml` (notes only), `CONFORMANCE.md`, the Makefile comment,
+`docs/THE-GAMEPLAN.md`, `CHANGELOG.md`, the worklog and its archive, and this
+file. No doctrine, spec, schema, policy, runtime, synthetic or corpus file; no
+CI step, no hook command.
 
-**What validation ran and what passed.** On this commit's staged tree: the
-tool's self-test (21 checks, 15 planted lines, 4 controls refusing), the tool
-over the 2026-10-28 transcript (its nine clicks read as clicks, seven harness
-records listed) and a Sonnet 5.5 verifier's two reads, three controls failing
-on a copy and one defect found and closed; hygiene and its self-test, the repo scan, the kernel gate, the hook
-and both diff checks. On `0aac3b9`: both branch CI runs read
-step by step before the merge, and run 41539769592 on main after it, success
-on every step.
+**What validation ran and what passed.** On this commit's staged tree, under
+the estate's heavy-run lock on 2026-11-09: the kernel gate, 25 implemented, 0
+failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0; the pre-commit
+hook exit 0; hygiene exit 0 with its self-test and a planted tense word
+refused; both diff checks clean. The worklog's Battery paragraph carries the
+stamps.
 
-**Whether a release baseline changed.** No. `main` gained `0aac3b9` by pull
-request 38 on 2026-11-02; this commit follows by the same route on his word,
-and PSE still has no tag.
+**Whether a release baseline changed.** No. PSE still has no tag.
 
-**What remains open or deferred.** Section 3: DA-R2's stamp, the readings, the
-queue; items 2 and 4 to 8 of the 10-28 list, in the 2026-11-02 record folder.
+**What remains open or deferred.** Section 3: DA-R2's stamp, the readings
+including O-R1 to O-R9, the queue; items 5 to 8 of the 10-28 list; the
+extractor's list fix, held for its own commit.
 
 ---
 
@@ -287,8 +285,8 @@ dollars non-recurring and 205 a month.
   fixture does not exist. `ABSENCE_CLAIMED_WITHOUT_CANARY` fires on every
   `attempted_and_absent`, which is why the Sherlock adapter emits no claim for a
   non-claimed row.
-- **`tools/validate_ontology.py --corpus` and `--matchers` are STUB entries**,
-  and every kernel run prints the debt.
+- **`tools/validate_ontology.py --matchers` is STUB and scores nothing**; its
+  structural half and `--corpus` (IMPLEMENTED) run since 2026-11-02.
 - **The application** is checked by static string tests and the served JSON and
   SVG after the fixer, not by a browser pass; the corpus web lays out at about
   2048 by 1143 pixels with edge labels overlapping near the centre; the Postgres

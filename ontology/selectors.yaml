@@ -327,7 +327,7 @@ selectors:
     stability: stable
     may_anchor_entity: true
     matcher: shape.channel.v1
-    note: A platform channel, group or feed. Anchors a Channel entity.
+    note: A platform channel, group or feed. Anchors a Channel entity. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "a channel id survives a rename, so a channel's title is not its identity"
     fp_mode_basis: reasoned
 
@@ -354,7 +354,7 @@ selectors:
     stability: reassignable
     may_anchor_entity: false
     matcher: shape.username.v1
-    note: PROPOSED. A username with no platform bound to it, used as a sweep input.
+    note: PROPOSED. A username with no platform bound to it, used as a sweep input. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "a sweep's hits are same-string, not same-person"
     fp_mode_basis: reasoned
     # PROPOSED 2026-09-03. A cross-platform username sweep takes a bare string
@@ -395,7 +395,7 @@ selectors:
     matcher: hints.phone.v1
     constraint_semantics: suffix_mask
     resolves_to: phone
-    note: A platform's masked account-recovery hint for a phone number.
+    note: A platform's masked account-recovery hint for a phone number. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "the platform returns the recovery hint for a LINKED account, not necessarily the owner; a suffix mask over a national numbering plan excludes far less than it appears to"
     fp_mode_basis: reported
 
@@ -450,7 +450,7 @@ selectors:
     stability: mutable
     may_anchor_entity: false
     matcher: shape.person_name.v1
-    note: A natural person's name as observed on a surface.
+    note: A natural person's name as observed on a surface. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "namesakes are common and a name is not a key"
     fp_mode_basis: reasoned
 
@@ -461,7 +461,7 @@ selectors:
     may_anchor_entity: false
     matcher: shape.person_name.v1
     resolves_to: person_name
-    note: PROPOSED. A name a record source associates with a person, which is not the person's name.
+    note: PROPOSED. A name a record source associates with a person, which is not the person's name. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "public-record aggregators merge namesakes on a shared or former address, so an alias list routinely carries a different person's name"
     fp_mode_basis: reasoned
     # PROPOSED 2026-09-03. The datum here is "a name this source ties to this
@@ -475,7 +475,7 @@ selectors:
     stability: mutable
     may_anchor_entity: false
     matcher: shape.org_name.v1
-    note: An organization's name as observed on a surface.
+    note: An organization's name as observed on a surface. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "trading names, legal names and former names collide across unrelated registrations"
     fp_mode_basis: reasoned
 
@@ -485,7 +485,7 @@ selectors:
     stability: stable
     may_anchor_entity: false
     matcher: shape.org_registration_number.v1
-    note: PROPOSED. A company or entity number issued by a named public registry. Institutional, never a person's.
+    note: PROPOSED. A company or entity number issued by a named public registry. Institutional, never a person's. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "a registration identifies a legal entity and not the people behind it; a shell's officers are a separate claim"
     fp_mode_basis: reasoned
     # PROPOSED 2026-09-03. This is the shell-entity pivot. It is N0
@@ -500,7 +500,7 @@ selectors:
     stability: stable
     may_anchor_entity: false
     matcher: shape.public_record_id.v1
-    note: PROPOSED. A docket, filing or case identifier inside a named public-records system.
+    note: PROPOSED. A docket, filing or case identifier inside a named public-records system. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "the identifier is stable and the binding to a subject is usually a name match, so the weak seam is the link rather than the record"
     fp_mode_basis: reasoned
     # PROPOSED 2026-09-03. A criminal record, a property record and a corporate
@@ -517,7 +517,7 @@ selectors:
     may_anchor_entity: false
     matcher: shape.postal_address.v1
     requires: [premises_class]
-    note: PROPOSED. A street or postal address. The premises class decides whose selector it is.
+    note: PROPOSED. A street or postal address. The premises class decides whose selector it is. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "an address is shared by everyone at it, present and former, so an address links a subject to co-residents nobody authorized"
     fp_mode_basis: reasoned
     premises_class:
@@ -543,7 +543,7 @@ selectors:
     stability: reassignable
     may_anchor_entity: false
     matcher: shape.domain.v1
-    note: A fully qualified domain name.
+    note: A fully qualified domain name. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "a lapsed domain is re-registered by an unrelated party, so historical residue attaches to a new holder"
     fp_mode_basis: reasoned
 
@@ -553,7 +553,7 @@ selectors:
     stability: stable
     may_anchor_entity: false
     matcher: shape.image_phash.v1
-    note: A perceptual hash of an image the case holds. It refers to the artifact.
+    note: A perceptual hash of an image the case holds. It refers to the artifact. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "a perceptual hash matches a stock image, an avatar generator's output, and a re-share, none of which is a shared person"
     fp_mode_basis: reasoned
 
@@ -563,7 +563,7 @@ selectors:
     stability: stable
     may_anchor_entity: false
     matcher: shape.geo_area.v1
-    note: A bounding box or polygon that bounds a query. It refers to no person.
+    note: A bounding box or polygon that bounds a query. It refers to no person. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "an area returns everyone inside it, which is incidental collection by construction"
     fp_mode_basis: reasoned
     # doctrine/SUBJECT_SELECTION.md SS-1 makes a coordinate box L0 LOCATION and
@@ -576,7 +576,7 @@ selectors:
     stability: stable
     may_anchor_entity: false
     matcher: shape.time_window.v1
-    note: A closed interval that bounds a query. It refers to no person.
+    note: A closed interval that bounds a query. It refers to no person. Unexercised at v0.1, since no must-pass row carries this type.
     fp_mode: "a window over platform-declared timestamps and a window over collection timestamps are different windows"
     fp_mode_basis: reasoned
     # docs/PLAINSIGHT-design.md section 2.2: a correlation run where one lane is
@@ -717,9 +717,11 @@ prohibitions:
 # `conformance/ontology/matcher-truth/` are deferred in docs/THE-GAMEPLAN.md
 # section 2.2 with a hard trigger: before the first matcher merges. Until then
 # an unscored matcher may not be an identity basis, which is the rule the
-# semantics contract carries and the reason `tools/validate_ontology.py
-# --matchers` is deferred until the first matcher exists. Calibration needs
-# labelled ground truth, which needs the cast, which is unsealed.
+# semantics contract carries and the reason the scoring half of
+# `tools/validate_ontology.py --matchers` is deferred until the first matcher
+# exists. Its structural half runs since 2026-11-02 and scores nothing.
+# Calibration needs labelled ground truth, which needs the cast, which is
+# unsealed.
 #
 # ONE DISTINCTION THAT MATTERS, BECAUSE IT DECIDES WHAT AN UNCALIBRATED MATCHER
 # MAY STILL DO. A matcher used as an argv shape gate refuses a value whose shape

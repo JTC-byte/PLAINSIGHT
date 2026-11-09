@@ -16,10 +16,13 @@ only because it said so on every run. An aggregator that counted it as green
 would have converted a known gap into a silent one. Step 8 replaced that stub
 with a tool that reads the tree, and the state stayed in the list because the
 next stub is easier to declare than to notice. Two were recorded and never
-declared: `tools/validate_ontology.py --matchers` and `--corpus` print DEFERRED
-and exit 0, the handoff and `CONFORMANCE.md` recorded `--corpus` and
+declared: `tools/validate_ontology.py --matchers` and `--corpus` printed DEFERRED
+and exited 0, the handoff and `CONFORMANCE.md` recorded `--corpus` and
 `docs/THE-GAMEPLAN.md` recorded `--matchers`, and nothing called either until
-2026-09-28, when both joined the list as STUB.
+2026-09-28, when both joined the list as STUB. On 2026-11-02 `--corpus` was built
+and moved to IMPLEMENTED, and the structural half of `--matchers` was built with
+its entry left STUB for the maintainer's decision; the default mode runs the
+same structural checks, so their refusals reach the IMPLEMENTED ontology entry.
 
 Eleven self-tests are entries of their own, IMPLEMENTED: six as of
 2026-09-28, the doctrine gate's and the pin-of-record reader's as of
@@ -201,7 +204,9 @@ KERNEL_GATE = (
         IMPLEMENTED,
         "the closed selector vocabulary: required fields, the constraint rule, "
         "anchor agreement with the entity types, prohibitions, matchers, and "
-        "the code vocabulary reconciled against the layer model",
+        "the code vocabulary reconciled against the layer model. Since 2026-11-02 "
+        "also the structural matcher checks O-M1 to O-M3, so a refusal of theirs "
+        "fails here while the ontology-matchers entry is STUB",
     ),
     (
         "ontology-self-test",
@@ -209,25 +214,41 @@ KERNEL_GATE = (
         IMPLEMENTED,
         "--self-test. Breaks the selector registry in memory and asserts each break "
         "is refused, among them an eighth entity type, an unscored matcher permitted "
-        "as an identity basis, and a registry that stops declaring itself closed",
+        "as an identity basis, and a registry that stops declaring itself closed. "
+        "Since 2026-11-02 it also plants each --corpus and --matchers code in "
+        "in-memory copies of the corpora, the registry and the connector sources, "
+        "and requires the unplanted corpora clean; plants the O-M codes again "
+        "through the default mode; plants an unreadable corpus and an empty site "
+        "list; and fails a plant whose refusal offers a gate-state move",
     ),
     (
         "ontology-matchers",
         [PY, "tools/validate_ontology.py", "--matchers"],
         STUB,
-        "--matchers. Deferred until the first matcher exists, because scoring needs "
-        "labelled ground truth and ground truth needs a sealed cast. It prints "
-        "DEFERRED, checks nothing and exits 0",
+        "--matchers. Since 2026-11-02 the structural half runs: every library entry "
+        "referenced and carrying a purpose and a note, calibrated and "
+        "identity_basis_permitted false while the calibration file is absent, and "
+        "every matcher id a connector names declared. Scoring stays deferred until "
+        "the first matcher exists, because it needs labelled ground truth and ground "
+        "truth needs a sealed cast, and the mode says so in its output. The entry "
+        "stays STUB, so its exit code is not read, until the maintainer decides "
+        "reading O-R6 in tools/validate_ontology.py; the ontology entry runs the "
+        "same structural checks and its exit code is read",
     ),
     (
         "ontology-corpus",
         [PY, "tools/validate_ontology.py", "--corpus"],
-        STUB,
-        "--corpus. Its deferral waits for conformance/must-pass.jsonl and "
-        "must-fail.jsonl, which Step 7 wrote, so the trigger has fired and the mode "
-        "is owed. It prints DEFERRED, checks nothing and exits 0. Rung 2 enforces "
-        "the same property meanwhile, because the generated schema inlines the "
-        "registry keys as the selector enum",
+        IMPLEMENTED,
+        "--corpus, since 2026-11-02. Both conformance corpora read at every field "
+        "spec/layer-model.yaml binds to the selector registry, context events "
+        "included: every selector type a registry key, every value in its key's "
+        "form with a lowercase platform token where the form is platform-bound, "
+        "every must-fail row expecting SELECTOR_TYPE_UNREGISTERED refused here for "
+        "it alone, and every registry key exercised by a must-pass row or declared "
+        "unexercised in its note. The corpora hold whole-value placeholders, so the "
+        "form check bites only on a value written with its separators (reading "
+        "O-R1), and it reads no connector's output, so it is no rung 3 claim for a "
+        "connector (reading O-R5)",
     ),
     (
         "authorization",

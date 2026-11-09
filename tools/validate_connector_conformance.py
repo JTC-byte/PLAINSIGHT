@@ -821,8 +821,9 @@ def claim_text(report: dict) -> str:
     lines.append(f"  rung 2   tools/validate.py check_event over every emitted event, in process: "
                  f"{s.get('events_graded', 0)} event(s), "
                  f"{sum(1 for f in r if f.code == 'CONFORMANCE_EVENT_REFUSED')} refused")
-    lines.append("  rung 3   tools/validate_ontology.py --corpus: STUB, prints DEFERRED and checks nothing; "
-                 "rung 2's generated selector enum enforces registry membership meanwhile")
+    lines.append("  rung 3   tools/validate_ontology.py --corpus: reads the repository's corpora and no "
+                 "connector's events, so it is no claim about this one (reading O-R5); rung 2's "
+                 "generated selector enum enforces registry membership for its events")
     lines.append(f"  rung 4   this tool: {s.get('fixtures', 0)} fixture(s), {s.get('held', 0)} held, "
                  f"{len(r)} finding(s)" + ("" if r else ", invoke refused without a permit and reached no process "
                                                         "or network call"))

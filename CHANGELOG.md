@@ -22,6 +22,35 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-08. The ontology validator's `--corpus` and `--matchers` modes built.**
+
+  **What changed.** `tools/validate_ontology.py --corpus` reads
+  `conformance/must-pass.jsonl` and `conformance/must-fail.jsonl` at the five
+  fields `spec/layer-model.yaml` binds to the selector registry and refuses an
+  unregistered type, a value off its key's form, a must-fail row expecting
+  `SELECTOR_TYPE_UNREGISTERED` that the mode does not refuse for that code alone,
+  and a key with no must-pass row whose note does not say so. `--matchers` runs
+  the structural half only: calibration flags false while the calibration file is
+  absent, every matcher id a connector names declared, every library entry
+  complete. Its self-test gained 17 plants. In `tools/validate_conformance.py`
+  the `ontology-corpus` entry moved from STUB to IMPLEMENTED; `CONFORMANCE.md`
+  sections 3 and 4, the Makefile comment, the gameplan's deferral row and the
+  connector validator's rung 3 line follow. Thirteen notes in
+  `ontology/selectors.yaml` gain "Unexercised at v0.1, since no must-pass row
+  carries this type.", which he kept by his click of 2026-11-02 (reading O-R4).
+
+  **What did not change.** No selector key, form, field, matcher or enum, so the
+  generated schema is untouched. No doctrine, spec, schema, policy, runtime,
+  synthetic or corpus file. No scored matcher and no precision or recall claim:
+  the `ontology-matchers` entry stays STUB, and whether it moves is his
+  decision (reading O-R6). No hook command, CI step or gate command changed. No
+  connector's conformance is claimed, since the mode reads the repository's
+  corpora and no connector's events (reading O-R5). PSE has no tag.
+
+  **Validation.** The kernel gate on the staged tree of 2026-11-02 read 25
+  implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending; the
+  rest is in the worklog entry of 2026-11-08.
+
 - **2026-11-02. The since-last-record extraction's three misreads corrected.**
 
   **What changed.** `tools/since_last_record.py` reads a click the app

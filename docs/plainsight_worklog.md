@@ -15,126 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-12, six false passages corrected and two delegations recorded, under the maintainer's words of 17:02.
-
-**Class:** A (`README.md`, `docs/THE-GAMEPLAN.md`, the handoff and the two
-process records). No doctrine, spec, schema, policy, ontology, runtime or other
-governed artifact changed, so `CHANGELOG.md` takes no entry.
-
-**The words this commit acts on.** The maintainer at 17:02:01 EDT on
-2026-10-12, in the personal-account parent-folder session: "go ahead and make
-sure everything needing to be finished is taken care of so we are moving forward
-cleanly. Any commits, merges and pushes along with finishing up any threads on
-work that was in swing then lets engage the weeks efforts". That session,
-`local_ac773541`, relayed them here at about 19:52, after a messaging limit held
-the copy, and they are verbatim in the parent's
-`research/inputs/dispatches_2026-09-30/decisions_queue_2026-10-01.md`. The relay
-meets the four tests the delegations below set. This session read "in swing" as
-the corrections the two harvests found, which waited only on a commit, the one
-this commit's own reading found, the queue brought level, and the two
-delegations no commit had carried. The Step 7 fixes, plan item 0.7 and the queue
-answers were never started, and they stay held.
-
-**Two delegations, recorded here because no commit had carried them.** Each
-names a parent-folder session whose relays of the maintainer's dated words are
-his word in this repository, as the 2026-09-30 overnight entry records for the
-sentences of 2026-09-28 and 2026-09-30.
-
-- Typed at 23:17:08 EDT on 2026-10-05 in the team-account PLAINSIGHT session:
-  "Delegation, 2026-10-05: the team-account parent-folder session
-  local_5f1148fb-244a-4c91-b2ca-8c1b812c21f5 (titled "Harvest closed ecosystem
-  project session") is my parent session for this repository and for this
-  project from today and going forward; a decision it relays with my dated words
-  quoted is my word here, the same as my sentences of 2026-09-28 and 2026-09-30;
-  anything that pushes, merges, deploys, deletes or mints still names the words
-  it acts on; record this in your notes."
-- Typed at 15:30:56 EDT on 2026-10-11 in the personal-account PLAINSIGHT session:
-  "Delegation, 2026-10-11: the personal-account parent-folder session
-  local_ac773541-f864-4080-900a-f80fea7aaa5d (titled "Ecosystem project") is my
-  parent session for this repository and for this project from today and going
-  forward, in place of the team-account parent session
-  local_5f1148fb-244a-4c91-b2ca-8c1b812c21f5 while I work on this account; a
-  decision it relays with my dated words quoted is my word here, the same as my
-  sentences of 2026-09-28, 2026-09-30 and 2026-10-05; anything that pushes,
-  merges, deploys, deletes or mints still names the words it acts on; record
-  this in your notes."
-
-A relay qualifies only when it comes from the named session, quotes his dated
-words, those words are found verbatim in the parent folder's records, and the
-act falls inside them. It reaches no Class F decision and no stamp, which stay
-his own hand per item. The session's reading of "in place of ... while I work on
-this account", labelled as a reading: while he works on the personal account, a
-relay from the team parent is held and he is asked first.
-
-**Between 2026-10-02 and this commit, nothing touched the tree.**
-
-- On 2026-10-05 the team-account session harvested the closed personal session
-  `f8d7cd3b`, in `Z-ISR/_session-artifacts/2026-10-05-plainsight-harvest-of-f8d7cd3b/`.
-  It found four of the six passages below, one confirmed class F review finding
-  with no queue item (rm2:9, drafted as plainsight-28), and one held finding
-  missing from plainsight-22's Blocks line (sd2:13).
-- From 2026-10-06 to 2026-10-09 that session stood by under relayed words that
-  asked for no act here, and closed out on 2026-10-09 at 20:06 as report 13.
-- On 2026-10-11 the personal-account session harvested it, in
-  `.../2026-10-11-plainsight-harvest-of-12c08cc1/`: four Sonnet 5.5 readers, four
-  Opus 5.5 refuters and an Opus 5.5 critic, 70 items, none refuted. It found the
-  Resume here passage, item 3 below, and that the parent had put plainsight-28
-  into its answer sheet on 2026-10-05.
-- At 15:45:56 EDT on 2026-10-11 the maintainer's "maintain direction till map is
-  done" held this repository while the COP's map work ran.
-
-**What this commit corrects**, each false at `064fa27`:
-
-1. The handoff's section 1 said Step 7's owed review was never run. It ran on
-   2026-10-02, and `STEP7_REVIEW.md` in the overnight folder records it.
-2. The handoff's section 5 said no second pass had read the generator against
-   the model. That is the same review: twenty findings, eighteen confirmed and
-   two downgraded, all open.
-3. The handoff's Resume here named Step 8's open class B findings as the next
-   work, while its own section 5 said all twelve wait on the maintainer's queue
-   or on Step 10. It now names the queue and the held agent work.
-4. The handoff's section 7 said `main` is the only branch that goes to `origin`.
-   Every pull request since 2026-09-30 pushed its branch there, and the 31
-   merged branches remain. This commit's own reading found it.
-5. `docs/THE-GAMEPLAN.md` Step 8 said no adversarial review has run. It ran on
-   2026-10-01.
-6. `README.md`'s Next action said the next work, as of 2026-09-30, was the
-   review Step 8 was owed.
-
-The handoff stays at its 400-line cap. Section 5's Step 8 paragraph lost its
-ragged line breaks and its sentence on method, which the 2026-09-30 overnight
-entry carries, and section 6 gained the overnight folder and the two harvests.
-
-**Outside the tree, as part of the same act.** The session-artifact queue,
-`MAINTAINER_QUEUE.md` in the overnight folder, gains plainsight-28 in full, and
-plainsight-22's Blocks line reads "rm2:8 and sd2:13", matching the parent's
-answer sheet of 2026-10-05. The queue holds 28 items, and none is answered.
-
-**Two notes from the parent, checked against this tree.** The parent's TMN
-instance design of 2026-10-12 uses "managed attribution" for an instance's
-disposable outward identity; the term appeared nowhere in this repository at
-`064fa27`. The
-design reuses this repository's shred verification as a pattern only, and
-nothing crosses between the two. This repository's isolated collection
-environment is ISOLATED in `doctrine/EGRESS.md`. The doctrine never calls it a
-DMZ, and the handoff's "DMZ compartment" is the 2026-09-02 design that ISOLATED
-inherits, not ZMeta's admission DMZ. CR-7's burn retires one credential, not an
-instance.
-
-**Battery.** All sixteen preflight commands passed on the staged tree, the
-authorization self-test with 147 breaks and the retention self-test with 184,
-and both forms of `git diff --check` were clean. The kernel gate exited 0, with
-16 implemented checks passing, 3 unratified and refusing, 2 stubbed and 5
-pending.
-
-**Open.** Unchanged from `064fa27`. Every item waits on the maintainer's words
-for that act: the 28 queue items, plan item 0.7, the Step 7 fixes and the rest
-of the held agent work the handoff's Resume here lists. The 31 merged branches
-stay on `origin` and in this checkout; deleting them needs his words naming that
-act.
-
----
-
 ## 2026-10-18, the standing words of 2026-10-16 and 2026-10-17 recorded, under the maintainer's words of 2026-10-18.
 
 **Class:** A (the handoff, this record and its archive). No doctrine, spec,
@@ -1177,3 +1057,23 @@ kernel gate on this commit's staged tree, under the same lock: 24 implemented,
 each artifact carries, the 28 queue items, plan item 0.7, every stamp, the 38
 merged branches. This entry's commit follows the usual route on his word in
 this chat.
+
+---
+
+## 2026-11-08, item 4 recorded: the ontology validator's --corpus and --matchers modes, the merge of 04b358f, and the lane resumed on the maintainer's click of 2026-11-08.
+
+**Class:** B. `tools/validate_ontology.py` gains two modes, `tools/validate_conformance.py` moves the `ontology-corpus` gate entry from STUB to IMPLEMENTED, and thirteen notes in `ontology/selectors.yaml` gain one sentence each (no key, form, field or matcher changed; reading O-R4, which he decided on 2026-11-02 with the click "Keep them"). `CONFORMANCE.md`, the Makefile comment, the gameplan's deferral row, the connector validator's rung 3 line, the handoff and `CHANGELOG.md` follow. No doctrine, spec, schema, policy, runtime, synthetic or corpus file changed, and no value.
+
+**Merge and CI first.** `04b358f` (the extraction tool's three misreads corrected, class B) merged to `main` as pull request 39 at 20:53:40 EST on 2026-11-02 on his click "Merge it" of 20:53:32; the CI run on main, 41562667958, concluded success on its one job (gate). Measured again today: `main` == `origin/main` == `04b358f`.
+
+**The words this commit acts on.** His click on the offered action "Yes, resume here" in this chat on 2026-11-08, which lifts the hold of his click "Leave it" (16:16:45 on 2026-11-03), and the earlier click "Keep them" (21:44:42 on 2026-11-02). Neither is a typed line. A commit takes his word here per act.
+
+**Agent involvement.** Item 4 was built on 2026-11-02 by workflow wf_513195a4-7a0 in session c941f6e6 (Opus 5.5 builder, Sonnet 5.5 verifier, Opus 5.5 fixer, one at a time under an agent slot; the verifier found 11 of 12 claims true and four defects, all closed with plants and controls). The mode report is `Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/PHASE_item4_report.md`. This entry and the other records were written on 2026-11-08 by the fresh session of that day on Sonnet 5.5 with no agent, then Fable 5.1 on the parent's switch.
+
+**What the modes check.** `--corpus` reads the five sites `spec/layer-model.yaml` binds to the registry and refuses an unregistered type, a value off its key's form, a vacuous must-fail row and an unexercised key (ONT_CORPUS_SELECTOR_UNREGISTERED, _VALUE_OFF_FORM, _FIXTURE_VACUOUS, _KEY_UNEXERCISED). `--matchers` is its structural half only: calibration flags false, every matcher id a connector names declared, every library entry complete (ONT_MATCHER_CALIBRATION_FLAG, _NAMED_UNDECLARED, _ENTRY_INCOMPLETE). No matcher is scored and the output says so; scoring needs labelled ground truth, which needs the sealed cast. The aggregator runs a STUB entry's command and does not read its exit code, which `CONFORMANCE.md` section 4 now states.
+
+**Held, not folded.** The extractor's list fix in `tools/since_last_record.py` (eight insertions, a prompt written as a list of blocks crashed the committed tool) stays unstaged for its own class B commit, so this commit carries item 4's eight files and the records only.
+
+**Battery.** On the staged tree with the extractor fix stashed so the working tree equalled the index, under the estate's heavy-run lock taken at 02:36:05 EST on 2026-11-09 (released 02:42:13): the kernel gate, 02:36:46 to 02:41:12, 25 implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0; the pre-commit hook, 02:41:12 to 02:41:59, exit 0; hygiene exit 0 with its self-test refusing 4 of 4 and a planted pre-commit tense word in the handoff refused as HYGIENE_HANDOFF_PRE_COMMIT_TENSE then restored; both forms of `git diff --check` clean. The 2026-11-02 run on the same eight files read the same gate line.
+
+**Open.** Items 5 to 8 of the 10-28 list; his DA-R2 stamp and, at that commit, the pin self-test's absent-file example; readings O-R1 to O-R9; the 28 queue items.

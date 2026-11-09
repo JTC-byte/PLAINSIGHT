@@ -3901,3 +3901,123 @@ and both forms of `git diff --check` were clean. The kernel gate exited 0, with
 pending.
 
 ---
+
+## 2026-10-12, six false passages corrected and two delegations recorded, under the maintainer's words of 17:02.
+
+**Class:** A (`README.md`, `docs/THE-GAMEPLAN.md`, the handoff and the two
+process records). No doctrine, spec, schema, policy, ontology, runtime or other
+governed artifact changed, so `CHANGELOG.md` takes no entry.
+
+**The words this commit acts on.** The maintainer at 17:02:01 EDT on
+2026-10-12, in the personal-account parent-folder session: "go ahead and make
+sure everything needing to be finished is taken care of so we are moving forward
+cleanly. Any commits, merges and pushes along with finishing up any threads on
+work that was in swing then lets engage the weeks efforts". That session,
+`local_ac773541`, relayed them here at about 19:52, after a messaging limit held
+the copy, and they are verbatim in the parent's
+`research/inputs/dispatches_2026-09-30/decisions_queue_2026-10-01.md`. The relay
+meets the four tests the delegations below set. This session read "in swing" as
+the corrections the two harvests found, which waited only on a commit, the one
+this commit's own reading found, the queue brought level, and the two
+delegations no commit had carried. The Step 7 fixes, plan item 0.7 and the queue
+answers were never started, and they stay held.
+
+**Two delegations, recorded here because no commit had carried them.** Each
+names a parent-folder session whose relays of the maintainer's dated words are
+his word in this repository, as the 2026-09-30 overnight entry records for the
+sentences of 2026-09-28 and 2026-09-30.
+
+- Typed at 23:17:08 EDT on 2026-10-05 in the team-account PLAINSIGHT session:
+  "Delegation, 2026-10-05: the team-account parent-folder session
+  local_5f1148fb-244a-4c91-b2ca-8c1b812c21f5 (titled "Harvest closed ecosystem
+  project session") is my parent session for this repository and for this
+  project from today and going forward; a decision it relays with my dated words
+  quoted is my word here, the same as my sentences of 2026-09-28 and 2026-09-30;
+  anything that pushes, merges, deploys, deletes or mints still names the words
+  it acts on; record this in your notes."
+- Typed at 15:30:56 EDT on 2026-10-11 in the personal-account PLAINSIGHT session:
+  "Delegation, 2026-10-11: the personal-account parent-folder session
+  local_ac773541-f864-4080-900a-f80fea7aaa5d (titled "Ecosystem project") is my
+  parent session for this repository and for this project from today and going
+  forward, in place of the team-account parent session
+  local_5f1148fb-244a-4c91-b2ca-8c1b812c21f5 while I work on this account; a
+  decision it relays with my dated words quoted is my word here, the same as my
+  sentences of 2026-09-28, 2026-09-30 and 2026-10-05; anything that pushes,
+  merges, deploys, deletes or mints still names the words it acts on; record
+  this in your notes."
+
+A relay qualifies only when it comes from the named session, quotes his dated
+words, those words are found verbatim in the parent folder's records, and the
+act falls inside them. It reaches no Class F decision and no stamp, which stay
+his own hand per item. The session's reading of "in place of ... while I work on
+this account", labelled as a reading: while he works on the personal account, a
+relay from the team parent is held and he is asked first.
+
+**Between 2026-10-02 and this commit, nothing touched the tree.**
+
+- On 2026-10-05 the team-account session harvested the closed personal session
+  `f8d7cd3b`, in `Z-ISR/_session-artifacts/2026-10-05-plainsight-harvest-of-f8d7cd3b/`.
+  It found four of the six passages below, one confirmed class F review finding
+  with no queue item (rm2:9, drafted as plainsight-28), and one held finding
+  missing from plainsight-22's Blocks line (sd2:13).
+- From 2026-10-06 to 2026-10-09 that session stood by under relayed words that
+  asked for no act here, and closed out on 2026-10-09 at 20:06 as report 13.
+- On 2026-10-11 the personal-account session harvested it, in
+  `.../2026-10-11-plainsight-harvest-of-12c08cc1/`: four Sonnet 5.5 readers, four
+  Opus 5.5 refuters and an Opus 5.5 critic, 70 items, none refuted. It found the
+  Resume here passage, item 3 below, and that the parent had put plainsight-28
+  into its answer sheet on 2026-10-05.
+- At 15:45:56 EDT on 2026-10-11 the maintainer's "maintain direction till map is
+  done" held this repository while the COP's map work ran.
+
+**What this commit corrects**, each false at `064fa27`:
+
+1. The handoff's section 1 said Step 7's owed review was never run. It ran on
+   2026-10-02, and `STEP7_REVIEW.md` in the overnight folder records it.
+2. The handoff's section 5 said no second pass had read the generator against
+   the model. That is the same review: twenty findings, eighteen confirmed and
+   two downgraded, all open.
+3. The handoff's Resume here named Step 8's open class B findings as the next
+   work, while its own section 5 said all twelve wait on the maintainer's queue
+   or on Step 10. It now names the queue and the held agent work.
+4. The handoff's section 7 said `main` is the only branch that goes to `origin`.
+   Every pull request since 2026-09-30 pushed its branch there, and the 31
+   merged branches remain. This commit's own reading found it.
+5. `docs/THE-GAMEPLAN.md` Step 8 said no adversarial review has run. It ran on
+   2026-10-01.
+6. `README.md`'s Next action said the next work, as of 2026-09-30, was the
+   review Step 8 was owed.
+
+The handoff stays at its 400-line cap. Section 5's Step 8 paragraph lost its
+ragged line breaks and its sentence on method, which the 2026-09-30 overnight
+entry carries, and section 6 gained the overnight folder and the two harvests.
+
+**Outside the tree, as part of the same act.** The session-artifact queue,
+`MAINTAINER_QUEUE.md` in the overnight folder, gains plainsight-28 in full, and
+plainsight-22's Blocks line reads "rm2:8 and sd2:13", matching the parent's
+answer sheet of 2026-10-05. The queue holds 28 items, and none is answered.
+
+**Two notes from the parent, checked against this tree.** The parent's TMN
+instance design of 2026-10-12 uses "managed attribution" for an instance's
+disposable outward identity; the term appeared nowhere in this repository at
+`064fa27`. The
+design reuses this repository's shred verification as a pattern only, and
+nothing crosses between the two. This repository's isolated collection
+environment is ISOLATED in `doctrine/EGRESS.md`. The doctrine never calls it a
+DMZ, and the handoff's "DMZ compartment" is the 2026-09-02 design that ISOLATED
+inherits, not ZMeta's admission DMZ. CR-7's burn retires one credential, not an
+instance.
+
+**Battery.** All sixteen preflight commands passed on the staged tree, the
+authorization self-test with 147 breaks and the retention self-test with 184,
+and both forms of `git diff --check` were clean. The kernel gate exited 0, with
+16 implemented checks passing, 3 unratified and refusing, 2 stubbed and 5
+pending.
+
+**Open.** Unchanged from `064fa27`. Every item waits on the maintainer's words
+for that act: the 28 queue items, plan item 0.7, the Step 7 fixes and the rest
+of the held agent work the handoff's Resume here lists. The 31 merged branches
+stay on `origin` and in this checkout; deleting them needs his words naming that
+act.
+
+---
