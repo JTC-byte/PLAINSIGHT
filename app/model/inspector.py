@@ -170,6 +170,13 @@ def inspect(conn, case_id: str, node_id: str) -> dict:
         if e["subtype"] in ("REQUIRES_EXTENSION", "REFUSED") and not (e["payload"] or {}).get("motivated_by")
     ]
     reg = conn.execute("SELECT * FROM case_registry WHERE case_id = ?", (case_id,)).fetchone()
+    # Every adjudication of this node's events: the node itself, the event that made it,
+    # its claims and their items. Rendered as consequences (slice 3).
+    targets = {node_id, row["created_by_event_id"]} | {c["claim_id"] for c in claims}
+    for c in claims:
+        item = reads.item_of_claim(conn, c)
+        if item is not None:
+            targets.add(item["event_id"])
     return {
         "case_id": case_id,
         "node": described,
@@ -178,5 +185,6 @@ def inspect(conn, case_id: str, node_id: str) -> dict:
         "claims": claim_rows,
         "pivot": preflight(conn, case_id, row, claims),
         "unattached_decisions": unattached,
+        "adjudications": reads.adjudications(conn, case_id, targets),
         "retention": retention.retention_line(reg) if reg else None,
     }

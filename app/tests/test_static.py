@@ -133,14 +133,14 @@ def check_refusal_moves_name_built_keys(ctx):
     assert {"l", "v", "8", "t", "-"} <= set(named), named
 
 
-def break_deep_dive_moves_name_unbuilt_keys(ctx):
-    from app import refusals
-
-    old = refusals.REFUSALS["DEEP_DIVE_NOT_DISPATCHED"]
-    ctx.mp.setitem(refusals.REFUSALS, "DEEP_DIVE_NOT_DISPATCHED", refusals.Code(
-        old.code, old.what, old.rule,
-        ("note the node with n", "raise an open question with ?", "record why it matters for when the gate ships"),
-    ))
+def break_a_named_key_marked_unbuilt(ctx):
+    """Since slice 3 every key is built, so the control marks one a refusal names
+    (x, in ACT_REASON_REQUIRED's moves) as not built; the check must then refuse."""
+    real = keymap()
+    for k in real["keys"]:
+        if k["key"] == "x":
+            k["built"] = False
+    ctx.mp.setattr(sys.modules[__name__], "keymap", lambda: real)
 
 
 def test_refusal_moves_name_built_keys(ctx):
@@ -151,5 +151,5 @@ CONTROLS = [
     ("the keymap gains a d", check_keymap_is_a_subset_of_8_6, break_keymap_gains_d),
     ("a planted storage call", check_static_uses_no_storage_canvas_or_host, break_planted_storage_call),
     ("onKey captures every key", check_focused_controls_keep_tab_and_enter, break_on_key_captures_everything),
-    ("the deep-dive moves name unbuilt keys", check_refusal_moves_name_built_keys, break_deep_dive_moves_name_unbuilt_keys),
+    ("a key a refusal names is marked unbuilt", check_refusal_moves_name_built_keys, break_a_named_key_marked_unbuilt),
 ]

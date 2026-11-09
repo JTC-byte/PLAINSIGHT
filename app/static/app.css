@@ -131,6 +131,18 @@ li { margin: 2px 0; }
 .kbd { border: 1px solid var(--rule); padding: 0 4px; }
 .card { border: 1px solid var(--rule); padding: 4px 6px; margin: 4px 0; }
 
+/* Slice 3: the queued act's toast, the review strip, the inline act forms and
+   the Merge Sheet, the one modal. Solid borders only: dash is INFERENCE. */
+.toast { border: 1px solid var(--ink); padding: 4px 6px; margin: 4px 0; background: var(--bg-raised); }
+.strip { border-left: 3px solid var(--ink); padding: 4px 6px; margin: 4px 0; background: var(--bg-raised); }
+.act-form label { display: block; margin: 4px 0; }
+.act-form input, .act-form textarea, .act-form select, .sheet textarea, .sheet select {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); width: 100%;
+}
+.sheet { font: inherit; color: var(--ink); background: var(--bg-raised); border: 1px solid var(--ink); padding: 12px 16px; width: min(80vw, 900px); }
+.sheet::backdrop { background: rgba(0, 0, 0, 0.4); }
+.seam { margin-right: 8px; }
+
 /* The WEB canvas. Border geometry carries the epistemic layer only: dash is
    INFERENCE and nothing else, so no box, card or focus rule sets a dash. */
 svg.web { display: block; max-width: none; background: var(--bg); }

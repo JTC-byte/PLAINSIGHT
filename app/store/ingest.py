@@ -59,14 +59,50 @@ def ingest_path(store, path, humans=None) -> IngestResult:
     return ingest_batch(store, rows, humans, source=source)
 
 
-def ingest_batch(store, rows, humans=None, *, source: door.SourceRecord | None = None) -> IngestResult:
+#: Where a batch comes from: a file through the CLI, an analyst act the server
+#: mints (app/http/acts.py), or a system event the runner's watchdog mints
+#: (runner/watchdog.py). The source rule governs a file; origin_allowed governs
+#: the other two.
+ORIGINS = ("file", "act", "system")
+
+
+def local_acts_enabled() -> bool:
+    """Whether the operator has set app.config.LOCAL_ACTS. A function, so a test can show the refusal is load-bearing."""
+    return bool(config.LOCAL_ACTS)
+
+
+def origin_allowed(store, case_id, origin: str) -> None:
+    """A minted act or system event lands only in a case the store holds. On
+    LOCAL an act lands only once the operator has set config.LOCAL_ACTS
+    (ACT_LOCAL_PENDING_DECISION until then, reading APP-R31: an act's payload is
+    stratum 1 and its prose is typed at run time, so admitting it is his
+    decision under EG-2), and then, like a system event, only in a case the
+    registry marks synthetic (ACT_LOCAL_SYNTHETIC_CASE_ONLY), so the LOCAL
+    store holds nothing about a person. A file batch is governed by the source
+    rule and passes here (docs/PLAINSIGHT-design.md amendment 9.16)."""
+    if origin not in ORIGINS:
+        raise Refusal("ROW_SHAPE_INVALID", f"origin: {origin}")
+    if origin == "file":
+        return
+    registered = store.registry(case_id) if case_id else None
+    if registered is None:
+        raise Refusal("CASE_NOT_HELD", "a minted event cannot open a case")
+    if store.environment == "LOCAL":
+        if origin == "act" and not local_acts_enabled():
+            raise Refusal("ACT_LOCAL_PENDING_DECISION")
+        if not registered["synthetic"]:
+            raise Refusal("ACT_LOCAL_SYNTHETIC_CASE_ONLY")
+
+
+def ingest_batch(store, rows, humans=None, *, source: door.SourceRecord | None = None, origin: str = "file") -> IngestResult:
     """Validate a batch with tools/validate.py and the store checks, then write it whole or not at all."""
     humans = set(config.deployment_humans() if humans is None else humans)
-    if store.environment == "LOCAL" and (source is None or not source.checked or not source.synthetic):
+    if origin == "file" and store.environment == "LOCAL" and (source is None or not source.checked or not source.synthetic):
         raise Refusal("STORE_LOCAL_SYNTHETIC_ONLY", "source: ingest_batch on LOCAL needs door.check_source's record")
     door.check_fresh()
     envs = door.normalize(rows)
     case_id = door.batch_case(envs)
+    origin_allowed(store, case_id, origin)
     registered = store.registry(case_id) if case_id else None
     stored, stored_sha = replay.stored_envelopes(store, case_id) if registered else ({}, {})
     pol = door.load_policy()

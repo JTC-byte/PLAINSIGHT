@@ -58,9 +58,10 @@ The server refuses any other bind address with BIND_REFUSED_LOCAL.
 The keymap is `app/static/keymap.json`, one source for the app and the docs.
 This slice builds j and k, Tab and Shift+Tab, l (or Ctrl+click), Shift+L, esc
 esc, ??, 7 WEB, 1 DOSSIER, 8 PATHS, f refocus, v mark, + and - hops, t the list
-twin, and p the Pivot Bar. The slice 3 act keys answer that they are not built
-and record nothing. When a button has keyboard focus, Tab and Shift+Tab move
-focus and Enter presses the button; elsewhere they run their keymap bindings.
+twin, and p the Pivot Bar. Slice 3 builds the act keys, Enter, e, i, n, ?, m, x
+and Backspace, which the Acts section below describes. When a button has
+keyboard focus, Tab and Shift+Tab move focus and Enter presses the button;
+elsewhere they run their keymap bindings.
 
 ## Routes
 
@@ -76,7 +77,66 @@ QUERY_KEY_REFUSED.
   `dossier`, `coverage`, `blobs/<item>`, and `notices`, the Server-Sent Events
   stream.
 - POST `/api/cases/<case>/deep-dives`: refused with its consequence, writes nothing.
+- POST `/api/cases/<case>/acts`: one analyst act from a closed body, minted by
+  the server and sent through the door (the Acts section below).
 - GET and PUT `/api/kv/<case>/<view>`: workspace state, closed keys, opaque values.
+
+## Acts
+
+The slice-3 keys record an analyst act. Each is one POST to
+`/api/cases/<case>/acts` with a closed body naming the act, its target and the
+fields the layer model requires of that subtype; the server mints the envelope
+under the session's `--analyst`, sends it through the same door as a corpus row
+(`tools/validate.py` by path, the store checks, one transaction) and publishes
+the notice, so a second tab learns of it without a reload. An unknown key or
+act is refused before the door; a code the validator fires comes back as
+ACT_REFUSED_BY_MODEL with the codes named, and nothing is written.
+
+- Enter promotes the item behind the selected selector node to an entity
+  (Account, PersonCandidate, Org, Channel, Place, Media or ManualTask),
+  anchored on that claim; an Account anchored on a type the registry does not
+  let anchor refuses (SELECTOR_ANCHOR_PROHIBITED), and an item promoted once is
+  not promoted again while its promotion stands (ACT_TARGET_ALREADY_PROMOTED).
+- e excludes the selection, affirmatively not the subject, with its basis and
+  the claim the exclusion rests on; the node stays in place, struck through.
+- i ignores the selection: soft and reversible, it stays in the log and in
+  lineage. A reason is needed only when the target supports a live cluster or
+  was promoted by another analyst (ACT_REASON_REQUIRED, design 4.4).
+- n notes and ? raises an open question on the selection.
+- m opens the Merge Sheet, the one modal, over the marked nodes (v, two or
+  more entity or referenced-only nodes): seams per member (h e n b i t g k),
+  the band, the basis claims, a note. An unreviewed basis claim shows the
+  review strip first (Enter verified, d dispute, in the course of
+  merge_basis). Every rule is the model's: two members, a seam per member, a
+  note with k, two evidence classes for almost_certain, and the circularity
+  walk, which the sheet answers with an override note on MERGE_CIRCULAR. A
+  proposal between the members enters the cluster's lineage as accepted.
+- x revokes the selection's cluster, exclusion or promotion, with a reason;
+  the tombstone stays, struck through and walkable, and is not revoked again.
+- Backspace cancels the act queued in the last ten seconds, as does leaving
+  the page. A single-key act
+  waits ten seconds before it is sent and records nothing until then; after it
+  lands the model offers no reversal except x on a cluster, an exclusion, a
+  promotion or a SAME_ENTITY link (amendment 9.17). The Merge Sheet commits on
+  its own button and is not queued.
+
+On LOCAL an act lands nowhere until the operator sets `LOCAL_ACTS` in
+`app/config.py` (ACT_LOCAL_PENDING_DECISION, amendment 9.16, reading APP-R31:
+an act's payload is stratum 1 and its prose is typed at run time, so admitting
+it is his decision under EG-2), and then only in a case the registry marks
+synthetic (ACT_LOCAL_SYNTHETIC_CASE_ONLY). The INSPECTOR lists every adjudication of
+the selected node's events under ADJUDICATIONS, each as its consequence.
+
+## Watchdog
+
+`python -m runner.watchdog --store <root> --once` closes every open coverage
+interval whose last verification is older than three poll intervals by
+appending one SYSTEM_EVENT COVERAGE_INTERVAL through the door, with t_end at
+the last verification and the producer runner-watchdog (design 8.2 item 2,
+amendments 9.6 and 9.18). Without `--once` it sweeps every 60 seconds, or
+every `--every` seconds. The projector replaces the working row with the
+closed row, which the trigger then keeps immutable; nothing is updated in
+place. The command lives under runner because app imports nothing from runner.
 
 ## Tests
 

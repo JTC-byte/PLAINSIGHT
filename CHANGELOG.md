@@ -22,6 +22,53 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-09. The application's slice 3: analyst acts through the door, the Merge Sheet, the review strip, and the runner's watchdog.**
+
+  **What changed.** POST `/api/cases/{case}/acts` mints one ADJUDICATE_EVENT
+  (VERIFY, DISPUTE, NOTE, QUESTION, IGNORE, REVOKE, PROMOTE) or IDENTITY_EVENT
+  (CLUSTER, EXCLUDE) per request from a closed body, under the session's
+  `--analyst`, and sends it through the same door as a corpus row
+  (`app/http/acts.py`, `app/http/routes.py`). `ingest_batch` gains an origin:
+  a minted event lands only in a held case; on LOCAL an act lands nowhere until
+  the operator sets `LOCAL_ACTS` in `app/config.py` (ACT_LOCAL_PENDING_DECISION,
+  reading APP-R31) and then only in a case the registry marks synthetic
+  (ACT_LOCAL_SYNTHETIC_CASE_ONLY). The server reads the runtime half of
+  ADJUDICATION_REASON_MISSING for IGNORE (ACT_REASON_REQUIRED) and the facts
+  the validator cannot see (an item already promoted, a target already revoked,
+  a member that is not an entity or a referenced-only node); eight refusal
+  codes join `app/refusals.py`. `runner/watchdog.py` closes an open coverage
+  interval whose last verification is older than three poll intervals by one
+  SYSTEM_EVENT COVERAGE_INTERVAL through the door, as `python -m
+  runner.watchdog`, and leaves a row with no recorded verification state open.
+  The INSPECTOR lists the adjudications of the selected node's events as
+  consequences (`app/model/reads.py`, `app/model/inspector.py`), and the node
+  description exposes its creating event. `app/static/views/acts.js` builds the
+  eight slice-3 keys: undo as a ten-second cancel window, the review strip in
+  the Merge Sheet and the Pivot Bar, and the Merge Sheet; `keymap.json`,
+  `app.js` and `app.css` follow, and v toggles marks. Design amendments 9.16,
+  9.17 and 9.18 record the departures; readings APP-R31 to APP-R33 are in the
+  acts module's docstring. Tests: `app/tests/test_acts.py` (8 checks, 8
+  controls) and `app/tests/test_watchdog.py` (3 checks, 4 controls), both in
+  `test_controls.py`, which now pairs 103 controls; `test_static.py`'s fourth
+  control is replaced, since every key is now built.
+
+  **What did not change.** No doctrine, spec, schema, policy, ontology,
+  synthetic or corpus file. No rule of the layer model is copied into the
+  server: two members, a seam per member, a note with k, the band's evidence
+  classes and the circularity walk stay the validator's. The deep-dive route
+  still refuses and `app/` still imports nothing from `runner/`; no
+  COLLECT_EVENT or AUTHORIZE_EVENT constructor exists in `app/`. No hook
+  command, gate command or CI step changed: the app-tests entry collects the
+  two new modules. `LOCAL_ACTS` ships False, so what a LOCAL store may hold is
+  unchanged until he decides. Citation into DRAFT, the ARRIVALS rail, the RUNS
+  expansion and the COLLECTION panel (slice 4) are not built. PSE has no tag.
+
+  **Validation.** The application suite in the build worktree, 218 passed and
+  1 skipped after the second-model review's fixes; the kernel gate on the
+  committed tree under the heavy-run lock; the Opus 5.5 verifier's report and
+  each finding's disposition in the 2026-11-09 record folder; the rest in the
+  worklog entry of 2026-11-09.
+
 - **2026-11-09. The since-last-record extraction's list-of-blocks fix.**
 
   **What changed.** `tools/since_last_record.py` reads a prompt or content the

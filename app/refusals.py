@@ -413,6 +413,74 @@ REFUSALS: dict[str, Code] = {
             "mark the node and another with v, then open PATHS with 8",
             "ask the operator to connect the subject gate to this route, a Class F change",
         ),
+        # -- the analyst acts (app/http/acts.py, slice 3, amendment 9.16) ----
+        _c(
+            "ACT_UNKNOWN",
+            "an act token the route does not mint, so nothing was recorded",
+            "docs/PLAINSIGHT-design.md amendment 9.16: the acts are VERIFY, DISPUTE, NOTE, QUESTION, "
+            "IGNORE, EXCLUDE, PROMOTE, CLUSTER and REVOKE, and nothing else",
+            "send one of the nine act tokens",
+            "press the key the keymap binds to the act, which sends the right body",
+        ),
+        _c(
+            "ACT_LOCAL_PENDING_DECISION",
+            "an analyst act on a LOCAL store, which lands nowhere until the operator decides reading "
+            "APP-R31, so nothing was recorded",
+            "doctrine/EGRESS.md EG-2 and amendment 9.16: an act's payload is stratum 1 and its prose is "
+            "typed at run time, so admitting it to LOCAL is the operator's decision, set as LOCAL_ACTS "
+            "in app/config.py",
+            "read the act's consequence here and record it once the operator has set LOCAL_ACTS",
+            "run against a case store in ISOLATED",
+        ),
+        _c(
+            "ACT_LOCAL_SYNTHETIC_CASE_ONLY",
+            "an act or a system event for a case this LOCAL store does not mark synthetic, so nothing "
+            "was recorded",
+            "doctrine/EGRESS.md EG-2 and amendment 9.16: on LOCAL the store holds nothing about a "
+            "person, and a minted event lands only in a synthetic case",
+            "act on the corpus case, which the registry marks synthetic",
+            "run against a case store in ISOLATED",
+        ),
+        _c(
+            "ACT_REASON_REQUIRED",
+            "an IGNORE with no reason of a target that supports a live cluster or that another analyst "
+            "promoted, so nothing was recorded",
+            "docs/PLAINSIGHT-design.md section 4.4, the runtime half of ADJUDICATION_REASON_MISSING",
+            "send the IGNORE again with a reason",
+            "revoke the cluster or the promotion first with x, with its reason",
+        ),
+        _c(
+            "ACT_TARGET_ALREADY_PROMOTED",
+            "a PROMOTE of an item whose promotion still stands, so no second entity was made",
+            "docs/PLAINSIGHT-design.md section 4.4: promotion is the one way an entity is created, "
+            "once per item",
+            "revoke the standing PROMOTE with x, with its reason, then promote again",
+            "select the entity the item already became and act on it",
+        ),
+        _c(
+            "ACT_TARGET_ALREADY_REVOKED",
+            "a REVOKE of a target already revoked, so nothing was recorded",
+            "docs/PLAINSIGHT-design.md section 5.6: a revocation leaves a tombstone, and a tombstone "
+            "is not revoked again",
+            "open the tombstone's lineage with l to read who revoked it and when",
+            "note the tombstone with n if more needs saying",
+        ),
+        _c(
+            "ACT_MEMBER_KIND_REFUSED",
+            "a CLUSTER member that is not an entity or a referenced-only node, so no cluster was asserted",
+            "docs/PLAINSIGHT-design.md section 5.6: a cluster references accounts and never absorbs "
+            "anything",
+            "mark entity or referenced-only nodes with v, then press m",
+            "promote the item behind a selector node first, then cluster the entity",
+        ),
+        _c(
+            "ACT_REFUSED_BY_MODEL",
+            "an act tools/validate.py refused, with the codes in the detail, so nothing was recorded",
+            "docs/PLAINSIGHT-design.md amendment 9.16: an act passes the same door as a corpus row, and "
+            "any fired code refuses it",
+            "read the codes named below and change the act they name",
+            "run python tools/validate.py --file on the envelope to see the same codes",
+        ),
         _c(
             "EGRESS_GUARD_REPLACED",
             "a response that carried a value this case holds where no value may go, so it was "

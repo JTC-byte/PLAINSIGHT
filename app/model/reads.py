@@ -12,10 +12,24 @@ Review state is projected here at read time from the latest VERIFY or DISPUTE
 
 from __future__ import annotations
 
+import collections
 import datetime as dt
 import json
 
 from app.store import db, retention
+
+#: Each adjudication rendered as its consequence, never as its token (CLAUDE.md section 4).
+ADJUDICATION_TEXT = {
+    "VERIFY": "verified by {who} {day} in the course of {in_course_of}",
+    "DISPUTE": "disputed by {who} {day}: {reason}",
+    "PROMOTE": "promoted by {who} {day}: {promotion_kind} to {entity_type}",
+    "IGNORE": "ignored by {who} {day}: soft and reversible, the target stays in the log",
+    "REVOKE": "revoked by {who} {day}: {reason}",
+    "ACKNOWLEDGE": "acknowledged by {who} {day}: {note}",
+    "OVERRIDE": "override by {who} {day} ({override_kind}): {note}",
+    "NOTE": "note by {who} {day}: {text}",
+    "QUESTION": "question by {who} {day}: {text}",
+}
 
 SKELETON_SELECT = (
     "SELECT s.seq, s.event_id, s.event_type, s.event_subtype, s.ts, s.producer, s.parents_json, "
@@ -121,6 +135,27 @@ def review_states(conn, case_id: str) -> dict[str, dict]:
         target = (e["payload"] or {}).get("target_ref")
         if target:
             out[target] = e
+    return out
+
+
+def adjudications(conn, case_id: str, targets) -> list[dict]:
+    """Every ADJUDICATE event naming one of `targets`, each rendered as its consequence, in seq order."""
+    targets = set(targets)
+    out = []
+    for e in events(conn, case_id, "ADJUDICATE_EVENT"):
+        p = e["payload"] or {}
+        if p.get("target_ref") not in targets:
+            continue
+        # Closed tokens read as words (item_to_entity as "item to entity"); prose fields are prose.
+        fields = collections.defaultdict(str, {
+            k: (v.replace("_", " ") if k in ("in_course_of", "promotion_kind", "override_kind") else v)
+            for k, v in p.items() if isinstance(v, str)
+        })
+        fields["who"] = p.get("analyst") or e["producer"]
+        fields["day"] = e["ts"][:10]
+        fields["subtype"] = e["subtype"].lower()
+        text = ADJUDICATION_TEXT.get(e["subtype"], "{subtype} by {who} {day}").format_map(fields)
+        out.append({"event_id": e["event_id"], "subtype": e["subtype"], "target_ref": p.get("target_ref"), "text": text})
     return out
 
 

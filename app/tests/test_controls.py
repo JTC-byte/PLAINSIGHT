@@ -17,6 +17,7 @@ import inspect
 import pytest
 
 from app.tests import (
+    test_acts,
     test_boundaries,
     test_corpus,
     test_door,
@@ -27,6 +28,7 @@ from app.tests import (
     test_spine,
     test_static,
     test_store,
+    test_watchdog,
 )
 from app.tests.helpers import Ctx
 
@@ -41,6 +43,8 @@ MODULES = (
     test_corpus,
     test_http,
     test_static,
+    test_acts,
+    test_watchdog,
 )
 
 ALL = [

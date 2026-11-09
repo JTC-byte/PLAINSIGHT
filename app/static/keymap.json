@@ -1,6 +1,6 @@
 {
   "source": "docs/PLAINSIGHT-design.md section 8.6, with the additions of amendment 9.10",
-  "note": "One source, read by the app and by the docs. Nothing in 8.6 is rebound. There is no d, and Enter stays promote. A key whose built flag is false answers that it is not built in this slice and records nothing.",
+  "note": "One source, read by the app and by the docs. Nothing in 8.6 is rebound. There is no d, and Enter stays promote. A key whose built flag is false answers that it is not built in this slice and records nothing. Since slice 3 (amendments 9.16 and 9.17) every key is built: a single-key act is queued ten seconds and Backspace cancels it; the Merge Sheet commits on its own button.",
   "keys": [
     {"key": "j", "design": "j/k row", "origin": "8.6", "slice": 1, "built": true, "action": "row_next", "label": "next node or row"},
     {"key": "k", "design": "j/k row", "origin": "8.6", "slice": 1, "built": true, "action": "row_prev", "label": "previous node or row"},
@@ -14,18 +14,18 @@
     {"key": "1", "design": "1–6 view", "origin": "8.6", "slice": 2, "built": true, "action": "view_dossier", "label": "DOSSIER"},
     {"key": "8", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "view_paths", "label": "PATHS between the two marked nodes"},
     {"key": "f", "design": "f set focus", "origin": "8.6", "slice": 2, "built": true, "action": "refocus", "label": "recentre the web on the selection; collects nothing"},
-    {"key": "v", "design": "v multi-select", "origin": "8.6", "slice": 2, "built": true, "action": "mark", "label": "mark the selection for PATHS (two marks)"},
+    {"key": "v", "design": "v multi-select", "origin": "8.6", "slice": 2, "built": true, "action": "mark", "label": "mark or unmark the selection: PATHS takes the first two marks, the Merge Sheet every marked node"},
     {"key": "+", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "hops_more", "label": "one more hop, at most 3"},
     {"key": "-", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "hops_less", "label": "one hop fewer, at least 1"},
     {"key": "t", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "list_twin", "label": "the list twin of the web"},
     {"key": "p", "design": "p pivot", "origin": "8.6", "slice": 2, "built": true, "action": "pivot", "label": "Pivot Bar for one node; a deep dive is NOT DISPATCHED until the subject gate is connected to this route"},
-    {"key": "Enter", "design": "⏎ promote", "origin": "8.6", "slice": 3, "built": false, "action": "promote", "label": "promote item to entity"},
-    {"key": "e", "design": "e exclude", "origin": "8.6", "slice": 3, "built": false, "action": "exclude", "label": "exclude (affirmative)"},
-    {"key": "i", "design": "i ignore", "origin": "8.6", "slice": 3, "built": false, "action": "ignore", "label": "ignore (soft, reversible)"},
-    {"key": "n", "design": "n note", "origin": "8.6", "slice": 3, "built": false, "action": "note", "label": "note"},
-    {"key": "?", "design": "? open question", "origin": "8.6", "slice": 3, "built": false, "action": "question", "label": "open question"},
-    {"key": "m", "design": "m assert identity", "origin": "8.6", "slice": 3, "built": false, "action": "merge", "label": "assert identity (Merge Sheet)"},
-    {"key": "x", "design": "x revoke", "origin": "8.6", "slice": 3, "built": false, "action": "revoke", "label": "revoke"},
-    {"key": "Backspace", "design": "Backspace undo", "origin": "8.6", "slice": 3, "built": false, "action": "undo", "label": "undo last disposition"}
+    {"key": "Enter", "design": "⏎ promote", "origin": "8.6", "slice": 3, "built": true, "action": "promote", "label": "promote the item behind the selection to an entity; queued ten seconds, Backspace cancels"},
+    {"key": "e", "design": "e exclude", "origin": "8.6", "slice": 3, "built": true, "action": "exclude", "label": "exclude the selection, affirmatively not the subject, with its basis; it stays in place, struck through"},
+    {"key": "i", "design": "i ignore", "origin": "8.6", "slice": 3, "built": true, "action": "ignore", "label": "ignore the selection: soft and reversible, it stays in the log and in lineage"},
+    {"key": "n", "design": "n note", "origin": "8.6", "slice": 3, "built": true, "action": "note", "label": "note on the selection"},
+    {"key": "?", "design": "? open question", "origin": "8.6", "slice": 3, "built": true, "action": "question", "label": "open question on the selection"},
+    {"key": "m", "design": "m assert identity", "origin": "8.6", "slice": 3, "built": true, "action": "merge", "label": "assert identity over the marked nodes in the Merge Sheet, the one modal; it commits on its own button"},
+    {"key": "x", "design": "x revoke", "origin": "8.6", "slice": 3, "built": true, "action": "revoke", "label": "revoke the selection's cluster, exclusion or promotion, with a reason; the tombstone stays walkable"},
+    {"key": "Backspace", "design": "Backspace undo", "origin": "8.6", "slice": 3, "built": true, "action": "undo", "label": "cancel the act queued in the last ten seconds; nothing was recorded. A landed act is not undone: x revokes a cluster, an exclusion or a promotion"}
   ]
 }
