@@ -12,10 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-08. `main` == `origin/main` == `04b358f`: the extraction
-tool's three misreads (class B) merged by pull request 39 on his click of
-2026-11-02, CI run 41562667958 on main green. This file's commit is class B,
-item 4: the ontology validator's `--corpus` and `--matchers` modes, with the
+**Date:** 2026-11-09. `main` == `origin/main` == `8507464`: item 4, the
+ontology validator's `--corpus` and `--matchers` modes (class B), merged by
+pull request 40 at 02:55 EST on the parent's go under his typed line of
+02:27:22, both branch CI runs and run 42582372459 on main green on every step.
+This file's commit is class A, the closeout of the resumption, carrying the
 records of that merge.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
@@ -46,35 +47,27 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** `tools/validate_ontology.py` gains `--corpus`, which
-checks the repository's two corpora against the selector registry at every
-field `spec/layer-model.yaml` binds to it, and the structural half of
-`--matchers`, which scores nothing and says so. The `ontology-corpus` gate entry
-moves from STUB to IMPLEMENTED; `ontology-matchers` stays STUB. Thirteen notes
-in `ontology/selectors.yaml` gain "Unexercised at v0.1, since no must-pass row
-carries this type.", which he kept on 2026-11-02 (reading O-R4). The worklog
-gains the 2026-11-08 entry, which also records the merge of `04b358f` and its
-CI run.
+**What changed and why.** Records only. The worklog gains the 2026-11-09 entry:
+item 4 committed, its two branch CI runs read, merged as `8507464`, the run on
+main read, and this closeout, under his typed line of 02:27:22 relayed and
+verified; its oldest entry moves to the archive. This header follows.
 
-**Which surfaces moved.** In this commit: `tools/validate_ontology.py`,
-`tools/validate_conformance.py`, `tools/validate_connector_conformance.py`,
-`ontology/selectors.yaml` (notes only), `CONFORMANCE.md`, the Makefile comment,
-`docs/THE-GAMEPLAN.md`, `CHANGELOG.md`, the worklog and its archive, and this
-file. No doctrine, spec, schema, policy, runtime, synthetic or corpus file; no
-CI step, no hook command.
+**Which surfaces moved.** This file, the worklog and its archive. No doctrine,
+spec, schema, policy, ontology, runtime, synthetic, generated or corpus file;
+no tool, gate, hook command or CI step.
 
-**What validation ran and what passed.** On this commit's staged tree, under
-the estate's heavy-run lock on 2026-11-09: the kernel gate, 25 implemented, 0
-failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0; the pre-commit
-hook exit 0; hygiene exit 0 with its self-test and a planted tense word
-refused; both diff checks clean. The worklog's Battery paragraph carries the
-stamps.
+**What validation ran and what passed.** All twenty-two preflight commands
+exit 0 on the tree, the hook at the commit, hygiene and both diff checks on the
+final text. The kernel gate ran on `8507464`'s tree under the heavy-run lock
+(25 implemented, 0 failed) and on main in CI; it was not re-run for this
+records-only change.
 
-**Whether a release baseline changed.** No. PSE still has no tag.
+**Whether a release baseline changed.** No. `main` gained `8507464` by pull
+request 40; this commit follows by the same route; PSE has no tag.
 
 **What remains open or deferred.** Section 3: DA-R2's stamp, the readings
-including O-R1 to O-R9, the queue; items 5 to 8 of the 10-28 list; the
-extractor's list fix, held for its own commit.
+including O-R1 to O-R9, the queue; items 5 to 8 of the 10-28 list, not
+started; the extractor's list fix, held for its own commit.
 
 ---
 
