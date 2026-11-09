@@ -15,166 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-25, the since-last-record extraction joins the closeout rule, and pull request 34 is merged, under the maintainer's selections of 2026-10-25.
-
-**Class:** C, the highest the change touches: `tools/since_last_record.py`, a
-new tool, and the Makefile target `since-last-record` that runs its self-test.
-Under it, the dated amendment to `AGENTS.md` section 8 is governed prose at
-rank 4, and `CHANGELOG.md`, which takes an entry because a governed file
-changed, the handoff, this record and its archive are Class A. The change is
-not Class F under rule 2 of `AGENTS.md` section 3: it reads only the session's
-own transcript, adds no connector, selector, allowlist, retention value or
-egress path, and writes on the same machine outside the tree, which the tool
-refuses to cross. No runtime exists, so the Class C design-record rule has
-nothing to move. No doctrine, spec, schema, policy, ontology, corpus, hook or
-CI line changed, and `preflight` is unchanged.
-
-**The words this entry acts on.** The maintainer typed in the team-account
-PLAINSIGHT session at 13:36:04 EDT on 2026-10-25: "go ahead and give me those
-interactive selections so I can decide these for you". Asked the two decisions
-as selections, he chose at 13:36:19 "Merge now (Recommended)" for pull request
-34 and "Add to AGENTS.md (Recommended)" for the extraction, the second option
-reading: "A rank-4 change on your stamp: draft a records commit adding the
-extraction step (run the script from the last record's stamp, file the output
-beside the closeout record, read its lines before writing any message of yours
-as typed). Drafted and staged for your separate commit word; no agent needed."
-His typed sentence asked for the selections as his way of deciding, which is
-the ground this entry rests on; the session's reading, put to him and not
-settled here, is that a selection of an offered option is his instruction for
-that act in the way his sentence of 01:30:58 on 2026-10-24 made a click one.
-This record says selection, never typed. Behind it, information rather than
-instruction, the team parent's relay of 13:32 quoting his words typed in the
-parent's chat at 13:31:34 ("go ahead and instruct the other sessions to do the
-above mentioned work") and 13:19:05 ("we have 15 percent usage left so lets get
-done what we can before we cap out the weekly usage since the refresh is
-tomorrow"), and its earlier relay of 01:48 on 2026-10-24 carrying his 01:43:38
-words that asked every repository session to add the extraction to its
-closeout. The commit of this draft is his separate word for that act, and the
-paragraph after the battery records it when it is given.
-
-**The merge, 13:36:54 to 13:39:50 EDT on 2026-10-25.** After a fetch, with
-`main` equal to `origin/main` at `d51ce06` and the records branch at `37dbcee`,
-`main` was fast-forwarded to `37dbcee` and pushed at 13:36:56; pull request 34
-reads merged at 13:36:57 with `37dbcee` as its merge commit; the CI run on
-`main` succeeded on all twenty steps, read step by step at 13:39. The branch
-docs/records-2026-10-23 stays on `origin` like the 33 before it, so `origin`
-holds 35 heads, `main` and 34 merged branches, and this checkout 35 local
-branches each equal to its origin ref. The team parent had one completion line.
-
-**The amendment.** `AGENTS.md` section 8 now says, in a dated paragraph after
-the rule that a closeout runs the battery, updates the records and commits,
-that a closeout first runs `tools/since_last_record.py` from the stamp of its
-last record (a moment with a zone) to the end of its own transcript and files
-the output beside the closeout record, outside the tree, which the tool
-enforces by refusing a path inside the repository; that the file marks each of
-the maintainer's lines as typed, as a click on an action offered in the most
-recent wrap-up call before it, or as a selection on an offered question, and
-carries every message sent and received and the last assistant texts; that
-the session reads it once before writing the records, writes in any
-maintainer line the records lack, and never writes a click or a selection as
-typed; that a resumer reads the record and the file and re-reads the
-transcript only when the file shows substantive entries after the closeout;
-that the file is a verbatim copy no retention mechanism reaches, so a closeout
-does not run it over a span in which case material was discussed until
-`doctrine/RETENTION.md` says how such a copy is held; and that the extraction
-is a records aid, not a gate, whose self-test runs at closeout through the
-Makefile target and on no automated path, by this session's decision put to
-him, with its joining the battery his separate decision. The rule that a
-closeout commits is unchanged.
-
-**The tool.** `tools/since_last_record.py` is a copy of the parent folder's
-playbook of 2026-10-24 under this repository's own process, adapted after a
-measured gap: in this harness a click on an offered action arrives as an
-ordinary user record (origin human, promptSource sdk) with no attachment that
-names it a click, and a question's answer arrives as a tool result, so the
-reference's click test never fired here and marked his commit word of 01:30:58
-on 2026-10-24 as typed. The copy detects a click by comparing the text with the
-actions offered in the most recent wrap-up call before the line, reads a
-message the app cut at 300 characters as the same click, and reads an answer
-to an AskUserQuestion call as a selection on an offered question, printed with
-the result text that carries each question and the chosen option verbatim. It
-refuses a since without a zone, because a zone guessed wrong empties the span
-silently, and an output path inside the repository; it exits 2 on a file that
-is not a transcript and 3 when the output cannot be written. Its `--self-test`
-writes a synthetic transcript under a temporary directory and runs fourteen
-checks: a typed line, a click, a cut click, a selection, a sent message, a
-received message and an assistant text each classified as what it is; a typed
-line equal to an offer from a superseded wrap-up call, and one equal to an
-offer made after it, each left typed; no click or selection written as typed;
-and four controls seen refusing, a since past the last entry (zero entries,
-four sections saying "none in the span"), a file that is not a transcript, a
-since without a zone, and an output path inside the repository, with nothing
-written there. The self-test ran at 14:05 on 2026-10-25: fourteen checks ok. A
-live run at 14:03 over this session's transcript from the stamp of its 2026-10-24
-closeout read two typed lines, one selection (the 13:36:19 answer), two
-messages sent and one received, which matches the transcript read by hand; the
-first version of the tool, reviewed at 13:51, had dropped the selection, which
-is why that class of input was added. The hygiene gate refused the first
-battery run of this draft at 13:45 (HYGIENE_TOOL_NOT_IN_ANY_GATE: a tool no
-Makefile target runs), so the target `since-last-record` runs the self-test;
-the extraction itself takes a transcript and is not a gate, and by this
-session's decision, put to him with the commit word, the self-test runs on no
-automated path, which is stated in the amendment. The
-parent folder's playbook README carries a dated note of 14:32 on 2026-10-24
-that it was corrected the same way after this session reported the gap.
-Removing the offered-action comparison fails the click checks; removing the
-tool-result branch fails the selection check; widening the comparison past the
-most recent wrap-up call fails the superseded-offer check; removing the since
-filter, the record check, the zone check or the path check fails its control.
-
-**The handoff** is brought level with this entry at its 400-line cap: the Date
-paragraph names this commit on `37dbcee` and the merge that put `main` there,
-Resume here opens with the extraction as the resumer's first act, section 0
-describes this commit in two fewer lines, and the cross-session records row
-says `37dbcee` carries the 2026-10-22 record's corrections. Nothing else moved.
-`docs/THE-GAMEPLAN.md`, the artifact register, is a rank-7 record of intent
-moved in unchanged and takes no row; the tool is cited by a path that exists.
-
-**Agents.** The main loop ran on Mythos 5.1, his model choice for the session,
-and drafted the tool, the amendment and the records. Two agents then read the
-staged diff, one at a time, read only: an independent Opus 5.5 review at high
-effort returned fix_first with one blocker (the first tool dropped question
-answers, so his two selections of this very day were invisible to it), four
-majors (a since without a zone emptied the span silently; the comparison
-reached every earlier wrap-up call; nothing enforced "outside the tree"; this
-paragraph was missing) and eight minors; a Sonnet 5.5 factual check at high
-effort found 36 of 38 claims true and one false (a hard-coded count in the
-self-test's last line). Every finding was applied before the battery ran on
-the final text. The option he selected said "no agent needed"; the two review
-legs ran under the standing rule that two models look at every merge-bound
-change, a departure from that text put to him here with the commit word.
-
-**Battery, run on the staged tree at 13:47 EDT on 2026-10-25 and again on the
-final text of this entry, with the same results.** The first run at 13:45 was
-refused by the hygiene gate on the new tool (no Makefile target ran it), and the
-target `since-last-record` answered it. On the runs after it: all sixteen
-preflight commands passed, the authorization self-test with 147 breaks and the
-retention self-test with 184, and both forms of `git diff --check` were clean;
-the hygiene gate, one of the sixteen, passed on this entry, the amendment, the
-changelog entry and the handoff at their caps, and its self-test planted its
-four refusals and saw each fire. The kernel gate exited 0, with 16 implemented
-checks passing, 3 unratified and refusing, 2 stubbed and 5 pending, the gate's
-own count; the audit of 2026-10-18 saw each of the sixteen fail under its
-control, and no control was re-run here. The new tool's self-test ran apart
-from the battery: fourteen checks ok, four controls seen refusing. The commit
-waits on his word for that act, authored as the maintainer with no
-Co-Authored-By trailer, which CI refuses, whatever the app's reminder asks.
-
-**Open.** The 2026-10-23 entry's item that the new team parent be told what
-the 2026-10-18 reports got wrong closed on 2026-10-23 at 20:44 and 2026-10-24
-at 14:31, when this session's reports carried both corrections to it. Unchanged
-from `37dbcee` otherwise: the 28 queue items, none answered; plan
-item 0.7, trimmed to its synthesis step; the Step 7 fixes and the rest of the
-held agent work the handoff's Resume here lists; the aggregator finding the
-negative-control audit raised, in section 8 of its record; the credentials
-inventory, names only, for the session he starts on his word; the 34 merged
-branches on `origin` and in this checkout, deleted only on his words naming
-that act. About 15 percent of the weekly usage was left at 13:19 on
-2026-10-25, with the reset on 2026-10-26 at noon; the session holds after this
-commit.
-
----
-
 ## 2026-10-26, the extraction amendment committed and pushed, and the closeout, under the maintainer's typed words of 2026-10-26.
 
 **Class:** A. This entry and the handoff header change no governed artifact. The
@@ -751,3 +591,21 @@ this chat.
 **Battery.** On the staged tree, under the estate's heavy-run lock, the kernel gate ran twice. The first run (lock taken 14:38:34 EST, after zmeta-spec's waiting file was gone and the producers had released; gate 14:38:35 to 14:42:47) read 25 implemented, 1 failed, the telemetry entry alone, because the waiter's environment carried PLAINSIGHT_NO_GATE_LOG=1, which tools/gate_log.py honours by writing nothing, so two of that entry's twelve tests found no record; confirmed by running tools/tests/test_gate_log.py both ways on the checkout, 2 of 12 failing with the variable and 12 ok without it. The pre-commit hook on the same tree exited 0 (14:42:47 to 14:43:32), and the lock was released at 14:43:32. The second run, from a fresh script with the variable unset (lock 14:44:24, gate 14:44:24 to 14:48:39, released 14:48:39): 25 implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0. Nothing in the tree changed between the two runs; this paragraph was written after them, and the hook, which runs hygiene, ran again at the commit on the exact tree. Hygiene on the records: 21 governed files, 5 voice-exempt, exit 0; both diff checks clean; the self-test 22 checks, 15 planted lines, 4 controls refusing (the committed tool: 21 checks); the control seen first: the committed tool stopped with the traceback on the planted record (exit 1) and the fixed tool listed the line as QUEUED (exit 0). The worklog's oldest entry (2026-10-23) moved to the archive without edit, 149 lines out and 149 in.
 
 **Open.** Items 5 to 8 of the 10-28 list, in number order under the same conditions, each its own commit and merge reported to the parent in one line: 5, the application's slices 2 and 3; 6, the UI/UX harvest synthesis of plan item 0.7; 7, Step 11 drafted refusing; 8, the two Class B manifest gaps (BRIEF_item8_manifest_gaps.md in the 2026-11-02 record folder). His: the DA-R2 stamp and the pin self-test's absent-file example at that commit, readings O-R1 to O-R9 and the rest, the 28 queue items, the mock-up adjustments, Patch 4b's Class F items, `synthetic/CAST.md`, VMs, domains, SIMs, accounts and the Track B identity acts, secrets, tags, mints and anything live.
+
+---
+
+## 2026-11-09, item 5 built: the application's slice 3 (analyst acts through the door, the Merge Sheet, the review strip) and the runner's watchdog, under the maintainer's clicks of 14:08:53 and 14:13:10.
+
+**Class:** C, runtime code with a design amendment per departure (9.16, 9.17 and 9.18), as the 10-28 record set for item 5. No doctrine, spec, schema, policy, ontology, synthetic or corpus file changed; `CHANGELOG.md` takes an entry. One value the change adds is Class F by effect and ships refusing: `LOCAL_ACTS` in `app/config.py`, False until he sets it (reading APP-R31, below).
+
+**The words this commit acts on.** His clicks of 14:08:53 and 14:13:10 EST on 2026-11-09 in the parent's chat, verified in the parent's transcript and recorded in this file's previous entry, carrying his line of 02:27:22 to 18:00 EST on 2026-11-11, with the parent's go given in advance for each commit and merge of items 5 to 8 that meets its five conditions; this commit's are measured in the battery below.
+
+**What exists now.** POST `/api/cases/{case}/acts` (`app/http/acts.py`, `app/http/routes.py` h_acts) mints one ADJUDICATE_EVENT (VERIFY, DISPUTE, NOTE, QUESTION, IGNORE, REVOKE, PROMOTE) or IDENTITY_EVENT (CLUSTER, EXCLUDE) per request from a closed body of the act, its target and the fields the layer model requires, under the session's `--analyst`, and sends it through `ingest_batch` with the origin "act": `tools/validate.py` by path, the store checks, one transaction, the notice. The server fills event id, timestamp, producer, source and lineage, refuses an unknown key or act before the door, and returns a fired validator code as ACT_REFUSED_BY_MODEL with the codes named. It copies no rule of the model and checks the facts the validator cannot see: an item already promoted (ACT_TARGET_ALREADY_PROMOTED), a target already revoked (ACT_TARGET_ALREADY_REVOKED), a member that is not an entity or referenced-only node (ACT_MEMBER_KIND_REFUSED), and the runtime half of ADJUDICATION_REASON_MISSING for IGNORE (ACT_REASON_REQUIRED). `ingest_batch` gains an origin and `origin_allowed`: a minted event lands only in a held case; on LOCAL an act lands nowhere until `LOCAL_ACTS` is set (ACT_LOCAL_PENDING_DECISION) and then only in a case the registry marks synthetic (ACT_LOCAL_SYNTHETIC_CASE_ONLY), which also governs the watchdog's system event. `runner/watchdog.py` closes an open coverage interval whose last verification is older than three poll intervals by one SYSTEM_EVENT COVERAGE_INTERVAL through the door, t_end at the last verification, producer runner-watchdog, and leaves a row with no recorded verification state or method open, reported as VERIFICATION_STATE_UNKNOWN; it runs as `python -m runner.watchdog`. The INSPECTOR lists the adjudications of the selected node's events as consequences (`app/model/reads.py` adjudications, `app/model/inspector.py`), and the node description exposes its creating event. `app/static/views/acts.js` builds the eight slice-3 keys: undo as a ten-second cancel window that leaving the page also cancels, the inline act forms, the review strip in the Merge Sheet and the Pivot Bar, and the Merge Sheet itself, committing on its own button; `keymap.json`, `app.js` and `app.css` follow, and v now toggles marks so PATHS takes the first two and the sheet every mark. `app/README.md` gains the Acts and Watchdog sections; `app/__main__.py`'s docstring points the watchdog at the runner's command.
+
+**Readings for him.** APP-R31, where an act lands: an act's payload is stratum 1 by the layer model and its prose is typed at run time, so admitting it to LOCAL widens what LOCAL may hold under EG-2 beyond the tracked, reviewed synthetic file the source rule admits; the route therefore refuses on LOCAL until he sets `LOCAL_ACTS`, and the tests set it in memory to exercise the mechanism. APP-R32, IGNORE's reason: the server reads whether the target is a basis claim of a live cluster or was promoted by another analyst, because the model marks that half runtime. APP-R33, what the server adds: rationale_codes as the union of the per-member seams, last_supporting_ts as the latest basis claim's ts, cluster_id and entity_id as uuid4; a PROMOTE's anchor_selector_type is the analyst's declaration, copied from the claim when absent, and a declared type the claim does not carry renders as the design's unvouched hatch rather than refusing. Amendments 9.16 to 9.18 each end with his decision.
+
+**Agent involvement.** Fable 5.1 in the main loop designed and built it in a detached git worktree in the session's scratchpad (DESIGN_item5.md in the 2026-11-09 record folder, drafted before any edit) while the extractor commit waited on the heavy-run lock, so the checkout's tree stayed equal to the index its gate ran on. One Opus 5.5 verifier, read-only, in agent-slot-2 of the estate (14:45:47 to 14:56:33, no slot waiting file present), ran the new modules, the controls and its own probes: five claims held outright, four held with defects, three confirmed (the watchdog read an unknown verification state as verified; a non-string act gave a 500; help exited 2) and four likely (the Class F reading of acts landing on LOCAL; the Merge Sheet re-reading the wrong member after a review; a queued act reading the case id at send time and dying silently on reload; the toast without its consequence and raw tokens in the adjudication text). Every finding was fixed or accepted as recorded in VERIFIER_item5_opus.md beside the design note; the Class F reading produced `LOCAL_ACTS`. No workflow.
+
+**Battery.** The application suite in the build worktree twice: 214 passed and 1 skipped before the verifier's fixes (248.57 s) and 218 passed and 1 skipped after them (242.79 s), the skip the docker DDL apply; the new modules and the changed static tests 18 passed and the controls 17 passed after the fixes, every new check seen failing under its control; hygiene exit 0 on the worktree and on this tree, after the handoff was brought under its 400-line cap (413 to 394 lines, three paragraphs compressed to pointers); both diff checks clean. The kernel gate on the staged tree under the estate's heavy-run lock, taken at 15:06:16 EST with no TMN waiting file present and no PLAINSIGHT_NO_GATE_LOG in the environment: 15:06:16 to 15:11:05, 25 implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0; the pre-commit hook on the same tree 15:11:05 to 15:11:53, exit 0; the lock released at 15:11:53, with zisr-tak's waiting file of 15:09 next. This paragraph was written after those runs, and the hook, which runs hygiene, ran again at the commit on the exact tree.
+
+**Open.** Items 6, 7 and 8 in order under the carried line; slice 4 (the COLLECTION panel, the retention projection, the RT-11 banner); citation into DRAFT and the ARRIVALS rail; his: `LOCAL_ACTS`, readings APP-R31 to APP-R33 and amendments 9.16 to 9.18, with everything the previous entry lists.

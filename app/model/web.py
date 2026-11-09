@@ -219,6 +219,7 @@ def describe_nodes(conn, case_id: str, rows: dict[str, dict], web_edges: list[di
             "entity_type": r["entity_type"],
             "generated": generated,
             "revoked": bool(r["revoked_by_event_id"]),
+            "created_by_event_id": r["created_by_event_id"],
             "lines": lines,
             "vouch_tokens": tokens,
             "deep_dive_state": deep,

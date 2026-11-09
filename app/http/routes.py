@@ -130,6 +130,7 @@ ROUTES = (
     _route("GET", "/api/cases/{case}/blobs/{item}", "blob"),
     _route("GET", "/api/cases/{case}/notices", "notices", ("after",)),
     _route("POST", "/api/cases/{case}/deep-dives", "deep_dive"),
+    _route("POST", "/api/cases/{case}/acts", "acts"),
     _route("GET", "/api/kv/{case}/{view}", "kv_get"),
     _route("PUT", "/api/kv/{case}/{view}", "kv_put"),
 )
@@ -424,6 +425,14 @@ def h_deep_dive(app, params, query, body) -> Response:
     return json_response(out, status=409)
 
 
+def h_acts(app, params, query, body) -> Response:
+    """One analyst act, minted under the session's identity and sent through the door (amendment 9.16)."""
+    case_id = params["case"]
+    with case_store(app.root, case_id, write=True) as store:
+        out = acts.mint(store, case_id, app.analyst, body)
+    return json_response(out, status=201)
+
+
 def h_kv_get(app, params, query, body) -> Response:
     case_id = params["case"]
     if params["view"] not in kv.TOKENS:
@@ -469,6 +478,7 @@ HANDLERS = {
     "coverage": h_coverage,
     "blob": h_blob,
     "deep_dive": h_deep_dive,
+    "acts": h_acts,
     "kv_get": h_kv_get,
     "kv_put": h_kv_put,
 }

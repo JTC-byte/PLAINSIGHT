@@ -1,9 +1,10 @@
 """python -m app: init, ingest into, rebuild and serve a PLAINSIGHT store.
 
 serve starts the stdlib HTTP server on 127.0.0.1 (app/http/server.py) and
-prints the URL of the landing view. A watchdog subcommand arrives with
-runner/watchdog.py, which docs/PLAINSIGHT-design.md amendment 9.6 records as not
-built, and is not offered here until it exists.
+prints the URL of the landing view. The watchdog that closes a coverage
+interval a collector left open is the runner's own command, python -m
+runner.watchdog, and is not offered here, because app/ imports nothing from
+runner/ (docs/PLAINSIGHT-design.md amendment 9.18).
 
 Exit codes: 0 done, 1 refused, 2 the command line could not be read.
 """

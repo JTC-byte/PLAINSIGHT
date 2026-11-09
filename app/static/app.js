@@ -5,13 +5,16 @@
 // client keeps no case material: it never touches browser storage of any kind
 // (doctrine/EGRESS.md EG-3), and per-viewer state goes to workspace_kv through
 // PUT /api/kv/<case>/<view>, which takes closed keys and opaque values only.
-// Every node is inert: selecting one fills the INSPECTOR and nothing else.
+// Every node is inert: selecting one fills the INSPECTOR and nothing else. An
+// analyst act is a deliberate keystroke that POSTs one closed body to /acts,
+// which the server mints and sends through the door (views/acts.js).
 
 import { renderWeb, webNodes, markSelected } from "./views/web.js";
 import { renderLineage } from "./views/lineage.js";
 import { renderDossier } from "./views/dossier.js";
 import { renderPaths, renderList } from "./views/paths.js";
 import { openStream } from "./views/stream.js";
+import { KEY_ACTS, mergeSheet, cancelPending, reviewStrip } from "./views/acts.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const VIEWS = ["dossier", "web", "paths", "list"];
@@ -172,8 +175,21 @@ export async function select(nodeId) {
     kids.push(el("h3", {}, "UNATTACHED DECISIONS"));
     kids.push(el("ul", {}, d.unattached_decisions.map((u) => el("li", {}, u.text))));
   }
+  if (d.adjudications && d.adjudications.length) {
+    kids.push(el("h3", {}, "ADJUDICATIONS"));
+    kids.push(el("ul", {}, d.adjudications.map((a) => el("li", {},
+      el("button", { onclick: () => go({ lineage: a.event_id, dir: "back" }) }, "l"), ` ${a.text}`))));
+  }
   if (state.pivot) kids.push(pivotBar(d));
   pane.replaceChildren(...kids);
+  lastInspected = d;
+}
+
+let lastInspected = null;
+
+function withSelected(fn) {
+  if (!lastInspected || lastInspected.node.node_id !== state.selected) { say("select a node first: the act applies to the selection"); return; }
+  fn(lastInspected);
 }
 
 function pivotBar(d) {
@@ -184,6 +200,11 @@ function pivotBar(d) {
     el("div", {}, `motivating claim ${p.motivating_claim ? p.motivating_claim.slice(0, 8) : "none"}`),
     ...p.capabilities.map((c) => el("div", {}, c)),
     ...p.lines.map((line) => el("div", { class: "consequence" }, line)));
+  const motivating = p.motivating_claim ? d.claims.find((c) => c.claim_id === p.motivating_claim) : null;
+  if (motivating && motivating.review.startsWith("unreviewed")) {
+    // Design 4.5: a claim used to motivate a pivot is reviewed first, in the course of that use.
+    out.append(reviewStrip(motivating, "pivot_motivation", () => select(d.node.node_id)));
+  }
   if (p.motivating_claim) {
     const result = el("div", { class: "consequence" });
     out.append(el("button", {
@@ -262,7 +283,7 @@ function legend() {
   const box = document.getElementById("legend");
   if (!box.hidden) { box.hidden = true; return; }
   const keys = (state.keymap ? state.keymap.keys : []).map((k) =>
-    el("li", {}, el("span", { class: "kbd" }, k.key), ` ${k.label}`, k.built ? "" : " (slice 3, not built: records nothing)"));
+    el("li", {}, el("span", { class: "kbd" }, k.key), ` ${k.label}`, k.built ? "" : " (not built in this slice: records nothing)"));
   box.replaceChildren(
     el("h2", {}, "LEGEND · ?? closes"),
     el("ul", {},
@@ -328,14 +349,26 @@ const ACTIONS = {
   refocus: () => { if (state.selected) go({ focus: state.selected }); },
   mark: () => {
     if (!state.selected) return;
-    state.marks = [...state.marks.filter((m) => m !== state.selected), state.selected].slice(-2);
+    // v toggles a mark. PATHS reads the first two marks; the Merge Sheet reads every mark.
+    state.marks = state.marks.includes(state.selected)
+      ? state.marks.filter((m) => m !== state.selected)
+      : [...state.marks, state.selected];
     viewButtons();
-    say(`marked ${state.marks.length} of 2 for PATHS`);
+    say(`${state.marks.length} marked: PATHS (8) takes the first two, the Merge Sheet (m) every marked node`);
   },
   hops_more: () => go({ hops: Math.min(3, state.hops + 1) }),
   hops_less: () => go({ hops: Math.max(1, state.hops - 1) }),
   list_twin: () => go({ view: "list" }),
   pivot: () => { state.pivot = !state.pivot; select(state.selected || state.focus); },
+  // Slice 3: each act is a closed body the server mints and sends through the door.
+  promote: () => withSelected(KEY_ACTS.promote),
+  exclude: () => withSelected(KEY_ACTS.exclude),
+  ignore: () => withSelected(KEY_ACTS.ignore),
+  note: () => withSelected(KEY_ACTS.note),
+  question: () => withSelected(KEY_ACTS.question),
+  revoke: () => withSelected(KEY_ACTS.revoke),
+  merge: () => mergeSheet(state.marks),
+  undo: () => cancelPending(),
 };
 
 let lastKey = null;
