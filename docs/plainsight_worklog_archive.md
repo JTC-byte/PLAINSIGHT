@@ -4232,3 +4232,152 @@ branches on `origin` and in this checkout, deleted only on his words naming
 that act.
 
 ---
+
+## 2026-10-23, the records' wording about the 2026-10-18 acts corrected, and the harvest of the personal session recorded, under the maintainer's click of 2026-10-23.
+
+**Class:** A (the handoff, this record and its archive). No doctrine, spec,
+schema, policy, ontology, runtime or other governed artifact changed, so
+`CHANGELOG.md` takes no entry.
+
+**The words this entry acts on.** The maintainer at 20:19:16 EDT on
+2026-10-23, in the team-account PLAINSIGHT session, by his click on the action
+the session had offered in its wrap-up, whose message the app delivered cut at
+300 characters: "Draft the Class A records commit now: fold in the 2026-10-23
+corrections (the four 2026-10-18 messages were clicks on offered actions, 33
+merged branches, pointers by name to CLOSEOUT_2026-10-20.md and the 2026-10-22
+harvest record), a line-neutral handoff edit, no agent trailer. Do not commit
+or pu". The button's message continued "push until I say so", and the cut is
+recorded here so the quotation stays what arrived. The session reads a click on
+an offered action in this chat as his decision for that act, with the wording
+the session's and accepted by him; that reading is his to confirm, since his
+message of 20:05 below says words typed, and this entry labels it as a reading
+wherever it records a click. The draft is this entry, the archive move under
+the ten-entry cap, and the handoff edit. The commit is his separate word for
+that act, and the paragraph after the battery records it, and how it arrived,
+when it is given. The commit, on that word, is authored as the maintainer
+(Incept.IO) with no Co-Authored-By trailer, which CI refuses, whatever the
+app's attribution reminder asks.
+
+**The correction this entry carries.** The 2026-10-18 entry above calls the two
+messages it records typed, "first-hand" for the draft at 15:23:29 and the
+commit at 16:06:27, and the `d51ce06` message and the handoff's Date paragraph
+say the same; the out-of-tree records call the merge word at 16:23:15 and the
+archive word at 16:32:35 typed too. Each of the four is word for word the
+message of a button that session had offered in the wrap-up call just before
+it (its transcript at L478, L687, L789 and L838), so he clicked session-authored
+text rather than composing it. On the session's reading the acts stand: a
+click on an offered action in his chat is his decision for that act, and R6 as
+amended asks for his instruction per act; whether a click meets it is his to
+confirm, and the commit paragraph below records how his word for this commit
+arrives. What changes now is the records' word for how the instruction was
+given, and the scope lists in those four messages (the five worklog passages,
+"no agent trailer", "read every CI step") are the session's wording that he
+accepted. The 2026-10-18 entry is a process record and stays as written; this
+entry is the correction. The session's own check
+that produced "typed" scanned the user records for the text and never compared
+the assistant's button messages, which is where the word entered. The same
+entry's Open paragraph counts 32 merged branches; the records branch of
+2026-10-18 made 33, so `origin` holds 34 heads, `main` and 33 merged branches,
+and this checkout 34 local branches each equal to its origin ref.
+
+**The harvest that found it.** On his words typed in this session at 23:01:22
+EDT on 2026-10-22, "refresh yourself, then reach over to my personal account
+and harvest the context from the open plainsight session over there and give
+me the roll up on what is next. Also, make sure to abide by proper model
+diversity and use the right models for the appropriate efforts, so we are
+efficiently managing our usage and getting full benefits from the higher
+models.", the team-account session read the personal session of 2026-10-18 to
+2026-10-20 from disk and compared it with its records. Twelve agents, one at a
+time because six sibling sessions had opened in the same five minutes under
+the estate cap of three: a Mythos 5.1 probe, which measured for the first time
+that a Mythos id works in the workflow tool; four Sonnet 5.5 readers; four Opus
+5.5 refuters; an Opus 5.5 critic; one Fable 5.1 judge, the decisive leg, which
+read the records independently and reached the same roll-up; a Haiku 5.5
+formatter, which declined the 249-row table rather than drop rows, so a script
+wrote it. The account hit its five-hour limit at 23:26 EDT by the parent
+session's notice, this run was cut at 23:28:48, and it resumed the next
+afternoon on his "Try again". Of 249 items, 224 from the readers and 25 added
+by the refuters, 147 were confirmed, 74 qualified, 2 refuted and 1 unverified.
+The records were complete on substance; the
+wording errors found were filed as dated notes out of tree on 2026-10-23: the
+clicks above; the personal parent's two titles recorded in reverse order, which
+the 2026-10-18 report to that parent had corrected the wrong way round; "of the
+31 messages the maintainer typed" counting two usage notices, so 29; "none of
+them was relayed to PLAINSIGHT" wrong by one, the ZMeta rule having been relayed
+as information on 2026-10-16; the negative-control audit session of 2026-10-18
+having run 112 of its 115 assistant records on Fable 5.1 although it was started on Opus 5.5
+with a brief that excluded Fable, with its stated window off by about twenty
+minutes; and several stamps ahead of the clock, the folder's recurring error.
+The record is `Z-ISR/_session-artifacts/2026-10-22-plainsight-harvest-of-dc310f2c/HARVEST.md`,
+section 5 the roll-up and section 7 his decision below; its item table and the
+workflow's output and journal sit beside it. The closeout record of 2026-10-20,
+`Z-ISR/_session-artifacts/2026-10-18-plainsight-harvest-of-b4c6ae3c/CLOSEOUT_2026-10-20.md`,
+reports that session's checkpoint of that night: `main` equal to `origin/main`
+and GitHub at `d51ce06`, the battery green, no commit because nothing in the
+tree had changed and the closeout word had reached it through a parent with no
+delegation here. No commit before this one names either file.
+
+**Delegation, and his decision of 2026-10-23.** The team parent his 2026-10-16
+delegation names, local_305e02ed, was archived at 22:52 EDT on 2026-10-22, four
+minutes before he opened the new team sessions; its last activity is still
+00:02 on 2026-10-18, so it never ran after its weekly limit. The new team
+parent, local_36039452 ("Ecosystem Project"), is named for reporting by his
+opening words to it and by no delegation line; the personal parent of
+2026-10-18 was never delegated. Asked whether to type a line naming the new
+parent, he answered at about 20:05 EDT on 2026-10-23 by his click on the
+offered action "Keep acts here", whose message reads: "Keep every PLAINSIGHT act
+on my words typed in this chat; no delegation line for the new team parent for
+now." No relay binds in this repository. Every commit, push, merge, archive,
+deletion or mint takes his own words in the PLAINSIGHT chat, per act; "for now"
+leaves him free to type a delegation line later on the 2026-10-16 pattern.
+
+**The repository between `d51ce06` and this entry.** Nothing touched the tree.
+`main` equal to `origin/main` and GitHub at `d51ce06` after fetches at 23:04 on
+2026-10-22 and 15:01 on 2026-10-23; 34 local branches each equal to its origin
+ref; clean; stash 0; one worktree; no open pull request; CI run 39163093154
+green. The personal session's closeout of 2026-10-20 made no commit, and the
+personal parent's read-only double-check of 2026-10-22 found that closeout
+complete with minor gaps, none blocking. The 28 queue items are unanswered and
+no word since 2026-10-13 releases a plan item or any held agent work.
+
+**The handoff** is brought level with this entry at its 400-line cap: the Date
+paragraph and section 0 describe this commit, Resume here states the hold and
+the delegation state, section 6 adds the 2026-10-22 harvest folder and names
+the 2026-10-20 closeout record, and section 7's relay rule states his decision.
+Section 0's open paragraph gives up one line to Resume here.
+
+**Battery, run on the staged tree at 20:25 EDT on 2026-10-23 and again on the
+final text of this entry, with the same results.** All sixteen preflight
+commands passed, the authorization self-test with 147 breaks and the retention
+self-test with 184, and both forms of `git diff --check` were clean. The kernel
+gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
+stubbed and 5 pending, which is the gate's own count; the audit of 2026-10-18
+saw each of the sixteen fail under its control, and no control was re-run
+here. The hygiene gate, one of the sixteen, passed on this entry and the
+handoff at their caps, and its self-test, another of the sixteen, planted its
+four refusals and saw each fire. The commit waits on his word for that act.
+
+**The commit, on his word of 01:30:58 EDT on 2026-10-24**, given in the
+PLAINSIGHT chat by his click on the offered action "Commit and open PR", whose
+message reads: "Commit the staged records draft now as me with no agent
+trailer, push it on a records branch, open the pull request, read every CI
+step and report back before any merge. My click on an offered action in this
+chat is my instruction for that act." The last sentence is the session's
+offered wording, accepted by his click, and it settles the reading the
+paragraphs above put to him: a click on an offered action in this chat is his
+instruction for that act. The commit is authored as the maintainer with no
+trailer, on a records branch named for the date of this entry; the push and
+the pull request follow on the same words, and the merge waits on his further
+word after every CI step is read.
+
+**Open.** Unchanged from `d51ce06`, plus one: the 28 queue items, none answered; plan
+item 0.7, trimmed to its synthesis step; the Step 7 fixes and the rest of the
+held agent work the handoff's Resume here lists; the aggregator finding the
+negative-control audit raised, in section 8 of its record; the credentials
+inventory, names only, ready in the 2026-10-18 harvest record's section 8 for
+the session he starts on his word "start the credentials session"; the message
+to the new team parent correcting what the 2026-10-18 reports told the personal
+parent, a send on his word if he wants it sent; the 33 merged branches on `origin` and in this checkout, deleted only on
+his words naming that act.
+
+---

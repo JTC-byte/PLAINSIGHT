@@ -12,12 +12,12 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-09. `main` == `origin/main` == `8507464`: item 4, the
-ontology validator's `--corpus` and `--matchers` modes (class B), merged by
-pull request 40 at 02:55 EST on the parent's go under his typed line of
-02:27:22, both branch CI runs and run 42582372459 on main green on every step.
-This file's commit is class A, the closeout of the resumption, carrying the
-records of that merge.
+**Date:** 2026-11-09. `main` == `origin/main` == `6bb3c16`: the closeout of
+the resumption (class A), merged by pull request 41 at 03:21 EST, both branch
+CI runs and run 42585302360 on main green on every step; item 4's `8507464`
+sits under it. This file's commit is class B, the extraction tool's
+list-of-blocks fix, the first under his clicks of 14:08:53 and 14:13:10, which
+carry his line of 02:27:22 to 18:00 EST on 2026-11-11.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -34,8 +34,12 @@ The maintainer's release of 2026-10-28 01:47 stands for building, and his click
 parent local_88a0656e (Parent 08NOV2026) for this repository: a relay quoting his
 dated words is his word here, merges and pushes go ahead on green gates with
 their controls seen failing, and every commit, Class F decision, deploy, tag,
-mint and secret takes his word in this chat, per act. The
-record of the build night, with every lens finding, refuter verdict, fixer and
+mint and secret takes his word in this chat, per act. His clicks of 14:08:53
+and 14:13:10 on 2026-11-09 in the parent's chat carry his line of 02:27:22 to
+18:00 EST on 2026-11-11: the parent adjudicates each commit and merge of the
+extractor fix and items 5 to 8 that passes the kernel gate, the hook, hygiene
+and CI on the exact tree, no Class F decision among them, and nothing merges
+or pushes after that hour. The record of the build night, with every lens finding, refuter verdict, fixer and
 verifier report, the DA-R2 allowlist draft and the design brief for the
 application, is `Z-ISR/_session-artifacts/2026-10-28-plainsight-build/`; the
 2026-11-02 resumption's is `Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/`. His
@@ -47,27 +51,30 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Records only. The worklog gains the 2026-11-09 entry:
-item 4 committed, its two branch CI runs read, merged as `8507464`, the run on
-main read, and this closeout, under his typed line of 02:27:22 relayed and
-verified; its oldest entry moves to the archive. This header follows.
+**What changed and why.** `tools/since_last_record.py` reads a prompt or
+content the harness wrote as a list of blocks as its text, where the committed
+tool stopped with a traceback; its self-test gains the plant and the check.
+The worklog gains the 2026-11-09 entry for this commit, which also records the
+closeout's CI run on main and the two clicks that carry his line; its oldest
+entry moves to the archive. `CHANGELOG.md` and this header follow.
 
-**Which surfaces moved.** This file, the worklog and its archive. No doctrine,
-spec, schema, policy, ontology, runtime, synthetic, generated or corpus file;
-no tool, gate, hook command or CI step.
+**Which surfaces moved.** One tool and its self-test, the changelog, this
+file, the worklog and its archive. No doctrine, spec, schema, policy,
+ontology, runtime, synthetic, generated or corpus file; no gate, hook command
+or CI step.
 
-**What validation ran and what passed.** All twenty-two preflight commands
-exit 0 on the tree, the hook at the commit, hygiene and both diff checks on the
-final text. The kernel gate ran on `8507464`'s tree under the heavy-run lock
-(25 implemented, 0 failed) and on main in CI; it was not re-run for this
-records-only change.
+**What validation ran and what passed.** The committed tool seen failing on a
+planted record and the fixed tool reading it; the self-test's 22 checks with 4
+controls refusing; hygiene and both diff checks on the final text; the kernel
+gate on this tree under the heavy-run lock (25 implemented, 0 failed) and the
+hook at the commit, with the stamps in the worklog entry.
 
-**Whether a release baseline changed.** No. `main` gained `8507464` by pull
-request 40; this commit follows by the same route; PSE has no tag.
+**Whether a release baseline changed.** No. `main` gained `6bb3c16` by pull
+request 41; this commit follows by the same route; PSE has no tag.
 
 **What remains open or deferred.** Section 3: DA-R2's stamp, the readings
-including O-R1 to O-R9, the queue; items 5 to 8 of the 10-28 list, not
-started; the extractor's list fix, held for its own commit.
+including O-R1 to O-R9, the queue; items 5 to 8 of the 10-28 list, next in
+number order under the carried line.
 
 ---
 

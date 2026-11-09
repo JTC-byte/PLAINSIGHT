@@ -15,155 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-23, the records' wording about the 2026-10-18 acts corrected, and the harvest of the personal session recorded, under the maintainer's click of 2026-10-23.
-
-**Class:** A (the handoff, this record and its archive). No doctrine, spec,
-schema, policy, ontology, runtime or other governed artifact changed, so
-`CHANGELOG.md` takes no entry.
-
-**The words this entry acts on.** The maintainer at 20:19:16 EDT on
-2026-10-23, in the team-account PLAINSIGHT session, by his click on the action
-the session had offered in its wrap-up, whose message the app delivered cut at
-300 characters: "Draft the Class A records commit now: fold in the 2026-10-23
-corrections (the four 2026-10-18 messages were clicks on offered actions, 33
-merged branches, pointers by name to CLOSEOUT_2026-10-20.md and the 2026-10-22
-harvest record), a line-neutral handoff edit, no agent trailer. Do not commit
-or pu". The button's message continued "push until I say so", and the cut is
-recorded here so the quotation stays what arrived. The session reads a click on
-an offered action in this chat as his decision for that act, with the wording
-the session's and accepted by him; that reading is his to confirm, since his
-message of 20:05 below says words typed, and this entry labels it as a reading
-wherever it records a click. The draft is this entry, the archive move under
-the ten-entry cap, and the handoff edit. The commit is his separate word for
-that act, and the paragraph after the battery records it, and how it arrived,
-when it is given. The commit, on that word, is authored as the maintainer
-(Incept.IO) with no Co-Authored-By trailer, which CI refuses, whatever the
-app's attribution reminder asks.
-
-**The correction this entry carries.** The 2026-10-18 entry above calls the two
-messages it records typed, "first-hand" for the draft at 15:23:29 and the
-commit at 16:06:27, and the `d51ce06` message and the handoff's Date paragraph
-say the same; the out-of-tree records call the merge word at 16:23:15 and the
-archive word at 16:32:35 typed too. Each of the four is word for word the
-message of a button that session had offered in the wrap-up call just before
-it (its transcript at L478, L687, L789 and L838), so he clicked session-authored
-text rather than composing it. On the session's reading the acts stand: a
-click on an offered action in his chat is his decision for that act, and R6 as
-amended asks for his instruction per act; whether a click meets it is his to
-confirm, and the commit paragraph below records how his word for this commit
-arrives. What changes now is the records' word for how the instruction was
-given, and the scope lists in those four messages (the five worklog passages,
-"no agent trailer", "read every CI step") are the session's wording that he
-accepted. The 2026-10-18 entry is a process record and stays as written; this
-entry is the correction. The session's own check
-that produced "typed" scanned the user records for the text and never compared
-the assistant's button messages, which is where the word entered. The same
-entry's Open paragraph counts 32 merged branches; the records branch of
-2026-10-18 made 33, so `origin` holds 34 heads, `main` and 33 merged branches,
-and this checkout 34 local branches each equal to its origin ref.
-
-**The harvest that found it.** On his words typed in this session at 23:01:22
-EDT on 2026-10-22, "refresh yourself, then reach over to my personal account
-and harvest the context from the open plainsight session over there and give
-me the roll up on what is next. Also, make sure to abide by proper model
-diversity and use the right models for the appropriate efforts, so we are
-efficiently managing our usage and getting full benefits from the higher
-models.", the team-account session read the personal session of 2026-10-18 to
-2026-10-20 from disk and compared it with its records. Twelve agents, one at a
-time because six sibling sessions had opened in the same five minutes under
-the estate cap of three: a Mythos 5.1 probe, which measured for the first time
-that a Mythos id works in the workflow tool; four Sonnet 5.5 readers; four Opus
-5.5 refuters; an Opus 5.5 critic; one Fable 5.1 judge, the decisive leg, which
-read the records independently and reached the same roll-up; a Haiku 5.5
-formatter, which declined the 249-row table rather than drop rows, so a script
-wrote it. The account hit its five-hour limit at 23:26 EDT by the parent
-session's notice, this run was cut at 23:28:48, and it resumed the next
-afternoon on his "Try again". Of 249 items, 224 from the readers and 25 added
-by the refuters, 147 were confirmed, 74 qualified, 2 refuted and 1 unverified.
-The records were complete on substance; the
-wording errors found were filed as dated notes out of tree on 2026-10-23: the
-clicks above; the personal parent's two titles recorded in reverse order, which
-the 2026-10-18 report to that parent had corrected the wrong way round; "of the
-31 messages the maintainer typed" counting two usage notices, so 29; "none of
-them was relayed to PLAINSIGHT" wrong by one, the ZMeta rule having been relayed
-as information on 2026-10-16; the negative-control audit session of 2026-10-18
-having run 112 of its 115 assistant records on Fable 5.1 although it was started on Opus 5.5
-with a brief that excluded Fable, with its stated window off by about twenty
-minutes; and several stamps ahead of the clock, the folder's recurring error.
-The record is `Z-ISR/_session-artifacts/2026-10-22-plainsight-harvest-of-dc310f2c/HARVEST.md`,
-section 5 the roll-up and section 7 his decision below; its item table and the
-workflow's output and journal sit beside it. The closeout record of 2026-10-20,
-`Z-ISR/_session-artifacts/2026-10-18-plainsight-harvest-of-b4c6ae3c/CLOSEOUT_2026-10-20.md`,
-reports that session's checkpoint of that night: `main` equal to `origin/main`
-and GitHub at `d51ce06`, the battery green, no commit because nothing in the
-tree had changed and the closeout word had reached it through a parent with no
-delegation here. No commit before this one names either file.
-
-**Delegation, and his decision of 2026-10-23.** The team parent his 2026-10-16
-delegation names, local_305e02ed, was archived at 22:52 EDT on 2026-10-22, four
-minutes before he opened the new team sessions; its last activity is still
-00:02 on 2026-10-18, so it never ran after its weekly limit. The new team
-parent, local_36039452 ("Ecosystem Project"), is named for reporting by his
-opening words to it and by no delegation line; the personal parent of
-2026-10-18 was never delegated. Asked whether to type a line naming the new
-parent, he answered at about 20:05 EDT on 2026-10-23 by his click on the
-offered action "Keep acts here", whose message reads: "Keep every PLAINSIGHT act
-on my words typed in this chat; no delegation line for the new team parent for
-now." No relay binds in this repository. Every commit, push, merge, archive,
-deletion or mint takes his own words in the PLAINSIGHT chat, per act; "for now"
-leaves him free to type a delegation line later on the 2026-10-16 pattern.
-
-**The repository between `d51ce06` and this entry.** Nothing touched the tree.
-`main` equal to `origin/main` and GitHub at `d51ce06` after fetches at 23:04 on
-2026-10-22 and 15:01 on 2026-10-23; 34 local branches each equal to its origin
-ref; clean; stash 0; one worktree; no open pull request; CI run 39163093154
-green. The personal session's closeout of 2026-10-20 made no commit, and the
-personal parent's read-only double-check of 2026-10-22 found that closeout
-complete with minor gaps, none blocking. The 28 queue items are unanswered and
-no word since 2026-10-13 releases a plan item or any held agent work.
-
-**The handoff** is brought level with this entry at its 400-line cap: the Date
-paragraph and section 0 describe this commit, Resume here states the hold and
-the delegation state, section 6 adds the 2026-10-22 harvest folder and names
-the 2026-10-20 closeout record, and section 7's relay rule states his decision.
-Section 0's open paragraph gives up one line to Resume here.
-
-**Battery, run on the staged tree at 20:25 EDT on 2026-10-23 and again on the
-final text of this entry, with the same results.** All sixteen preflight
-commands passed, the authorization self-test with 147 breaks and the retention
-self-test with 184, and both forms of `git diff --check` were clean. The kernel
-gate exited 0, with 16 implemented checks passing, 3 unratified and refusing, 2
-stubbed and 5 pending, which is the gate's own count; the audit of 2026-10-18
-saw each of the sixteen fail under its control, and no control was re-run
-here. The hygiene gate, one of the sixteen, passed on this entry and the
-handoff at their caps, and its self-test, another of the sixteen, planted its
-four refusals and saw each fire. The commit waits on his word for that act.
-
-**The commit, on his word of 01:30:58 EDT on 2026-10-24**, given in the
-PLAINSIGHT chat by his click on the offered action "Commit and open PR", whose
-message reads: "Commit the staged records draft now as me with no agent
-trailer, push it on a records branch, open the pull request, read every CI
-step and report back before any merge. My click on an offered action in this
-chat is my instruction for that act." The last sentence is the session's
-offered wording, accepted by his click, and it settles the reading the
-paragraphs above put to him: a click on an offered action in this chat is his
-instruction for that act. The commit is authored as the maintainer with no
-trailer, on a records branch named for the date of this entry; the push and
-the pull request follow on the same words, and the merge waits on his further
-word after every CI step is read.
-
-**Open.** Unchanged from `d51ce06`, plus one: the 28 queue items, none answered; plan
-item 0.7, trimmed to its synthesis step; the Step 7 fixes and the rest of the
-held agent work the handoff's Resume here lists; the aggregator finding the
-negative-control audit raised, in section 8 of its record; the credentials
-inventory, names only, ready in the 2026-10-18 harvest record's section 8 for
-the session he starts on his word "start the credentials session"; the message
-to the new team parent correcting what the 2026-10-18 reports told the personal
-parent, a send on his word if he wants it sent; the 33 merged branches on `origin` and in this checkout, deleted only on
-his words naming that act.
-
----
-
 ## 2026-10-25, the since-last-record extraction joins the closeout rule, and pull request 34 is merged, under the maintainer's selections of 2026-10-25.
 
 **Class:** C, the highest the change touches: `tools/since_last_record.py`, a
@@ -884,3 +735,19 @@ this chat.
 **Extraction.** SINCE_LAST_RECORD_2026-11-09_closeout.md beside the record in Z-ISR/_session-artifacts/2026-11-06-plainsight-resume/, over this session's whole transcript (30988045): 598 entries, 0 typed, 1 click (15:45:31 on 11-08, "Yes, resume here", read against the offer at 15:43:54), 2 harness notices (the parent's relays), 5 sent, 0 received. Controls first: the self-test's 22 checks with 4 controls refusing, a 2027 stamp giving 0 entries, a since without a zone refused.
 
 **Open.** Items 5 to 8 of the 10-28 list, not started by the parent's reading of his line; the extractor's list fix, unstaged in the working tree for its own Class B commit; his: the DA-R2 stamp and the pin self-test's absent-file example at that commit, readings O-R1 to O-R9 and the rest, the 28 queue items, the mock-up adjustments, VMs, domains, SIMs and the Track B identity acts.
+
+---
+
+## 2026-11-09, the extraction tool's list-of-blocks fix committed, the closeout's CI run read, and the lane carried to the freeze of 2026-11-11, under the maintainer's clicks of 14:08:53 and 14:13:10.
+
+**Class:** B. `tools/since_last_record.py` changes behaviour: a prompt or content the harness wrote as a list of blocks is read as its text blocks joined, where the committed tool stopped with a traceback (`AttributeError: 'list' object has no attribute 'strip'` in `_clean`, seen this afternoon on a planted record run against the committed tool before the fix was staged). The self-test gains a planted `queued_command` attachment whose prompt is a list of blocks and the check that it is read as its text, 21 checks to 22. `CHANGELOG.md` takes an entry. No doctrine, spec, schema, policy, ontology, runtime, gate or value changed, and no classification rule of the tool, so a transcript the committed tool could read gives the same counts.
+
+**The words this commit acts on.** Two clicks of his in the parent's chat, verified in the parent's transcript (434c9ac5, user records at 2026-11-09T19:08:53Z and 19:13:10Z): "Yes, carry it" at 14:08:53 EST on 2026-11-09, answering "Carry your overnight line into these three days?", which carries his typed line of 02:27:22 ("You are good to adjudicate any commits, merges, pushes, deploys etc as needed so long as they pass repo documentation and established tests, conformance and validations") to 18:00 EST on 2026-11-11; and "Yes, resume it" at 14:13:10, answering "Resume PLAINSIGHT under the same line?", after the parent had told him the line would let this lane commit the extractor fix and work through items 5 to 8 with the TMN lanes first on heavy runs. The parent (local_88a0656e) relayed both at 14:14 and gave its go in advance for each commit and merge in that work meeting five conditions: the kernel gate 0 failed on the exact tree committed, the hook passing, hygiene passing, this repository's documentation allowing a delegate's word for the commit's class (no Class F decision is covered), and for a merge CI green on every step at the exact head, never with --auto. Read as the line was read last night: a click on an offered action is his word for the act the offer named, a relay found verbatim in the parent's record is his word here by the terms of his click of 15:45:31 on 11-08, and the parent's go, measured per act against the conditions, is the per-act instruction CLAUDE.md R6 and AGENTS.md section 4 ask for. No merge or push after 18:00 EST on 11-11.
+
+**The closeout's CI run.** Run 42585302360 on main at 6bb3c16: success, 26 steps, none other than success, read at 03:32 EST on 2026-11-09 and owed to this entry by the record folder.
+
+**Agent involvement.** None in this commit; Fable 5.1 in the main loop. Estate: the heavy-run lock was held by zisr-producers from 13:41 with zmeta-spec's waiting file of 13:54 ahead of this lane; waiting-plainsight.txt was written at 14:14:55, and the lock was taken for the kernel gate and the hook only after every TMN waiting file was gone, with the stamps in the battery paragraph.
+
+**Battery.** On the staged tree, under the estate's heavy-run lock, the kernel gate ran twice. The first run (lock taken 14:38:34 EST, after zmeta-spec's waiting file was gone and the producers had released; gate 14:38:35 to 14:42:47) read 25 implemented, 1 failed, the telemetry entry alone, because the waiter's environment carried PLAINSIGHT_NO_GATE_LOG=1, which tools/gate_log.py honours by writing nothing, so two of that entry's twelve tests found no record; confirmed by running tools/tests/test_gate_log.py both ways on the checkout, 2 of 12 failing with the variable and 12 ok without it. The pre-commit hook on the same tree exited 0 (14:42:47 to 14:43:32), and the lock was released at 14:43:32. The second run, from a fresh script with the variable unset (lock 14:44:24, gate 14:44:24 to 14:48:39, released 14:48:39): 25 implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0. Nothing in the tree changed between the two runs; this paragraph was written after them, and the hook, which runs hygiene, ran again at the commit on the exact tree. Hygiene on the records: 21 governed files, 5 voice-exempt, exit 0; both diff checks clean; the self-test 22 checks, 15 planted lines, 4 controls refusing (the committed tool: 21 checks); the control seen first: the committed tool stopped with the traceback on the planted record (exit 1) and the fixed tool listed the line as QUEUED (exit 0). The worklog's oldest entry (2026-10-23) moved to the archive without edit, 149 lines out and 149 in.
+
+**Open.** Items 5 to 8 of the 10-28 list, in number order under the same conditions, each its own commit and merge reported to the parent in one line: 5, the application's slices 2 and 3; 6, the UI/UX harvest synthesis of plan item 0.7; 7, Step 11 drafted refusing; 8, the two Class B manifest gaps (BRIEF_item8_manifest_gaps.md in the 2026-11-02 record folder). His: the DA-R2 stamp and the pin self-test's absent-file example at that commit, readings O-R1 to O-R9 and the rest, the 28 queue items, the mock-up adjustments, Patch 4b's Class F items, `synthetic/CAST.md`, VMs, domains, SIMs, accounts and the Track B identity acts, secrets, tags, mints and anything live.
