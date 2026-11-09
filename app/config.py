@@ -23,6 +23,16 @@ SYNTHETIC_SOURCES = ("conformance/must-pass.jsonl",)
 #: Making WEB the landing view is the operator's decision.
 LANDING_VIEW = "dossier"
 
+#: Whether an analyst act may land in a LOCAL store (amendment 9.16, reading
+#: APP-R31). False until the operator decides: an act's payload is stratum 1 by
+#: the layer model and its prose is typed at run time rather than read from a
+#: tracked synthetic file, so admitting it widens what LOCAL may hold under
+#: doctrine/EGRESS.md EG-2, which is Class F by effect (AGENTS.md section 3).
+#: With it set, an act still lands only in a case the registry marks synthetic.
+#: The tests set it in memory to exercise the mechanism; an agent edits it in no
+#: commit.
+LOCAL_ACTS = False
+
 #: The environment variable naming the store root.
 ENV_HOME = "PLAINSIGHT_HOME"
 

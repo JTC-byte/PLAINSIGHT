@@ -4381,3 +4381,163 @@ parent, a send on his word if he wants it sent; the 33 merged branches on `origi
 his words naming that act.
 
 ---
+
+## 2026-10-25, the since-last-record extraction joins the closeout rule, and pull request 34 is merged, under the maintainer's selections of 2026-10-25.
+
+**Class:** C, the highest the change touches: `tools/since_last_record.py`, a
+new tool, and the Makefile target `since-last-record` that runs its self-test.
+Under it, the dated amendment to `AGENTS.md` section 8 is governed prose at
+rank 4, and `CHANGELOG.md`, which takes an entry because a governed file
+changed, the handoff, this record and its archive are Class A. The change is
+not Class F under rule 2 of `AGENTS.md` section 3: it reads only the session's
+own transcript, adds no connector, selector, allowlist, retention value or
+egress path, and writes on the same machine outside the tree, which the tool
+refuses to cross. No runtime exists, so the Class C design-record rule has
+nothing to move. No doctrine, spec, schema, policy, ontology, corpus, hook or
+CI line changed, and `preflight` is unchanged.
+
+**The words this entry acts on.** The maintainer typed in the team-account
+PLAINSIGHT session at 13:36:04 EDT on 2026-10-25: "go ahead and give me those
+interactive selections so I can decide these for you". Asked the two decisions
+as selections, he chose at 13:36:19 "Merge now (Recommended)" for pull request
+34 and "Add to AGENTS.md (Recommended)" for the extraction, the second option
+reading: "A rank-4 change on your stamp: draft a records commit adding the
+extraction step (run the script from the last record's stamp, file the output
+beside the closeout record, read its lines before writing any message of yours
+as typed). Drafted and staged for your separate commit word; no agent needed."
+His typed sentence asked for the selections as his way of deciding, which is
+the ground this entry rests on; the session's reading, put to him and not
+settled here, is that a selection of an offered option is his instruction for
+that act in the way his sentence of 01:30:58 on 2026-10-24 made a click one.
+This record says selection, never typed. Behind it, information rather than
+instruction, the team parent's relay of 13:32 quoting his words typed in the
+parent's chat at 13:31:34 ("go ahead and instruct the other sessions to do the
+above mentioned work") and 13:19:05 ("we have 15 percent usage left so lets get
+done what we can before we cap out the weekly usage since the refresh is
+tomorrow"), and its earlier relay of 01:48 on 2026-10-24 carrying his 01:43:38
+words that asked every repository session to add the extraction to its
+closeout. The commit of this draft is his separate word for that act, and the
+paragraph after the battery records it when it is given.
+
+**The merge, 13:36:54 to 13:39:50 EDT on 2026-10-25.** After a fetch, with
+`main` equal to `origin/main` at `d51ce06` and the records branch at `37dbcee`,
+`main` was fast-forwarded to `37dbcee` and pushed at 13:36:56; pull request 34
+reads merged at 13:36:57 with `37dbcee` as its merge commit; the CI run on
+`main` succeeded on all twenty steps, read step by step at 13:39. The branch
+docs/records-2026-10-23 stays on `origin` like the 33 before it, so `origin`
+holds 35 heads, `main` and 34 merged branches, and this checkout 35 local
+branches each equal to its origin ref. The team parent had one completion line.
+
+**The amendment.** `AGENTS.md` section 8 now says, in a dated paragraph after
+the rule that a closeout runs the battery, updates the records and commits,
+that a closeout first runs `tools/since_last_record.py` from the stamp of its
+last record (a moment with a zone) to the end of its own transcript and files
+the output beside the closeout record, outside the tree, which the tool
+enforces by refusing a path inside the repository; that the file marks each of
+the maintainer's lines as typed, as a click on an action offered in the most
+recent wrap-up call before it, or as a selection on an offered question, and
+carries every message sent and received and the last assistant texts; that
+the session reads it once before writing the records, writes in any
+maintainer line the records lack, and never writes a click or a selection as
+typed; that a resumer reads the record and the file and re-reads the
+transcript only when the file shows substantive entries after the closeout;
+that the file is a verbatim copy no retention mechanism reaches, so a closeout
+does not run it over a span in which case material was discussed until
+`doctrine/RETENTION.md` says how such a copy is held; and that the extraction
+is a records aid, not a gate, whose self-test runs at closeout through the
+Makefile target and on no automated path, by this session's decision put to
+him, with its joining the battery his separate decision. The rule that a
+closeout commits is unchanged.
+
+**The tool.** `tools/since_last_record.py` is a copy of the parent folder's
+playbook of 2026-10-24 under this repository's own process, adapted after a
+measured gap: in this harness a click on an offered action arrives as an
+ordinary user record (origin human, promptSource sdk) with no attachment that
+names it a click, and a question's answer arrives as a tool result, so the
+reference's click test never fired here and marked his commit word of 01:30:58
+on 2026-10-24 as typed. The copy detects a click by comparing the text with the
+actions offered in the most recent wrap-up call before the line, reads a
+message the app cut at 300 characters as the same click, and reads an answer
+to an AskUserQuestion call as a selection on an offered question, printed with
+the result text that carries each question and the chosen option verbatim. It
+refuses a since without a zone, because a zone guessed wrong empties the span
+silently, and an output path inside the repository; it exits 2 on a file that
+is not a transcript and 3 when the output cannot be written. Its `--self-test`
+writes a synthetic transcript under a temporary directory and runs fourteen
+checks: a typed line, a click, a cut click, a selection, a sent message, a
+received message and an assistant text each classified as what it is; a typed
+line equal to an offer from a superseded wrap-up call, and one equal to an
+offer made after it, each left typed; no click or selection written as typed;
+and four controls seen refusing, a since past the last entry (zero entries,
+four sections saying "none in the span"), a file that is not a transcript, a
+since without a zone, and an output path inside the repository, with nothing
+written there. The self-test ran at 14:05 on 2026-10-25: fourteen checks ok. A
+live run at 14:03 over this session's transcript from the stamp of its 2026-10-24
+closeout read two typed lines, one selection (the 13:36:19 answer), two
+messages sent and one received, which matches the transcript read by hand; the
+first version of the tool, reviewed at 13:51, had dropped the selection, which
+is why that class of input was added. The hygiene gate refused the first
+battery run of this draft at 13:45 (HYGIENE_TOOL_NOT_IN_ANY_GATE: a tool no
+Makefile target runs), so the target `since-last-record` runs the self-test;
+the extraction itself takes a transcript and is not a gate, and by this
+session's decision, put to him with the commit word, the self-test runs on no
+automated path, which is stated in the amendment. The
+parent folder's playbook README carries a dated note of 14:32 on 2026-10-24
+that it was corrected the same way after this session reported the gap.
+Removing the offered-action comparison fails the click checks; removing the
+tool-result branch fails the selection check; widening the comparison past the
+most recent wrap-up call fails the superseded-offer check; removing the since
+filter, the record check, the zone check or the path check fails its control.
+
+**The handoff** is brought level with this entry at its 400-line cap: the Date
+paragraph names this commit on `37dbcee` and the merge that put `main` there,
+Resume here opens with the extraction as the resumer's first act, section 0
+describes this commit in two fewer lines, and the cross-session records row
+says `37dbcee` carries the 2026-10-22 record's corrections. Nothing else moved.
+`docs/THE-GAMEPLAN.md`, the artifact register, is a rank-7 record of intent
+moved in unchanged and takes no row; the tool is cited by a path that exists.
+
+**Agents.** The main loop ran on Mythos 5.1, his model choice for the session,
+and drafted the tool, the amendment and the records. Two agents then read the
+staged diff, one at a time, read only: an independent Opus 5.5 review at high
+effort returned fix_first with one blocker (the first tool dropped question
+answers, so his two selections of this very day were invisible to it), four
+majors (a since without a zone emptied the span silently; the comparison
+reached every earlier wrap-up call; nothing enforced "outside the tree"; this
+paragraph was missing) and eight minors; a Sonnet 5.5 factual check at high
+effort found 36 of 38 claims true and one false (a hard-coded count in the
+self-test's last line). Every finding was applied before the battery ran on
+the final text. The option he selected said "no agent needed"; the two review
+legs ran under the standing rule that two models look at every merge-bound
+change, a departure from that text put to him here with the commit word.
+
+**Battery, run on the staged tree at 13:47 EDT on 2026-10-25 and again on the
+final text of this entry, with the same results.** The first run at 13:45 was
+refused by the hygiene gate on the new tool (no Makefile target ran it), and the
+target `since-last-record` answered it. On the runs after it: all sixteen
+preflight commands passed, the authorization self-test with 147 breaks and the
+retention self-test with 184, and both forms of `git diff --check` were clean;
+the hygiene gate, one of the sixteen, passed on this entry, the amendment, the
+changelog entry and the handoff at their caps, and its self-test planted its
+four refusals and saw each fire. The kernel gate exited 0, with 16 implemented
+checks passing, 3 unratified and refusing, 2 stubbed and 5 pending, the gate's
+own count; the audit of 2026-10-18 saw each of the sixteen fail under its
+control, and no control was re-run here. The new tool's self-test ran apart
+from the battery: fourteen checks ok, four controls seen refusing. The commit
+waits on his word for that act, authored as the maintainer with no
+Co-Authored-By trailer, which CI refuses, whatever the app's reminder asks.
+
+**Open.** The 2026-10-23 entry's item that the new team parent be told what
+the 2026-10-18 reports got wrong closed on 2026-10-23 at 20:44 and 2026-10-24
+at 14:31, when this session's reports carried both corrections to it. Unchanged
+from `37dbcee` otherwise: the 28 queue items, none answered; plan
+item 0.7, trimmed to its synthesis step; the Step 7 fixes and the rest of the
+held agent work the handoff's Resume here lists; the aggregator finding the
+negative-control audit raised, in section 8 of its record; the credentials
+inventory, names only, for the session he starts on his word; the 34 merged
+branches on `origin` and in this checkout, deleted only on his words naming
+that act. About 15 percent of the weekly usage was left at 13:19 on
+2026-10-25, with the reset on 2026-10-26 at noon; the session holds after this
+commit.
+
+---

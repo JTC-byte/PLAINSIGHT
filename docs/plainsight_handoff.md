@@ -12,12 +12,13 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-09. `main` == `origin/main` == `6bb3c16`: the closeout of
-the resumption (class A), merged by pull request 41 at 03:21 EST, both branch
-CI runs and run 42585302360 on main green on every step; item 4's `8507464`
-sits under it. This file's commit is class B, the extraction tool's
-list-of-blocks fix, the first under his clicks of 14:08:53 and 14:13:10, which
-carry his line of 02:27:22 to 18:00 EST on 2026-11-11.
+**Date:** 2026-11-09. `main` == `origin/main` == `c54ea6c`: the extraction
+tool's list-of-blocks fix (class B), merged by pull request 42 at 15:02 EST,
+both branch CI runs green on every step. This file's commit is class C, item 5
+of the 10-28 list: the application's slice 3 (analyst acts through the door,
+the Merge Sheet, the review strip) and the runner's watchdog, the second commit
+under his clicks of 14:08:53 and 14:13:10, which carry his line of 02:27:22 to
+18:00 EST on 2026-11-11.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -39,42 +40,46 @@ and 14:13:10 on 2026-11-09 in the parent's chat carry his line of 02:27:22 to
 18:00 EST on 2026-11-11: the parent adjudicates each commit and merge of the
 extractor fix and items 5 to 8 that passes the kernel gate, the hook, hygiene
 and CI on the exact tree, no Class F decision among them, and nothing merges
-or pushes after that hour. The record of the build night, with every lens finding, refuter verdict, fixer and
-verifier report, the DA-R2 allowlist draft and the design brief for the
-application, is `Z-ISR/_session-artifacts/2026-10-28-plainsight-build/`; the
-2026-11-02 resumption's is `Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/`. His
-queue is `MAINTAINER_QUEUE.md` in
-`Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/`, 28 items, none
-answered.
+or pushes after that hour. The records are under `Z-ISR/_session-artifacts/`:
+the build night in `2026-10-28-plainsight-build/`, the resumptions in
+`2026-11-02-plainsight-resume/` and `2026-11-06-plainsight-resume/`, items 5 to 8
+in `2026-11-09-plainsight-items/`, and his 28-item queue in
+`2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none answered.
 
 ---
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** `tools/since_last_record.py` reads a prompt or
-content the harness wrote as a list of blocks as its text, where the committed
-tool stopped with a traceback; its self-test gains the plant and the check.
-The worklog gains the 2026-11-09 entry for this commit, which also records the
-closeout's CI run on main and the two clicks that carry his line; its oldest
-entry moves to the archive. `CHANGELOG.md` and this header follow.
+**What changed and why.** Item 5 of the 10-28 list: POST
+`/api/cases/{case}/acts` mints one analyst act per request under the session's
+identity and sends it through the door, landing on LOCAL only once he sets
+`LOCAL_ACTS` (reading APP-R31) and then only in a synthetic case;
+`runner/watchdog.py` closes an open coverage interval by event after three
+silent poll intervals; the INSPECTOR lists adjudications; the front end builds
+the eight slice-3 keys, undo as a cancel window, the review strip and the Merge
+Sheet; amendments 9.16 to 9.18. The worklog gains the entry and archives its
+oldest; `CHANGELOG.md` and this file follow.
 
-**Which surfaces moved.** One tool and its self-test, the changelog, this
-file, the worklog and its archive. No doctrine, spec, schema, policy,
-ontology, runtime, synthetic, generated or corpus file; no gate, hook command
-or CI step.
+**Which surfaces moved.** `app/` (http, store, model, config, refusals, the
+static front end and its keymap, README, two new test modules), `runner/watchdog.py`,
+the design record's three amendments, the changelog, this file, the worklog and
+its archive. No doctrine, spec, schema, policy, ontology, synthetic, generated
+or corpus file; no gate, hook command or CI step.
 
-**What validation ran and what passed.** The committed tool seen failing on a
-planted record and the fixed tool reading it; the self-test's 22 checks with 4
-controls refusing; hygiene and both diff checks on the final text; the kernel
-gate on this tree under the heavy-run lock (25 implemented, 0 failed) and the
-hook at the commit, with the stamps in the worklog entry.
+**What validation ran and what passed.** The application suite in the build
+worktree, 218 passed and 1 skipped, every new check with its control seen
+failing; an Opus 5.5 second-model read whose seven findings are fixed or
+accepted (the 2026-11-09 record folder); hygiene and both diff checks on the
+final text; the kernel gate on this tree under the heavy-run lock and the hook
+at the commit, with the stamps in the worklog entry.
 
-**Whether a release baseline changed.** No. `main` gained `6bb3c16` by pull
-request 41; this commit follows by the same route; PSE has no tag.
+**Whether a release baseline changed.** No. `main` gained `c54ea6c` by pull
+request 42; this commit follows by the same route; PSE has no tag.
 
 **What remains open or deferred.** Section 3: DA-R2's stamp, the readings
-including O-R1 to O-R9, the queue; items 5 to 8 of the 10-28 list, next in
-number order under the carried line.
+including O-R1 to O-R9 and APP-R31 to APP-R33, `LOCAL_ACTS`, the queue; items
+6 to 8 of the 10-28 list, next in number order under the carried line; the
+application's slice 4.
 
 ---
 
@@ -119,10 +124,14 @@ never performed; no connector is registered for live use.
 
 **The application's first slice** holds the store, the ingest door, rebuild and
 replay, the loopback server, the social web view, the Lineage Drawer, PATHS,
-DOSSIER and the SSE stream; 195 tests with 91 paired negative controls, in the
-kernel gate, `make test` and CI and not in the hook or preflight (APP-R30). Its
-design departures from `docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.15 at
-the end of that file, each dated, each his to decide.
+DOSSIER and the SSE stream. **Slice 3 (2026-11-09)** adds the analyst acts
+through the door (POST `/acts`), the Merge Sheet, the review strip, undo as a
+cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
+LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
+(reading APP-R31). 219 tests with 103 paired negative controls, in the kernel
+gate, `make test` and CI and not in the hook or preflight (APP-R30). Its design
+departures from `docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.18 at the
+end of that file, each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
 consenting subjects who will confirm the findings, who are S1 CONSENTING. The
@@ -178,23 +187,14 @@ exists and has never run.
 
 Everything in this section is the operator's, and none of it is an agent act.
 
-**Three classes, each applied on his click of 2026-10-28 as the session's
-reading, each decided by him the same day on his click on the offered action
-in this chat.** First, the emit's platform, kept: a handle's registry form is
-`handle:<platform>/<string>` and Sherlock's platform differs per site, so an
-emit of a platform-bound key may declare `platform_from_item` on an
-endpoint-unit connector, the shape `docs/PLAINSIGHT-design.md` section 6.2
-draws (MF-R17, amendment 9.14), with the claim's platform token derived from
-the site name alone (SH-R18, amendment 9.15; nine sites give no token and a hit
-there is ambiguous with no claim). Second, VA-R6, decided: he read it as
-Class B on 2026-10-28 (his click on the offered action in this chat), a
-precision rule of the dispatch scanner (a patch target, a patched attribute's
-kept original and an attribute assigned over are no site, in test modules
-only, with plants proving a patch whose replacement dispatches is still a
-site), so the rule stands and the allowlist draft keeps its four sites. Third, the one-word edit at `policy/retention.yaml` line 870,
-which he instructed, decided Class B by him on 2026-10-28 (his click on the
-offered action in this chat): a statement of enforcement state reaching no
-subject, retention period or egress path, needing no row in the pin.
+**Three classes he decided on 2026-10-28, each by his click on the offered
+action in this chat.** The emit's platform move kept (`platform_from_item` on
+an endpoint-unit connector, MF-R17 and amendment 9.14, the token from the site
+name alone, SH-R18 and 9.15); VA-R6 Class B (the dispatch scanner's precision
+rule for patch targets and kept originals in test modules, so the allowlist
+draft keeps its four sites); the one-word edit at `policy/retention.yaml` line
+870 Class B (an enforcement-state statement reaching no subject, period or
+egress path).
 
 **DA-R2, the dispatch allowlist.** Class F by `AGENTS.md` section 3. The
 re-measured draft is in the record folder beside DA-R1 and its argument, never
@@ -213,7 +213,7 @@ line 105); the five production docstrings cite the design amendments.
 
 **The 29 decisions in the register** of Step 8, plus U-17, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, PIN-R9, SG, VA, DA, SH, CC,
-APP), and the design amendments 9.1 to 9.15. Each is recorded where its artifact is
+APP, now to APP-R33), and the design amendments 9.1 to 9.18. Each is recorded where its artifact is
 and in the record folder.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
@@ -311,16 +311,12 @@ reviewed adversarially on 2026-10-01 and in six later passes; the records are
 Every implemented gate entry of that time was seen failing under a negative
 control on 2026-10-18 (the audit folder).
 
-**The build night of 2026-10-28** reviewed each phase the same way: read-only
-lenses, three refuters per finding, one fixer with a control per fix, one
-verifier. Step 9: 56 findings, 25 confirmed, 9 defects fixed. The manifest
-schema: 65 findings, 16 fixes, 7 skipped as widening. The application: 78
-findings, 33 confirmed and fixed. Step 10 and the connector: 91 findings, 57
-standing, 38 defects fixed, the last 35 agents run after the usage limit of
-06:30 reset. The morning's three builds: 51 findings, 32 standing, 8 fixes
-applied. The six new gate entries and the three that changed state have not
-been through a negative-control audit of the 2026-10-18 kind; their self-test
-controls were seen failing in each run.
+**The build night of 2026-10-28** reviewed each phase the same way (lenses,
+three refuters per finding, a fixer with a control per fix, a verifier); the
+counts per phase are in its record folder. The six new gate entries and the
+three that changed state have not been through a negative-control audit of the
+2026-10-18 kind; their self-test controls were seen failing in each run. Item
+5's slice 3 was read by one Opus 5.5 second model (the 2026-11-09 folder).
 
 ## 6. Session context that lives outside this repository
 
