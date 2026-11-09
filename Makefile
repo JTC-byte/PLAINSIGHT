@@ -168,8 +168,9 @@ validate-connector:
 
 # The five rungs for one connector, narrowest first: make prove CONNECTOR=<id>.
 # Rung 1 needs pytest, which CI installs for its own connector adapter tests
-# step. Rung 3's --corpus mode is a
-# STUB that prints DEFERRED and checks nothing. Rung 5 is the whole-repository
+# step. Rung 3's --corpus mode reads the repository's two corpora against the
+# selector registry and no connector's events, so it says nothing about the
+# connector named (reading O-R5 in tools/validate_ontology.py). Rung 5 is the whole-repository
 # kernel gate and says nothing about one connector. The live canaries, design
 # section 6.5's Prove It, are an operator act this target never performs, so a
 # green run here registers nothing for live use.

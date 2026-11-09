@@ -66,19 +66,79 @@ Each check guards a defect that is one edit away in that file:
         operator ratifies additions, so the list they read has to be the list
         the file implements.
 
-`--registry` is the default and runs every check above. `--self-test` breaks the
-loaded registry in memory in sixteen directions and asserts each break is
-refused, which is doctrine/HYGIENE.md section 2's rule for a newly written
-check. `--matchers` and `--corpus` are deferred and say so rather than passing.
+`--registry` is the default and runs every check above. It also runs O-M1 to
+O-M3 below, so that a refusal of theirs reaches the kernel gate through the
+IMPLEMENTED ontology entry while the ontology-matchers entry is STUB (reading
+O-R6).
 
-Exit codes: 0 clean, 1 violations found, 2 the registry or the code vocabulary
-could not be read.
+`--corpus` reads conformance/must-pass.jsonl and conformance/must-fail.jsonl at
+every site spec/layer-model.yaml binds to this registry, which is every field
+the layer model declares with `registry: ontology/selectors.yaml`. The sites are
+read from the layer model rather than listed here, and every run prints them.
+
+  O-C1  A selector type at a site is not a key in this registry. Rung 2 refuses
+        the same thing first, because tools/validate.py's generated schema
+        inlines the registry keys as the enum of every registry-bound field.
+        The duplicate is deliberate: this mode reads the registry itself, so a
+        stale generated schema cannot hide an unregistered type from it.
+  O-C2  A selector value does not fit its key's form. The form is read as a
+        pattern: separators are literal and each <slot> takes any text. A
+        <placeholder> fits any slot, and a value that is one placeholder stands
+        in for the whole value (reading O-R1). A form with a <platform> slot
+        needs a platform token of the shape ^[a-z][a-z0-9_]*$ there, and an
+        empty slot is refused. A filled value is the repo scan's business
+        rather than this mode's, so a filled slot other than <platform> is not
+        graded.
+  O-C3  The vacuity guard. A must-fail row whose expected code is one this mode
+        refuses is refused by this mode for that code and no other, and a
+        must-fail row that expects only another code is not also refused here.
+        A fixture this mode passes while claiming its code proves nothing.
+  O-C4  A registry key is exercised by no must-pass row and its note does not
+        say it is unexercised at this registry version, or its note says so
+        while a must-pass row exercises it. A key that can be added and never
+        proven is the closed vocabulary's own untested surface.
+
+`--matchers` runs the structural half of the matcher check and says in its
+output what it cannot check. No matcher is scored, because scoring needs
+labelled ground truth and ground truth needs a sealed cast. It reruns O-08 and
+O-09 rather than copying them, and adds three checks.
+
+  O-M1  calibrated or identity_basis_permitted is anything but false while the
+        file calibration_ref names does not exist. The flag is the only thing
+        enforcing the identity-basis rule until a calibration file exists.
+  O-M2  A connector's adapter.py or manifest.yaml names a matcher id the
+        library does not declare. SS-19 refuses an argv value that does not
+        match its registered matcher, so a name that resolves to nothing is a
+        gate that cannot run.
+  O-M3  A library entry carries no note, or a purpose outside the two the
+        registry uses, argv_shape_gate and constraint_satisfaction (reading
+        O-R7).
+
+`--self-test` breaks the loaded registry in memory in sixteen directions, plants
+each --corpus code in in-memory copies of the corpora and the registry, and
+plants each --matchers code in in-memory copies of the registry and the
+connector sources, and asserts each break is refused by its code, which is
+doctrine/HYGIENE.md section 2's rule for a newly written check. It plants the
+O-M codes a second time through the default mode, and plants an absent
+corpus, an unparseable row and a layer model that binds no site, each of which
+must refuse. Every refusal a plant draws is also read for its moves: a move
+that offers to set a kernel gate entry to STUB, PENDING, UNRATIFIED or
+DEFERRED recommends hiding the fault the gate found, and the plant fails.
+
+READINGS below records the interpretive calls these modes make, on the
+tools/validate_retention.py pattern. Confirming or reversing one is the
+maintainer's decision rather than an edit in place.
+
+Exit codes: 0 clean, 1 violations found, 2 the registry, the code vocabulary, the
+layer model's sites or a corpus could not be read.
 """
 
 from __future__ import annotations
 
 import argparse
+import ast
 import copy
+import json
 import re
 import sys
 from pathlib import Path
@@ -148,22 +208,195 @@ VALUE_SHAPES = (
 #: ordinary word in the file matches.
 CODE_IN_TEXT_RE = re.compile(r"\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){2,}\b")
 
+#: --corpus. The two corpora Step 7 wrote, in the order they are read.
+CORPORA = (
+    ("must-pass", ROOT / "conformance" / "must-pass.jsonl", "conformance/must-pass.jsonl"),
+    ("must-fail", ROOT / "conformance" / "must-fail.jsonl", "conformance/must-fail.jsonl"),
+)
+
+#: A form's slots, read the way tools/validate_retention.py reads them for the
+#: repo scan, so the two modes split a form identically.
+FORM_SLOT_RE = re.compile(r"<([^<>]+)>")
+
+#: A slot or a whole value that is a placeholder. The corpora write
+#: placeholders such as <synthetic-handle-1>, wider than a form's <slot> names.
+VALUE_PLACEHOLDER_RE = re.compile(r"^<[^<>]+>$")
+
+#: The slot a platform-bound form carries, and the token shape it needs there.
+PLATFORM_SLOT = "platform"
+PLATFORM_TOKEN_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+
+#: The layer-model codes --corpus refuses for itself, each with the finding code
+#: that carries it. O-C3 holds a must-fail row expecting one of these to this
+#: mode. Reading O-R3 says why the registry-driven codes are not here.
+CORPUS_OWNED_CODES = {"SELECTOR_TYPE_UNREGISTERED": "ONT_CORPUS_SELECTOR_UNREGISTERED"}
+
+#: The words a selector's note carries when no must-pass row exercises it. The
+#: version is read from ontology.version, so a version change asks for the
+#: declaration again rather than inheriting it (reading O-R4).
+UNEXERCISED_WORDS = "unexercised at v{version}"
+
+#: --matchers. The purposes the registry's matchers block uses. The registry
+#: declares no vocabulary for them, so this pair is a reading (O-R7).
+MATCHER_PURPOSES = ("argv_shape_gate", "constraint_satisfaction")
+
+#: A matcher id as the library writes one: namespace, name, pinned version.
+MATCHER_ID_RE = re.compile(r"\b[a-z][a-z0-9_]*\.[a-z0-9_]+\.v[0-9]+\b")
+
+#: The files of a connector O-M2 reads for a matcher id (reading O-R8).
+CONNECTORS = ROOT / "connectors"
+CONNECTOR_FILES = ("adapter.py", "manifest.yaml")
+
+#: A reading id as the connector READMEs and this repository's tools write one.
+READING_ID_RE = re.compile(r"\b[A-Z]{1,4}-R[0-9]+\b")
+
+#: --self-test. A move that sets a kernel gate entry's state. A refusal offering
+#: one recommends hiding the fault the gate found, so a plant whose refusal
+#: carries one of these words in its moves fails.
+GATE_STATE_MOVE_RE = re.compile(r"\b(?:STUB|PENDING|UNRATIFIED|DEFERRED)\b")
+
+
+# ---------------------------------------------------------------------------
+# READINGS
+#
+# Interpretive calls --corpus and --matchers had to make where no governed
+# source answers the question. Recorded on the tools/validate_retention.py
+# pattern so the maintainer can confirm or reverse each one rather than find it
+# in the code. Nothing here adds a registry key, changes a form or touches the
+# cast.
+# ---------------------------------------------------------------------------
+
+#: (id, question, the reading taken, what would change it)
+READINGS = (
+    (
+        "O-R1",
+        "How a corpus value that is one placeholder is held to a form with two "
+        "slots, such as <synthetic-handle-1> against handle:<platform>/<string>",
+        "It stands in for the whole value, fits any form, and carries no platform "
+        "token to check. On the corpora of 2026-11-02 every value at a site is one "
+        "placeholder, so O-C2's form and token checks refuse nothing on the real "
+        "rows and bite only on a value written with its separators. Every run "
+        "counts these values and says so",
+        "The corpora writing structured placeholders such as "
+        "<platform>/<synthetic-handle-1>, a change to tools/build_corpus.py and "
+        "conformance/, after which the token check bites on the real rows",
+    ),
+    (
+        "O-R2",
+        "Whether a CLAIM's value carries its type prefix, as in handle:<...>, or "
+        "only the part after it",
+        "Either is accepted. A value whose prefix names a different registered "
+        "key is refused under O-C2, because the value then says it is a "
+        "different type from the selector_type beside it",
+        "spec/layer-model.yaml stating which of the two a CLAIM's value is, at "
+        "which point the other is refused",
+    ),
+    (
+        "O-R3",
+        "Which codes are ontology codes for O-C3's vacuity guard",
+        "Only SELECTOR_TYPE_UNREGISTERED, the one this mode refuses. "
+        "SELECTOR_ANCHOR_PROHIBITED, HINT_CITED_AS_VALUE and "
+        "GENERATED_CITED_AS_OBSERVED are driven by the registry and need an "
+        "entity type or a citation's lineage to decide, and rung 2 refuses them "
+        "for their fixtures. O-C3 also refuses a must-fail row with expect_only "
+        "true that this mode refuses for a code the row does not expect, which is "
+        "the same guard from the other side",
+        "This mode taking over one of the registry-driven codes, which adds it to "
+        "CORPUS_OWNED_CODES in the same change",
+    ),
+    (
+        "O-R4",
+        "Where a key that no must-pass row exercises is declared unexercised",
+        "In the selector's own note, as the words 'unexercised at v' plus "
+        "ontology.version. Thirteen notes in ontology/selectors.yaml carry the "
+        "words since 2026-11-02, written by the builder of this mode. That is a "
+        "rank-3 edit of words alone, with no key, form or field added",
+        "A list under ontology naming the unexercised keys, which is a new field "
+        "and so a shape change; or must-pass rows written for the thirteen, "
+        "after which O-C4 refuses the words until they are removed",
+    ),
+    (
+        "O-R5",
+        "Whether a clean --corpus run is rung 3 of CONFORMANCE.md section 3 for "
+        "a connector",
+        "No. The mode reads the repository's two corpora and no connector's "
+        "emitted events, so it proves the corpora's selectors against the "
+        "registry and proves nothing about a connector. Rung 2's generated enum "
+        "still carries registry membership for an emitted event",
+        "A --file argument that reads a connector's sample output, which would "
+        "make this mode the rung 3 tool the ladder names",
+    ),
+    (
+        "O-R6",
+        "Whether the ontology-matchers kernel gate entry moves from STUB to "
+        "IMPLEMENTED now that the structural half runs",
+        "Left to the maintainer, and the entry stays STUB with its note saying "
+        "the structural half runs. The aggregator runs a STUB entry's command "
+        "and does not read its exit code, so the fixer pass of 2026-11-02 made "
+        "the default mode run O-M1 to O-M3 as well: a refusal of theirs now "
+        "fails the IMPLEMENTED ontology entry and the pre-commit hook, and the "
+        "self-test plants three of them through the default mode. O-15 also "
+        "refuses a calibration flag there under its own code, so a flag fault "
+        "can draw two refusals in that mode. CONFORMANCE.md has no rule on a "
+        "mode that checks structure and says so",
+        "The maintainer's decision. IMPLEMENTED for ontology-matchers adds the "
+        "matchers report to the kernel gate and keeps the scoring half deferred "
+        "in the mode's own output. Reversing the fixer's change is one line in "
+        "main(), the default mode calling check() instead of registry_lint(), "
+        "and the three default-mode plants then fail until they are removed",
+    ),
+    (
+        "O-R7",
+        "Which purposes a matcher library entry may carry, and the code that "
+        "refuses one outside them",
+        "argv_shape_gate and constraint_satisfaction, the two the registry uses "
+        "and its matchers comment describes. The registry declares no vocabulary "
+        "for purposes, so the pair is a constant here, and O-M3 is a code the "
+        "brief for this mode did not name",
+        "A purposes block in ontology/selectors.yaml that this mode reads instead, "
+        "which is a registry shape change",
+    ),
+    (
+        "O-R8",
+        "What counts as a connector using a matcher by name for O-M2",
+        "Any token of the shape namespace.name.vN in a connector's adapter.py or "
+        "manifest.yaml, in code or in prose. connectors/sherlock/adapter.py names "
+        "shape.username.v1 in a docstring only. A connector that applies a "
+        "matcher without naming it is not found, and which purpose a connector "
+        "uses a matcher for is not checked",
+        "A manifest field naming the matchers a connector applies, which the "
+        "manifest schema does not carry",
+    ),
+    (
+        "O-R9",
+        "Whether the context events of a must-fail row are held to O-C1 and O-C2",
+        "Yes. A row's context is presented as the legal history its event is "
+        "refused against, so a defect there is a second defect the fixture did "
+        "not mean to carry. They do not count toward O-C4, which reads must-pass "
+        "rows alone",
+        "A must-fail row that needs an illegal context to be refused for its own "
+        "code, which would move that row's context out of this check by name",
+    ),
+)
+
 
 class Finding:
-    __slots__ = ("code", "where", "detail", "moves")
+    __slots__ = ("code", "where", "detail", "moves", "rule")
 
-    def __init__(self, code: str, where: str, detail: str, moves: str):
+    def __init__(self, code: str, where: str, detail: str, moves: str, rule: str = ""):
         self.code = code
         self.where = where
         self.detail = detail
         self.moves = moves
+        self.rule = rule
 
     def render(self) -> str:
         return (
             f"REFUSED {self.code}\n"
             f"  where: {self.where}\n"
             f"  what:  {self.detail}\n"
-            f"  moves: {self.moves}"
+            + (f"  rule:  {self.rule}\n" if self.rule else "")
+            + f"  moves: {self.moves}"
         )
 
 
@@ -851,6 +1084,589 @@ def check_proposed(meta, selectors) -> list[Finding]:
 
 
 # ---------------------------------------------------------------------------
+# --corpus
+# ---------------------------------------------------------------------------
+
+
+class Unreadable(Exception):
+    """A governed input a mode needs could not be read. Exit 2."""
+
+    def __init__(self, code: str, where: str, what: str, moves: str):
+        super().__init__(what)
+        self.finding = Finding(code, where, what, moves)
+
+
+def load_layer_model() -> dict:
+    model = yaml.safe_load(LAYER_MODEL.read_text(encoding="utf-8"))
+    if not isinstance(model, dict):
+        raise ValueError("the layer model did not parse to a mapping")
+    return model
+
+
+def registry_sites(model: dict) -> list[tuple[str, tuple, bool]]:
+    """Every field the layer model binds to this registry, per event type.
+
+    Each entry is (event type, path from the event root, whether the field's
+    own mapping also declares `value`). A path segment `[]` steps into every
+    item of an array. Nothing here names a field: the sites are what the layer
+    model says they are, so a new registry-bound field is read on the next run.
+    """
+    out: list[tuple[str, tuple, bool]] = []
+
+    def collect(event_type: str, fields, prefix: tuple) -> None:
+        if not isinstance(fields, dict):
+            return
+        for name, spec in fields.items():
+            if not isinstance(spec, dict):
+                continue
+            path = prefix + (str(name),)
+            if spec.get("registry") == REL:
+                out.append((event_type, path, "value" in fields))
+            collect(event_type, spec.get("fields"), path)
+            items = spec.get("items")
+            if isinstance(items, dict):
+                collect(event_type, items.get("fields"), path + ("[]",))
+
+    for event_type, spec in (model.get("event_types") or {}).items():
+        if isinstance(spec, dict) and isinstance(spec.get("payload"), dict):
+            collect(str(event_type), spec["payload"].get("fields"), ("payload",))
+    return out
+
+
+def site_label(site: tuple[str, tuple, bool]) -> str:
+    event_type, path, has_value = site
+    text = ".".join(path).replace(".[]", "[]")
+    return f"{event_type} {text}" + (" with its value" if has_value else "")
+
+
+def require_sites(sites: list) -> list:
+    """The registry-bound sites, refused when the layer model binds none."""
+    if not sites:
+        raise Unreadable(
+            "ONT_CORPUS_SITES_UNREADABLE",
+            "spec/layer-model.yaml",
+            f"the layer model binds no field to {REL}, so --corpus would read no site "
+            "and check nothing while exiting 0",
+            f"restore the registry: {REL} annotation on the fields that carry a selector "
+            "type and run python tools/validate_layer_model.py; or, if the binding moved "
+            "on purpose, annotate the fields that now carry selector types",
+        )
+    return sites
+
+
+def parse_corpus(text: str, rel: str) -> list[tuple[int, dict]]:
+    """One corpus as (line number, row). Unreadable on any row that cannot be read."""
+    rows: list[tuple[int, dict]] = []
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise Unreadable(
+                "ONT_CORPUS_UNREADABLE",
+                f"{rel}:{number}",
+                f"the line is not JSON ({exc.msg}), so the row cannot be read and a "
+                "row skipped silently is a row checked by nothing",
+                "regenerate the corpus with python tools/build_corpus.py, or fix the line",
+            )
+        if not isinstance(row, dict) or not isinstance(row.get("event"), dict):
+            raise Unreadable(
+                "ONT_CORPUS_UNREADABLE",
+                f"{rel}:{number}",
+                "the row is not a mapping carrying an event, so there is nothing to "
+                "read a selector from",
+                "regenerate the corpus with python tools/build_corpus.py, or fix the row",
+            )
+        rows.append((number, row))
+    return rows
+
+
+def load_corpora(corpora=CORPORA) -> dict[str, list[tuple[int, dict]]]:
+    """Both corpora as (line number, row). Exit 2 on anything unreadable."""
+    out: dict[str, list[tuple[int, dict]]] = {}
+    for label, path, rel in corpora:
+        try:
+            text = path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            raise Unreadable(
+                "ONT_CORPUS_UNREADABLE",
+                rel,
+                "the corpus does not exist, so --corpus has nothing to read and checks nothing",
+                "run python tools/build_corpus.py to regenerate both corpora, or restore the "
+                "file from git; the ontology-corpus entry keeps failing until a corpus is read",
+            )
+        out[label] = parse_corpus(text, rel)
+    return out
+
+
+def _parents(node, path: tuple, trail: tuple):
+    """Every mapping at `path` under `node`, with the dotted trail to it."""
+    if not path:
+        if isinstance(node, dict):
+            yield trail, node
+        return
+    head, rest = path[0], path[1:]
+    if head == "[]":
+        if isinstance(node, list):
+            for i, item in enumerate(node):
+                yield from _parents(item, rest, trail + (str(i),))
+    elif isinstance(node, dict) and head in node:
+        yield from _parents(node[head], rest, trail + (head,))
+
+
+_ABSENT = object()
+
+
+def occurrences(event: dict, sites: list[tuple[str, tuple, bool]]):
+    """(dotted path, selector type, value or _ABSENT) at every site the event's type has."""
+    event_type = (event.get("event") or {}).get("event_type") if isinstance(event.get("event"), dict) else None
+    for site_type, path, has_value in sites:
+        if site_type != event_type:
+            continue
+        for trail, parent in _parents(event, path[:-1], ()):
+            field = path[-1]
+            if field not in parent or parent[field] is None:
+                continue
+            value = parent.get("value", _ABSENT) if has_value else _ABSENT
+            yield ".".join(trail + (field,)), parent[field], value
+
+
+def form_misfit(key: str, form: str, value, keys) -> tuple[str, bool]:
+    """Why `value` does not fit `form`, or "" when it fits. The flag says the value
+    was one whole-value placeholder, which fits by reading O-R1.
+
+    The reason never quotes the value. RETENTION.md RT-15 keeps a selector value
+    out of every tracked file, and a refusal is the text that gets pasted into a
+    worklog entry, a handoff or an issue, so it names the row and the field and
+    never the value.
+    """
+    if value is None:
+        return "", False
+    if not isinstance(value, str):
+        return (
+            f"the value is a {type(value).__name__}, and a selector value is a string in "
+            "its key's form",
+            False,
+        )
+    body = value
+    head, colon, tail = value.partition(":")
+    if colon and head in keys:
+        if head != key:
+            return (
+                f"the value is written typed as {head} while the selector_type beside it is "
+                f"{key}, so the value says it is a different selector (reading O-R2)",
+                False,
+            )
+        body = tail
+    if VALUE_PLACEHOLDER_RE.match(body):
+        return "", True
+    remainder = form[len(key) + 1:] if form.startswith(f"{key}:") else form
+    parts = FORM_SLOT_RE.split(remainder)
+    pattern = "".join(re.escape(p) if i % 2 == 0 else "(.*?)" for i, p in enumerate(parts))
+    match = re.fullmatch(pattern, body, re.S)
+    if not match:
+        return (
+            f"the value does not have the shape of the form {form}: its separators are "
+            "not the form's, so the slots cannot be read",
+            False,
+        )
+    for name, text in zip(parts[1::2], match.groups()):
+        if text == "":
+            return f"the <{name}> slot of the form {form} is empty", False
+        if VALUE_PLACEHOLDER_RE.match(text):
+            continue
+        if name == PLATFORM_SLOT and not PLATFORM_TOKEN_RE.match(text):
+            return (
+                f"the form {form} is platform-bound and the <platform> slot does not hold a "
+                "platform token of the shape ^[a-z][a-z0-9_]*$",
+                False,
+            )
+    return "", False
+
+
+def _event_findings(event: dict, sites, selectors: dict, file_where: str, prefix: str, row_name: str, stats: dict):
+    """O-C1 and O-C2 for one event: the findings, plus the registered keys seen.
+
+    `prefix` is the dotted path from the row to the event, empty for a row's own
+    event, so every location is one path plus one dotted node, which is the
+    shape tools/gate_log.py accepts.
+    """
+    out: list[Finding] = []
+    seen: set[str] = set()
+    keys = set(selectors)
+    for path, key, value in occurrences(event, sites):
+        stats["occurrences"] += 1
+        path = prefix + path
+        where = f"{file_where} :: {path}"
+        if not isinstance(key, str) or key not in selectors:
+            # A type is named only when it has a key's shape, so a value pasted
+            # into a type field is never repeated into a terminal or a CI log.
+            named = f"the selector type {key}" if isinstance(key, str) and PLATFORM_TOKEN_RE.match(key) else "a selector type"
+            out.append(
+                Finding(
+                    "ONT_CORPUS_SELECTOR_UNREGISTERED",
+                    where,
+                    f"row {row_name} carries {named} at {path}, which is not a key in "
+                    f"{REL}, so the event names a type the closed vocabulary does not carry",
+                    "use a registered key; or propose the type as a registry addition under "
+                    "ontology.proposed with a form, a datum_class and a matcher; or, if the row "
+                    "is meant to fail, move it to must-fail.jsonl expecting SELECTOR_TYPE_UNREGISTERED",
+                    rule="O-C1, docs/PLAINSIGHT-FOUNDATION.md D2. Rung 2's generated selector enum "
+                    "refuses the same type first",
+                )
+            )
+            continue
+        seen.add(key)
+        if value is _ABSENT:
+            continue
+        spec = selectors.get(key) or {}
+        form = spec.get("form") if isinstance(spec, dict) else None
+        if not isinstance(form, str):
+            continue  # O-01 refuses a selector with no form in the registry mode
+        stats["values"] += 1
+        reason, opaque = form_misfit(key, form, value, keys)
+        if opaque:
+            stats["opaque"] += 1
+        if value is None:
+            stats["null"] += 1
+        if reason:
+            out.append(
+                Finding(
+                    "ONT_CORPUS_VALUE_OFF_FORM",
+                    where.rsplit(".", 1)[0] + ".value",
+                    f"row {row_name} carries a {key} value that does not fit its form: {reason}. "
+                    "This refusal does not quote the value, because RETENTION.md RT-15 keeps a "
+                    "selector value out of every tracked file and a refusal is the text that "
+                    "gets pasted into one",
+                    f"write the value as one <placeholder>, or in the form {form} with every "
+                    "variable part a <placeholder> and any platform token in lowercase; or change "
+                    "the selector_type to the key whose form the value has",
+                    rule=f"O-C2, the form {REL} declares for {key}",
+                )
+            )
+    return out, seen
+
+
+def check_corpus(reg: dict, sites, corpora: dict) -> tuple[list[Finding], dict]:
+    """O-C1 to O-C4 over both corpora. Returns the findings and the counts the
+    output reports, so a clean run says what it read rather than only that it passed."""
+    findings: list[Finding] = []
+    selectors = reg.get("selectors") or {}
+    version = (reg.get("ontology") or {}).get("version")
+    words = UNEXERCISED_WORDS.format(version=version)
+    stats = {
+        "pass_rows": len(corpora.get("must-pass", [])),
+        "fail_rows": len(corpora.get("must-fail", [])),
+        "context_events": 0,
+        "occurrences": 0,
+        "values": 0,
+        "opaque": 0,
+        "null": 0,
+        "owned_rows": 0,
+        "words": words,
+    }
+    exercised: dict[str, str] = {}
+    pass_rel = CORPORA[0][2]
+    fail_rel = CORPORA[1][2]
+
+    for number, row in corpora.get("must-pass", []):
+        name = str(row.get("name") or f"line {number}")
+        found, seen = _event_findings(row["event"], sites, selectors, f"{pass_rel}:{number}", "event.", name, stats)
+        findings += found
+        for key in seen:
+            exercised.setdefault(key, name)
+
+    for number, row in corpora.get("must-fail", []):
+        name = str(row.get("name") or f"line {number}")
+        base = f"{fail_rel}:{number}"
+        for index, context in enumerate(_as_list(row.get("context"))):
+            if not isinstance(context, dict):
+                continue
+            stats["context_events"] += 1
+            found, _ = _event_findings(
+                context, sites, selectors, base, f"context.{index}.", f"{name}, context event {index},", stats
+            )
+            findings += found
+        found, _ = _event_findings(row["event"], sites, selectors, base, "event.", name, stats)
+        fired = {f.code for f in found}
+        expected = str(row.get("expect_code") or "")
+        if expected in CORPUS_OWNED_CODES:
+            stats["owned_rows"] += 1
+            want = CORPUS_OWNED_CODES[expected]
+            if want not in fired:
+                findings.append(
+                    Finding(
+                        "ONT_CORPUS_FIXTURE_VACUOUS",
+                        base,
+                        f"must-fail row {name} expects {expected}, which this mode refuses as "
+                        f"{want}, and this mode refuses nothing on the row's event. A fixture "
+                        "that passes the check it claims to break proves nothing about it",
+                        "break the row the way its expected code describes, such as a "
+                        "selector_type that is not a registry key; or change expect_code to the "
+                        "code the row does break",
+                        rule="O-C3, the vacuity guard. CLAUDE.md design gate 1",
+                    )
+                )
+            extra = sorted(fired - {want})
+            if extra:
+                findings.append(
+                    Finding(
+                        "ONT_CORPUS_FIXTURE_VACUOUS",
+                        base,
+                        f"must-fail row {name} expects {expected} and this mode also refuses its "
+                        f"event as {', '.join(extra)}, so the row breaks more than the rule it names",
+                        "remove the second defect from the row so it is refused for its expected "
+                        "code alone",
+                        rule="O-C3, the vacuity guard",
+                    )
+                )
+        elif fired and row.get("expect_only") is True:
+            findings.append(
+                Finding(
+                    "ONT_CORPUS_FIXTURE_VACUOUS",
+                    base,
+                    f"must-fail row {name} expects only {expected or 'its code'} and this mode "
+                    f"refuses its event as {', '.join(sorted(fired))} too, so the row breaks a "
+                    "selector rule it does not name and its refusal cannot be read as one rule",
+                    "make the row's selectors legal, a registered key and a value in its form or "
+                    "one <placeholder>, so the row is refused for its expected code alone",
+                    rule="O-C3, the vacuity guard read from the other side (reading O-R3)",
+                )
+            )
+
+    declared: list[str] = []
+    for key, spec in selectors.items():
+        note = str((spec or {}).get("note", "")) if isinstance(spec, dict) else ""
+        says = words.lower() in note.lower()
+        if says:
+            declared.append(key)
+        if key not in exercised and not says:
+            findings.append(
+                Finding(
+                    "ONT_CORPUS_KEY_UNEXERCISED",
+                    at(f"selectors.{key}.note"),
+                    f"no must-pass row carries {key} at any site and its note does not say it "
+                    f"is {words}, so the key can be added and never proven",
+                    f"add a must-pass row that carries {key} through python "
+                    f"tools/build_corpus.py; or add the words '{words}' to the key's note, which "
+                    "is a statement the maintainer reads",
+                    rule="O-C4, CLAUDE.md design gate 3",
+                )
+            )
+        elif key in exercised and says:
+            findings.append(
+                Finding(
+                    "ONT_CORPUS_KEY_UNEXERCISED",
+                    at(f"selectors.{key}.note"),
+                    f"the note says {key} is {words} and must-pass row {exercised[key]} "
+                    "exercises it, so the note states something the corpus contradicts",
+                    f"remove the words '{words}' from the note",
+                    rule="O-C4, read from the other side",
+                )
+            )
+    stats["exercised"] = sorted(k for k in exercised if k in selectors)
+    stats["declared"] = sorted(declared)
+    return findings, stats
+
+
+def corpus_report(stats: dict, sites, reg: dict) -> str:
+    prohibited = sorted({str(p.get("code")) for p in _as_list(reg.get("prohibitions")) if isinstance(p, dict) and p.get("code")})
+    lines = [
+        f"validate_ontology --corpus ok: {stats['pass_rows'] + stats['fail_rows']} rows read "
+        f"({stats['pass_rows']} must-pass, {stats['fail_rows']} must-fail carrying "
+        f"{stats['context_events']} context events).",
+        f"  sites read from spec/layer-model.yaml ({len(sites)}): " + "; ".join(site_label(s) for s in sites),
+        f"  selector occurrences: {stats['occurrences']}, every one a registry key except on a "
+        "must-fail row that expects " + " or ".join(sorted(CORPUS_OWNED_CODES)) + ".",
+        f"  values held to their form: {stats['values']}. {stats['opaque']} of them are one "
+        "whole-value placeholder, which fits any form and carries no platform token to "
+        "check (reading O-R1), and " + str(stats['null']) + " are null.",
+        f"  keys: {len(stats['exercised'])} exercised by a must-pass row "
+        f"({', '.join(stats['exercised'])}); {len(stats['declared'])} declared "
+        f"{stats['words']} in their notes.",
+        f"  must-fail rows expecting a code this mode refuses: {stats['owned_rows']} "
+        f"({', '.join(sorted(CORPUS_OWNED_CODES))}), each refused for that code alone.",
+        "  not checked here: a filled value, which tools/validate_retention.py --repo-scan "
+        "refuses; a filled slot other than <platform>; and the registry-driven codes "
+        f"SELECTOR_ANCHOR_PROHIBITED, {', '.join(prohibited)}, which rung 2 refuses. The rows "
+        "are the repository's corpora and no connector's output, so this is no rung 3 claim "
+        "for any connector (reading O-R5).",
+    ]
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# --matchers
+# ---------------------------------------------------------------------------
+
+
+def connector_sources() -> list[tuple[str, str]]:
+    """(repository path, text) for each connector file O-M2 reads."""
+    out: list[tuple[str, str]] = []
+    if not CONNECTORS.is_dir():
+        return out
+    for folder in sorted(p for p in CONNECTORS.iterdir() if p.is_dir() and not p.name.startswith(("_", "."))):
+        for name in CONNECTOR_FILES:
+            path = folder / name
+            if path.is_file():
+                out.append((path.relative_to(ROOT).as_posix(), path.read_text(encoding="utf-8")))
+    return out
+
+
+def _stands_in(text: str, line: int) -> tuple[str, list[str]]:
+    """The innermost function around `line` in a Python source, and the reading ids
+    its docstring names. Empty when the line is outside every function or the
+    source does not parse."""
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return "", []
+    best = None
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            end = getattr(node, "end_lineno", node.lineno)
+            if node.lineno <= line <= end and (best is None or node.lineno >= best.lineno):
+                best = node
+    if best is None:
+        return "", []
+    doc = ast.get_docstring(best) or ""
+    return best.name, sorted(set(READING_ID_RE.findall(doc)))
+
+
+def check_matchers_mode(reg: dict, sources: list[tuple[str, str]]) -> tuple[list[Finding], dict]:
+    """O-08 and O-09 rerun, then O-M1 to O-M3. Structure only: nothing is scored."""
+    matchers = reg.get("matchers") or {}
+    findings = check_matchers(reg.get("selectors") or {}, matchers.get("library") or {})
+    structural, report = matcher_structure(reg, sources)
+    return findings + structural, report
+
+
+def registry_lint(reg: dict, text: str, codes: set[str], sources: list[tuple[str, str]]) -> list[Finding]:
+    """What the default mode runs: every registry check, then O-M1 to O-M3.
+
+    The ontology-matchers kernel gate entry is STUB, and the aggregator does not
+    read a STUB entry's exit code. Running the structural matcher checks here puts
+    their refusals behind the IMPLEMENTED ontology entry and the pre-commit hook
+    instead (reading O-R6).
+    """
+    return check(reg, text, codes) + matcher_structure(reg, sources)[0]
+
+
+def matcher_structure(reg: dict, sources: list[tuple[str, str]]) -> tuple[list[Finding], dict]:
+    """O-M1 to O-M3 alone, with the report --matchers prints."""
+    matchers = reg.get("matchers") or {}
+    library = matchers.get("library") or {}
+    findings: list[Finding] = []
+
+    for name, spec in library.items():
+        spec = spec if isinstance(spec, dict) else {}
+        faults = []
+        if spec.get("purpose") not in MATCHER_PURPOSES:
+            faults.append("its purpose is not one of " + " or ".join(MATCHER_PURPOSES))
+        if not spec.get("note"):
+            faults.append("it carries no note")
+        if faults:
+            findings.append(
+                Finding(
+                    "ONT_MATCHER_ENTRY_INCOMPLETE",
+                    at(f"matchers.library.{name}"),
+                    "the library entry says less than a reader needs: " + "; ".join(faults)
+                    + ". An argv shape gate may run uncalibrated and a constraint matcher may "
+                    "not, so an entry whose purpose is unreadable is one nobody can place",
+                    "set purpose to " + " or ".join(MATCHER_PURPOSES)
+                    + " and write a note saying what the matcher accepts; or propose a third "
+                    "purpose to the maintainer (reading O-R7)",
+                    rule="O-M3",
+                )
+            )
+
+    ref = matchers.get("calibration_ref")
+    ref_exists = bool(ref) and (ROOT / str(ref)).is_file()
+    if not ref_exists:
+        for flag in ("calibrated", "identity_basis_permitted"):
+            if matchers.get(flag) is not False:
+                findings.append(
+                    Finding(
+                        "ONT_MATCHER_CALIBRATION_FLAG",
+                        at(f"matchers.{flag}"),
+                        f"{flag} is not false while {ref or 'calibration_ref'} does not exist. "
+                        "Until a calibration file exists this flag is the only thing that keeps "
+                        "an unscored matcher from being an identity basis",
+                        f"set {flag}: false; or write the calibration policy and its truth corpus "
+                        "first, which docs/THE-GAMEPLAN.md section 2.2 defers to before the first "
+                        "matcher merges and which needs the sealed cast",
+                        rule="O-M1, the semantics contract's rule that an unscored matcher may not "
+                        "be an identity basis",
+                    )
+                )
+
+    named: list[dict] = []
+    for rel, text in sources:
+        for number, line in enumerate(text.splitlines(), 1):
+            for match in MATCHER_ID_RE.finditer(line):
+                mid = match.group(0)
+                entry = {"where": f"{rel}:{number}", "id": mid, "in_library": mid in library}
+                if mid in library:
+                    entry["purpose"] = (library.get(mid) or {}).get("purpose")
+                    if rel.endswith(".py"):
+                        entry["function"], entry["readings"] = _stands_in(text, number)
+                else:
+                    findings.append(
+                        Finding(
+                            "ONT_MATCHER_NAMED_UNDECLARED",
+                            f"{rel}:{number}",
+                            f"the connector names matcher {mid}, which matchers.library does not "
+                            "declare, so SS-19's argv refusal would resolve it to nothing",
+                            "name a matcher the library declares; or declare this one under "
+                            f"matchers.library in {REL} with a purpose and a note and reference it "
+                            "from the selector it gates",
+                            rule="O-M2, doctrine/SUBJECT_SELECTION.md SS-19",
+                        )
+                    )
+                named.append(entry)
+    report = {
+        "library": len(library),
+        "ref": ref,
+        "ref_exists": ref_exists,
+        "named": named,
+        "connectors": len({s[0].split("/")[1] for s in sources if s[0].count("/") >= 2}),
+    }
+    return findings, report
+
+
+def matchers_report(report: dict) -> str:
+    named = report["named"]
+    lines = [
+        "validate_ontology --matchers: the structural half ran and refused nothing. It scored nothing.",
+        f"  checked: {report['library']} library entries, each referenced by a selector and each "
+        "selector's matcher declared (O-08, O-09); each with a note and a purpose of "
+        + " or ".join(MATCHER_PURPOSES) + " (O-M3); calibrated and identity_basis_permitted "
+        f"false while {report['ref']} "
+        + ("exists" if report["ref_exists"] else "does not exist")
+        + f" (O-M1); {len(named)} matcher id(s) named across {report['connectors']} connector(s), "
+        "each in the library (O-M2).",
+    ]
+    for entry in named:
+        line = f"  {entry['where']} names {entry['id']} ({entry.get('purpose')})"
+        if entry.get("function"):
+            line += f", and {entry['function']} stands in for its grammar there"
+            if entry.get("readings"):
+                line += f" (reading {', '.join(entry['readings'])})"
+        lines.append(line + ".")
+    if report["ref_exists"]:
+        lines.append(
+            f"  {report['ref']} exists and this mode does not read it. The scoring half is owed."
+        )
+    lines.append(
+        "  cannot check: no matcher is scored, no precision or recall is claimed, and the "
+        "identity-basis rule is enforced by the flag alone until the cast is sealed and a "
+        "calibration file exists."
+    )
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
 # self-test
 # ---------------------------------------------------------------------------
 
@@ -934,11 +1750,194 @@ def _mutations():
     ]
 
 
-def self_test(reg: dict, text: str, codes: set[str]) -> int:
+def _row(ctx: dict, corpus: str, name: str) -> dict:
+    for _, row in ctx["corpora"][corpus]:
+        if row.get("name") == name:
+            return row
+    raise KeyError(f"the self-test plants on {corpus} row {name}, which the corpus no longer carries")
+
+
+#: A value with none of the form's separators and no brackets. It is no
+#: selector of any shape, so this file never carries a filled value.
+OFF_FORM = "synthetic_value_with_no_separator"
+
+
+def _corpus_plants():
+    """One break per --corpus code, on in-memory copies of the corpora and the registry.
+    Every planted value is a placeholder or a string no selector shape matches."""
+
+    def unregistered_key(c):
+        _row(c, "must-pass", "collect-permitted")["event"]["payload"]["target_selector_type"] = "unregistered_type_plant"
+
+    def value_off_form(c):
+        _row(c, "must-pass", "extract-claim-handle")["event"]["payload"]["value"] = OFF_FORM
+
+    def platform_slot_empty(c):
+        _row(c, "must-pass", "extract-claim-handle")["event"]["payload"]["value"] = "/<synthetic-handle-1>"
+
+    def platform_token_misshapen(c):
+        _row(c, "must-pass", "extract-claim-handle")["event"]["payload"]["value"] = "Not-A-Token/<synthetic-handle-1>"
+
+    def typed_as_another_key(c):
+        _row(c, "must-pass", "extract-claim-handle")["event"]["payload"]["value"] = "email:<synthetic-handle-1>"
+
+    def owned_code_refused_by_nothing(c):
+        _row(c, "must-fail", "extract-carries-confidence")["expect_code"] = "SELECTOR_TYPE_UNREGISTERED"
+
+    def other_code_also_off_form(c):
+        _row(c, "must-fail", "extract-carries-confidence")["event"]["payload"]["value"] = OFF_FORM
+
+    def context_off_form(c):
+        for _, row in c["corpora"]["must-fail"]:
+            for event in _as_list(row.get("context")):
+                payload = event.get("payload") if isinstance(event, dict) else None
+                if isinstance(payload, dict) and payload.get("selector_type") == "handle":
+                    payload["value"] = OFF_FORM
+                    return
+
+    def key_with_no_row_and_no_note(c):
+        words = UNEXERCISED_WORDS.format(version=c["reg"]["ontology"]["version"])
+        spec = c["reg"]["selectors"]["domain"]
+        spec["note"] = re.sub(re.escape(words), "", spec["note"], flags=re.I)
+
+    def only_row_of_a_key_removed(c):
+        c["corpora"]["must-pass"] = [
+            (n, row) for n, row in c["corpora"]["must-pass"] if '"phone"' not in json.dumps(row)
+        ]
+
+    def exercised_key_declared_unexercised(c):
+        words = UNEXERCISED_WORDS.format(version=c["reg"]["ontology"]["version"])
+        c["reg"]["selectors"]["handle"]["note"] += f" Planted, {words}."
+
+    return [
+        ("put an unregistered type on a must-pass row", unregistered_key, "ONT_CORPUS_SELECTOR_UNREGISTERED"),
+        ("write a must-pass value with none of its form's separators", value_off_form, "ONT_CORPUS_VALUE_OFF_FORM"),
+        ("leave a platform-bound value's <platform> slot empty", platform_slot_empty, "ONT_CORPUS_VALUE_OFF_FORM"),
+        ("fill a <platform> slot with a misshapen token", platform_token_misshapen, "ONT_CORPUS_VALUE_OFF_FORM"),
+        ("type a handle value with another key's prefix", typed_as_another_key, "ONT_CORPUS_VALUE_OFF_FORM"),
+        ("claim SELECTOR_TYPE_UNREGISTERED on a row nothing refuses", owned_code_refused_by_nothing, "ONT_CORPUS_FIXTURE_VACUOUS"),
+        ("break a must-fail row's form beside its own code", other_code_also_off_form, "ONT_CORPUS_FIXTURE_VACUOUS"),
+        ("break a value in a must-fail row's context", context_off_form, "ONT_CORPUS_VALUE_OFF_FORM"),
+        ("drop the unexercised words from a key no row carries", key_with_no_row_and_no_note, "ONT_CORPUS_KEY_UNEXERCISED"),
+        ("remove the only must-pass rows carrying a key", only_row_of_a_key_removed, "ONT_CORPUS_KEY_UNEXERCISED"),
+        ("declare an exercised key unexercised", exercised_key_declared_unexercised, "ONT_CORPUS_KEY_UNEXERCISED"),
+    ]
+
+
+def _matcher_plants():
+    """One break per --matchers code, on in-memory copies of the registry and the
+    connector sources, plus the reused O-08 check firing inside the mode."""
+
+    def calibrated_without_file(c):
+        c["reg"]["matchers"]["calibrated"] = True
+
+    def identity_basis_without_file(c):
+        c["reg"]["matchers"]["identity_basis_permitted"] = True
+
+    def connector_names_undeclared(c):
+        c["sources"] = c["sources"] + [("connectors/plant/adapter.py", "# gated by shape.undeclared_plant.v1\n")]
+
+    def purpose_outside_set(c):
+        c["reg"]["matchers"]["library"]["shape.handle.v1"]["purpose"] = "identity_decision"
+
+    def note_dropped(c):
+        c["reg"]["matchers"]["library"]["shape.email.v1"].pop("note")
+
+    def selector_matcher_undeclared(c):
+        del c["reg"]["matchers"]["library"]["shape.domain.v1"]
+
+    return [
+        ("claim calibration while calibration_ref is absent", calibrated_without_file, "ONT_MATCHER_CALIBRATION_FLAG"),
+        ("permit an identity basis while calibration_ref is absent", identity_basis_without_file, "ONT_MATCHER_CALIBRATION_FLAG"),
+        ("name an undeclared matcher in a connector", connector_names_undeclared, "ONT_MATCHER_NAMED_UNDECLARED"),
+        ("give a library entry a purpose outside the two", purpose_outside_set, "ONT_MATCHER_ENTRY_INCOMPLETE"),
+        ("drop a library entry's note", note_dropped, "ONT_MATCHER_ENTRY_INCOMPLETE"),
+        ("drop a matcher a selector names, under --matchers", selector_matcher_undeclared, "ONT_MATCHER_UNDECLARED"),
+    ]
+
+
+#: The --matchers plants run a second time through the default mode, one per
+#: O-M code. O-15 refuses either calibration flag under its own code in the
+#: default mode, so each plant asserts the O-M code itself and a lost O-M1 is
+#: not hidden behind O-15.
+DEFAULT_MODE_PLANTS = ("identity_basis_without_file", "connector_names_undeclared", "purpose_outside_set")
+
+
+def _run_plants(label: str, plants, base: dict, run) -> tuple[int, int]:
+    failures = 0
+    for desc, mutate, expected in plants:
+        ctx = copy.deepcopy(base)
+        try:
+            mutate(ctx)
+            drawn = run(ctx)
+            fired, hiding = {fnd.code for fnd in drawn}, _hiding_moves(drawn)
+        except Exception as exc:  # a plant that cannot be applied is a failed plant
+            fired, hiding = {f"PLANT_ERROR {type(exc).__name__}: {exc}"}, []
+        failures += _judge(label, desc, expected, fired, hiding)
+    return failures, len(plants)
+
+
+def _hiding_moves(findings) -> list[str]:
+    """The codes of refusals whose moves offer to set a kernel gate entry's state."""
+    return sorted({fnd.code for fnd in findings if GATE_STATE_MOVE_RE.search(fnd.moves or "")})
+
+
+def _judge(label: str, desc: str, expected: str, fired: set, hiding: list[str]) -> int:
+    """Print one plant's line and return 1 when it was not refused cleanly: its code
+    did not fire, or a refusal it drew offers a move that hides the fault."""
+    ok = expected in fired and not hiding
+    mark = "refused" if ok else ("HIDING  " if expected in fired else "PASSED  ")
+    print(
+        f"  {mark}  {label:10} {desc:60} expected {expected}"
+        + ("" if expected in fired else f", fired {sorted(fired)}")
+        + (f", and {', '.join(hiding)} offers a gate-state move" if hiding else "")
+    )
+    return 0 if ok else 1
+
+
+def _unreadable_plants():
+    """Inputs --corpus cannot read. Each must raise Unreadable with its code."""
+    absent = (("must-pass", ROOT / "conformance" / "self-test-absent.jsonl", "conformance/self-test-absent.jsonl"),)
+    rel = "conformance/must-pass.jsonl"
+    return [
+        ("a corpus file that does not exist", lambda: load_corpora(absent), "ONT_CORPUS_UNREADABLE"),
+        ("a corpus line that is not JSON", lambda: parse_corpus("{not json", rel), "ONT_CORPUS_UNREADABLE"),
+        ("a corpus row with no event", lambda: parse_corpus('{"name": "x"}', rel), "ONT_CORPUS_UNREADABLE"),
+        ("a layer model that binds no field to the registry", lambda: require_sites([]), "ONT_CORPUS_SITES_UNREADABLE"),
+    ]
+
+
+def _run_unreadable(plants) -> tuple[int, int]:
+    failures = 0
+    for desc, act, expected in plants:
+        findings: list[Finding] = []
+        try:
+            act()
+        except Unreadable as exc:
+            findings = [exc.finding]
+        except Exception as exc:  # a plant that cannot be applied is a failed plant
+            findings = [Finding(f"PLANT_ERROR {type(exc).__name__}: {exc}", "", "", "")]
+        failures += _judge("unreadable", desc, expected, {f.code for f in findings}, _hiding_moves(findings))
+    return failures, len(plants)
+
+
+def self_test(reg: dict, text: str, codes: set[str], sites=None, corpora=None, sources=None) -> int:
     baseline = check(reg, text, codes)
     if baseline:
         print("self-test cannot run: the unmutated registry is not clean", file=sys.stderr)
         for fnd in baseline:
+            print(fnd.render(), file=sys.stderr)
+        return 1
+    corpus_base, _ = check_corpus(reg, sites, corpora)
+    matcher_base, _ = check_matchers_mode(reg, sources)
+    matcher_base += registry_lint(reg, text, codes, sources)
+    if corpus_base or matcher_base:
+        print(
+            "self-test cannot run: the unmutated corpora or matchers block is not clean, so a "
+            "planted break cannot be told from the tree",
+            file=sys.stderr,
+        )
+        for fnd in corpus_base + matcher_base:
             print(fnd.render(), file=sys.stderr)
         return 1
     failures = 0
@@ -946,22 +1945,46 @@ def self_test(reg: dict, text: str, codes: set[str]) -> int:
     for desc, mutate, expected in muts:
         r = copy.deepcopy(reg)
         mutate(r)
-        fired = {fnd.code for fnd in check(r, text, codes)}
-        ok = expected in fired
-        failures += 0 if ok else 1
-        print(
-            f"  {'refused' if ok else 'PASSED  '}  {desc:56} expected {expected}"
-            + ("" if ok else f", fired {sorted(fired)}")
-        )
+        drawn = check(r, text, codes)
+        failures += _judge("registry", desc, expected, {fnd.code for fnd in drawn}, _hiding_moves(drawn))
+    corpus_failed, corpus_n = _run_plants(
+        "--corpus",
+        _corpus_plants(),
+        {"reg": reg, "corpora": corpora},
+        lambda c: check_corpus(c["reg"], sites, c["corpora"])[0],
+    )
+    matcher_failed, matcher_n = _run_plants(
+        "--matchers",
+        _matcher_plants(),
+        {"reg": reg, "sources": sources},
+        lambda c: check_matchers_mode(c["reg"], c["sources"])[0],
+    )
+    # The O-M codes again, through what the default mode runs, so a refusal of
+    # theirs is proven to reach the IMPLEMENTED ontology entry (reading O-R6).
+    lint_failed, lint_n = _run_plants(
+        "default",
+        [p for p in _matcher_plants() if p[1].__name__ in DEFAULT_MODE_PLANTS],
+        {"reg": reg, "sources": sources},
+        lambda c: registry_lint(c["reg"], text, codes, c["sources"]),
+    )
+    unread_failed, unread_n = _run_unreadable(_unreadable_plants())
+    failures += corpus_failed + matcher_failed + lint_failed + unread_failed
+    total = len(muts) + corpus_n + matcher_n + lint_n + unread_n
     print()
     if failures:
         print(
-            f"validate_ontology --self-test: {failures} mutation(s) were not refused. A gate "
-            "nobody has watched fail is an assumption (HYGIENE.md section 2).",
+            f"validate_ontology --self-test: {failures} of {total} deliberate breaks were not "
+            "refused, or were refused with a move that hides the fault (HIDING). A gate nobody "
+            "has watched fail is an assumption (HYGIENE.md section 2).",
             file=sys.stderr,
         )
         return 1
-    print(f"validate_ontology --self-test ok: {len(muts)} deliberate breaks, {len(muts)} refused")
+    print(
+        f"validate_ontology --self-test ok: {total} deliberate breaks, {total} refused "
+        f"({len(muts)} registry, {corpus_n} --corpus, {matcher_n} --matchers, {lint_n} --matchers "
+        f"through the default mode, {unread_n} unreadable), no refusal offering a gate-state "
+        "move, and the unplanted registry, corpora and matchers block clean"
+    )
     return 0
 
 
@@ -978,40 +2001,45 @@ def load() -> tuple[dict, str]:
     return reg, text
 
 
-def _deferred(flag: str, stands_in: str, un_defers: str) -> int:
-    print(
-        f"validate_ontology {flag}: DEFERRED, and it checked nothing.\n"
-        f"  stands in:  {stands_in}\n"
-        f"  un-defers:  {un_defers}\n"
-        "  docs/THE-GAMEPLAN.md section 2.2 carries the trigger. A deferred check is "
-        "never counted as a pass."
-    )
-    return 0
+def _record(gate: str, findings: list[Finding]) -> None:
+    if not gate_log:
+        return
+    try:
+        gate_log.record_run(gate, "refuse" if findings else "pass", count=len(findings))
+        for fnd in findings:
+            gate_log.record_finding(gate, code=fnd.code, where=fnd.where)
+    except Exception:
+        pass
+
+
+def _refuse(findings: list[Finding], flag: str, rule: str) -> int:
+    for fnd in findings:
+        print(fnd.render(), file=sys.stderr)
+        print(file=sys.stderr)
+    print(f"validate_ontology {flag}: {len(findings)} violation(s). rule: {rule}", file=sys.stderr)
+    return 1
 
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="Selector registry self-lint.")
     ap.add_argument("--registry", action="store_true", help="Registry self-lint. The default.")
-    ap.add_argument("--matchers", action="store_true", help="Deferred until the first matcher exists.")
-    ap.add_argument("--corpus", action="store_true", help="Deferred until the conformance corpus exists.")
-    ap.add_argument("--self-test", action="store_true", help="Break the registry in memory and assert each break is refused.")
+    ap.add_argument(
+        "--matchers",
+        action="store_true",
+        help="The structural half of the matcher check, O-M1 to O-M3. Scores nothing, and says so.",
+    )
+    ap.add_argument(
+        "--corpus",
+        action="store_true",
+        help="Read both conformance corpora at every registry-bound site, O-C1 to O-C4.",
+    )
+    ap.add_argument(
+        "--self-test",
+        action="store_true",
+        help="Break the registry, the corpora and the matchers block in memory and assert each break is refused.",
+    )
     ap.add_argument("--quiet", action="store_true", help="Print only on failure.")
     args = ap.parse_args(argv)
-
-    if args.matchers:
-        return _deferred(
-            "--matchers",
-            "the contract's rule that an unscored matcher may not be an identity basis, "
-            "declared in the registry's matchers block",
-            "the first matcher exists. Scoring needs labelled ground truth, which needs a "
-            "sealed cast",
-        )
-    if args.corpus:
-        return _deferred(
-            "--corpus",
-            "the registry self-lint, which closes the vocabulary at the manifest boundary",
-            "conformance/must-pass.jsonl and must-fail.jsonl exist. Step 7",
-        )
 
     try:
         reg, text = load()
@@ -1049,18 +2077,72 @@ def main(argv: list[str]) -> int:
         )
         return 2
 
-    if args.self_test:
-        return self_test(reg, text, codes)
-
-    findings = check(reg, text, codes)
-
-    if gate_log:
+    sites = corpora = sources = None
+    if args.corpus or args.self_test:
         try:
-            gate_log.record_run(GATE, "refuse" if findings else "pass", count=len(findings))
-            for fnd in findings:
-                gate_log.record_finding(GATE, code=fnd.code, where=fnd.where)
-        except Exception:
-            pass
+            sites = require_sites(registry_sites(load_layer_model()))
+            corpora = load_corpora()
+        except Unreadable as exc:
+            print(exc.finding.render(), file=sys.stderr)
+            return 2
+        except (FileNotFoundError, yaml.YAMLError, ValueError, UnicodeDecodeError) as exc:
+            print(
+                "REFUSED ONT_CORPUS_SITES_UNREADABLE\n"
+                "  where: spec/layer-model.yaml\n"
+                f"  what:  the layer model could not be read for its registry-bound sites: {exc}\n"
+                "  moves: fix spec/layer-model.yaml, or run tools/validate_layer_model.py first",
+                file=sys.stderr,
+            )
+            return 2
+    if args.matchers or args.self_test or not args.corpus:
+        try:
+            sources = connector_sources()
+        except (OSError, UnicodeDecodeError) as exc:
+            print(
+                "REFUSED ONT_MATCHER_SOURCES_UNREADABLE\n"
+                "  where: connectors\n"
+                f"  what:  a connector's adapter.py or manifest.yaml could not be read: {exc}. O-M2 "
+                "reads every one, and a file skipped is a matcher name nobody checked\n"
+                "  moves: fix the file's encoding or permissions and run again",
+                file=sys.stderr,
+            )
+            return 2
+
+    if args.self_test:
+        return self_test(reg, text, codes, sites, corpora, sources)
+
+    if args.corpus:
+        findings, stats = check_corpus(reg, sites, corpora)
+        _record("ontology-corpus", findings)
+        if findings:
+            return _refuse(
+                findings,
+                "--corpus",
+                "every selector the corpora carry is a registry key in its form, every fixture "
+                "claiming an ontology code is refused for it here, and every key is proven or "
+                "declared unexercised; docs/PLAINSIGHT-FOUNDATION.md D2, CLAUDE.md design gates 1 and 3.",
+            )
+        if not args.quiet:
+            print(corpus_report(stats, sites, reg))
+        return 0
+
+    if args.matchers:
+        findings, report = check_matchers_mode(reg, sources)
+        _record("ontology-matchers", findings)
+        if findings:
+            return _refuse(
+                findings,
+                "--matchers",
+                "an unscored matcher may not be an identity basis, and every matcher a selector or "
+                "a connector names is declared with its purpose; SS-19, CLAUDE.md design gate 6. "
+                "No matcher is scored by this mode.",
+            )
+        if not args.quiet:
+            print(matchers_report(report))
+        return 0
+
+    findings = registry_lint(reg, text, codes, sources)
+    _record(GATE, findings)
 
     if findings:
         for fnd in findings:
@@ -1084,7 +2166,7 @@ def main(argv: list[str]) -> int:
             f"validate_ontology ok: {len(selectors)} selectors ({proposed} proposed), {anchors} "
             f"anchor-eligible, {constraints} constraint, {len(reg.get('entities') or {})} entity "
             f"types, {len(_as_list(reg.get('prohibitions')))} prohibitions, {lib} matchers, "
-            "none calibrated"
+            f"none calibrated, and O-M1 to O-M3 clean across {len(sources)} connector file(s)"
         )
     return 0
 

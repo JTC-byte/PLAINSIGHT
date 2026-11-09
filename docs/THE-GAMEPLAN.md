@@ -235,7 +235,7 @@ Rule for every class: **a change carries the highest class it touches.**
 | `doctrine/plainsight_audit_playbook.md` | HYGIENE.md's cadence section | The first real after-action review. ZMeta's was "Adopted 2026-07-22 from the R1-11 after-action review", written after the lesson |
 | `doctrine/plainsight_doctrine_review_log.md` | Nothing | The first genuine pressure on a doctrine point. An empty pressure log trains everyone to skip it |
 | `docs/plainsight_worklog_archive.md` | Nothing | The worklog passes ~1,500 lines. **Delivered 2026-09-04** at the ten-entry cap the worklog header set instead |
-| `tools/validate_ontology.py --matchers` | Nothing | The first matcher exists. Requires labelled ground truth, which requires the cast |
+| `tools/validate_ontology.py --matchers`, the scoring half | The structural half, O-M1 to O-M3, since 2026-11-02, which scores nothing and says so | The first matcher exists. Requires labelled ground truth, which requires the cast |
 | Diagnostics: `pse-health`, `pse-retain`, `pse-lineage`, `pse-authz` | The validators, run by hand | Week 5 for `pse-retain`, week 14 for `pse-health`. All four are read-only and **never exit nonzero for a state of the world** |
 | `tools/validate_projection.py`, `validate_precision_policy.py`, `validate_encoding_negative.py`, `validate_release_*.py`, `validate_conformance_classes.py` | Nothing | There is no profile thinning, one encoding, no release, and no third-party implementation. Several of these never un-defer |
 | Profiles L/M/H, profile precision, compact binary, protobuf, mesh trust, UAS identity, command deconfliction topology, geodesy | Nothing | **Never.** One Postgres, one consumer, no wire budget, no bandwidth axis |

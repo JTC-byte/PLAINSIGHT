@@ -75,16 +75,17 @@ in that mode.
 |---|---|---|---|---|
 | 1 | `python -m pytest connectors/<id>` | Yes, for one connector as of Step 12: `connectors/sherlock/tests/`, replay only, against cassettes hand-built in a recorded shape. `make prove` runs it, and so does CI's connector adapter tests step. | The adapter's own `translate_<subject>` functions behave as the author intended, against inputs the author chose. | Anything this repository checks independently. The author wrote the code and the test. |
 | 2 | `tools/validate.py --file <events>.jsonl --strict` | Yes, as of the commit that lands Step 7. `--kernel` also refuses a generated artifact that differs from what `spec/layer-model.yaml` generates, grades both corpora, and runs the runner's own self-test. | The adapter's sample output is schema-valid and passes every layer denylist, lineage rule, and producer-authority check. | That the sample represents the connector's full output range, or anything about behaviour against a live target. |
-| 3 | `tools/validate_ontology.py --corpus` | The tool and `ontology/selectors.yaml` both exist since `f4e00e1`. The `--corpus` mode this rung needs is still deferred, and its trigger has now fired: `conformance/must-pass.jsonl` is a corpus it could read. Until the mode lands, rung 2 enforces the same property, because the generated schema inlines the registry's keys as the enum of every registry-bound field (the contract's S7-R4). The default `--registry` mode lints the registry itself and is what the kernel gate runs. | Every `selector_type` the sample emits is a member of the closed vocabulary. | Schema or policy conformance, which is rung 2. Registry self-consistency, which is not a claim about any connector. |
+| 3 | `tools/validate_ontology.py --corpus` | The tool and `ontology/selectors.yaml` both exist since `f4e00e1`, and the `--corpus` mode runs since 2026-11-02. It reads the repository's two corpora at every field `spec/layer-model.yaml` binds to the registry and refuses an unregistered type, a value off its key's form, a must-fail row expecting `SELECTOR_TYPE_UNREGISTERED` that it does not refuse for that code alone, and a registry key no must-pass row exercises and no note declares unexercised. It reads no connector's emitted events (reading O-R5 in the tool), so for a connector rung 2 still carries this property, because the generated schema inlines the registry's keys as the enum of every registry-bound field (the contract's S7-R4). The default `--registry` mode lints the registry itself, and the kernel gate runs both. | Every `selector_type` the sample emits is a member of the closed vocabulary. | Schema or policy conformance, which is rung 2. Registry self-consistency, which is not a claim about any connector. |
 | 4 | `tools/validate_connector_conformance.py --connector <id>`, or `--all` | Yes, as of Step 12. It runs DECLARE first, then replays each fixture's cassette through the adapter and grades every emitted event with rung 2's `check_event`. It asserts the exact `event_count`, each refusal fixture's code and the input it withholds, the known negative's zero hits in its class, the known positive's hits, and the golden replay, and that `invoke()` refuses without a permit. `connectors/sherlock/` holds 6 of 6 fixtures, all on hand-built cassettes. It refused at DECLARE on reading SH-R5 until the move of 2026-10-28, which the maintainer decides, and it passes DECLARE on this tree, which is not a claim, because rung 3 checks nothing and the live canaries have not run. | The adapter, called against a pinned cassette set including `event_count: 0`, returns output matching each fixture's pinned result: an exact `event_count`, zero included, or a refusal with its declared code. The presence, absence, lineage and `forbidden_paths` expectations `docs/PLAINSIGHT-FOUNDATION.md` section 4.4 names have no key in the fixture schema yet (reading MF-R15), so no runner can prove them until the schema carries them. | Behavior against a live target on the day it actually runs. A cassette is frozen at capture time and a platform can change under it. |
 | 5 | `tools/validate_conformance.py --kernel-gate` | Yes. | Nothing an implemented gate would refuse regressed anywhere in the repository. | Anything about this connector specifically. It is a whole-repository regression gate, not a connector claim. |
 
-Rung 3's tool exists with the mode this rung needs still deferred. One
+Rung 3's tool and mode exist, and the mode reads the repository's corpora
+rather than a connector's output. One
 connector exists, `connectors/sherlock/`, and rungs 1, 2 and 4 run for it
 against cassettes hand-built in Sherlock's recorded shape and never captured,
 so they prove the adapter against shapes its author chose. No connector can
-honestly claim conformance today: rung 3 checks nothing, and the live canaries
-have not run. The Sherlock manifest passes DECLARE since the `platform_from_item`
+honestly claim conformance today: rung 3 reads no connector's events, and the
+live canaries have not run. The Sherlock manifest passes DECLARE since the `platform_from_item`
 move of 2026-10-28, which the maintainer decides, and before that move it
 refused there on reading SH-R5. Rung 5 says nothing about a connector by design.
 
@@ -103,10 +104,10 @@ Its `KERNEL_GATE` list carries thirty-two entries in four states, and
 `python tools/validate_conformance.py --list` prints the live list with the
 note each entry carries.
 
-Twenty-four entries are implemented: doctrine, hygiene, layer-model, cast,
-telemetry, retention-repo-scan, schema, ontology, divergence-register,
-connector-manifest, connector-conformance, subject-guard-tests and app-tests,
-plus eleven self-test entries. app-tests joined on 2026-10-28 and runs the
+Twenty-five entries are implemented: doctrine, hygiene, layer-model, cast,
+telemetry, retention-repo-scan, schema, ontology, ontology-corpus,
+divergence-register, connector-manifest, connector-conformance,
+subject-guard-tests and app-tests, plus eleven self-test entries. app-tests joined on 2026-10-28 and runs the
 application's pytest suite with its paired negative controls inside it. Six, one each for hygiene,
 layer-model, cast, retention, ontology and authorization, joined the list on
 2026-09-28; the doctrine self-test and the self-test of `tools/pin_of_record.py`,
@@ -140,11 +141,20 @@ grades the check rather than the artifact. Before 2026-09-28 five of the first
 six ran on no automated path. `tools/validate.py` runs its own self-test inside
 `--kernel`, so the schema entry already carried it.
 
-Two entries are STUB: `tools/validate_ontology.py --matchers` and `--corpus`.
-Both print DEFERRED, check nothing, and exit 0, and nothing called either until
-they joined the list on 2026-09-28. The `--corpus` trigger has fired, as rung 3
-in section 3 records. Step 8 replaced the D-001 stub with
-`tools/validate_retention.py`, so retention-repo-scan left the STUB state
+One entry is STUB: `tools/validate_ontology.py --matchers`. It and
+`--corpus` printed DEFERRED, checked nothing and exited 0, and nothing called
+either until they joined the list as STUB on 2026-09-28. On 2026-11-02
+`--corpus` was built and its entry moved to IMPLEMENTED, and the structural half
+of `--matchers` was built: every library entry referenced and carrying a purpose
+and a note, the calibration flags false while the calibration file is absent,
+and every matcher id a connector names declared. No matcher is scored, because
+scoring needs labelled ground truth and ground truth needs the sealed cast, and
+the mode says so in its output. The aggregator runs a STUB entry's command and
+does not read its exit code, so the tool's default mode runs the same three
+structural checks and a structural refusal fails the IMPLEMENTED ontology entry
+and the pre-commit hook; whether the ontology-matchers entry moves to
+IMPLEMENTED is the maintainer's decision, reading O-R6 in the tool. Step 8 replaced the D-001 stub
+with `tools/validate_retention.py`, so retention-repo-scan left the STUB state
 before these two entered it. That check reads every tracked file in the working
 tree for a filled selector in its typed form, or written as a type beside a
 value in a JSON line, a .json file or a .yaml file, against thirteen shapes
