@@ -4021,3 +4021,214 @@ stay on `origin` and in this checkout; deleting them needs his words naming that
 act.
 
 ---
+
+## 2026-10-18, the standing words of 2026-10-16 and 2026-10-17 recorded, under the maintainer's words of 2026-10-18.
+
+**Class:** A (the handoff, this record and its archive). No doctrine, spec,
+schema, policy, ontology, runtime or other governed artifact changed, so
+`CHANGELOG.md` takes no entry.
+
+**The words this entry acts on.** The maintainer at 15:23:29 EDT on 2026-10-18,
+first-hand in the personal-account PLAINSIGHT session: "Draft the records
+commit now: the worklog entry with the 2026-10-16 delegation, the ZMeta rule,
+the negative-control rule, the order of work and the credentials plan, plus the
+line-neutral handoff edit. Do not commit or push until I say so." The draft is
+this entry, the archive move under the ten-entry cap, and the handoff edit. The
+commit is his separate word for that act, and the paragraph after the battery
+records it when it is given.
+
+**The delegation of 2026-10-16, recorded because no commit had carried it.**
+Typed at 00:08:36 EDT on 2026-10-16 in the team-account PLAINSIGHT session:
+"Delegation, 2026-10-16: the team-account parent-folder session
+local_305e02ed-244e-4017-b953-57f2e469985c (titled "Ecosystem Project") is my
+parent session for this repository and for this project from today and going
+forward; a decision it relays with my dated words quoted is my word here, the
+same as my sentences of 2026-10-05 and 2026-10-11; anything that pushes, merges,
+deploys, deletes or mints still names the words it acts on; record this in your
+notes." A relay qualifies on the four tests the 2026-10-12 entry states: it
+comes from the named session, quotes his dated words, those words are found
+verbatim in the parent folder's records, and the act falls inside them. The
+session's reading of the two live parents, labelled as a reading: while he works
+on the team account, a relay from the personal parent of 2026-10-11 is held and
+he is asked first, the mirror of that delegation's own clause. On 2026-10-18 he
+archived the personal parent of 2026-10-11 and opened a new personal parent,
+which he named for reporting and did not delegate, so on the personal account
+every act takes his own words in the PLAINSIGHT chat; the team parent reached
+its weekly limit at 00:02 EDT on 2026-10-18 and runs again after the reset of
+2026-10-19 at noon. Words he types in the PLAINSIGHT chat outrank a relay that
+differs, and the conflict goes to him: the TAK plane session applied that on
+2026-10-17 when a relay's clause conflicted with his words in its chat, and the
+team parent accepted the reading.
+
+**The ZMeta rule, 00:17:30 EDT on 2026-10-16.** Typed in the team parent's chat,
+relayed to the team PLAINSIGHT session at 00:19 as information only, and
+verbatim in the parent folder's
+`research/inputs/dispatches_2026-09-30/decisions_queue_2026-10-01.md` under its
+00:18 heading. His words, after the model words that open the message: "Also,
+as stated before but ZMeta is the most important repo of any of the repos as it
+is the data foundation for the entire project so its integrity needs to be
+maintained no matter what and its foundational semantics must not be changed
+unless substantial evidence is presented. Stuff like new adapters and fixing
+current adapters and other things that do not damage the canonical schema or
+its tools that check conformance, mutations etc can be touched a bit more
+freely but that core semantics, canonical schema and all the tools that
+validate zmeta must be maintained explicitly based off the documentation
+written to define it. ZMeta is the ultimate authority when it comes to zmeta
+related work. Make sure anything touching the standard or tools for validation
+go through me first." What it reaches here, measured on 2026-10-16 and again on
+2026-10-18: no tool in this repository writes into ZMeta's; the ZMeta mentions
+in `tools/`, `policy/` and `spec/` are comments and citations; no queue item,
+Step 7 finding or open review row touches ZMeta's standard; and PSE is a private
+dialect that never claims upstream compatibility (`CLAUDE.md` section 1), so
+its validators are its own and take his word under this repository's authority
+order, which is also the team parent's standing reading since 09:54 on
+2026-10-16. A change this repository ever wants upstream is a request to him
+through the ZMeta session and never an edit from here. The message opened with
+model words: he set the team parent, ZMeta and the COP to Mythos 5.1 and kept
+model diversity; the parent's relay said this repository's main loop and agent
+split were unchanged.
+
+**The hard rule on negative controls, 01:09:06 EDT on 2026-10-16.** Typed in
+the parent's chat and verbatim in the decisions record: "dont forget the hard
+rule of nothing counts until its negative control has seen failing because a
+positive test is no good if a negative test does not also pass, or more
+appropriately fail". The parent carries it into every brief and report as a
+standing rule for every check in every repository: a check is green only when
+its positive condition passed and its negative control has been observed to
+fail, and a check without a runnable control is marked so and does not count as
+green. Gate 1 of `CLAUDE.md` section 3 already requires every constraint to be
+covered by a test that fails when the constraint is removed, and the validator
+self-tests record 147 and 184 breaks. What the rule adds here: every report
+that calls a check green names the control seen failing, and the kernel gate's
+sixteen implemented and passing entries are owed an audit that lists, per
+entry, the control that was seen to fail and marks the rest as not counted
+green. That audit ran as its own session on 2026-10-18, started on his click at
+about 15:23 EDT and finished by 15:56: every one of the sixteen implemented
+entries was seen failing under a control run in a clone, eight of them for the
+first time on any record (the cast, ontology, schema and telemetry gate entries
+and the doctrine, pin-of-record, hygiene and ontology self-tests had only ever
+been seen passing); an Opus 5.5 refuter re-ran all 26 controls and confirmed 24,
+and the two it qualified or refuted were re-run with its corrections. It also
+found that the aggregator cannot tell a crash in an unratified mode from the
+designed refusal, a finding for the maintainer and not acted on. Its record is
+`Z-ISR/_session-artifacts/2026-10-18-plainsight-negative-control-audit/AUDIT.md`
+with the forty run logs beside it; it is outside this commit and changed no
+file.
+
+**The order of work, 00:36:57 EDT on 2026-10-16.** Typed in the parent's chat
+and verbatim in the decisions record under its 00:38 heading: "lets make sure
+we have a fully built out TMN and we agree on before we then worry about the
+quick deploy and tear down, but that is my end goal for this current work
+effort is to fully establish a TMN in the cloud that can also be operated
+completely on edge hardware like laptops and phones and Pi's and protectli's
+etc that can be deployed with one script (with all your accounts like VM's and
+Cloudflare assumed to be logged in and connected for the stuff to deploy onto),
+configured any way an edge operator would want, and then torn down with one
+script as well. It needs to be simple and easy and quick and a solid and fully
+functional default so tweaking isn't too much work either. That is what I want
+up, then we can work the zisr cop UI/UX redesign based off the deep research
+pass and then I want to dive into plainsight and actually get that OSINT "COP"
+up in a domain that connects to VM's to run everything and a nice social web
+interface to control it all and visualize all the collected data, as well as
+work the zmeta dialect for OSINT normalization." This repository is fourth: a
+TMN "we agree on", the one-script deploy and tear-down, the COP redesign, then
+PLAINSIGHT. The parent's TMN definition adds "validated" and "he opens it" as
+gates and says this session holds with its queue; those are the parent's gates,
+labelled here as such. His sentence names four pieces that each have a home in
+this tree: a domain, which is the deployment; VMs that run the collection, which
+is ISOLATED in `doctrine/EGRESS.md` and `doctrine/CREDENTIAL_LIFECYCLE.md`; a
+social web interface to control and visualize, which is SS-16's web map and the
+usable-hub plan of Steps 10 to 12; and the ZMeta dialect, which is PSE. Nothing
+in it widens who may be a subject. The hold of 2026-10-11 ("6. maintain
+direction till map is done") stands on its own terms as well: the COP's map
+merged its M10 increment on 2026-10-16 and holds at M10 until the TMN is
+validated, and its promotion to the project domain on 2026-10-18 is not his mark
+on the map. His words of 2026-10-17 tighten the hold. At 19:00:39 EDT: "I
+concur: when the Status increment merges and the plane's third control lands,
+every session holds and I will give the word for the credentials session." At
+19:11:09: "once the checkpoints finish, lets hold and knock out this
+presentation stuff with the remaining usage we have since we should have just
+enough to take care of this before the refresh in a day and a half anyways". No
+word since 2026-10-13 answers a queue item or releases plan item 0.7 or any held
+agent work.
+
+**The credentials plan, 23:12:04 EDT on 2026-10-16.** Typed in the parent's chat
+and verbatim in the decisions record: "one thing I would like to do is set up
+all my logins and authentications into stuff like my Git, Cloudflare and Digital
+Ocean environments on that Kingston drive and encrypt it so in order for you to
+log into my stuff, the drive has to be plugged in and mounted. We did an initial
+mapping of where all my authentication stuff is like keys and logins, but I
+would actually like to work that as a dedicated session. We will keep working
+this stuff till we get to a good checkpoint, but then I would like to remap
+where everything is within all the different sessions and go ahead and just
+knock that out at some point". At 23:16:03 he set the procedure: the parent
+names a checkpoint, he concurs or defers, and the session starts on his word.
+The parent's prepared brief asks every repository session for a names-only
+inventory of the credentials it uses, where each lives and which tool reads it,
+with the negative control that the tool fails when the drive is absent. This
+repository's inventory, names only, measured 2026-10-18: the GitHub CLI's token
+for the account that owns the public remote, in the Windows keyring, read by
+`gh`; Git Credential Manager in the Windows credential store, read by `git` for
+https pushes to `origin`; CI's default read-only token. Nothing else exists on
+the workstation, because CR-4 and EG-4 keep every collection credential in
+ISOLATED only, no cast is sealed and no persona exists. Both live credentials
+sit in a store the brief says cannot be moved without exposing values, so the
+drive-out control is not designed for an in-place store, and rotate-or-move is
+his choice. No value is written anywhere.
+
+**Between 2026-10-12 and this entry, nothing touched the tree.**
+
+- On 2026-10-15 the team-account session harvested the personal session
+  `b994d03c`, in
+  `Z-ISR/_session-artifacts/2026-10-15-plainsight-harvest-of-b994d03c/`: three
+  Sonnet 5.5 readers, three Opus 5.5 refuters and an Opus 5.5 critic, 104 items,
+  86 confirmed, 16 qualified, 2 refuted. It found that session's closeout
+  stamped at 20:55 for a report written at 20:51:37, and nothing after it; its
+  section 5 orders the queue by what each item blocks. Problem, recorded there:
+  it ran three agents at once while the parent's harvest ran three, against the
+  estate cap of three; the fix is one agent at a time, or a slot from the
+  parent. The delegation above was typed in that session's chat, and the ZMeta
+  rule was relayed to it there.
+- On 2026-10-18 the personal-account session harvested that session and the
+  team parent since 2026-10-16, in
+  `.../2026-10-18-plainsight-harvest-of-b4c6ae3c/`: four Sonnet 5.5 readers,
+  four Opus 5.5 refuters, an Opus 5.5 critic and a Haiku 5.5 formatter, one
+  agent at a time, 140 items, 89 confirmed, 49 qualified, 2 refuted, with Fable
+  5.1 in the main loop. Every decision-bearing word he typed in the parent since
+  2026-10-16 is verbatim in the decisions record. The 2026-10-15 record's own
+  stamps ran ahead of its clock (18:25 and about 18:26 for a send made at
+  18:18:36), and dated notes now say so there, in the overnight queue's header
+  (main is `bf6d5d4`, not `064fa27`) and in `REPORTS.md`. The team account hit
+  its weekly limit at 00:02 EDT on 2026-10-18.
+
+**The handoff** is brought level with this entry at its 400-line cap: the Date
+paragraph and section 0 describe this commit; Resume here states the hold and
+what waits; section 6 adds the two harvest folders; section 7 adds the order of
+2026-10-16, the negative-control rule and the relay rule, and five lines of
+section 0 were shortened to make room.
+
+**Battery, run on the staged tree, finished at 15:33 EDT on 2026-10-18.** All sixteen
+preflight commands passed, the authorization self-test with 147 breaks and the
+retention self-test with 184, and both forms of `git diff --check` were clean.
+The kernel gate exited 0, with 16 implemented checks passing, 3 unratified and
+refusing, 2 stubbed and 5 pending, which is the gate's own count; the audit of
+the same afternoon saw each of the sixteen fail under its control. The hygiene
+gate read this entry and the handoff at their caps. The commit waits on his
+word for that act.
+
+**The commit, on his words of 16:06:27 EDT on 2026-10-18**, typed first-hand in
+the PLAINSIGHT session: "Commit the staged records draft now as me with no
+agent trailer, push it on a records branch, open the pull request, and read
+every CI step; report back before any merge." The commit is authored as the
+maintainer with no trailer, on a records branch named for the date; the push
+and the pull request follow on the same words, and the merge waits on his
+further word after every CI step is read.
+
+**Open.** Unchanged from `bf6d5d4`: the 28 queue items, none answered; plan
+item 0.7, trimmed to its synthesis step; the Step 7 fixes and the rest of the
+held agent work the handoff's Resume here lists; the aggregator finding the
+negative-control audit raised, in section 8 of its record; the 32 merged
+branches on `origin` and in this checkout, deleted only on his words naming
+that act.
+
+---
