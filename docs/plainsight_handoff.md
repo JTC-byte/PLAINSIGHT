@@ -12,13 +12,12 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-09. `main` == `origin/main` == `c54ea6c`: the extraction
-tool's list-of-blocks fix (class B), merged by pull request 42 at 15:02 EST,
-both branch CI runs green on every step. This file's commit is class C, item 5
-of the 10-28 list: the application's slice 3 (analyst acts through the door,
-the Merge Sheet, the review strip) and the runner's watchdog, the second commit
-under his clicks of 14:08:53 and 14:13:10, which carry his line of 02:27:22 to
-18:00 EST on 2026-11-11.
+**Date:** 2026-11-09. This file's commit is item 7 of the 10-28 list, Step 11
+drafted refusing (section 0), class C by effect under `AGENTS.md` section 3
+rule 2 by the sessions' reading, his to confirm. It is also the closeout he
+typed for at 19:12:35 EST, finished by a fresh session on his typed line of
+20:31:36 EST in the parent's chat. Before it, `main` == `origin/main` == item
+5's merge commit (pull request 43), CI green on every step.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -28,58 +27,63 @@ this tree; section 3 says whose decision it is.
 exits 0 on this tree and the pre-commit hook passes. `CONFORMANCE.md` section 4
 applies.
 
-**Resume here.** Run `tools/since_last_record.py` from the last record's stamp
-over the session's own transcript and read its typed and clicked lines first.
-The maintainer's release of 2026-10-28 01:47 stands for building, and his click
-"Yes, resume here" of 2026-11-08 lifted the hold of 2026-11-03 and named the
-parent local_88a0656e (Parent 08NOV2026) for this repository: a relay quoting his
-dated words is his word here, merges and pushes go ahead on green gates with
-their controls seen failing, and every commit, Class F decision, deploy, tag,
-mint and secret takes his word in this chat, per act. His clicks of 14:08:53
-and 14:13:10 on 2026-11-09 in the parent's chat carry his line of 02:27:22 to
-18:00 EST on 2026-11-11: the parent adjudicates each commit and merge of the
-extractor fix and items 5 to 8 that passes the kernel gate, the hook, hygiene
-and CI on the exact tree, no Class F decision among them, and nothing merges
-or pushes after that hour. The records are under `Z-ISR/_session-artifacts/`:
-the build night in `2026-10-28-plainsight-build/`, the resumptions in
-`2026-11-02-plainsight-resume/` and `2026-11-06-plainsight-resume/`, items 5 to 8
-in `2026-11-09-plainsight-items/`, and his 28-item queue in
+**Resume here.** Measure the refs and the tree first, then run
+`tools/since_last_record.py` from the last record's stamp over the session's
+own transcript and read his lines first. His release of 2026-10-28 01:47
+stands for building. On 2026-11-09 the sessions were replaced. At 20:31:36 EST
+he typed, in the chat of the parent local_177949be (Parent 08/09NOV2026), that
+each lane finishes what was in flight, runs the commits, merges and pushes
+that did not get done, and holds, with no new work. This commit, its push and
+its merge are those acts here, and that line is spent with them. From the next
+session on, every commit, push, merge, Class F decision, deploy, tag, mint and
+secret takes his word, per act. Whether his line of 02:27:22, carried to 18:00
+EST on 2026-11-11 by his clicks of 14:08:53 and 14:13:10 in the chat of the
+earlier parent local_88a0656e, passes to the new parent is his to say, so the
+next session asks him first. Nothing merges or pushes after that hour. The
+records are under `Z-ISR/_session-artifacts/` (section 6): this closeout and
+items 5 to 8 in `2026-11-09-plainsight-items/`, whose `README.md` ends with the
+Next Session line, the resumptions in `2026-11-02-plainsight-resume/` and
+`2026-11-06-plainsight-resume/`, and his 28-item queue in
 `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none answered.
 
 ---
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Item 5 of the 10-28 list: POST
-`/api/cases/{case}/acts` mints one analyst act per request under the session's
-identity and sends it through the door, landing on LOCAL only once he sets
-`LOCAL_ACTS` (reading APP-R31) and then only in a synthetic case;
-`runner/watchdog.py` closes an open coverage interval by event after three
-silent poll intervals; the INSPECTOR lists adjudications; the front end builds
-the eight slice-3 keys, undo as a cancel window, the review strip and the Merge
-Sheet; amendments 9.16 to 9.18. The worklog gains the entry and archives its
-oldest; `CHANGELOG.md` and this file follow.
+**What changed and why.** Item 7 of the 10-28 list, Step 11 drafted refusing:
+`runner/retention_sweep.py` decides every case before it writes, refuses every
+due case at the first step of RETENTION.md section 9's order, deletes nothing,
+and writes one SWEEP_HEARTBEAT per held case through the door last;
+`runner/verify_shred.py` runs RT-9's five checks as dated facts and reports no
+pass while the fixture is unstamped; the header renders RT-12's consequence;
+eight refusal codes; amendment 9.19; `app/tests/test_retention_sweep.py` (14
+checks, 44 controls); four second-model reads, disposed in the record folder.
+The worklog gains the entry and archives its oldest; `CHANGELOG.md`, the
+gameplan's two register rows and this file follow.
 
-**Which surfaces moved.** `app/` (http, store, model, config, refusals, the
-static front end and its keymap, README, two new test modules), `runner/watchdog.py`,
-the design record's three amendments, the changelog, this file, the worklog and
-its archive. No doctrine, spec, schema, policy, ontology, synthetic, generated
-or corpus file; no gate, hook command or CI step.
+**Which surfaces moved.** `runner/retention_sweep.py` and `runner/verify_shred.py`
+(new), `app/refusals.py`, `app/model/reads.py`, `app/http/routes.py`,
+`app/static/app.js`, `app/README.md`, the new test module, `test_controls.py`,
+amendment 9.19, the gameplan register, the changelog, this file, the worklog and
+its archive, and the control count in the app-tests gate entry's description
+(103 to 147). No doctrine, spec, schema, policy, ontology, synthetic, generated
+or corpus file, gate command or state, hook command or CI step; nothing deleted.
 
-**What validation ran and what passed.** The application suite in the build
-worktree, 218 passed and 1 skipped, every new check with its control seen
-failing; an Opus 5.5 second-model read whose seven findings are fixed or
-accepted (the 2026-11-09 record folder); hygiene and both diff checks on the
-final text; the kernel gate on this tree under the heavy-run lock and the hook
-at the commit, with the stamps in the worklog entry.
+**What validation ran and what passed.** The application suite, 276 passed and
+1 skipped (the Postgres apply, which runs on his word), all 44 new controls seen
+failing their check; hygiene and both diff checks on the final text; the kernel
+gate on this tree under the heavy-run lock and the hook at the commit.
 
-**Whether a release baseline changed.** No. `main` gained `c54ea6c` by pull
-request 42; this commit follows by the same route; PSE has no tag.
+**Whether a release baseline changed.** No. `main` gained item 5 by pull
+request 43; this commit follows by the same route; PSE has no tag.
 
 **What remains open or deferred.** Section 3: DA-R2's stamp, the readings
-including O-R1 to O-R9 and APP-R31 to APP-R33, `LOCAL_ACTS`, the queue; items
-6 to 8 of the 10-28 list, next in number order under the carried line; the
-application's slice 4.
+including O-R1 to O-R9, APP-R31 to APP-R33 and RS-R1 to RS-R8, `LOCAL_ACTS`,
+U-09 to U-11 and SR-U1, the queue; item 8 of the 10-28 list, built and held as
+a patch in the 2026-11-09 record folder, his word to land (item 6's synthesis
+is in the harvest folder outside the tree); the application's slice 4; Step
+11's shred itself, which waits on the ISOLATED store and his stamps; the door's
+missing held-case check (section 4) and the reads' open findings (section 2).
 
 ---
 
@@ -128,10 +132,10 @@ DOSSIER and the SSE stream. **Slice 3 (2026-11-09)** adds the analyst acts
 through the door (POST `/acts`), the Merge Sheet, the review strip, undo as a
 cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
-(reading APP-R31). 219 tests with 103 paired negative controls, in the kernel
-gate, `make test` and CI and not in the hook or preflight (APP-R30). Its design
-departures from `docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.18 at the
-end of that file, each dated, each his to decide.
+(reading APP-R31). 277 tests with 147 paired negative controls since the Step
+11 draft, in the kernel gate, `make test` and CI and not in the hook or
+preflight (APP-R30). Its design departures from `docs/PLAINSIGHT-design.md` are
+amendments 9.1 to 9.19 at the end of that file, each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
 consenting subjects who will confirm the findings, who are S1 CONSENTING. The
@@ -172,6 +176,7 @@ exists and has never run.
 | `conformance/connector-harness/fixture.schema.json`, `README.md` | **Committed in `8583132`.** The fixture shape: `event_count` and `cassette` on an events fixture, `refusal_code` on a refusal, the fixed adapter-state enum, placeholder-only inputs. |
 | `ontology/selectors.yaml` | Committed in `f4e00e1`. 19 selectors, 5 proposed and unstamped. Lines 89 to 90 and 96 to 99 describe the guard and `interaction_class` in a tense the tree has passed. |
 | `synthetic/CAST.md`, `synthetic/GROUND_TRUTH.yaml` | Committed in `f4e00e1`. DRAFT, UNSEALED, placeholders only. |
+| `runner/retention_sweep.py`, `runner/verify_shred.py` | **Committed 2026-11-09, drafted refusing.** The sweep decides every case, refuses every due one, deletes nothing and writes its heartbeat per held case last; verify_shred runs the five checks as PASS, FAIL or NOT RUN, has no passing path for checks 1, 2 and 4, and reports no pass while the fixture is unstamped; check 3 fails on a file SQLite keeps beside the case database; readings RS-R1 to RS-R8 in the docstrings; 14 checks and 44 controls in `app/tests/test_retention_sweep.py`. The four reads' open findings are listed in the worklog entry of 2026-11-09 under What is not claimed, and `app/README.md` names the behaviours with no control. The shred, the ledger and the receipt wait on the ISOLATED store and his stamps. |
 | `runner/subject_guard.py`, `runner/tests/` | **Committed in `8583132`, drafted UNRATIFIED.** `evaluate()` returns a Decision that serializes as a COLLECT_EVENT; the live pin refuses at step 1; 22 tests under pytest and as a script; readings SG-R1 to SG-R18 in the docstring. `runner/dispatch_allowlist.yaml` does not exist. |
 | `connectors/sherlock/` | **Committed in `8583132`.** `manifest.yaml`, `adapter.py` (parse, emit, permit-gated invoke), `site_facts.json` (481 sites from `data.json` at 9100f9d), three hand-built cassettes, `fixtures.jsonl`, 51 tests, `README.md` with SH-R1 to SH-R18. Never run. |
 | `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. |
@@ -188,13 +193,9 @@ exists and has never run.
 Everything in this section is the operator's, and none of it is an agent act.
 
 **Three classes he decided on 2026-10-28, each by his click on the offered
-action in this chat.** The emit's platform move kept (`platform_from_item` on
-an endpoint-unit connector, MF-R17 and amendment 9.14, the token from the site
-name alone, SH-R18 and 9.15); VA-R6 Class B (the dispatch scanner's precision
-rule for patch targets and kept originals in test modules, so the allowlist
-draft keeps its four sites); the one-word edit at `policy/retention.yaml` line
-870 Class B (an enforcement-state statement reaching no subject, period or
-egress path).
+action in this chat**, are in the worklog entry of that date: the emit's
+platform move kept (MF-R17, SH-R18, amendments 9.14 and 9.15), VA-R6 Class B,
+and the one-word edit at `policy/retention.yaml` line 870 Class B.
 
 **DA-R2, the dispatch allowlist.** Class F by `AGENTS.md` section 3. The
 re-measured draft is in the record folder beside DA-R1 and its argument, never
@@ -204,16 +205,13 @@ loopback listener's class statement, and the operator-gated docker test. A
 stamp is a whole-artifact dated row he authors, and any change to the list
 after it is a new Class F act.
 
-**CI on Python 3.12 is unverified until a push.** `app/` compiles under 3.12 and
-every standard-library attribute it names resolves there, and the suite could
-not run on 3.12 locally (no pytest, PyYAML or jsonschema), so CI-R1 was not
-taken. Three test files still mention the design brief outside the repository
+**Three test files still mention the design brief outside the repository**
 (`app/tests/test_corpus.py` line 3, `test_http.py` line 321, `test_store.py`
 line 105); the five production docstrings cite the design amendments.
 
 **The 29 decisions in the register** of Step 8, plus U-17, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, PIN-R9, SG, VA, DA, SH, CC,
-APP, now to APP-R33), and the design amendments 9.1 to 9.18. Each is recorded where its artifact is
+APP, now to APP-R33, and RS-R1 to RS-R8), and the design amendments 9.1 to 9.19. Each is recorded where its artifact is
 and in the record folder.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
@@ -295,6 +293,10 @@ dollars non-recurring and 205 a month.
   EG-2 and RT-4 as stamped through whole-artifact rows, so only ISOLATED and an
   Encryptor stand between a caller and a blob write on the Postgres engine
   (APP-R13).
+- **The door has no held-case check.** It lands an event in a case the registry
+  marks shredded and creates an absent case database (probed 2026-11-09). The
+  sweep refuses on its own side; `runner/watchdog.py` has no such check (read,
+  not probed). The shred's design decides where the guard lives.
 - **The voice pass is parked.** Not on the path to a first run.
 - **The cast is unsealed**, so nothing is scoreable and SS-14 item 6 refuses all
   collection.
@@ -316,7 +318,9 @@ three refuters per finding, a fixer with a control per fix, a verifier); the
 counts per phase are in its record folder. The six new gate entries and the
 three that changed state have not been through a negative-control audit of the
 2026-10-18 kind; their self-test controls were seen failing in each run. Item
-5's slice 3 was read by one Opus 5.5 second model (the 2026-11-09 folder).
+5's slice 3 was read by one Opus 5.5 second model and item 7's draft by four in
+turn (the 2026-11-09 folder); each read of item 7 found defects or gaps, which
+were fixed before the commit or are recorded as open.
 
 ## 6. Session context that lives outside this repository
 
@@ -375,20 +379,19 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
 - **Hashes in worklog entries above the 2026-09-07 rewrite entry, in the
   archive, and in every changelog entry below the rewrite entry are
   pre-rewrite.** That entry translates them.
-- The gates need PyYAML and jsonschema; the guard tests, the adapter tests and
-  the application's tests need pytest, which CI now installs. `make preflight`
-  runs twenty-two commands; the hook twenty-one.
+- The gates need PyYAML and jsonschema; the guard, adapter and application
+  tests need pytest (`AGENTS.md` section 5).
 - **The worklog is capped at ten live entries and the hygiene gate refuses an
   eleventh.** Each closeout moves the oldest live entry into
   `plainsight_worklog_archive.md` unedited before adding its own.
 - Write the handoff in the tense of the tree the commit will create, per
   `AGENTS.md` section 8; stage first and reconcile against the staged list.
 - Only CI on Linux checks a file mode. The Edit tool on Windows writes CRLF into
-  an existing file; `.gitattributes` normalizes the index, and
-  `docs/PLAINSIGHT-design.md` is appended in CRLF to match its working copy.
+  an existing file; `.gitattributes` normalizes the index, and tracked files
+  are edited as bytes by script so that the working copy stays LF.
 - Harness facts: a subagent cannot write outside the repository or its own
-  scratchpad; a Bash heredoc breaks on an apostrophe; a worktree's
-  `core.hooksPath` names the main checkout's `.githooks`; a tree copied under the
-  scratchpad passes MAX_PATH; a workflow's task output file is often empty, so
-  its `journal.jsonl` is the record to read; a run cut by the usage limit is
-  finished from its saved findings rather than by retyping its arguments.
+  scratchpad; a Bash heredoc breaks on an apostrophe, and the command after a
+  failed heredoc still runs; a worktree's `core.hooksPath` names the main
+  checkout's `.githooks`; a tree copied under the scratchpad passes MAX_PATH; a
+  workflow's task output file is often empty, so its `journal.jsonl` is the
+  record; a run cut by the usage limit is finished from its saved findings.

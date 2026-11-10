@@ -24,6 +24,7 @@ from app.tests import (
     test_http,
     test_kv,
     test_retention,
+    test_retention_sweep,
     test_rollup,
     test_spine,
     test_static,
@@ -45,6 +46,7 @@ MODULES = (
     test_static,
     test_acts,
     test_watchdog,
+    test_retention_sweep,
 )
 
 ALL = [

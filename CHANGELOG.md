@@ -22,6 +22,67 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-09. Step 11 drafted refusing: the retention sweep with its heartbeat, and verify_shred's five checks.**
+
+  **What changed.** `runner/retention_sweep.py` reads every registry row and
+  decides before it writes anything. A case is held when the registry says open
+  and its case database is present; any other case is listed as not held and
+  gets no heartbeat. A row that says open for a case whose database is absent
+  makes the run exit 1. A held case whose `retain_until` or `frozen_until`
+  cannot be read as a date is refused (SWEEP_REFUSED_DATE_UNREADABLE) and the
+  run exits 1. A case is due from the instant `retain_until` names. A held case
+  past `retain_until` whose freeze is in force is skipped and said so (RT-17).
+  Every other held case past `retain_until` is stated as due with RETENTION.md
+  section 9's order and refused at its first step
+  (SWEEP_REFUSED_FINDING_CHECK_PENDING, then SWEEP_REFUSED_LOCAL_STORE, then
+  SWEEP_REFUSED_POLICY_UNRATIFIED, then SWEEP_REFUSED_SHRED_NOT_BUILT); a run
+  that refuses a due case exits 0, which reading RS-R2 states. The sweep then
+  appends one SYSTEM_EVENT SWEEP_HEARTBEAT per held case through the door
+  (producer runner-sweep, next_due read from the policy's daily cadence). A
+  heartbeat the door refuses is reported with the door's refusal and its legal
+  moves, the run exits 1, and a run that wrote no heartbeat says so. The sweep
+  deletes nothing and writes no SHRED_RECEIPT or SHRED_FAILED.
+  `runner/verify_shred.py` runs RT-9's five checks as dated facts with the
+  outcomes PASS, FAIL and NOT RUN. Check 1 reads no path and fails as not_found,
+  because what designates a witness is undecided (SR-U1). No object on disk is
+  not run while the store records no count to compare (SR-U1). Check 3 fails
+  before it opens anything when a file SQLite keeps beside the case database is
+  on disk (-journal, -wal or -shm), because a rollback journal or a write-ahead
+  log can hold pages of the case. Zero rows, an object the schema still lists,
+  any query error that is not a table gone, and a database that cannot be read
+  are not absence. The tombstone and a receipt row after the case's last
+  stratum-1 event are both required, and a receipt hash with no stated preimage
+  is not run (U-09). A missing canary or inventory is not run (U-11). Checks 1,
+  2 and 4 have no passing path, so no run reports a verified shred, and the
+  program refuses to report a pass while the fixture is unstamped
+  (VERIFY_SHRED_UNRATIFIED). It refuses a case the store never held and a canary
+  that is the case under verification. The case header renders the heartbeat as
+  RT-12's consequence, read only from a heartbeat whose time is not after now,
+  with the latest run taken by time and then by arrival (`app/model/reads.py`
+  sweep_state and sweep_line, `app/http/routes.py`, `app/static/app.js`). A
+  heartbeat row that lacks a ts, a seq or an object payload does not make the
+  line raise. The line's text carries no mark; `app/static/app.css` writes the
+  mark on the server's flag, as it does for the retention line. Eight refusal
+  codes; amendment 9.19; readings RS-R1 to RS-R8 in the docstrings;
+  `app/tests/test_retention_sweep.py` (14 checks, 44 controls) in
+  `test_controls.py`; the gameplan's two register rows note the drafts.
+
+  **What did not change.** Nothing is deleted anywhere. The heartbeat is the
+  only write: one appended event, and the door's projector raising that case's
+  `case_rollup` counters in place. No doctrine, spec, schema, policy, ontology,
+  synthetic or corpus file; `policy/retention.yaml` and the shred fixture stay
+  unstamped and their self-lints refuse as before. No kernel gate entry changed
+  state: retention-finding stays PENDING, and the gameplan's Step 11 done-when
+  (a CI test that shreds a past-due case and passes all five checks) is not met
+  and is not claimed. No ledger, no receipt, no shred. PSE has no tag.
+
+  **Validation.** The application suite, with every new control seen failing its
+  check; four second-model reads before the commit, with a disposition for each
+  claim in the session record; the kernel gate on the committed tree under the
+  heavy-run lock; the rest in the worklog entry of 2026-11-09. Four behaviours
+  the two modules state have no control of their own, and three of check 3's
+  controls fail on wording alone; `app/README.md` names them.
+
 - **2026-11-09. The application's slice 3: analyst acts through the door, the Merge Sheet, the review strip, and the runner's watchdog.**
 
   **What changed.** POST `/api/cases/{case}/acts` mints one ADJUDICATE_EVENT

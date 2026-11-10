@@ -229,6 +229,98 @@ def authorization_state(acts: list[dict], at: dt.datetime | None = None) -> dict
     return {"pivot_depth_max": depth_max, "expires_on": expires_on, "revoked": revoked, "expired": expired}
 
 
+def instant(value) -> dt.datetime | None:
+    """A wire timestamp as an instant, or None when the value is not one. A time with no zone is not an instant."""
+    try:
+        parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except (ValueError, TypeError, AttributeError):
+        return None
+    return parsed.astimezone(dt.timezone.utc) if parsed.tzinfo is not None else None
+
+
+NOT_ENFORCED = "retain_until is not being enforced (RT-12)"
+
+
+def ran_by(beat: dict, at: dt.datetime) -> dt.datetime | None:
+    """The instant a heartbeat records a run at, or None when it carries no ts, its ts is after `at`, or its ts
+    is not an instant."""
+    ts = instant(beat.get("ts"))
+    return ts if ts is not None and ts <= at else None
+
+
+def arrival(beat: dict) -> int:
+    """A heartbeat's arrival order, 0 when it carries none."""
+    seq = beat.get("seq")
+    return seq if isinstance(seq, int) else 0
+
+
+def next_due_of(beat: dict):
+    """The next_due a heartbeat's payload carries, or None when the payload is not an object or carries none."""
+    payload = beat.get("payload")
+    return payload.get("next_due") if isinstance(payload, dict) else None
+
+
+def latest_run(runs: list[tuple]) -> dict:
+    """The latest of the heartbeats that read as a run: by ts, then by arrival."""
+    return max(runs, key=lambda run: run[:2])[2]
+
+
+def overdue(due: dt.datetime, at: dt.datetime) -> bool:
+    """Whether a sweep whose heartbeat names `due` is overdue at `at`: at the due time itself, with no grace
+    (policy/retention.yaml RET-R7)."""
+    return due <= at
+
+
+def sweep_state(conn, case_id: str, at: dt.datetime | None = None) -> dict:
+    """RT-12 for one case: the case's SWEEP_HEARTBEAT events read by sweep_line against `at`, or against now."""
+    return sweep_line(events(conn, case_id, "SYSTEM_EVENT", ("SWEEP_HEARTBEAT",)), at or now())
+
+
+def sweep_line(beats: list[dict], at: dt.datetime) -> dict:
+    """RT-12, rendered as its consequence: the latest SWEEP_HEARTBEAT that reads as a run, against its own next_due.
+
+    A heartbeat reads as a run when its ts is an instant at or before `at`. One dated after `at`, or carrying
+    no readable time, records no run that has happened, so the line never stands on it, and the line says how
+    many were set aside. The latest run is the latest by ts, then by arrival. A next_due that cannot be read
+    is a degraded state, because the line would otherwise vouch for a threshold it never compared
+    (policy/retention.yaml RET-R7: the heartbeat's own next due time decides, with no grace). A heartbeat
+    row that lacks a ts, a seq or an object payload reads as carrying none, and none of the three makes this
+    raise.
+
+    The text carries no mark of its own. The header gives a line whose vouch is true the class that
+    app/static/app.css marks, as it does for the retention line, so a mark written here would render twice."""
+    if not beats:
+        return {"ran": None, "next_due": None, "vouch": True, "not_read": 0,
+                "text": f"RETENTION SWEEP HAS NEVER RUN HERE · {NOT_ENFORCED}"}
+    runs = []
+    for beat in beats:
+        ts = ran_by(beat, at)
+        if ts is not None:
+            runs.append((ts, arrival(beat), beat))
+    not_read = len(beats) - len(runs)
+    if not runs:
+        return {"ran": None, "next_due": None, "vouch": True, "not_read": not_read,
+                "text": f"NO RETENTION SWEEP RUN IS ON RECORD HERE · {not_read} heartbeat(s) carry a time after now "
+                        f"or no readable time · {NOT_ENFORCED}"}
+    last = latest_run(runs)
+    next_due = next_due_of(last)
+    due = instant(next_due)
+    if due is None:
+        vouch = True
+        text = (f"RETENTION SWEEP RAN {last['ts']} AND ITS NEXT DUE TIME CANNOT BE READ · whether retain_until "
+                "is being enforced cannot be told (RT-12)")
+    elif overdue(due, at):
+        vouch = True
+        text = f"RETENTION SWEEP HAS NOT RUN SINCE {last['ts']} · {NOT_ENFORCED}"
+    else:
+        vouch = False
+        text = f"retention sweep ran {last['ts']}, next due {next_due} · this draft of the sweep deletes nothing"
+    if not_read:
+        vouch = True
+        text += f" · {not_read} heartbeat(s) carrying a time after now or no readable time are not read as a run"
+    return {"ran": last["ts"], "next_due": next_due, "vouch": vouch, "not_read": not_read, "text": text}
+
+
 def halt_line(conn) -> str | None:
     """RT-11, rendered as its consequence: a SHRED_FAILED with halt_system_wide in any case held."""
     for e in conn.execute(

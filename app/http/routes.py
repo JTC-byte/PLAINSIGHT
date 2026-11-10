@@ -300,6 +300,7 @@ def h_header(app, params, query, body) -> Response:
             "retention_vouch": retention.is_past(reg),
             "anchor": f"anchor_ts {reg['anchor_ts']} ({reg['anchor_reading']})",
             "halt": reads.halt_line(conn),
+            "sweep": reads.sweep_state(conn, case_id),
             "seed_focus": reads.seed_focus(conn, case_id),
             "landing_view": config.LANDING_VIEW,
             "analyst": app.analyst,
