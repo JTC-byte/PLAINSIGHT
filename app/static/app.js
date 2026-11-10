@@ -116,6 +116,7 @@ async function header() {
   lines.replaceChildren(
     el("div", {}, r.body.environment),
     el("div", { class: r.body.retention_vouch ? "vouch" : "" }, r.body.retention),
+    el("div", { class: r.body.sweep && r.body.sweep.vouch ? "vouch" : "" }, r.body.sweep ? r.body.sweep.text : ""),
     el("div", {}, r.body.anchor),
   );
   const halt = document.getElementById("halt");

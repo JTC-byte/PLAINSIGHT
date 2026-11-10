@@ -413,6 +413,78 @@ REFUSALS: dict[str, Code] = {
             "mark the node and another with v, then open PATHS with 8",
             "ask the operator to connect the subject gate to this route, a Class F change",
         ),
+        # -- the retention sweep and verify_shred (runner/, Step 11 drafted refusing) --
+        _c(
+            "SWEEP_REFUSED_FINDING_CHECK_PENDING",
+            "a case past retain_until, not swept: RT-13's finding check has not run for it, and the "
+            "kernel gate lists that check as PENDING, so the pre-shred sequence stops at its first step",
+            "doctrine/RETENTION.md section 9 and RT-13: run --finding, then shred, then verify_shred, "
+            "then the receipt, in that order",
+            "leave the case open, which is the state this refusal describes",
+            "build RT-13's finding check against a case store in ISOLATED, the work that takes the kernel "
+            "gate's retention-finding entry off PENDING",
+        ),
+        _c(
+            "SWEEP_REFUSED_POLICY_UNRATIFIED",
+            "a case past retain_until, not swept: policy/retention.yaml carries no dated row, so no TTL "
+            "is ratified and the sweep refuses to delete under an unratified one",
+            "doctrine/RETENTION.md RT-5 and the policy's self-lint, RETENTION_POLICY_UNRATIFIED",
+            "the operator stamps policy/retention.yaml in doctrine/DOCTRINE_STATUS.md",
+            "leave the case open",
+        ),
+        _c(
+            "SWEEP_REFUSED_LOCAL_STORE",
+            "a case past retain_until on a LOCAL store, not swept: the shred's two mechanisms, dropping "
+            "the case schema and destroying its key, are the ISOLATED store's, and LOCAL holds "
+            "synthetic material only",
+            "doctrine/EGRESS.md EG-2 and RETENTION.md RT-3",
+            "leave the case open, which is the state this refusal describes",
+            "remove a LOCAL synthetic store with its directory, which is no shred and leaves no receipt",
+        ),
+        _c(
+            "SWEEP_REFUSED_SHRED_NOT_BUILT",
+            "a case past retain_until, not swept: this draft holds no shred, because what the receipt "
+            "hash is computed over (U-09) and what check 5 does with no adjacent case (U-11) are "
+            "undecided, and a shred that cannot be receipted did not happen",
+            "doctrine/RETENTION.md RT-3, RT-9 and RT-10, and policy/retention.yaml U-09 and U-11",
+            "the operator decides U-09 and U-11, a Class F decision, and the shred is built after it",
+            "leave the case open, which is the state this refusal describes",
+        ),
+        _c(
+            "SWEEP_REFUSED_DATE_UNREADABLE",
+            "a case whose retain_until or frozen_until could not be read as a date, so the sweep can "
+            "say neither that the case is due nor that it is current: it is not swept, and it is not "
+            "passed over as current",
+            "doctrine/RETENTION.md RT-5 and RT-17: both dates are computed from the log under policy, "
+            "and the sweep decides nothing from a date it cannot read",
+            "run python -m app rebuild against the store, which recomputes both dates from the log",
+            "leave the case open, which is the state this refusal describes",
+        ),
+        _c(
+            "VERIFY_SHRED_UNRATIFIED",
+            "a verification whose five checks ran and are shown, but which reports no pass while "
+            "conformance/retention/shred-roundtrip.yaml carries no dated row",
+            "doctrine/RETENTION.md RT-9 and the fixture's self-lint, SHRED_ROUNDTRIP_UNRATIFIED",
+            "read the five dated facts above and act on each failing one",
+            "the operator stamps the fixture in doctrine/DOCTRINE_STATUS.md",
+        ),
+        _c(
+            "VERIFY_SHRED_CASE_NEVER_HELD",
+            "a verification of a case this store has no registry row for: a case never held here "
+            "cannot have been shredded here, and its absent objects and tables would read as passes",
+            "doctrine/RETENTION.md RT-9: a check that can pass for a reason other than the one claimed "
+            "is not a check",
+            "open /api/cases for the cases this store holds",
+            "run the verification against the store that held the case",
+        ),
+        _c(
+            "VERIFY_SHRED_CANARY_IS_THE_CASE",
+            "a verification whose canary is the case under verification, so check 5 would compare the "
+            "case with itself and say nothing about an adjacent one",
+            "doctrine/RETENTION.md RT-9 check 5: an adjacent canary case is still fully readable",
+            "name a different held case as --canary, with its counts taken before the shred",
+            "omit --canary, and check 5 reports NOT RUN, which is not a pass",
+        ),
         # -- the analyst acts (app/http/acts.py, slice 3, amendment 9.16) ----
         _c(
             "ACT_UNKNOWN",

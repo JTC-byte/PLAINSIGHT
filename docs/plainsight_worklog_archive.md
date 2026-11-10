@@ -4541,3 +4541,52 @@ that act. About 15 percent of the weekly usage was left at 13:19 on
 commit.
 
 ---
+
+## 2026-10-26, the extraction amendment committed and pushed, and the closeout, under the maintainer's typed words of 2026-10-26.
+
+**Class:** A. This entry and the handoff header change no governed artifact. The
+commit it records, `12e9d55`, was Class C as the 2026-10-25 entry classed it.
+
+**Agent involvement.** A fresh personal-account PLAINSIGHT session on Sonnet 5.5
+at medium, started by the parent folder session on his words of 2026-10-26, ran
+every step below with no sub-agent. By his words of 20:05:08 on 2026-10-23 every
+act here takes his words typed in this chat, and the parent's relays were read
+as information.
+
+**What was done, from his typed lines** (read from the since-last-record file
+`SINCE_LAST_RECORD_2026-10-26_closeout.md`, which marks all four as typed and
+none as a click or selection):
+
+- 19:24 to 19:30, the refresh from records. After a fetch: `main` ==
+  `origin/main` == `37dbcee`, 35 branches each equal to `origin`, one worktree,
+  stash 0, no open pull request, seven files staged and untouched. The delta
+  file of 2026-10-24 held only the parent's relay of 14:34. One report went to
+  the parent.
+- 19:33, "if all looks clean and matches our intent and philosophy, go for
+  commit". The sixteen preflight commands and the extraction's self-test all
+  exited 0 on the staged tree and `git diff --cached --check` was clean. The
+  seven files were committed as `12e9d55` with the 2026-10-25 message, authored
+  as the maintainer, no trailer. The report to the parent that followed stamped
+  the commit 19:35, a minute after the clock read at the commit; the commit's
+  own timestamp governs.
+- 19:35, "go for push". `main` fast-forwarded from `37dbcee` to `12e9d55`; after
+  a fetch `main` == `origin/main` == `12e9d55`. CI run 40420770198 on `main`
+  concluded success, all twenty steps read one by one, the trailer refusal and
+  the hook step included.
+- 19:39, "closeout is good to work now". The extraction's self-test ran first
+  (fourteen checks ok, four controls seen refusing), then the extraction over
+  this session's transcript, filed outside the tree beside the 2026-10-24
+  closeout record. The 2026-09-28 entry moved to the archive unedited, to keep
+  the ten-entry cap. The handoff header was corrected to the committed state.
+
+**What changed in state.** `main` gained `12e9d55`, and the amendment to
+`AGENTS.md` section 8 is now in force on `main`. The extraction joins no
+battery, as the amendment says. Pull request 34 was merged on 2026-10-25.
+
+**Open.** The closeout records wait on his commit word for that act, a Class A
+commit. Unchanged: the 28 queue items, none answered; plan item 0.7; the Step 7
+fixes and the rest of the held agent work; the audit's section 8 finding; the
+credentials inventory for the session he starts; the 34 merged branches, deleted
+only on his words naming that act. The lane holds until he types a release here.
+
+---
