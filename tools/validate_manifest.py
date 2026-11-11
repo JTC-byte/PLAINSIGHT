@@ -18,10 +18,11 @@ Modes:
   --self-test   breaks a manifest in memory and on a scratch disk outside the
                 repository, and asserts each break is refused by its own code or
                 permitted as stated, plus the controls named in self_test()
-  --quiet       prints nothing on a pass, with two exceptions that are states
+  --quiet       prints nothing on a pass, with three exceptions that are states
                 rather than passes and print regardless: --all over zero
-                manifests says that no manifest was validated, and --shape says
-                that no conformance claim is made
+                manifests says that no manifest was validated, --shape says
+                that no conformance claim is made, and each thing the adapter
+                check could not read is printed as NOT READ
 
 --all reads every directory under connectors/. A directory whose name starts
 with . or _ is not a connector, because the id pattern admits neither; one that
@@ -100,6 +101,67 @@ The checks, each with its code:
                manifest file under a directory --all does not read
                (MANIFEST_DIRECTORY_HIDDEN)
   drift        the schemas' copied enums equal their sources (MANIFEST_SCHEMA_DRIFT)
+  adapter      the manifest's command_template is read as a command line, and where
+               a connector directory holds adapter.py that file is read with ast
+               and never imported or executed. Refused under
+               MANIFEST_ADAPTER_WRITE_VERB (SS-14 item 3, MF-R19, MF-R21): a call
+               or a reference to .post, .put, .patch or .delete on requests or
+               httpx, on a client object the file binds (requests.Session(),
+               httpx.Client(), by assignment, by a with statement or on an
+               attribute, in any scope), on such a call's own result, or on an
+               object read as a client by a name alone, its own or that of the
+               call it comes from, when that name ends in session or client
+               (session, api_client, aiohttp.ClientSession()); an import of one
+               of those verbs; a .request, .stream or .build_request call, or a
+               Request object, whose method is a literal other than GET or HEAD
+               (MF-R22; on an object read by a name alone, a literal POST, PUT,
+               PATCH or DELETE); a urllib.request.Request with such a method,
+               or with a data argument and no method, and urlopen with a data
+               argument; and a command line that asks for a write. A command
+               line is a literal argv or a literal string given to a call this
+               check lists (subprocess, os.system, os.popen, asyncio's two
+               subprocess calls), or the template. An argv and the template
+               are one command each and are never split, since no shell reads
+               them. A string a shell reads (os.system, os.popen, getoutput,
+               getstatusoutput, asyncio's shell call, subprocess with shell
+               set to anything but a literal that is false) is split into
+               commands at every token made only of the characters | & ; ( ),
+               and each command is read alone. A list given with shell set is
+               read as an argv and printed as NOT READ, and a string given
+               with a keyword splat and no shell keyword is read as a shell
+               reads it and printed as NOT READ. In a command, -X, --request
+               or --method with POST, PUT, PATCH or DELETE refuses for any
+               program; after a token that names curl or wget, any method but
+               GET or HEAD refuses, and so does a body flag, unless curl's -G
+               makes its data a query. The template exempts nothing. What the
+               check can see it is not reading is printed as NOT READ, under
+               --quiet too, and is not refused: a verb or a method that is not
+               a string literal, a command line that is not a literal, a
+               command handed to a shell as text (a shell's name with -c or
+               the like after it in the same command), a command substitution
+               in a shell string, a shell string that cannot be split, a list
+               given with shell set, a string given with a keyword splat, a
+               program that is not a literal or holds a template slot, a
+               starred argv, a method flag whose value is not a literal or is
+               a template slot, and a name the file imports from two libraries
+               this check reads. Any other argv element that is not a literal
+               is taken to be an argument.
+               An adapter that is not readable Python is
+               MANIFEST_ADAPTER_UNREADABLE
+  must-fail    --all also walks conformance/connector-harness/must-fail/. Every
+               *.manifest.yaml there goes through check_manifest, which stops at
+               the schema when the schema refuses, and the one code its sibling
+               .expect file names must be among the findings: a manifest that
+               refuses nothing, or not that code, is MANIFEST_MUST_FAIL_PASSED.
+               An .expect that is absent, empty, holds more than one word or
+               names no code of this tool is MANIFEST_MUST_FAIL_EXPECT_ABSENT.
+               Every other entry of the folder but README.md (a file under
+               another name, a subfolder, an .expect with no manifest) is
+               MANIFEST_MUST_FAIL_UNREAD, and a folder that is missing or holds
+               no manifest is MANIFEST_MUST_FAIL_ABSENT, so removing the
+               fixture refuses. What a must-fail manifest fires is not a
+               refusal of --all; only these four codes are (SS-10's last
+               paragraph, MF-R18)
 
 Readings this tool and the two schemas took, each an agent reading awaiting the
 operator:
@@ -210,10 +272,126 @@ operator:
          amendment 9.14 of the design records the change. The maintainer kept
          the move on 2026-10-28, on his click on the offered action in the
          PLAINSIGHT chat, as Class B.
+  MF-R18 The must-fail folder sits in the harness, conformance/connector-harness/must-fail/,
+         beside fixture.schema.json, not under connectors/ (which --all would read
+         as connectors) and not under conformance/ as a corpus (which
+         tools/build_corpus.py owns). conformance/gate/ already carries the
+         decision fixture SS-10 names, bystander-disposition-retain; this folder
+         holds the manifest fixture of SS-10's last paragraph. The expected code
+         sits in a sibling .expect file because the schema admits no top-level
+         key for it, and adding one would be a schema change. The walk reads
+         every entry of the folder or refuses it, and refuses a folder with no
+         manifest, so a fixture cannot leave the walk by being renamed, moved
+         into a subfolder or deleted. A must-fail manifest that needs fixtures
+         beside it has no place here yet: the walk refuses the extra files, and
+         admitting them is a change to this walk. A harness folder is a
+         tool-side location and no class question; the first fixture widens
+         nothing, since it proves a refusal. 2026-11-09, item 8; the closure
+         over the folder added 2026-11-10 after the second-model read.
+  MF-R19 The adapter check is a shape check over one file's names and literals.
+         What it can resolve to a write it refuses. What it can see it is not
+         reading it prints as NOT READ under --all and under a single
+         manifest, with --quiet too, and never refuses. What it cannot see at
+         all it passes without a word; "What this tool does not catch" lists
+         the shapes five reads found, and that list is not complete, because
+         a shape check cannot name every shape it misses. A receiver is read
+         as a client when the file binds it to a client constructor of
+         requests or httpx, or by a name alone: when its own name, or the name
+         of the call it comes from, ends in session or client. Names are read
+         without scope, so a name bound to a client in one function is that
+         client in every function, and a refusal on a bound name says every
+         call the name was bound to, by either rule, and the line of each.
+         The name rules can refuse an object that is no HTTP client, a
+         database session for one; the refusal says how the name was read,
+         and the moves say what to change. Nothing is exempted by allowlist:
+         an adapter that trips the check is a finding for the record, not a
+         reason for an exemption. The Sherlock adapter holds one call the
+         check prints as NOT READ, a subprocess.run whose argv is built at
+         run time, and nothing it refuses; that is no finding that the
+         adapter writes nothing. Two paths do not show a NOT READ line: the
+         kernel gate prints a passing entry's name and not its output, and
+         the DECLARE rung of tools/validate_connector_conformance.py runs
+         this check and prints none. A direct run and the pre-commit hook
+         show them. 2026-11-09, item 8; rebuilt 2026-11-10 after five
+         second-model reads.
+  MF-R20 The brief's fourth item, a dead monkeypatch in app/tests/test_http.py,
+         was already closed in the tree: it is the paired breaker
+         break_log_writes_the_request_line. Nothing in this tool follows from
+         it, and the number is kept so the series has no gap. 2026-11-09,
+         item 8.
+  MF-R21 The command_template is read by the same command-line rule as an
+         adapter's argv, and it exempts nothing. The builder's brief of
+         2026-11-02 (BRIEF_item8_manifest_gaps.md in the record folder
+         Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/) asked for a
+         refusal of a write-verb flag "the connector's command_template does
+         not carry", which let a manifest declare a write into legality. SS-14
+         item 3 names the template as a thing checked, not as a permission. An
+         argv and the template are each one command, read token by token and
+         never split: no shell reads them, the template is split on spaces as
+         a connector builds its argv from it, and a | or an & inside one is an
+         argument. Only a string a shell reads is split into commands, at
+         every token made only of the characters | & ; ( ); a string given
+         to subprocess is one when the call sets shell to anything but a
+         literal that is false. A list given with shell set is read as an
+         argv and printed as NOT READ, since a shell reads its first
+         element, or all of them joined, as text. A string given with a
+         keyword splat and no shell keyword is read as a shell reads it and
+         printed as NOT READ, since the splat may set shell. In a command
+         the client is the first token that names curl or wget, wherever it
+         stands, so that sudo, env or docker run in front of it does not hide
+         it; the cost is that the word curl given to another program as an
+         argument, with one of that program's own flags after it, is refused,
+         and the moves say what to change. A body flag is read only after that
+         token; a method flag is read at any place and refuses on POST, PUT,
+         PATCH or DELETE, and after that token on any value but GET or HEAD. A
+         method flag whose value is a template slot is refused for curl and
+         wget and printed as NOT READ for any other program. A shell's name
+         with a flag that hands it a command (-c and the like) anywhere after
+         it in the same command is printed as NOT READ, and the text it is
+         handed is not read. Options may stand between the two, as in bash -e
+         -c, so the note is also printed where the later flag is not the
+         shell's: a script's own -c after bash run.sh, or curl's own -c after
+         a URL that ends in sh. The command's own tokens are still read, so
+         the note never takes the place of a refusal. Reading the text a
+         shell is handed was built on 2026-11-10 and gave wrong answers on
+         pipes, flag clusters and nesting, so it was taken out. 2026-11-10,
+         item 8, after the second-model reads.
+  MF-R22 The methods read as a read are GET and HEAD, the pair the same brief
+         set for urllib. OPTIONS and TRACE are safe methods by RFC 9110's
+         definition, and a literal OPTIONS is refused all the same: admitting
+         a method widens what passes this check, and that is the maintainer's
+         to decide. The refusal's moves say so. 2026-11-10, item 8, after the
+         second-model reads.
 
-What this tool does not catch: SS-14 item 3's check of read verbs against an
-adapter's methods waits for an adapter. A repeated key in a YAML manifest or a
-JSON fixture line is refused, under MANIFEST_DUPLICATE_KEY and
+What this tool does not catch: the adapter check reads names and literals in
+one file. The five second-model reads of 2026-11-10 found the shapes below
+passing without a word, and the list is not complete. It does not follow a
+client that reaches the call under a name that says nothing: a parameter
+called s, a second name given to a client, the return value of a function in
+the same file, an entry of a container, a tuple or loop target, a class that
+inherits from a client, a wrapper imported from another module. It does not
+follow a request that is built first and changed or sent later: a method or a
+body set on a request object after it is built, a PreparedRequest, a urllib
+opener's open with a body. It does not read a verb passed as a string to
+anything but getattr, such as operator.methodcaller, a client of another
+library whose names say nothing of session or client
+(http.client.HTTPSConnection, urllib3.PoolManager, a raw socket), or a
+requests or httpx call that sends a body under GET. On a command line it does
+not read a command run by a call it does not list (the os.exec and os.spawn
+families, a pty), a client that takes its verb as a plain argument (HTTPie,
+xh), a flag inside a cluster of short flags that holds a letter outside the
+ones CURL_VALUELESS lists, a -G that is the value of another of curl's flags
+(-H -G), which it reads as curl's own, a body flag of a client whose name it
+does not know, a program given by a slot or a variable behind another program
+such as sudo, a script a shell runs from a file, a PowerShell encoded
+command, code handed to another interpreter (python -c), a shell keyword
+passed to an argv list through a keyword splat, or anything a string builds
+at run time. It reads names without scope, so one binding of a name to a
+client marks that name through the whole file. The design's live canaries,
+the dispatch scanner in tools/validate_authorization.py and the subject gate
+remain the controls on what a connector does, and a passing adapter check is
+no claim that the connector mutates nothing. A repeated key in a YAML manifest
+or a JSON fixture line is refused, under MANIFEST_DUPLICATE_KEY and
 MANIFEST_REFUSAL_FIXTURE_SHAPE.
 
 Exit codes: 0 pass, 1 refusal, 2 a file this tool reads could not be read: the
@@ -224,12 +402,15 @@ retention policy, the cast draft or the pin of record is absent or unreadable.
 from __future__ import annotations
 
 import argparse
+import ast
 import contextlib
 import copy
 import io
 import json
 import os
 import re
+import shlex
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -325,6 +506,50 @@ class ToolFailure(Exception):
 
 #: Governed prose. Each code: the rule that refuses it, and the legal moves.
 CODES: dict[str, tuple[str, str]] = {
+    "MANIFEST_MUST_FAIL_PASSED": (
+        "doctrine/SUBJECT_SELECTION.md SS-10, last paragraph, and CLAUDE.md design gate 1: a constraint "
+        "is not done until a test fails when it is removed, and a must-fail manifest is that test",
+        "restore the break the must-fail manifest plants, so it refuses with the code its .expect file "
+        "names; or, if a check was tightened on purpose and the file now refuses for a different code, "
+        "update its .expect in the same change; never delete the file to make --all pass",
+    ),
+    "MANIFEST_MUST_FAIL_EXPECT_ABSENT": (
+        "conformance/connector-harness/must-fail/README.md: every must-fail manifest names the one code it "
+        "must refuse with, in a sibling .expect file that holds that code and nothing else",
+        "write <name>.expect beside <name>.manifest.yaml with one code of this tool on one line and no "
+        "comment; or remove a manifest that no longer plants a break, in a change that says why",
+    ),
+    "MANIFEST_MUST_FAIL_UNREAD": (
+        "conformance/connector-harness/must-fail/README.md: the walk reads <name>.manifest.yaml and "
+        "<name>.expect in that folder and nothing else, and a fixture the walk never reads would pass by "
+        "being skipped",
+        "name the manifest <name>.manifest.yaml in the folder itself, not in a subfolder, with "
+        "<name>.expect beside it; or remove the entry; README.md is the one other file the folder holds",
+    ),
+    "MANIFEST_MUST_FAIL_ABSENT": (
+        "doctrine/SUBJECT_SELECTION.md SS-10, last paragraph: one must-fail manifest fixture lands with "
+        "the refusal it proves; and CLAUDE.md design gate 1: a folder with no manifest proves nothing",
+        "restore conformance/connector-harness/must-fail/retain-disposition.manifest.yaml and its .expect "
+        "from history; never delete the folder or its last manifest to make --all pass",
+    ),
+    "MANIFEST_ADAPTER_WRITE_VERB": (
+        "doctrine/SUBJECT_SELECTION.md SS-14 item 3 and R7: no action that mutates a target platform, "
+        "with the line drawn at what the subject can observe; this is a shape check over the adapter's "
+        "names and literals and the manifest's command_template (MF-R19, MF-R21)",
+        "remove the write call, the reference to it or the write flag; or, if the object named is not an "
+        "HTTP client, give it a name of its own that says what it is, or bind it from a call whose name "
+        "does not end in session or client: this check reads such a name as a client, and reads a name "
+        "bound to a client anywhere in the file as that client in the whole file; or, where curl or wget "
+        "is an argument of another program and not the program, put that program's own flags before it; "
+        "or, for a method other than GET or HEAD that writes nothing, raise it in the record, since which "
+        "methods count as a read is the maintainer's reading (MF-R22); this tool exempts nothing by "
+        "allowlist, and neither does a command_template",
+    ),
+    "MANIFEST_ADAPTER_UNREADABLE": (
+        "doctrine/SUBJECT_SELECTION.md SS-14 item 3: the adapter is checked for write verbs, and a file "
+        "this tool cannot read as Python is a file it did not check",
+        "fix the syntax error Python reports for adapter.py; or save the file as UTF-8 text",
+    ),
     "MANIFEST_SHAPE_INVALID": (
         "schema/connector-manifest.schema.json, the one CI check docs/PLAINSIGHT-design.md section 6.4 keeps",
         "correct the key or value named above; run python tools/validate_manifest.py --shape <path> "
@@ -1388,8 +1613,570 @@ def check_interaction(m: dict, ctx: dict, rel: str) -> list[Finding]:
                     "of record carries no dated row for R7, so nothing this manifest declares may run")]
 
 
+#: The HTTP client libraries this check reads (MF-R19). A library not named here is not read.
+HTTP_LIBRARIES = ("requests", "httpx")
+#: The roots of every library this check reads. An import alias bound to one of them is kept when the
+#: file imports something else under the same name.
+READ_ROOTS = HTTP_LIBRARIES + ("urllib", "subprocess", "os", "asyncio")
+#: The last segment of a call that builds a client object of the HTTP libraries.
+CLIENT_CONSTRUCTORS = ("Session", "session", "Client", "AsyncClient")
+#: Methods that write, on a library or on a client object, and the HTTP methods they send.
+WRITE_VERBS = ("post", "put", "patch", "delete")
+WRITE_METHODS = tuple(v.upper() for v in WRITE_VERBS)
+#: The HTTP methods this check reads as a read (MF-R22).
+READ_METHODS = ("GET", "HEAD")
+#: Calls whose first argument, or method keyword, is the HTTP method, and request objects built the same way.
+METHOD_FIRST = ("request", "stream", "build_request")
+REQUEST_CONSTRUCTORS = ("Request",)
+#: A name that ends in one of these is read as a client: session, api_client, aiohttp.ClientSession().
+CLIENT_NAME_ENDINGS = ("session", "client")
+#: Calls that run a command line, and how each takes it. argv: the first argument, or the args keyword,
+#: is a list of tokens, or one string that a shell reads only when the call says shell. shell: the first
+#: argument, or the command or cmd keyword, is one string a shell reads. args: every positional
+#: argument is a token.
+COMMAND_CALLS = {
+    "subprocess.run": "argv",
+    "subprocess.Popen": "argv",
+    "subprocess.call": "argv",
+    "subprocess.check_call": "argv",
+    "subprocess.check_output": "argv",
+    "subprocess.getoutput": "shell",
+    "subprocess.getstatusoutput": "shell",
+    "os.system": "shell",
+    "os.popen": "shell",
+    "asyncio.create_subprocess_shell": "shell",
+    "asyncio.create_subprocess_exec": "args",
+}
+#: Flags that set the HTTP method. Read at any place in a command and for any program.
+METHOD_FLAGS = ("-X", "--request", "--method")
+#: Flags that make a command-line client send a body or a file. Read only after the token that names the
+#: client, within the same command, because -d means something else to most other tools.
+BODY_FLAGS = {
+    "curl": ("-d", "--data", "--data-ascii", "--data-binary", "--data-raw", "--data-urlencode", "--json",
+             "-F", "--form", "--form-string", "-T", "--upload-file"),
+    "wget": ("--post-data", "--post-file", "--body-data", "--body-file"),
+}
+#: The curl flags that -G or --get turns from a body into a query string.
+QUERY_UNDER_GET = ("-d", "--data", "--data-ascii", "--data-binary", "--data-raw", "--data-urlencode")
+#: Some of curl's short flags that take no value. A cluster of these is read through, so -sX, -sd and
+#: -sG are read as -X, -d and -G; a cluster holding any other letter is not.
+CURL_VALUELESS = "sSfLkviIgNGOJ#"
+#: Programs that run a command handed to them as text, and the flags that hand it over. A shell's name
+#: followed by one of these flags, or by a cluster of letters ending in c such as -ec, is printed as NOT
+#: READ; the text it is handed is not read.
+SHELLS = ("sh", "bash", "zsh", "dash", "ksh", "cmd", "powershell", "pwsh")
+SHELL_COMMAND_FLAGS = ("-c", "/c", "/C", "/k", "/K", "-Command", "-command")
+#: The characters a shell reads as separators between commands. A token made only of these splits a
+#: shell's command line into commands, each read alone. An argv and a template are never split.
+COMMAND_SEPARATORS = "|&;()"
+#: Why an object was read as a client without a constructor of a library this check reads.
+BY_NAME = ", which this check reads as a client because the name ends in session or client"
+
+
+def _adapter_dotted(node, aliases: dict) -> str | None:
+    """A name or an attribute chain as dotted text, its first segment read through the import aliases.
+    A loop and not a recursion: a chain can be deeper than the interpreter's recursion limit."""
+    parts: list[str] = []
+    while isinstance(node, ast.Attribute):
+        parts.append(node.attr)
+        node = node.value
+    if not isinstance(node, ast.Name):
+        return None
+    parts.append(aliases.get(node.id, node.id))
+    return ".".join(reversed(parts))
+
+
+def _is_http_name(dotted: str | None) -> bool:
+    return bool(dotted) and dotted.split(".")[0] in HTTP_LIBRARIES
+
+
+def _is_client_constructor(node, aliases: dict) -> bool:
+    """A call such as requests.Session() or httpx.Client(): a library name ending in a constructor."""
+    if not isinstance(node, ast.Call):
+        return False
+    head = _adapter_dotted(node.func, aliases)
+    return _is_http_name(head) and head.rsplit(".", 1)[-1] in CLIENT_CONSTRUCTORS
+
+
+def _says_client(name: str | None) -> bool:
+    """Whether the last segment of a dotted name ends in session or client, in any case."""
+    return bool(name) and name.rsplit(".", 1)[-1].lower().endswith(CLIENT_NAME_ENDINGS)
+
+
+def _adapter_bindings(tree) -> tuple[dict, dict, dict, set]:
+    """(aliases, clients, named, twice). aliases holds every name an import binds, anywhere in the file.
+    clients maps every name or attribute chain the file binds to a client constructor of an HTTP
+    library, by assignment, by a with statement or by :=, to each such call and its line. named maps
+    every name bound the same way to a call whose own name ends in session or client, to each such
+    call and its line. twice holds every name the file imports from two different libraries this
+    check reads, which it cannot read as either. The reading is by name and ignores scope, so one
+    binding marks the name through the whole file."""
+    aliases: dict[str, str] = {}
+    twice: set[str] = set()
+
+    def alias(name: str, target: str) -> None:
+        # One name can be imported twice in one file. A binding to a library this check reads is kept,
+        # so a later import of something else under that name does not hide it. Two bindings to two
+        # such libraries cannot both be right, and the name is set aside, unless both are HTTP
+        # libraries, where either reading gives the same answer.
+        old = aliases.get(name)
+        roots = (old.split(".")[0] if old else "", target.split(".")[0])
+        if old is None or roots[0] not in READ_ROOTS:
+            aliases[name] = target
+        elif roots[1] in READ_ROOTS and roots[0] != roots[1] and not set(roots) <= set(HTTP_LIBRARIES):
+            twice.add(name)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                # `import a.b.c` binds a; `import a.b as x` binds x to a.b.
+                if a.asname:
+                    alias(a.asname, a.name)
+                else:
+                    alias(a.name.split(".")[0], a.name.split(".")[0])
+        elif isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            for a in node.names:
+                alias(a.asname or a.name, f"{node.module}.{a.name}")
+    clients: dict[str, list] = {}
+    named: dict[str, list] = {}
+
+    def bind(target, value) -> None:
+        name = _adapter_dotted(target, {})
+        if not name or not isinstance(value, ast.Call):
+            return
+        callee = _adapter_dotted(value.func, aliases)
+        origin = (getattr(value, "lineno", 0), f"{callee}() at line {getattr(value, 'lineno', 0)}")
+        if _is_client_constructor(value, aliases):
+            clients.setdefault(name, []).append(origin)
+        elif _says_client(callee):
+            named.setdefault(name, []).append(origin)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                bind(target, node.value)
+        elif isinstance(node, (ast.AnnAssign, ast.NamedExpr)) and node.value is not None:
+            bind(node.target, node.value)
+        elif isinstance(node, (ast.With, ast.AsyncWith)):
+            for item in node.items:
+                if item.optional_vars is not None:
+                    bind(item.optional_vars, item.context_expr)
+    return aliases, clients, named, twice
+
+
+def _origins(bound: list) -> str:
+    """Every binding of one name, in line order: "requests.Session() at line 2 and httpx.Client() at line 4"."""
+    return " and ".join(text for _, text in sorted(set(bound)))
+
+
+def _root_name(node) -> str | None:
+    """The name an attribute chain starts from, as the file writes it."""
+    while isinstance(node, ast.Attribute):
+        node = node.value
+    return node.id if isinstance(node, ast.Name) else None
+
+
+def _receiver(node, aliases: dict, clients: dict, named: dict) -> tuple[str, str, str]:
+    """How this check reads the object a method is called on: (kind, name, why).
+
+    kind is "library" for requests or httpx or a name inside one; "client" for a name the file binds to
+    one of their client constructors, or such a call's own result; "named" for an object read as a
+    client by a name alone, its own or that of the call it comes from; "" for anything else, which is
+    not read as a client. why says where a bound name was bound, and that a name alone was read."""
+    if isinstance(node, ast.Call):
+        callee = _adapter_dotted(node.func, aliases)
+        if _is_client_constructor(node, aliases):
+            return "client", f"{callee}()", ""
+        if _says_client(callee):
+            return "named", f"{callee}()", BY_NAME
+        return "", "", ""
+    raw = _adapter_dotted(node, {})
+    if raw is None:
+        return "", "", ""
+    resolved = _adapter_dotted(node, aliases)
+    if _is_http_name(resolved):
+        return "library", resolved, ""
+    if raw in clients:
+        return "client", raw, f", bound to {_origins(clients[raw] + named.get(raw, []))}"
+    if raw in named:
+        return "named", raw, f", bound to {_origins(named[raw])}{BY_NAME}"
+    if _says_client(raw):
+        return "named", raw, BY_NAME
+    return "", "", ""
+
+
+def _method_of(call: ast.Call, position: int) -> tuple[str, str]:
+    """The HTTP method a call names: ("literal", "POST"); ("unread", "") when it is there and is not a
+    string literal, or may sit inside a starred argument; ("absent", "") when the call names none."""
+    value = next((kw.value for kw in call.keywords if kw.arg == "method"), None)
+    if value is None:
+        if any(isinstance(a, ast.Starred) for a in call.args[: position + 1]):
+            return "unread", ""
+        if len(call.args) > position:
+            value = call.args[position]
+    if value is None:
+        return ("unread", "") if any(kw.arg is None for kw in call.keywords) else ("absent", "")
+    if isinstance(value, ast.Constant) and isinstance(value.value, str):
+        return "literal", value.value.upper()
+    if isinstance(value, ast.Constant) and value.value is None:
+        return "absent", ""
+    return "unread", ""
+
+
+def _has_body(call: ast.Call, position: int) -> bool:
+    """Whether a urllib call passes data other than the literal None, by keyword or at its position."""
+    value = next((kw.value for kw in call.keywords if kw.arg == "data"), None)
+    if value is None and len(call.args) > position:
+        value = call.args[position]
+    return value is not None and not (isinstance(value, ast.Constant) and value.value is None)
+
+
+def _split_command(text: str) -> list | None:
+    """A command line a shell runs, split into tokens as a shell splits it, with the shell's own
+    operators (|, ||, &&, ;, parentheses, redirections) as tokens of their own. A backslash is read as
+    a path separator first, since a Windows path would otherwise lose its separators. None when it
+    cannot be split, as with an unbalanced quote."""
+    try:
+        lexer = shlex.shlex(text.replace("\\", "/"), posix=True, punctuation_chars=True)
+        lexer.whitespace_split = True
+        return list(lexer)
+    except ValueError:
+        return None
+
+
+def _literal(node):
+    """A string literal's text, or None for anything else."""
+    return node.value if isinstance(node, ast.Constant) and isinstance(node.value, str) else None
+
+
+def _program(token) -> str:
+    """The program a token names: its last path segment, in lower case, without .exe."""
+    if not isinstance(token, str):
+        return ""
+    name = token.replace("\\", "/").rsplit("/", 1)[-1].lower()
+    return name[:-4] if name.endswith(".exe") else name
+
+
+def _is_slot(token) -> bool:
+    """Whether a token is a template slot and nothing else: {username}."""
+    return isinstance(token, str) and re.fullmatch(r"\{[^{}\s]+\}", token) is not None
+
+
+def _holds_slot(token) -> bool:
+    """Whether a token holds a template slot anywhere in it: {tool}, /opt/{tool}."""
+    return isinstance(token, str) and re.search(r"\{[^{}\s]+\}", token) is not None
+
+
+def _commands(tokens: list) -> list[list]:
+    """A shell's command line, split into its commands at the tokens the shell reads as separators."""
+    out: list[list] = [[]]
+    for tok in tokens:
+        if isinstance(tok, str) and tok and all(ch in COMMAND_SEPARATORS for ch in tok):
+            out.append([])
+        else:
+            out[-1].append(tok)
+    return [command for command in out if command]
+
+
+def _command_line_writes(tokens: list, shell: bool = False) -> tuple[list[str], list[str]]:
+    """(writes, unread) for one command line, given as its tokens: text for a literal, None otherwise.
+
+    With shell true the line is one a shell runs: it is split into commands at the shell's separators
+    and each command is read alone. Otherwise it is an argv or a template, which no shell reads, and it
+    is one command whatever its tokens hold. writes holds each flag that asks for a write. A method
+    flag refuses on POST, PUT, PATCH or DELETE at any place and for any program, and on anything but
+    GET or HEAD after a token that names curl or wget. A body flag is read only after the token that
+    names its client, and curl's -G turns its data flags into a query. unread holds what could be seen
+    and not read: a command handed to a shell as text, a program that is not a literal or holds a
+    template slot, a method flag whose value is not a literal or is a template slot."""
+    writes: list[str] = []
+    unread: list[str] = []
+    cluster = "-[" + re.escape(CURL_VALUELESS) + "]*"
+    for command in (_commands(tokens) if shell else [tokens] if tokens else []):
+        client_at = next((i for i, t in enumerate(command) if _program(t) in BODY_FLAGS), None)
+        client = _program(command[client_at]) if client_at is not None else ""
+        # What -G is read from: the tokens after the client, leaving out the value of a body flag.
+        after = [t for i, t in enumerate(command) if client_at is not None and i > client_at and isinstance(t, str)
+                 and command[i - 1] not in BODY_FLAGS[client]
+                 and not (client == "curl" and isinstance(command[i - 1], str)
+                          and re.fullmatch(cluster + "[dFT]", command[i - 1]))]
+        as_query = client == "curl" and any(
+            t == "--get" or (not t.startswith("--") and "G" in (re.match(cluster, t) or [""])[0]) for t in after)
+        if client_at is None and not isinstance(command[0], str):
+            unread.append("a program that is not a literal, so no body flag in it was read")
+        elif client_at is None and _holds_slot(command[0]):
+            unread.append("a program that holds a template slot, so no body flag in it was read")
+        for i, tok in enumerate(command):
+            if not isinstance(tok, str):
+                continue
+            nxt = command[i + 1] if i + 1 < len(command) else ""
+            in_client = client_at is not None and i > client_at
+            # A shell's name with a flag that hands it a command anywhere after it in the same command:
+            # options may stand between the two (bash -e -c, cmd /d /c, powershell -NoProfile -Command).
+            if _program(tok) in SHELLS and any(
+                    isinstance(t, str) and (t in SHELL_COMMAND_FLAGS or re.fullmatch(r"-[A-Za-z]*c", t))
+                    for t in command[i + 1:]):
+                # The shell's command string is not read. The command's own tokens still are.
+                unread.append(f"a command handed to the shell {_program(tok)} as text, which this check does not read")
+            flag, eq, attached = tok.partition("=")
+            method = None
+            if flag in METHOD_FLAGS:
+                method = (flag, attached if eq else nxt)
+            elif not tok.startswith("--"):
+                short = re.fullmatch(cluster + "X(.*)", tok)
+                if short:
+                    method = ("-X", short.group(1) or nxt)
+            if method:
+                flag, value = method
+                if not isinstance(value, str):
+                    unread.append(f"{flag} with a value that is not a literal")
+                elif value.upper() in WRITE_METHODS or (in_client and value and value.upper() not in READ_METHODS):
+                    writes.append(f"{flag} {value}")
+                elif _is_slot(value):
+                    unread.append(f"{flag} with a value that is a template slot")
+                continue
+            if not in_client:
+                continue
+            body = flag if flag in BODY_FLAGS[client] else None
+            if body is None and client == "curl" and not tok.startswith("--"):
+                short = re.fullmatch(cluster + "([dFT]).*", tok)
+                body = "-" + short.group(1) if short else None
+            if body and not (as_query and body in QUERY_UNDER_GET):
+                writes.append(body)
+    return writes, unread
+
+
+def _check_adapter_call(node: ast.Call, aliases: dict, clients: dict, named: dict, refuse, note) -> None:
+    """One call of the adapter, against every rule but the write verb on an attribute, which the caller reads."""
+    func = node.func
+    dotted = _adapter_dotted(func, aliases)
+    last = dotted.rsplit(".", 1)[-1] if dotted else ""
+    # A verb imported by name: from requests import post, then post(url).
+    if isinstance(func, ast.Name) and _is_http_name(dotted) and last in WRITE_VERBS:
+        refuse(node, f"a call to {dotted}")
+        return
+    # requests.request(method, ...), client.stream(method, ...), requests.Request(method, ...).
+    kind, label, why = "", "", ""
+    if isinstance(func, ast.Attribute) and func.attr in METHOD_FIRST:
+        kind, name, why = _receiver(func.value, aliases, clients, named)
+        label = f"{name}.{func.attr}"
+    elif _is_http_name(dotted) and last in METHOD_FIRST + REQUEST_CONSTRUCTORS:
+        kind, label = "library", dotted
+    if kind:
+        how, method = _method_of(node, 0)
+        if how == "literal" and (method in WRITE_METHODS or (kind != "named" and method not in READ_METHODS)):
+            refuse(node, f"a call to {label} with method {method}{why}")
+        elif how == "unread":
+            note(node, f"a call to {label} whose method is not a string literal")
+        return
+    # urllib: a method other than a read, or a body, which urllib sends as POST.
+    if dotted == "urllib.request.Request":
+        how, method = _method_of(node, 5)
+        if how == "literal" and method not in READ_METHODS:
+            refuse(node, f"urllib.request.Request with method {method}")
+        elif how == "unread":
+            note(node, "urllib.request.Request whose method is not a string literal")
+        elif how == "absent" and _has_body(node, 1):
+            refuse(node, "urllib.request.Request with a data argument and no method, which urllib sends as POST")
+        return
+    if dotted == "urllib.request.urlopen":
+        if _has_body(node, 1):
+            refuse(node, "urllib.request.urlopen with a data argument, which urllib sends as POST")
+        return
+    # A command line: an argv list, one string, or one token per argument.
+    style = COMMAND_CALLS.get(dotted or "")
+    if style:
+        starred = shell = False
+        if style == "args":
+            tokens = [_literal(a) for a in node.args]
+            starred = any(isinstance(a, ast.Starred) for a in node.args)
+        else:
+            arg = node.args[0] if node.args else next(
+                (kw.value for kw in node.keywords if kw.arg in ("args", "command", "cmd")), None)
+            # A shell reads the command when the call is one that hands its string to a shell, or says
+            # shell with anything but a literal that is false (False, 0, None, an empty string).
+            says = next((kw.value for kw in node.keywords if kw.arg == "shell"), None)
+            shell = style == "shell" or (says is not None and not (
+                isinstance(says, ast.Constant) and not says.value))
+            if isinstance(arg, (ast.List, ast.Tuple)):
+                tokens = [_literal(e) for e in arg.elts]
+                starred = any(isinstance(e, ast.Starred) for e in arg.elts)
+                if shell:
+                    # A list where a shell runs: the shell reads its first element, or all of them joined,
+                    # as text. The list is read as one argv all the same, and that is said.
+                    note(node, f"a list given to {dotted} with shell set, which a shell reads as text and this "
+                               "check reads as an argv")
+                    shell = False
+            else:
+                # One string: split as a shell splits it where a shell reads it, on spaces alone otherwise.
+                text = _literal(arg)
+                if text is not None and not shell and says is None and any(kw.arg is None for kw in node.keywords):
+                    # A keyword splat may set shell. The string is read as a shell reads it, and that is said.
+                    note(node, f"a string given to {dotted} with a keyword splat that may set shell, so it is read "
+                               "as a shell reads it")
+                    shell = True
+                tokens = None if text is None else _split_command(text) if shell else text.split()
+                if shell and text is not None and tokens is None:
+                    note(node, f"a command line given to {dotted} that cannot be split as a shell splits it, "
+                               "so no token of it was read")
+                    return
+                if shell and text is not None and ("`" in text or "$(" in text):
+                    note(node, f"a command line given to {dotted} that holds a command substitution, which this "
+                               "check does not read")
+        if tokens is None:
+            note(node, f"a command line given to {dotted} that is not a literal, so no token of it was read")
+            return
+        if starred:
+            note(node, f"a command line given to {dotted} that holds a starred element, so only its literal "
+                       "tokens were read")
+        writes, unread = _command_line_writes(tokens, shell)
+        for what in writes:
+            refuse(node, f"a command line given to {dotted} carrying {what}, which asks for a write")
+        for what in unread:
+            note(node, f"a command line given to {dotted} carrying {what}")
+        return
+    # getattr(client, name): the verb is a string, read when it is a literal.
+    if dotted == "getattr" and len(node.args) >= 2:
+        kind, name, why = _receiver(node.args[0], aliases, clients, named)
+        verb = _literal(node.args[1])
+        if kind and verb is not None:
+            if verb in WRITE_VERBS:
+                refuse(node, f"a getattr of .{verb} on {name}{why}")
+        elif kind:
+            note(node, f"a call through getattr on {name}, whose verb is not a string literal")
+
+
+def check_adapter_write_verbs(m: dict, rel: str, mdir: Path) -> tuple[list[Finding], list[tuple[str, str]]]:
+    """SS-14 item 3, as a shape check (MF-R19, MF-R21). Reads the manifest's command_template as a
+    command line and, where the connector directory holds adapter.py, that file with ast. Imports
+    nothing and executes nothing.
+
+    Returns (findings, not_read). not_read lists, as (where, what), each thing this check could see
+    it was not reading. The callers print every one, so a pass never covers it silently."""
+    findings: list[Finding] = []
+    not_read: list[tuple[str, str]] = []
+    template = _dig(m, "lineage", "command_template")
+    if isinstance(template, str) and template.strip():
+        # Split on spaces alone, as a connector builds its argv from it: no shell reads a template.
+        writes, unread = _command_line_writes(template.split())
+        where = at(rel, "lineage.command_template")
+        findings += [Finding("MANIFEST_ADAPTER_WRITE_VERB", where,
+                             f"the command template carries {what}, which asks for a write") for what in writes]
+        not_read += [(where, f"the command template carries {what}") for what in unread]
+    path = mdir / "adapter.py"
+    if not path.is_file():
+        return findings, not_read
+    arel = rel_of(path)
+    try:
+        # utf-8-sig: Python runs a source file that starts with a byte-order mark, so this reads one too.
+        tree = ast.parse(path.read_text(encoding="utf-8-sig"), filename=str(path))
+    except (OSError, SyntaxError, UnicodeDecodeError, ValueError, RecursionError, MemoryError) as exc:
+        findings.append(Finding("MANIFEST_ADAPTER_UNREADABLE", arel,
+                                f"adapter.py could not be read as Python ({exc.__class__.__name__}), "
+                                "so no call in it was checked"))
+        return findings, not_read
+    aliases, clients, named, twice = _adapter_bindings(tree)
+    called = {id(n.func) for n in ast.walk(tree) if isinstance(n, ast.Call)}
+    refused: set[tuple[int, str]] = set()
+    unread_calls: set[tuple[int, str]] = set()
+
+    def refuse(node, what: str) -> None:
+        refused.add((getattr(node, "lineno", 0), what))
+
+    def note(node, what: str) -> None:
+        unread_calls.add((getattr(node, "lineno", 0), what))
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module and not node.level and _is_http_name(node.module):
+            for a in node.names:
+                if a.name in WRITE_VERBS:
+                    refuse(node, f"an import of {node.module}.{a.name}")
+        elif isinstance(node, ast.Attribute) and node.attr in WRITE_VERBS:
+            if _root_name(node.value) in twice:
+                # A verb that is called is listed once, by the call below; one that is only held is listed here.
+                if id(node) not in called:
+                    note(node, f"a use of {_root_name(node.value)}, a name the file imports from two libraries "
+                               "this check reads, so it is read as neither")
+                continue
+            kind, name, why = _receiver(node.value, aliases, clients, named)
+            if kind:
+                how = "a call to" if id(node) in called else "a reference to"
+                refuse(node, f"{how} .{node.attr} on {name}{why}")
+        elif isinstance(node, ast.Call):
+            if _root_name(node.func) in twice:
+                note(node, f"a call on {_root_name(node.func)}, a name the file imports from two libraries "
+                           "this check reads, so it is read as neither")
+                continue
+            _check_adapter_call(node, aliases, clients, named, refuse, note)
+    findings += [Finding("MANIFEST_ADAPTER_WRITE_VERB", f"{arel}:{line}", what) for line, what in sorted(refused)]
+    return findings, not_read + [(f"{arel}:{line}", what) for line, what in sorted(unread_calls)]
+
+
+MUST_FAIL = ROOT / "conformance" / "connector-harness" / "must-fail"
+MUST_FAIL_SUFFIX = ".manifest.yaml"
+
+
+def must_fail_findings(ctx: dict, folder: Path) -> list[Finding]:
+    """The must-fail walk (MF-R18). Every manifest in the folder must refuse with the one code its
+    .expect names; every other entry of the folder is read or refused; and a folder that is missing or
+    holds no manifest is refused, so a fixture cannot leave the walk by being renamed, moved or deleted."""
+    if not folder.is_dir():
+        return [Finding("MANIFEST_MUST_FAIL_ABSENT", rel_of(folder), "the must-fail folder does not exist")]
+    out: list[Finding] = []
+    manifests: list[Path] = []
+    expects: dict[str, Path] = {}
+    for path in sorted(folder.iterdir()):
+        if path.is_dir():
+            out.append(Finding("MANIFEST_MUST_FAIL_UNREAD", rel_of(path),
+                               "a subfolder, which the walk does not enter"))
+        elif path.name.endswith(MUST_FAIL_SUFFIX):
+            manifests.append(path)
+        elif path.name.endswith(".expect"):
+            expects[path.name[: -len(".expect")]] = path
+        elif path.name != "README.md":
+            out.append(Finding("MANIFEST_MUST_FAIL_UNREAD", rel_of(path),
+                               "a file the walk does not read: it is not named <name>.manifest.yaml, "
+                               "<name>.expect or README.md"))
+    stems = {p.name[: -len(MUST_FAIL_SUFFIX)] for p in manifests}
+    for stem in sorted(set(expects) - stems):
+        out.append(Finding("MANIFEST_MUST_FAIL_UNREAD", rel_of(expects[stem]),
+                           f"an .expect file with no {stem}{MUST_FAIL_SUFFIX} beside it, so it names a code for nothing"))
+    if not manifests:
+        out.append(Finding("MANIFEST_MUST_FAIL_ABSENT", rel_of(folder),
+                           "the must-fail folder holds no *.manifest.yaml, so no refusal is proven"))
+    for path in manifests:
+        rel = rel_of(path)
+        expect = expects.get(path.name[: -len(MUST_FAIL_SUFFIX)])
+        if expect is None:
+            out.append(Finding("MANIFEST_MUST_FAIL_EXPECT_ABSENT", rel,
+                               "no .expect file names the code this manifest must refuse with"))
+            continue
+        try:
+            words = expect.read_text(encoding="utf-8-sig").split()
+        except (OSError, UnicodeDecodeError) as exc:
+            out.append(Finding("MANIFEST_MUST_FAIL_EXPECT_ABSENT", rel,
+                               f"the .expect file could not be read as UTF-8 text ({exc.__class__.__name__})"))
+            continue
+        if len(words) != 1 or words[0] not in CODES:
+            what = ("the .expect file is empty" if not words
+                    else f"the .expect file holds {len(words)} words, and it holds one code and nothing else"
+                    if len(words) > 1 else f"the .expect file names {words[0]}, which is not a code this tool refuses with")
+            out.append(Finding("MANIFEST_MUST_FAIL_EXPECT_ABSENT", rel, what))
+            continue
+        code = words[0]
+        manifest, repeated = load_manifest(path)
+        fired = {f.code for f in repeated}
+        if manifest is not None:
+            fired |= {f.code for f in check_manifest(manifest, ctx, rel, folder, expect_id=None)}
+        if code not in fired:
+            what = "refused nothing" if not fired else f"refused {', '.join(sorted(fired))} and not {code}"
+            out.append(Finding("MANIFEST_MUST_FAIL_PASSED", rel, f"a must-fail manifest {what}"))
+    return out
+
+
 def check_manifest(manifest, ctx: dict, rel: str, mdir: Path, expect_id: str | None = None,
-                   shape_only: bool = False) -> list[Finding]:
+                   shape_only: bool = False, notes: list | None = None) -> list[Finding]:
+    """Every check on one manifest. notes, when given, collects the adapter calls the check could not read."""
     findings = shape_findings(manifest, ctx["schema"], rel)
     if shape_only or findings:
         return findings
@@ -1403,6 +2190,10 @@ def check_manifest(manifest, ctx: dict, rel: str, mdir: Path, expect_id: str | N
     findings += check_slots(m, rel)
     findings += check_honesty(m, rel)
     findings += check_interaction(m, ctx, rel)
+    found, not_read = check_adapter_write_verbs(m, rel, mdir)
+    findings += found
+    if notes is not None:
+        notes += not_read
     if expect_id is not None and m["id"] != expect_id:
         findings.append(Finding("MANIFEST_ID_DISAGREES_WITH_DIRECTORY", at(rel, "id"),
                                 f"the id differs from its directory name, connectors/{expect_id}/"))
@@ -1456,16 +2247,35 @@ def _report(findings: list[Finding], label: str) -> int:
     for f in findings:
         print(f.render(), file=sys.stderr)
         print(file=sys.stderr)
-    print(
-        f"validate_manifest {label}: {len(findings)} refusal(s). A refused manifest registers nothing, "
-        "and no connector it describes may run.",
-        file=sys.stderr,
-    )
+    harness = sum(1 for f in findings if f.code.startswith("MANIFEST_MUST_FAIL_"))
+    if harness == len(findings):
+        consequence = ("Each names the must-fail folder, the harness that proves a refusal still fires, and none "
+                       "names a connector. The gate stays closed until the folder proves its refusals again.")
+    else:
+        consequence = "A refused manifest registers nothing, and no connector it describes may run."
+        if harness:
+            consequence += f" {harness} of them name the must-fail folder and not a connector."
+    print(f"validate_manifest {label}: {len(findings)} refusal(s). {consequence}", file=sys.stderr)
     return 1
 
 
-def run_all(ctx: dict, quiet: bool, connectors: Path) -> int:
+def _print_not_read(notes: list[tuple[str, str]]) -> None:
+    """MF-R19. Printed under --quiet too: what the adapter check could not read is not a refusal and not
+    a pass, and CLAUDE.md section 4 renders a state as its consequence."""
+    for where, what in notes:
+        print(f"NOT READ {where}\n"
+              f"  what:  {what}\n"
+              "  means: the adapter check did not read this, so no finding and no pass covers it (MF-R19)")
+
+
+def _not_read_clause(notes: list[tuple[str, str]]) -> str:
+    return f"; {len(notes)} thing(s) not read, listed above" if notes else ""
+
+
+def run_all(ctx: dict, quiet: bool, connectors: Path, must_fail: Path | None = None) -> int:
     findings = drift_findings(ctx)
+    findings += must_fail_findings(ctx, MUST_FAIL if must_fail is None else must_fail)
+    notes: list[tuple[str, str]] = []
     dirs = sorted(p for p in connectors.iterdir() if p.is_dir()) if connectors.is_dir() else []
     checked = 0
     for d in dirs:
@@ -1485,9 +2295,10 @@ def run_all(ctx: dict, quiet: bool, connectors: Path) -> int:
             continue
         manifest, repeated = load_manifest(path)
         findings += repeated
-        findings += check_manifest(manifest, ctx, rel, d, expect_id=d.name)
+        findings += check_manifest(manifest, ctx, rel, d, expect_id=d.name, notes=notes)
         checked += 1
     _telemetry("refuse" if findings else "pass", findings)
+    _print_not_read(notes)
     if findings:
         return _report(findings, "--all")
     if checked == 0:
@@ -1501,7 +2312,7 @@ def run_all(ctx: dict, quiet: bool, connectors: Path) -> int:
             "metaschema and their copied enums reconciled against their sources."
         )
     elif not quiet:
-        print(f"validate_manifest --all ok: {checked} manifest(s), every check passed")
+        print(f"validate_manifest --all ok: {checked} manifest(s), every check passed{_not_read_clause(notes)}")
     return 0
 
 
@@ -1512,9 +2323,9 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--shape", action="store_true", help="Schema gate only. Makes no conformance claim.")
     ap.add_argument("--self-test", action="store_true", help="Break a manifest in memory; assert each refusal.")
     ap.add_argument("--quiet", action="store_true",
-                    help="Print only on refusal, except two states printed regardless: --all over zero "
-                         "manifests says no manifest was validated, and --shape says no conformance "
-                         "claim is made.")
+                    help="Print only on refusal, except three states printed regardless: --all over zero "
+                         "manifests says no manifest was validated, --shape says no conformance claim "
+                         "is made, and each thing the adapter check could not read is printed as NOT READ.")
     args = ap.parse_args(argv)
 
     modes = sum(bool(x) for x in (args.all, args.self_test, args.path))
@@ -1524,6 +2335,7 @@ def main(argv: list[str]) -> int:
     if args.self_test:
         return self_test(quiet=args.quiet)
 
+    notes: list[tuple[str, str]] = []
     try:
         if args.shape:
             schema = _read_json(SCHEMA, "the manifest schema")
@@ -1545,16 +2357,17 @@ def main(argv: list[str]) -> int:
         manifest, repeated = load_manifest(path)
         findings = drift_findings(ctx) + repeated
         findings += check_manifest(manifest, ctx, rel_of(path), path.resolve().parent,
-                                   expect_id=_expected_id(path, CONNECTORS))
+                                   expect_id=_expected_id(path, CONNECTORS), notes=notes)
     except ToolFailure as fail:
         print(fail.render(), file=sys.stderr)
         return 2
     _telemetry("refuse" if findings else "pass", findings)
+    _print_not_read(notes)
     if findings:
         return _report(findings, rel_of(path))
     if not args.quiet:
         print(f"validate_manifest ok: {rel_of(path)} passes every check, R7 stamped "
-              f"{ctx['pin'].decision_stamped(R7)}")
+              f"{ctx['pin'].decision_stamped(R7)}{_not_read_clause(notes)}")
     return 0
 
 
@@ -1736,6 +2549,22 @@ def _cases(pin_text: str, cast_tokens=frozenset()) -> list[tuple]:
         ("the baseline manifest permits under the real pin", lambda m: None, keep, None, True, None),
         ("a stamped-R7 pin permits", lambda m: None, keep, pin_text, True, None),
         ("an unstamped R7 pin refuses", lambda m: None, keep, no_r7, True, "MANIFEST_INTERACTION_UNRATIFIED"),
+        ("a command template that asks curl for a POST",
+         _set("lineage.command_template", "curl -X POST --credential {credential_ref} --user {username}"),
+         keep, None, True, "MANIFEST_ADAPTER_WRITE_VERB"),
+        ("a command template that gives curl a body flag",
+         _set("lineage.command_template", "curl --data {username} --credential {credential_ref}"),
+         keep, None, True, "MANIFEST_ADAPTER_WRITE_VERB"),
+        ("a command template with an unbalanced quote that gives curl a body flag",
+         _set("lineage.command_template", "curl -d '{username} --credential {credential_ref}"),
+         keep, None, True, "MANIFEST_ADAPTER_WRITE_VERB"),
+        ("a command template whose URL holds an ampersand before a body flag for curl",
+         _set("lineage.command_template",
+              "curl https://h/x?a=1&b=2 -d {username} --credential {credential_ref}"),
+         keep, None, True, "MANIFEST_ADAPTER_WRITE_VERB"),
+        ("a command template that asks curl for a GET permits",
+         _set("lineage.command_template", "curl -X GET --credential {credential_ref} --user {username}"),
+         keep, None, True, None),
         ("an undeclared bystander block", _del("bystanders"), keep, None, True, "MANIFEST_BYSTANDER_UNDECLARED"),
         ("reach declared with no class", _set("bystanders", {"reach": "declared"}), keep, None, True,
          "MANIFEST_BYSTANDER_UNDECLARED"),
@@ -1964,6 +2793,566 @@ def _structural_controls(ctx: dict) -> list[tuple[str, bool]]:
     return out
 
 
+SELFTEST_RETAIN_CODE = "BYSTANDER_DISPOSITION_OUT_OF_SET"
+
+
+def _must_fail_folder(base: Path, name: str, files: dict) -> Path:
+    """A scratch must-fail folder holding {relative name: text or bytes}."""
+    folder = base / name
+    folder.mkdir(parents=True)
+    for rel_name, content in files.items():
+        target = folder / rel_name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(content if isinstance(content, bytes) else content.encode("utf-8"))
+    return folder
+
+
+def _must_fail_controls(ctx: dict, base: Path, connectors: Path, mdir: Path, captured, refuses) -> list[tuple[str, bool]]:
+    """The must-fail walk (MF-R18), on scratch folders shaped like the tracked one and on the tracked one."""
+    out: list[tuple[str, bool]] = []
+    code = SELFTEST_RETAIN_CODE
+    retain = _baseline()
+    retain["bystanders"] = {"reach": "declared", "classes": [
+        {"class": "followers", "estimate": {"method": "platform_reported_count"}, "disposition": "retain"}]}
+    as_tracked = copy.deepcopy(retain)
+    broken = yaml.safe_dump(retain, sort_keys=False)
+    retain["bystanders"]["classes"][0]["disposition"] = "count_only"
+    undone = yaml.safe_dump(retain, sort_keys=False)
+    named = {"a.manifest.yaml": broken, "a.expect": code + "\n"}
+
+    as_named = _must_fail_folder(base, "mf-as-named", named)
+    out.append(("--all over a must-fail folder whose manifest refuses as named exits 0",
+                run_all(ctx, True, connectors, as_named) == 0))
+    tracked = MUST_FAIL / "retain-disposition.manifest.yaml"
+    tracked_expect = MUST_FAIL / "retain-disposition.expect"
+    out.append(("the tracked must-fail manifest is the baseline with a disposition of retain, and refuses with that "
+                "code alone",
+                not must_fail_findings(ctx, MUST_FAIL) and tracked.is_file() and tracked_expect.is_file()
+                and tracked_expect.read_text(encoding="utf-8-sig").split() == [code]
+                and load_manifest(tracked)[0] == as_tracked
+                and {f.code for f in check_manifest(load_manifest(tracked)[0], ctx, rel_of(tracked), MUST_FAIL)}
+                == {code}))
+    refusals = (
+        ("a must-fail manifest whose break is undone is refused",
+         {"a.manifest.yaml": undone, "a.expect": code + "\n"}, "MANIFEST_MUST_FAIL_PASSED"),
+        ("a must-fail manifest that refuses, but not with the code it names, is refused",
+         {"a.manifest.yaml": broken, "a.expect": "MANIFEST_SHAPE_INVALID\n"}, "MANIFEST_MUST_FAIL_PASSED"),
+        ("a must-fail manifest with no .expect is refused",
+         {"a.manifest.yaml": broken}, "MANIFEST_MUST_FAIL_EXPECT_ABSENT"),
+        ("a must-fail manifest with an empty .expect is refused",
+         {"a.manifest.yaml": broken, "a.expect": "\n"}, "MANIFEST_MUST_FAIL_EXPECT_ABSENT"),
+        ("an .expect naming a code this tool does not have is refused",
+         {"a.manifest.yaml": broken, "a.expect": "NO_SUCH_CODE\n"}, "MANIFEST_MUST_FAIL_EXPECT_ABSENT"),
+        ("an .expect holding two codes is refused",
+         {"a.manifest.yaml": broken, "a.expect": code + "\nMANIFEST_SHAPE_INVALID\n"},
+         "MANIFEST_MUST_FAIL_EXPECT_ABSENT"),
+        ("an .expect that is not UTF-8 text is refused",
+         {"a.manifest.yaml": broken, "a.expect": bytes((0xFF, 0xFE, 0x41))}, "MANIFEST_MUST_FAIL_EXPECT_ABSENT"),
+        ("a manifest under another extension is refused, not skipped",
+         dict(named, **{"b.manifest.yml": broken}), "MANIFEST_MUST_FAIL_UNREAD"),
+        ("a manifest in a subfolder is refused, not skipped",
+         dict(named, **{"sub/c.manifest.yaml": broken}), "MANIFEST_MUST_FAIL_UNREAD"),
+        ("an .expect with no manifest beside it is refused",
+         dict(named, **{"orphan.expect": code + "\n"}), "MANIFEST_MUST_FAIL_UNREAD"),
+        ("a folder left with an .expect and no manifest is refused",
+         {"a.expect": code + "\n"}, "MANIFEST_MUST_FAIL_ABSENT"),
+        ("an empty must-fail folder is refused", {}, "MANIFEST_MUST_FAIL_ABSENT"),
+    )
+    for n, (label, files, expected) in enumerate(refusals):
+        folder = _must_fail_folder(base, f"mf-{n:02d}", files)
+        out.append((label, refuses(run_all, (ctx, True, connectors, folder), expected)))
+    out.append(("a must-fail folder that does not exist is refused",
+                refuses(run_all, (ctx, True, connectors, base / "mf-missing"), "MANIFEST_MUST_FAIL_ABSENT")))
+    marked = _must_fail_folder(base, "mf-marked", {
+        "a.manifest.yaml": broken,
+        "a.expect": bytes((0xEF, 0xBB, 0xBF)) + code.encode("ascii") + bytes((13, 10, 13, 10))})
+    out.append(("an .expect with a byte-order mark, CRLF and a trailing blank line reads as its one code",
+                run_all(ctx, True, connectors, marked) == 0))
+    # A manifest that passes every check needs its fixtures beside it, and the walk refuses those as
+    # unread. The branch under test is the wording for a manifest that refuses nothing at all.
+    passing = base / "mf-passes"
+    shutil.copytree(mdir, passing)
+    (passing / "manifest.yaml").rename(passing / "a.manifest.yaml")
+    (passing / "a.expect").write_text(code + "\n", encoding="utf-8")
+    out.append(("a must-fail manifest that passes every check is refused as refusing nothing",
+                any(f.code == "MANIFEST_MUST_FAIL_PASSED" and "refused nothing" in f.what
+                    for f in must_fail_findings(ctx, passing))))
+    # What the closing line says: about the harness alone, and about the harness beside a connector.
+    harness_only = _must_fail_folder(base, "mf-says-so", {"a.manifest.yaml": undone, "a.expect": code + "\n"})
+    rc, text = captured(run_all, ctx, True, connectors, harness_only)
+    out.append(("a refusal that names only the must-fail folder says no connector is named",
+                rc == 1 and "none names a connector" in text and "no connector it describes may run" not in text))
+    (mdir / "adapter.py").write_text(_src("import requests", "", "def run(u):", "    return requests.post(u)"),
+                                     encoding="utf-8")
+    rc, text = captured(run_all, ctx, True, connectors, harness_only)
+    out.append(("a refusal that names a connector and the must-fail folder counts the second apart",
+                rc == 1 and "no connector it describes may run. 1 of them name the must-fail folder" in text))
+    (mdir / "adapter.py").unlink()
+    saved = globals()["MUST_FAIL"]
+    try:
+        globals()["MUST_FAIL"] = _must_fail_folder(base, "mf-default", {"a.manifest.yaml": undone, "a.expect": code + "\n"})
+        out.append(("--all with no folder named walks the folder the constant names",
+                    refuses(run_all, (ctx, True, connectors), "MANIFEST_MUST_FAIL_PASSED")))
+    finally:
+        globals()["MUST_FAIL"] = saved
+    return out
+
+
+def _src(*lines: str) -> str:
+    return "\n".join(lines) + "\n"
+
+
+def _run(*call: str) -> str:
+    """An adapter whose one function returns the call given, with every library the plants use imported."""
+    return _src("import asyncio", "import os", "import subprocess", "", "def run(u, prog=None, verb=None, extra=()):",
+                *("    " + line for line in call))
+
+
+_SESSION = ("import requests", "session = requests.Session()", "")
+_NOT_READ_SOURCE = _src(*_SESSION, "def run(u, name):", "    return getattr(session, name)(u)")
+
+#: The check's tables as this self-test knows them. Each entry has a plant below that needs it, and a
+#: control asserts these equal the tables the check reads, so an entry leaves a table only in a change
+#: that also edits this copy, where a reviewer sees it.
+_TABLES = {
+    "HTTP_LIBRARIES": ("requests", "httpx"),
+    "READ_ROOTS": ("requests", "httpx", "urllib", "subprocess", "os", "asyncio"),
+    "CLIENT_CONSTRUCTORS": ("Session", "session", "Client", "AsyncClient"),
+    "WRITE_VERBS": ("post", "put", "patch", "delete"),
+    "READ_METHODS": ("GET", "HEAD"),
+    "METHOD_FIRST": ("request", "stream", "build_request"),
+    "REQUEST_CONSTRUCTORS": ("Request",),
+    "CLIENT_NAME_ENDINGS": ("session", "client"),
+    "COMMAND_CALLS": {
+        "subprocess.run": "argv", "subprocess.Popen": "argv", "subprocess.call": "argv",
+        "subprocess.check_call": "argv", "subprocess.check_output": "argv", "subprocess.getoutput": "shell",
+        "subprocess.getstatusoutput": "shell", "os.system": "shell", "os.popen": "shell",
+        "asyncio.create_subprocess_shell": "shell", "asyncio.create_subprocess_exec": "args",
+    },
+    "METHOD_FLAGS": ("-X", "--request", "--method"),
+    "BODY_FLAGS": {
+        "curl": ("-d", "--data", "--data-ascii", "--data-binary", "--data-raw", "--data-urlencode", "--json",
+                 "-F", "--form", "--form-string", "-T", "--upload-file"),
+        "wget": ("--post-data", "--post-file", "--body-data", "--body-file"),
+    },
+    "QUERY_UNDER_GET": ("-d", "--data", "--data-ascii", "--data-binary", "--data-raw", "--data-urlencode"),
+    "CURL_VALUELESS": "sSfLkviIgNGOJ#",
+    "SHELLS": ("sh", "bash", "zsh", "dash", "ksh", "cmd", "powershell", "pwsh"),
+    "SHELL_COMMAND_FLAGS": ("-c", "/c", "/C", "/k", "/K", "-Command", "-command"),
+    "COMMAND_SEPARATORS": "|&;()",
+}
+
+#: For each library root the check reads, an import under the name r and one line that writes through it.
+_ALIASED_WRITES = {
+    "requests": ("import requests as r", "return r.post(u)"),
+    "httpx": ("import httpx as r", "return r.put(u)"),
+    "urllib": ("import urllib.request as r", "return r.urlopen(u, b'x')"),
+    "subprocess": ("import subprocess as r", "return r.run(['curl', '-X', 'POST', u])"),
+    "os": ("import os as r", "return r.system('curl -X POST target')"),
+    "asyncio": ("import asyncio as r", "return r.create_subprocess_shell('curl -X POST target')"),
+}
+
+
+def _table_plants() -> list[tuple[str, str, str]]:
+    """One plant for each entry of _TABLES, built from that copy and never from the check's own tables."""
+    out: list[tuple[str, str, str]] = []
+    for name, style in _TABLES["COMMAND_CALLS"].items():
+        call = (f"{name}('curl', '-X', 'POST', u)" if style == "args"
+                else f"{name}('curl -X POST target')" if style == "shell" else f"{name}(['curl', '-X', 'POST', u])")
+        out.append((f"an adapter running curl -X POST through {name} is refused", _run(f"return {call}"), "refused"))
+        if style == "shell":
+            out.append((f"a string given to {name} is split into commands, so a pipe into cut -d passes",
+                        _run(f"return {name}('curl -s target | cut -d, -f2')"), "passes"))
+        elif style == "argv":
+            out.append((f"an argv list given to {name} is one command, so curl's -d after a pipe argument is refused",
+                        _run(f"return {name}(['curl', '-s', u, '|', '-d', 'k=v'])"), "refused"))
+    for client, flags in _TABLES["BODY_FLAGS"].items():
+        for flag in flags:
+            out.append((f"an adapter giving {client} the body flag {flag} is refused",
+                        _run(f"return subprocess.run(['{client}', '{flag}', 'x', u])"), "refused"))
+    for flag in _TABLES["QUERY_UNDER_GET"]:
+        out.append((f"an adapter giving curl -G with {flag} passes, since the data is a query",
+                    _run(f"return subprocess.run(['curl', '-G', '{flag}', 'q=x', u])"), "passes"))
+    for flag in _TABLES["METHOD_FLAGS"]:
+        out.append((f"an adapter setting the method to PUT with {flag} is refused",
+                    _run(f"return subprocess.run(['fetcher', '{flag}', 'PUT', u])"), "refused"))
+    for letter in _TABLES["CURL_VALUELESS"]:
+        out.append((f"an adapter running curl -{letter}X POST is refused",
+                    _run(f"return subprocess.run(['curl', '-{letter}X', 'POST', u])"), "refused"))
+    for shell in _TABLES["SHELLS"]:
+        out.append((f"a command handed to the shell {shell} as text is listed as not read",
+                    _run(f"return subprocess.run(['{shell}', '-c', 'curl -d x target'])"), "not read"))
+    for flag in _TABLES["SHELL_COMMAND_FLAGS"]:
+        out.append((f"a command handed to bash after {flag} is listed as not read",
+                    _run(f"return subprocess.run(['bash', '{flag}', 'curl -d x target'])"), "not read"))
+    for separator in tuple(_TABLES["COMMAND_SEPARATORS"]) + ("||", "&&"):
+        out.append((f"a shell string with a read, then {separator}, then cut -d passes, since each command is read alone",
+                    _run(f"return os.system('curl -s target {separator} cut -d, -f2')"), "passes"))
+        out.append((f"a shell string with a read, then {separator}, then curl -X POST is refused",
+                    _run(f"return os.system('curl -s target {separator} curl -X POST target')"), "refused"))
+    for root in _TABLES["READ_ROOTS"]:
+        first, call = _ALIASED_WRITES[root]
+        out.append((f"an alias for {root} that the file imports again as something else is still read",
+                    _src(first, "", "def run(u):", "    " + call, "", "def other():", "    import re as r", "    return r"),
+                    "refused"))
+    for verb in _TABLES["WRITE_VERBS"]:
+        out.append((f"an adapter calling requests.{verb} is refused",
+                    _src("import requests", "", "def run(u):", f"    return requests.{verb}(u)"), "refused"))
+        out.append((f"an adapter running fetcher -X {verb.upper()} is refused",
+                    _run(f"return subprocess.run(['fetcher', '-X', '{verb.upper()}', u])"), "refused"))
+    for library in _TABLES["HTTP_LIBRARIES"]:
+        for constructor in _TABLES["CLIENT_CONSTRUCTORS"]:
+            # OPTIONS separates a client read by its constructor from one read by a name alone (MF-R22).
+            out.append((f"an adapter calling request with method OPTIONS on {library}.{constructor}() is refused",
+                        _src(f"import {library}", "", "def run(u):",
+                             f"    return {library}.{constructor}().request('OPTIONS', u)"), "refused"))
+    for method in _TABLES["READ_METHODS"]:
+        out.append((f"an adapter calling requests.request with method {method.lower()} passes",
+                    _src("import requests", "", "def run(u):", f"    return requests.request('{method.lower()}', u)"),
+                    "passes"))
+        out.append((f"an adapter running curl -X {method} passes",
+                    _run(f"return subprocess.run(['curl', '-X', '{method}', u])"), "passes"))
+    for attr in _TABLES["METHOD_FIRST"]:
+        out.append((f"an adapter calling .{attr} with method POST on a client bound inside a function is refused",
+                    _src("import httpx", "", "def run(u):", "    c = httpx.Client()", f"    return c.{attr}('POST', u)"),
+                    "refused"))
+    for constructor in _TABLES["REQUEST_CONSTRUCTORS"]:
+        out.append((f"an adapter building requests.{constructor} with method PUT is refused",
+                    _src("import requests", "", "def run(u):", f"    return requests.{constructor}('PUT', u)"), "refused"))
+    for ending in _TABLES["CLIENT_NAME_ENDINGS"]:
+        out.append((f"an adapter calling .post on a parameter named api_{ending} is refused",
+                    _src(f"def run(api_{ending}, u):", f"    return api_{ending}.post(u)"), "refused"))
+    return out
+
+
+#: (label, adapter source, what the check must do with it: refused, passes, or not read). The sources are
+#: scratch files written beside the baseline manifest; none is imported or run.
+_ADAPTER_PLANTS = (
+    # ---- what is a client
+    ("an adapter calling .delete on a session bound at module level is refused",
+     _src(*_SESSION, "def run(u):", "    return session.delete(u)"), "refused"),
+    ("an adapter calling httpx.put through an alias is refused",
+     _src("import httpx as hx", "", "def run(u):", "    return hx.put(u)"), "refused"),
+    ("a name imported from two libraries this check reads is listed as not read",
+     _src("from urllib.request import Request", "from requests import Request", "", "def run(u):",
+          "    return Request('GET', u)"), "not read"),
+    ("a write verb on a name imported from subprocess and from requests is listed as not read",
+     _src("import subprocess as r", "import requests as r", "", "def run(u):", "    return r.post(u)"), "not read"),
+    ("a write verb on a name imported from two HTTP libraries is refused",
+     _src("import requests as r", "import httpx as r", "", "def run(u):", "    return r.post(u)"), "refused"),
+    ("an adapter importing post from requests is refused",
+     _src("from requests import post", "", "def run(u):", "    return post(u)"), "refused"),
+    ("an adapter calling request imported from requests with method POST is refused",
+     _src("from requests import request", "", "def run(u):", "    return request('POST', u)"), "refused"),
+    ("an adapter importing post from a package of its own named requests passes",
+     _src("from .requests import post", "", "def run(u):", "    return post(u)"), "passes"),
+    ("an adapter holding a reference to requests.post is refused",
+     _src("import requests", "send = requests.post"), "refused"),
+    ("an adapter calling .post on requests.Session() with no name bound is refused",
+     _src("import requests", "", "def run(u):", "    return requests.Session().post(u)"), "refused"),
+    ("an adapter calling .post on a client bound inside a function is refused",
+     _src("import requests", "", "def run(u):", "    s = requests.Session()", "    return s.post(u)"), "refused"),
+    ("an adapter calling .put on a client bound by a with statement is refused",
+     _src("import httpx", "", "def run(u):", "    with httpx.Client() as c:", "        return c.put(u)"), "refused"),
+    ("an adapter calling .post on a client bound by an async with statement is refused",
+     _src("import httpx", "", "async def run(u):", "    async with httpx.AsyncClient() as c:",
+          "        return await c.post(u)"), "refused"),
+    ("an adapter calling .post on a client bound by := is refused",
+     _src("import requests", "", "def run(u):", "    if (s := requests.Session()):", "        return s.post(u)"),
+     "refused"),
+    ("an adapter calling .post on a client bound by an annotated assignment is refused",
+     _src("import requests", "", "def run(u):", "    s: requests.Session = requests.Session()", "    return s.post(u)"),
+     "refused"),
+    ("an adapter calling .patch on a client bound to an attribute is refused",
+     _src("import requests", "", "class A:", "    def __init__(self):", "        self.h = requests.Session()", "",
+          "    def run(self, u):", "        return self.h.patch(u)"), "refused"),
+    ("an adapter calling .post on a parameter named session is refused",
+     _src("def run(session, u):", "    return session.post(u)"), "refused"),
+    ("an adapter calling .post on a name bound to aiohttp.ClientSession() is refused",
+     _src("import aiohttp", "", "def run(u):", "    s = aiohttp.ClientSession()", "    return s.post(u)"), "refused"),
+    ("an adapter calling .post on aiohttp.ClientSession() with no name bound is refused",
+     _src("import aiohttp", "", "def run(u):", "    return aiohttp.ClientSession().post(u)"), "refused"),
+    ("an adapter calling getattr(session, 'post') is refused",
+     _src(*_SESSION, "def run(u):", "    return getattr(session, 'post')(u)"), "refused"),
+    # ---- methods
+    ("an adapter calling a bound session's request with method=DELETE is refused",
+     _src(*_SESSION, "def run(u):", "    return session.request(url=u, method='DELETE')"), "refused"),
+    ("an adapter calling request with method OPTIONS on a client bound inside a function is refused",
+     _src("import requests", "", "def run(u):", "    s = requests.Session()", "    return s.request('OPTIONS', u)"),
+     "refused"),
+    ("an adapter calling request with method post on a parameter named session is refused",
+     _src("def run(session, u):", "    return session.request('post', u)"), "refused"),
+    ("an adapter calling request with a word that is no HTTP verb on a name ending in client passes",
+     _src("def run(rpc_client):", "    return rpc_client.request('users')"), "passes"),
+    # ---- urllib
+    ("an adapter building a urllib Request with method DELETE is refused",
+     _src("import urllib.request", "", "def run(u):", "    return urllib.request.Request(u, method='DELETE')"), "refused"),
+    ("an adapter building a urllib Request with a body and no method is refused",
+     _src("import urllib.request", "", "def run(u, body):", "    return urllib.request.Request(u, data=body)"), "refused"),
+    ("an adapter calling urlopen with a body is refused",
+     _src("from urllib.request import urlopen", "", "def run(u, body):", "    return urlopen(u, body)"), "refused"),
+    ("an adapter opening a urllib Request with method HEAD and no body passes",
+     _src("import urllib.request", "", "def run(u):",
+          "    return urllib.request.urlopen(urllib.request.Request(u, method='HEAD'))"), "passes"),
+    ("an adapter passing the literal None as urllib's method passes",
+     _src("import urllib.request", "", "def run(u):", "    return urllib.request.Request(u, method=None)"), "passes"),
+    ("an adapter passing the literal None as urllib's data passes",
+     _src("import urllib.request", "", "def run(u):",
+          "    return urllib.request.urlopen(urllib.request.Request(u, data=None), None)"), "passes"),
+    # ---- command lines
+    ("an adapter running curl --request=PATCH by the args keyword is refused",
+     _run("return subprocess.run(args=['curl', '--request=PATCH', u])"), "refused"),
+    ("an adapter running wget --post-data=k is refused",
+     _run("return subprocess.run(['wget', '--post-data=k', u])"), "refused"),
+    ("an adapter running /usr/bin/curl -d is refused",
+     _run("return subprocess.run(['/usr/bin/curl', '-d', 'k=v', u])"), "refused"),
+    ("an adapter running curl.exe by a Windows path with -d is refused",
+     _run("return subprocess.run([r'C:\\tools\\curl.exe', '-d', 'x', u])"), "refused"),
+    ("an adapter passing a shell a Windows path to curl.exe with -d is refused",
+     _run("return os.system(r'C:\\tools\\curl.exe -d x target')"), "refused"),
+    ("an adapter running curl -XPOST is refused", _run("return subprocess.run(['curl', '-XPOST', u])"), "refused"),
+    ("an adapter running curl -sSXDELETE is refused",
+     _run("return subprocess.run(['curl', '-sSXDELETE', u])"), "refused"),
+    ("an adapter running curl with -d attached to its value is refused",
+     _run("return subprocess.run(['curl', '-dk=v', u])"), "refused"),
+    ("an adapter running curl -sd is refused", _run("return subprocess.run(['curl', '-sd', 'k=v', u])"), "refused"),
+    ("an adapter running curl -X PROPFIND is refused",
+     _run("return subprocess.run(['curl', '-X', 'PROPFIND', u])"), "refused"),
+    ("an adapter running sudo curl -d is refused",
+     _run("return subprocess.run(['sudo', 'curl', '-d', 'x', u])"), "refused"),
+    ("an adapter running curl inside docker run with -d is refused",
+     _run("return subprocess.run(['docker', 'run', '--rm', 'curlimages/curl', '-d', 'x', u])"), "refused"),
+    ("an adapter running curl -sG -d passes", _run("return subprocess.run(['curl', '-sG', '-d', 'q=x', u])"), "passes"),
+    ("an adapter piping into curl -d is refused", _run("return os.system('echo x | curl -d @- target')"), "refused"),
+    ("an adapter passing os.system its command by keyword is refused",
+     _run("return os.system(command='curl -X POST target')"), "refused"),
+    ("an adapter passing os.popen its command as cmd is refused",
+     _run("return os.popen(cmd='curl -X POST target')"), "refused"),
+    ("an adapter giving grep the word curl before grep's own -d is refused, the false refusal MF-R21 states",
+     _run("return subprocess.run(['grep', '-r', 'curl', '-d', 'skip', '.'])"), "refused"),
+    ("an adapter running curl -G with -F is refused, since a form is not a query",
+     _run("return subprocess.run(['curl', '-G', '-F', 'f=x', u])"), "refused"),
+    ("an adapter running curl --get -d passes", _run("return subprocess.run(['curl', '--get', '-d', 'q=x', u])"), "passes"),
+    ("an adapter running curl -fsSL -o passes",
+     _run("return subprocess.run(['curl', '-fsSL', '-o', 'out', u])"), "passes"),
+    ("an adapter running fetcher -X PROPFIND passes, since the program is not a client this check knows",
+     _run("return subprocess.run(['fetcher', '-X', 'PROPFIND', u])"), "passes"),
+    ("an adapter running ssh -X passes", _run("return subprocess.run(['ssh', '-X', 'host'])"), "passes"),
+    ("an adapter giving docker run its own -d before any client passes",
+     _run("return subprocess.run(['docker', 'run', '-d', 'image', 'fetcher', u])"), "passes"),
+    ("an adapter giving docker run its own -d before the token that names curl passes",
+     _run("return subprocess.run(['docker', 'run', '-d', 'curlimages/curl', u])"), "passes"),
+    ("an adapter passing -d to a program that is neither curl nor wget passes",
+     _run("return subprocess.run(['exiftool', '-d', '%Y', u])"), "passes"),
+    ("an adapter passing the word DELETE as an argv value passes",
+     _run("return subprocess.run(['tool', '--user', 'DELETE'])"), "passes"),
+    # ---- what is not a client
+    ("an adapter calling requests.get alone passes",
+     _src("import requests", "", "def run(u):", "    return requests.get(u)"), "passes"),
+    ("an adapter calling .get on a bound session passes",
+     _src(*_SESSION, "def run(u):", "    return session.get(u)"), "passes"),
+    ("an adapter calling .delete on http_cache and on session_store passes",
+     _src("def run(http_cache, session_store, k):", "    http_cache.delete(k)", "    session_store.delete(k)"), "passes"),
+    ("an adapter calling .put on a queue passes",
+     _src("import queue", "", "def run(x):", "    q = queue.Queue()", "    q.put(x)"), "passes"),
+    ("an adapter calling getattr on an object that is no client passes",
+     _src("def run(settings, name):", "    return getattr(settings, name)"), "passes"),
+    ("an attribute chain 1500 names deep on an object that is no client is read and passes",
+     _src("x = a" + ".a" * 1500 + ".post"), "passes"),
+    # ---- what the check can see it is not reading
+    ("a verb behind getattr(session, name) is listed as not read", _NOT_READ_SOURCE, "not read"),
+    ("a requests.request call whose method is a variable is listed as not read",
+     _src("import requests", "", "def run(u, verb):", "    return requests.request(verb, u)"), "not read"),
+    ("a requests.request call given only starred options is listed as not read",
+     _src("import requests", "", "def run(options):", "    return requests.request(**options)"), "not read"),
+    ("a urllib Request whose method is a variable is listed as not read",
+     _src("import urllib.request", "", "def run(u, verb):", "    return urllib.request.Request(u, method=verb)"),
+     "not read"),
+    ("a urllib Request built from starred arguments is listed as not read",
+     _src("import urllib.request", "", "def run(parts):", "    return urllib.request.Request(*parts)"), "not read"),
+    ("a subprocess call whose argv is a variable is listed as not read",
+     _run("return subprocess.run(extra)"), "not read"),
+    ("a subprocess argv whose program is a variable is listed as not read",
+     _run("return subprocess.run([prog, '--data', 'x', u])"), "not read"),
+    ("a curl -X whose value is a variable is listed as not read",
+     _run("return subprocess.run(['curl', '-X', verb, u])"), "not read"),
+    ("a subprocess argv holding a starred element is listed as not read",
+     _run("return subprocess.run(['curl', *extra, u])"), "not read"),
+    ("an argv list holding a semicolon as an argument is one command, and curl's -d after it is refused",
+     _run("return subprocess.run(['curl', '-b', ';', '-d', 'k=v', u])"), "refused"),
+    ("a string given to subprocess with no shell is split on spaces alone, and its -d is refused",
+     _run("return subprocess.run('curl https://h/x?a=1&b=2 -d k=v')"), "refused"),
+    ("a string given to subprocess with shell=True is split into commands",
+     _run("return subprocess.run('curl -s target | cut -d, -f2', shell=True)"), "passes"),
+    ("a string given to subprocess with shell=False is one command",
+     _run("return subprocess.run('curl -s target | cut -d, -f2', shell=False)"), "refused"),
+    ("a string given to subprocess with shell=0 is one command",
+     _run("return subprocess.run('curl -s target | cut -d, -f2', shell=0)"), "refused"),
+    ("a string given to subprocess with shell set by a variable is split into commands",
+     _run("return subprocess.run('curl -s target | cut -d, -f2', shell=verb)"), "passes"),
+    ("a list given to subprocess with shell=True is listed as not read",
+     _run("return subprocess.run(['curl -s target | cut -d, -f2'], shell=True)"), "not read"),
+    ("a list given to subprocess with shell=True is read as one argv, and curl's -d after a semicolon is refused",
+     _run("return subprocess.run(['curl', '-b', ';', '-d', 'k=v', u], shell=True)"), "refused"),
+    ("a shell string with an unbalanced quote is listed as not read",
+     _run("return os.system(\"curl -d 'k=v target\")"), "not read"),
+    ("a shell given an option before its -c is listed as not read",
+     _run("return subprocess.run(['bash', '-e', '-c', 'curl -d k=v target'])"), "not read"),
+    ("cmd given /d before its /c is listed as not read",
+     _run("return subprocess.run(['cmd', '/d', '/c', 'curl -d k=v target'])"), "not read"),
+    ("powershell given -NoProfile before its -Command is listed as not read",
+     _run("return subprocess.run(['powershell', '-NoProfile', '-Command', 'Invoke-RestMethod -Method Post u'])"),
+     "not read"),
+    ("a string given to subprocess with a keyword splat is read as a shell reads it and listed as not read",
+     _run("return subprocess.run('curl -s target | cut -d, -f2', **extra)"), "not read"),
+    ("a string given to subprocess with a keyword splat is still refused for curl's -d",
+     _run("return subprocess.run('curl -d k=v target', **extra)"), "refused"),
+    ("a list given to subprocess with a keyword splat is read as an argv",
+     _run("return subprocess.run(['curl', '-s', u], **extra)"), "passes"),
+    ("an adapter giving curl -sd a value that begins -G is refused",
+     _run("return subprocess.run(['curl', '-sd', '-Gx', u])"), "refused"),
+    ("a shell string holding a dollar-parenthesis substitution and no client is listed as not read",
+     _run("return os.system('echo $(fetcher target)')"), "not read"),
+    ("an adapter posting to a URL whose last segment is sh is refused",
+     _run("return subprocess.run(['curl', '-X', 'POST', 'https://h/api/sh'])"), "refused"),
+    ("an adapter posting to a URL whose last segment is sh, with curl's own -c after it, is refused",
+     _run("return subprocess.run(['curl', '-X', 'POST', 'https://h/api/sh', '-c', 'jar'])"), "refused"),
+    ("an adapter whose curl has a URL ending in sh, its own -c, and then -d is refused",
+     _run("return subprocess.run(['curl', 'https://h/api/sh', '-c', 'jar', '-d', 'k=v'])"), "refused"),
+    ("an adapter deleting at a URL whose last segment is cmd is refused",
+     _run("return subprocess.run(['fetcher', '-X', 'DELETE', 'https://h/v1/cmd'])"), "refused"),
+    ("an adapter writing curl's output to a file named bash is refused for its -d",
+     _run("return subprocess.run(['curl', '-d', 'k=v', '-o', 'bash', u])"), "refused"),
+    ("an adapter running curl from the image alpine/bash is refused for its -d",
+     _run("return subprocess.run(['docker', 'run', 'alpine/bash', 'curl', '-d', 'x', u])"), "refused"),
+    ("an adapter giving curl -d a value that begins -G is refused",
+     _run("return subprocess.run(['curl', '-d', '-Gx', u])"), "refused"),
+    ("a shell string holding a dollar-parenthesis substitution is refused for the curl -d inside it",
+     _run("return os.system('echo $(curl -d k=v target)')"), "refused"),
+    ("an adapter running a script with bash passes", _run("return subprocess.run(['bash', 'run.sh'])"), "passes"),
+    ("an adapter running a script with bash and the script's own -c is listed as not read, a cost MF-R21 states",
+     _run("return subprocess.run(['bash', 'run.sh', '-c', 'conf.yml'])"), "not read"),
+    ("an adapter giving curl its cookie jar with -c passes",
+     _run("return subprocess.run(['curl', '-c', 'jar', u])"), "passes"),
+    ("a shell string holding a backtick substitution is listed as not read",
+     _run("return os.system('echo `curl -d k=v target`')"), "not read"),
+    ("a verb held on a name imported from subprocess and from requests is listed as not read",
+     _src("import subprocess as r", "import requests as r", "send = r.post"), "not read"),
+    ("a command given to bash -ec is listed as not read",
+     _run("return subprocess.run(['bash', '-ec', 'curl -X POST target'])"), "not read"),
+    ("a command that runs sh inside docker run is listed as not read",
+     _run("return subprocess.run(['docker', 'run', 'image', 'sh', '-c', 'curl -d x target'])"), "not read"),
+    ("an asyncio exec call holding a starred argument is listed as not read",
+     _run("return asyncio.create_subprocess_exec('curl', *extra)"), "not read"),
+)
+
+
+def _adapter_controls(ctx: dict, connectors: Path, mdir: Path, good: Path, captured, refuses) -> list[tuple[str, bool]]:
+    """The adapter check (MF-R19, MF-R21, MF-R22), on scratch adapters beside the baseline manifest."""
+    out: list[tuple[str, bool]] = []
+    adapter = mdir / "adapter.py"
+    arel = rel_of(adapter)
+    code = "MANIFEST_ADAPTER_WRITE_VERB"
+
+    def read(source, manifest=None) -> tuple[list[Finding], list[tuple[str, str]]]:
+        adapter.write_bytes(source if isinstance(source, bytes) else source.encode("utf-8"))
+        return check_adapter_write_verbs(manifest or _baseline(), "selftest/manifest.yaml", mdir)
+
+    out.append(("the check's tables are the ones this self-test plants against",
+                all(globals()[name] == value for name, value in _TABLES.items())))
+    for label, source, want in tuple(_table_plants()) + _ADAPTER_PLANTS:
+        fired, unread = read(source)
+        codes = [f.code for f in fired]
+        if want == "refused":
+            ok = bool(fired) and set(codes) == {code}
+        elif want == "passes":
+            ok = not fired and not unread
+        else:
+            ok = not fired and len(unread) == 1 and unread[0][0].startswith(arel + ":")
+        out.append((label, ok))
+    # What a note says, where the words carry the reason.
+    _, unread = read(_run("return os.system(\"curl -d 'k=v target\")"))
+    out.append(("a shell string that cannot be split says so, and is not called a non-literal",
+                [what for _, what in unread] == ["a command line given to os.system that cannot be split as a "
+                                                 "shell splits it, so no token of it was read"]))
+    # What a refusal says, where the words carry the reason.
+    fired, _ = read(_src("from requests import post", "", "def run(u):", "    return post(u)"))
+    out.append(("an imported verb is refused where it is imported and where it is called",
+                [f.where for f in fired] == [f"{arel}:1", f"{arel}:4"]))
+    fired, _ = read(_src("import requests", "send = requests.post"))
+    out.append(("a verb that is held and not called is refused as a reference",
+                [f.what for f in fired] == ["a reference to .post on requests"]))
+    fired, _ = read(_src("import requests", "", "def a():", "    r = requests.Session()", "    return r", "",
+                         "def b(r, k):", "    return r.delete(k)"))
+    out.append(("a refusal on a name bound to a client in another function says where it was bound",
+                [f.what for f in fired] == ["a call to .delete on r, bound to requests.Session() at line 4"]))
+    fired, _ = read(_src("import requests", "import httpx", "s = requests.Session()", "", "def run(u):",
+                         "    s = httpx.Client()", "    return s.delete(u)"))
+    out.append(("a refusal on a name bound to a client twice names both bindings",
+                [f.what for f in fired] == ["a call to .delete on s, bound to requests.Session() at line 3 and "
+                                            "httpx.Client() at line 6"]))
+    fired, _ = read(_src("import requests", "", "def a():", "    s = get_session()", "    return s", "", "def b(u):",
+                         "    s = requests.Session()", "    return s.delete(u)"))
+    out.append(("a refusal on a name bound once by a name alone and once to a client names both bindings",
+                [f.what for f in fired] == ["a call to .delete on s, bound to get_session() at line 4 and "
+                                            "requests.Session() at line 8"]))
+    fired, _ = read(_src("import aiohttp", "", "def run(u):", "    s = aiohttp.ClientSession()", "    return s.post(u)"))
+    out.append(("a refusal on a name read through the call it was bound to names that call and says how it was read",
+                [f.what for f in fired] == ["a call to .post on s, bound to aiohttp.ClientSession() at line 4, which "
+                                            "this check reads as a client because the name ends in session or client"]))
+    fired, _ = read(_run("return os.system('curl -X POST target')"))
+    out.append(("a refusal of a command line names the call it was given to",
+                [f.what for f in fired] == ["a command line given to os.system carrying -X POST, which asks for a write"]))
+    # Files Python runs, and files it cannot.
+    fired, unread = read(bytes((0xEF, 0xBB, 0xBF)) + _ADAPTER_PLANTS[0][1].encode("utf-8"))
+    out.append(("an adapter that starts with a byte-order mark is read, and its write refused",
+                [f.code for f in fired] == [code] and not unread))
+    for label, source in (
+            ("an adapter with a syntax error is refused as unreadable", _src("def run(:")),
+            ("an adapter that is not UTF-8 text is refused as unreadable",
+             bytes((0x78, 0x20, 0x3D, 0x20, 0x22, 0xFF, 0x22, 0x0A))),
+            ("an adapter too deep for the parser is refused as unreadable", _src("x = " + "-" * 100000 + "1"))):
+        fired, unread = read(source)
+        out.append((label, [f.code for f in fired] == ["MANIFEST_ADAPTER_UNREADABLE"] and not unread))
+    # The command template: a method flag whose value is a slot, for a program that is no client.
+    slotted = _baseline()
+    slotted["lineage"]["command_template"] = "fetcher --method {username} --credential {credential_ref}"
+    fired, unread = read(_src("x = 1"), slotted)
+    out.append(("a template method flag whose value is a slot is listed as not read",
+                not fired and unread == [("selftest/manifest.yaml :: lineage.command_template",
+                                          "the command template carries --method with a value that is a template slot")]))
+    slotted["lineage"]["command_template"] = "{tool} -d {username} --credential {credential_ref}"
+    fired, unread = read(_src("x = 1"), slotted)
+    out.append(("a template whose program is a slot is listed as not read",
+                not fired and unread == [("selftest/manifest.yaml :: lineage.command_template",
+                                          "the command template carries a program that holds a template slot, so no "
+                                          "body flag in it was read")]))
+    slotted["lineage"]["command_template"] = "/opt/{tool} -d {username} --credential {credential_ref}"
+    fired, unread = read(_src("x = 1"), slotted)
+    out.append(("a template whose program path holds a slot is listed as not read",
+                not fired and unread == [("selftest/manifest.yaml :: lineage.command_template",
+                                          "the command template carries a program that holds a template slot, so no "
+                                          "body flag in it was read")]))
+    # The same check, through the paths a person runs: --all and one manifest.
+    read(_src("import requests", "", "def run(u):", "    return requests.post(u)"))
+    out.append(("--all refuses a connector whose adapter calls requests.post",
+                refuses(run_all, (ctx, True, connectors), code)))
+    out.append(("a single manifest is refused for the adapter beside it", refuses(main, ([str(good)],), code)))
+    read(_NOT_READ_SOURCE)
+    where = f"NOT READ {arel}:5"
+    rc, text = captured(run_all, ctx, True, connectors)
+    out.append(("--all lists a call it could not read, under --quiet too, and exits 0",
+                rc == 0 and where in text and "getattr on session" in text))
+    rc, text = captured(run_all, ctx, False, connectors)
+    out.append(("--all without --quiet counts the calls it did not read",
+                rc == 0 and where in text and "1 thing(s) not read" in text))
+    rc, text = captured(main, [str(good)])
+    out.append(("a single manifest lists the call it could not read",
+                rc == 0 and where in text and "1 thing(s) not read" in text))
+    adapter.unlink()
+    return out
+
+
 def _main_controls(base: Path) -> list[tuple[str, bool]]:
     """main() run against scratch files: the exit codes the docstring promises."""
     out: list[tuple[str, bool]] = []
@@ -2030,6 +3419,9 @@ def _main_controls(base: Path) -> list[tuple[str, bool]]:
                     refuses(main, ([str(dupfx)],), "MANIFEST_REFUSAL_FIXTURE_SHAPE")))
         (connectors / "no_manifest").mkdir()
         out.append(("--all refuses a connector directory with no manifest", run_all(ctx, True, connectors) == 1))
+        (connectors / "no_manifest").rmdir()
+        out += _must_fail_controls(ctx, base, connectors, mdir, captured, refuses)
+        out += _adapter_controls(ctx, connectors, mdir, good, captured, refuses)
     return out
 
 

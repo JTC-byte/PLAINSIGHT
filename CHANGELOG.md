@@ -22,6 +22,79 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-10. The manifest gate walks a must-fail folder and reads a connector's command template and adapter for a write.**
+
+  **What changed.** `tools/validate_manifest.py` closes the two gaps item 8 of
+  the 2026-10-28 list named. The first is a must-fail walk. `--all` now also
+  reads `conformance/connector-harness/must-fail/`: every `*.manifest.yaml`
+  there goes through `check_manifest`, and the one code its sibling `.expect`
+  file names must be among the findings. A must-fail manifest that refuses
+  nothing, or not that code, is `MANIFEST_MUST_FAIL_PASSED`. An `.expect` that
+  is absent, empty, holds more than one word or names no code of the tool is
+  `MANIFEST_MUST_FAIL_EXPECT_ABSENT`. Every other entry of the folder but its
+  README is `MANIFEST_MUST_FAIL_UNREAD`, and a folder that is missing or holds
+  no manifest is `MANIFEST_MUST_FAIL_ABSENT`, so a fixture cannot leave the
+  walk by being renamed, moved or deleted. The first fixture,
+  `retain-disposition`, is the self-test's baseline manifest with a bystander
+  disposition of `retain`, the manifest fixture SS-10's last paragraph asks
+  for. It holds placeholders only.
+
+  The second is an adapter check under SS-14 item 3. The manifest's
+  `command_template` is read as a command line, and where a connector
+  directory holds `adapter.py` that file is parsed with `ast` and never
+  imported or executed. Refused under `MANIFEST_ADAPTER_WRITE_VERB`: a call
+  or a reference to `.post`, `.put`, `.patch` or `.delete` on `requests` or
+  `httpx`, on a client object the file binds, or on an object read as a
+  client because its name ends in session or client; a `.request`, `.stream`
+  or `.build_request` call, or a `Request` object, whose method is a literal
+  other than GET or HEAD; a `urllib` request that carries a body; and a
+  command line that asks for a write, by a method flag or, after a token that
+  names curl or wget, by a body flag. The template exempts nothing. An
+  adapter that is not readable Python is `MANIFEST_ADAPTER_UNREADABLE`. What
+  the check can see it is not reading is printed as NOT READ, under `--quiet`
+  too, and is never refused. Readings MF-R18 to MF-R22 in the tool state the
+  rules, the false refusals they keep and the shapes five second-model reads
+  found passing without a word.
+
+  The pre-commit hook's refusal sentence now names the adapter, the must-fail
+  folder and SS-14 item 3. The manifest entry of the kernel gate describes
+  both checks. `connectors/sherlock/tests/test_sherlock_adapter.py` gains a
+  test that no two sites of the pinned site facts share a platform token,
+  with a control that plants a collision and runs in the suite.
+  `AGENTS.md` section 5 says what the manifest check now covers, amendment
+  9.20 of the design record states the adapter check for a connector author,
+  and the gameplan's register row for the tool names both checks.
+
+  **What did not change.** No doctrine, spec, schema, policy, ontology,
+  synthetic, generated or corpus file. No kernel gate entry and no hook
+  command is added: the manifest entry and the hook's existing command run
+  both checks. `connectors/sherlock/manifest.yaml` and its adapter are as
+  they were, and the adapter passes with one call printed as NOT READ, a
+  `subprocess.run` whose argv is built at run time. The adapter check is a
+  shape check over names and literals in one file: a pass is no finding that
+  a connector writes nothing, and the design's live canaries, the dispatch
+  scanner and the subject gate remain the controls on what a connector does.
+  A NOT READ line shows in a direct run and in the pre-commit hook, and not
+  in the kernel gate's listing, in CI or in the DECLARE rung of
+  `tools/validate_connector_conformance.py`. A literal OPTIONS is refused
+  although RFC 9110 calls the method safe (MF-R22). The name rules are read
+  without scope and can refuse an object that is no HTTP client (MF-R19),
+  and the word curl given to another program as an argument can be refused
+  (MF-R21). Each of those four is the maintainer's to decide. Nothing here
+  widens who can be collected on: the walk proves a refusal, and the adapter
+  check only moves a connector between refused, NOT READ and passing.
+  PSE has no tag.
+
+  **Validation.** `--self-test`: 77 breaks refused by their own codes, 11
+  permits held, 286 controls held, with the check's tables copied into the
+  self-test and one plant built for each entry. A battery of 146 mutants of
+  the tool, each run through its own self-test under the heavy-run lock:
+  146 of 146 killed. The adapter plants agree on Python 3.11, 3.12, 3.13 and 3.14.
+  Five reads by a second model, each rerun by the session; the fixes made
+  after the fifth were read by no second model. The kernel gate on the
+  committed tree under the heavy-run lock; the rest in the worklog entry of
+  2026-11-10 on item 8.
+
 - **2026-11-10. The top five commits of `main` are rewritten to take a personal address out of their committer fields, and CI refuses such an identity.**
 
   **What changed.** Pull requests 40 to 44 were landed on 2026-11-09 with

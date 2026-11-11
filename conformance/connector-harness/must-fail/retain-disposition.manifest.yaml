@@ -1,0 +1,114 @@
+manifest_schema: plainsight-connector-manifest-0.1
+id: selftest_conn
+version: 0.1.0
+capability: selftest.account_profile
+kind: one_shot
+cardinality: one_to_one
+consumes:
+  required:
+  - selector: handle
+    platform: synthplatform
+    as: username
+  optional:
+  - selector: platform_uid
+    platform: synthplatform
+    as: user_id
+  preconditions:
+  - expr: creds.selftest_sessions.available > 0
+    unmet_message: No valid session in the credential pool
+params:
+- key: fetch_avatar
+  type: bool
+  default: true
+  label: Download the profile image, which enables the image hash pivot
+emits:
+- selector: platform_uid
+  platform: synthplatform
+  layer: observation
+  always_present: true
+- selector: email_hint_recovery_masked
+  layer: observation
+  always_present: true
+  constraint_semantics: prefix_suffix_mask
+  fp_mode: the platform returns the recovery hint for a linked account
+  fp_mode_basis: reported
+- selector: handle
+  platform: synthplatform
+  layer: observation
+  inference_hint:
+    proposes: same_entity
+    rationale_template: handle string identical to {username}
+- entity: Account
+  layer: observation
+  fields:
+  - name: display_name
+    always_present: true
+  - name: follower_count
+    volatile: true
+zero_means: absence_evidence
+distinguishable_negatives:
+- account_does_not_exist
+- account_private
+cost:
+  class: session
+  units: one authenticated request
+  credits_per_call: 0
+exposure:
+  level: logged
+  detail: authenticated read, attributable to the session account
+rate_limit:
+  scope: per_credential
+  calls: 40
+  per: 1h
+  on_429:
+    backoff: exponential
+    cooldown: 15m
+    quarantine_credential: true
+auth:
+  credential_pool: selftest_sessions
+health:
+  probe_unit: connector
+  canaries:
+    known_positive:
+      input:
+        username: <cast_linked_handle>
+      expect:
+        result_count_min: 1
+        always_present_fields: all
+    known_negative:
+      input:
+        username: <cast_negative_handle>
+      expect:
+        result_count: 0
+        negative_class: account_does_not_exist
+  cadence: round_robin
+  golden_fixture: fixtures/golden.json
+  refusal_fixtures:
+  - input_field: username
+    fixtures: fixtures.jsonl
+    id: refuse-no-username
+canary_subject_class: synthetic
+lineage:
+  command_template: selftest-tool --credential {credential_ref} --user {username}
+  capture:
+  - stdout
+  - stderr
+  - exit_code
+  - duration_ms
+  - credential_id
+  retention_stratum: raw_capture
+render:
+  shape: record
+  title_template: '{username}'
+  columns:
+  - display_name
+  - follower_count
+  - email_hint_recovery_masked
+interaction_class: passive_authenticated_read
+bystanders:
+  reach: declared
+  classes:
+  - class: followers
+    estimate:
+      method: platform_reported_count
+    disposition: retain

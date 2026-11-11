@@ -4772,3 +4772,65 @@ failed; the pre-commit hook passing; both diff checks clean. The commit waits
 on his typed word.
 
 ---
+
+## 2026-10-28, the build night's commit, push, merge and three CI runs, under the maintainer's clicks of 2026-10-28.
+
+**Class:** A. This entry and the handoff's header and section 0 change no
+governed artifact. The commit they record, `8583132`, was Class C as the
+previous entry classed it.
+
+**Agent involvement.** The same personal-account session as the previous
+entry, on Fable 5.1, ran every act below itself with no sub-agent. Each act
+took his click on an action the session offered in this chat, which is his
+instruction for that act by his own words of 2026-10-24 01:30:58; the button
+messages are the session's words that he accepted by clicking, not words he
+composed, and his record carries each button's label. The extraction filed
+beside the night's record marks the four labels as typed, because the tool
+compares a record with the offered action's message and not its label; the
+previous entry names that as a case for the tool's next fix.
+
+**What was done, from his clicks** (stamps from the transcript):
+
+- 12:09:52, "Build them now": the three held builds of the previous entry's
+  addendum.
+- 14:49:49, "Commit and open PR" (the button: commit the staged tree as him
+  with no agent trailer, push it on a branch, open the pull request, read every
+  CI step and report back before any merge). The identity read
+  `Incept.IO <234959487+JTC-byte@users.noreply.github.com>`; `main` ==
+  `origin/main` == `41badf7` after a fetch; 106 files staged; the cached diff
+  check clean. Commit `8583132` on `build/2026-10-28-build-night` at 14:50:51,
+  the hook running from 14:50:51 to 14:51:41 and passing, no trailer; pushed;
+  pull request 35 opened against `main`. CI runs 40749046365 (push, 18:51:49Z
+  to 18:58:36Z) and 40749053930 (pull_request, to 18:59:20Z): success on every
+  step of each, the 23 named steps read one by one at 14:59, the application
+  tests on Python 3.12 among them for the first time in CI, with the kernel
+  gate, the hook step and the trailer check. The report went to him before
+  any merge.
+- 15:00:13, "Merge it" (the button: fast-forward `main` to `8583132`, push
+  `main`, read every CI step on `main` and report back). `main` fast-forwarded
+  from `41badf7` and pushed at 15:00:34; pull request 35 MERGED at 19:00:34Z;
+  after a fetch `main` == `origin/main` == `8583132`. CI run 40750370333 on
+  `main` (19:00:35Z to 19:11:00Z): success on every step, read one by one at
+  15:11. The branch stays on `origin` like the 34 before it.
+- 16:00:52, "Draft it" (the button: draft this entry with the push, the merge
+  and the three CI runs and their step counts, his clicks named as clicks, no
+  agent trailer; stage it and do not commit until he says so). The 2026-09-30
+  checkpoint entry moved to the archive unedited, to keep the ten-entry cap;
+  the handoff's header and section 0 brought to the committed state.
+
+**What changed in state.** `main` gained `8583132`: Step 9, the manifest
+schema and harness, Step 10 drafted, the Sherlock connector on cassettes
+passing DECLARE, the application's first slice in the kernel gate, the one-word
+policy edit of line 870, and the records of the night. The kernel gate exits 0
+at 32 entries on `main`. Nothing else moved. State at this entry: `HEAD` ==
+`main` == `origin/main` == GitHub `main` == `8583132`, clean, stash 0, one
+worktree, no open pull request, 35 merged branches on `origin`.
+
+**Open.** His: the three classes the handoff's section 3 names (the emit's
+platform move, VA-R6, the line 870 edit), the DA-R2 stamp outside the tree,
+the readings each artifact carries, the sentences in rank 1 to 3 files the
+night made stale, the 28 queue items, plan item 0.7, the Step 7 fixes, the
+audit's section 8 finding, the credentials inventory, the 35 merged branches.
+This entry's commit waits on his word for that act, a Class A commit.
+
+---

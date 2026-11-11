@@ -539,3 +539,33 @@ def test_invoke_refuses_a_permit_the_gate_gave_another_selector_type(monkeypatch
     with pytest.raises(A.InvokeRefused) as exc:
         A.invoke(decision, {"username": value})
     assert "another connector or selector type" in str(exc.value)
+
+
+def test_no_two_sites_share_a_platform_token():
+    """REVIEW_8583132.md section 3.2 measured 481 sites, 472 distinct tokens and 9 none on
+    2026-11-02 and nothing asserted it. Over the pinned site_facts.json, no two sites may
+    yield the same platform token, because a shared token would file two sites' hits under
+    one platform (SH-R18). The test below is its control and runs with it."""
+    by_token: dict = {}
+    for site in A.load_site_facts()["sites"]:
+        token = A.platform_token(site)
+        if token is not None:
+            by_token.setdefault(token, []).append(site)
+    collisions = {t: s for t, s in by_token.items() if len(s) > 1}
+    assert not collisions, f"sites sharing a platform token: {collisions}"
+
+
+def test_the_token_collision_test_fails_on_a_planted_collision(monkeypatch):
+    """The control of the test above. The pinned facts gain one site whose name differs from an
+    existing site's in case alone, so both fold to one token, and the test above must fail
+    naming both."""
+    facts = A.load_site_facts()
+    first = next(name for name in facts["sites"] if A.platform_token(name) and name.swapcase() != name)
+    twin = first.swapcase()
+    assert twin not in facts["sites"] and A.platform_token(twin) == A.platform_token(first)
+    sites = dict(facts["sites"])
+    sites[twin] = sites[first]
+    monkeypatch.setattr(A, "load_site_facts", lambda *args, **kwargs: dict(facts, sites=sites))
+    with pytest.raises(AssertionError) as exc:
+        test_no_two_sites_share_a_platform_token()
+    assert first in str(exc.value) and twin in str(exc.value)

@@ -98,13 +98,17 @@ python tools/validate_divergence_register.py --quiet || {
 # connectors/sherlock/README.md, which blocked every commit, until the
 # platform_from_item move of 2026-10-28 (MF-R17), built on the maintainer's
 # instruction; whether that move stands is his decision, and reverting it
-# returns this command and the next to refusing.
+# returns this command and the next to refusing. Since item 8 of the 10-28
+# list the same command reads each command template and adapter for a write
+# verb (SS-14 item 3), prints what it could not read as NOT READ, and walks
+# conformance/connector-harness/must-fail/.
 python tools/validate_manifest.py --all --quiet || {
   echo ""
-  echo "pre-commit refused: a connector manifest, or a schema it is graded against, is refused."
-  echo "  rule:  docs/PLAINSIGHT-design.md section 6.4, doctrine/SUBJECT_SELECTION.md SS-10,"
-  echo "         doctrine/RETENTION.md RT-15"
-  echo "  moves: fix the manifest, fixture or schema line named above; or run"
+  echo "pre-commit refused: the manifest gate refuses the state of a connector manifest, its adapter,"
+  echo "the must-fail folder, or a schema one of them is graded against."
+  echo "  rule:  docs/PLAINSIGHT-design.md section 6.4, doctrine/SUBJECT_SELECTION.md SS-10 and"
+  echo "         SS-14 item 3, doctrine/RETENTION.md RT-15"
+  echo "  moves: fix the manifest, adapter, fixture or schema line named above; or run"
   echo "         python tools/validate_manifest.py --shape <path> for structure-only feedback,"
   echo "         which makes no conformance claim; then commit again."
   exit 1

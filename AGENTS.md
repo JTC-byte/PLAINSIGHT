@@ -198,7 +198,14 @@ added the connector manifest check: `tools/validate_manifest.py --all` grades
 every `connectors/*/manifest.yaml` against `schema/connector-manifest.schema.json`,
 the selector registry, both canaries, one refusal fixture per required input
 linted against `conformance/connector-harness/fixture.schema.json`, SS-10's
-bystander declaration, and the R7 stamp. The first connector,
+bystander declaration, and the R7 stamp. Since item 8 of the 10-28 list
+(2026-11-10) the same command walks `conformance/connector-harness/must-fail/`,
+where each manifest must refuse with the code its `.expect` names, and reads
+each manifest's `command_template` and the `adapter.py` beside it for a write
+under SS-14 item 3. That adapter check is a shape check over names and
+literals in one file: what it sees and cannot read it prints as NOT READ, in
+a direct run and in the pre-commit hook and not in the kernel gate's listing,
+and a pass is no finding that a connector writes nothing. The first connector,
 `connectors/sherlock/`, refused under `MANIFEST_SELECTOR_PLATFORM`, which is
 reading SH-R5 in its README, until its handle emit declared `platform_from_item`
 on 2026-10-28 (MF-R17, amendment 9.14 of `docs/PLAINSIGHT-design.md`), a move
