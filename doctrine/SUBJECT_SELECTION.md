@@ -757,14 +757,24 @@ unlock is not a hard refusal.
    including a view the platform surfaces to them as a view, a follow, a friend
    request, a message, and any state the platform shows them changed.
 
-   **This is a rule that becomes a structure at Step 12, and it is not one
-   yet.** The mechanism is an adapter declaring read verbs only, checked by
-   `validate_manifest.py` against the declared methods and the
-   `command_template`, with `interaction_class` on every manifest resolving
-   against this line. Until that check exists this is a rule an author follows,
-   and a draft of this item called it an architectural boundary the system
-   already had, which is the laundering design gate 6 forbids, in the list that
-   reads as most enforced.
+   **The check exists since 2026-11-10, and it is a shape check rather than a
+   proof.** `tools/validate_manifest.py --all` reads each manifest's
+   `command_template` and the `adapter.py` beside it, parsed with `ast` and never
+   imported or run. A write verb on `requests` or `httpx`, on a client the file
+   binds, or on a name ending in session or client refuses under
+   `MANIFEST_ADAPTER_WRITE_VERB`, and so does a command line with a write method
+   or, after curl or wget, a body flag. `interaction_class` on every manifest
+   resolves against this line while R7 carries its dated row. The tool's
+   self-test plants each refusal and fails when the check is removed, and the
+   kernel gate, CI and `.githooks/pre-commit` run it.
+
+   A pass is no finding that a connector writes nothing. The check reads names
+   and literals in one file, and readings MF-R18 to MF-R22 in the tool state the
+   shapes it misses. It cannot see the half of R7 that a read verb reaches: a
+   profile view the platform surfaces to the subject is a GET. That half is still
+   a rule an author follows. A draft of this item once called it an architectural
+   boundary the system already had, which is the laundering design gate 6
+   forbids, in the list that reads as most enforced.
 4. **No model training and no fixture-building on non-synthetic data.** A
    matcher trained or fixture-built on a real case carries that case in its
    weights or its fixtures permanently and cannot be shredded. CUT LIST B names

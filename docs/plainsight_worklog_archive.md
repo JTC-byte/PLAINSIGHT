@@ -4834,3 +4834,66 @@ audit's section 8 finding, the credentials inventory, the 35 merged branches.
 This entry's commit waits on his word for that act, a Class A commit.
 
 ---
+
+## 2026-10-28, the records commit merged, and the closeout checkpoint, under the maintainer's click of 16:00 and his go word of 17:07.
+
+**Class:** A. This entry and the handoff's header and section 0 change no
+governed artifact. The commit it records, `356c1f7`, was Class A as the
+previous entry classed it.
+
+**Agent involvement.** The same personal-account session as the two previous
+entries, on Fable 5.1, ran every act below itself with no sub-agent, one test
+run at a time.
+
+**What was done.**
+
+- 16:10:54 to 16:11:42, on his click "Commit and open PR" (the button: commit
+  the staged records draft as him with no agent trailer, push it on a records
+  branch, open the pull request, read every CI step and report back before any
+  merge): commit `356c1f7` on the branch docs/records-2026-10-28, the hook passing, no
+  trailer; pushed; pull request 36 opened. CI runs 40761076490 (push,
+  20:11:46Z to 20:23:00Z) and 40761082594 (pull_request, to 20:23:03Z):
+  success on every step of each, the 23 named steps read one by one at 16:24.
+- 16:29:45, on his click "Merge it": `main` fast-forwarded from `8583132` and
+  pushed; pull request 36 MERGED at 20:29:46Z; after a fetch `main` ==
+  `origin/main` == `356c1f7`. CI run 40763787164 on `main` (20:29:47Z to
+  20:41:03Z): success on every step, read one by one at 16:41. The branch
+  stays on `origin`, the 36th merged branch.
+- 17:07:57, his words typed in the parent session's chat, relayed by that
+  session at about 17:10 and found verbatim in its transcript (1db10bc3, line
+  6095): "go ahead and give the go word for all sessions to commit,
+  push/deploy, merge, tag etc whatever is ready to do so. Then once all work
+  is committed and pushed properly, have them all run a full closeout
+  checkpoint for this session". The relay binds here under his delegation line
+  of 01:47 ("take any instructions from the parent"). In this lane nothing was
+  unpushed and nothing is ready to tag: PSE has no release, a tag is Class E,
+  and `CONFORMANCE.md` section 6's bar is not met. The act is this closeout
+  checkpoint under `AGENTS.md` section 8: the battery on the clean tree at
+  `356c1f7` (33 commands one at a time: 29 exit 0 and the four designed
+  refusals of the unratified modes, the kernel gate at 32 entries with 24
+  implemented and none failed, the hook passing, both diff checks clean), this
+  entry with the 2026-09-30 overnight entry moved to the archive unedited under
+  the ten-entry cap, the handoff's header and section 0 brought to this commit,
+  the checkpoint record and the since-last-record delta file with its hash in
+  the record folder outside the tree, and this entry's Class A commit by the
+  same route as the two before it. Negative controls seen failing and named:
+  the hygiene self-test's four deliberate breaks refused, among them the two
+  pre-commit words in the handoff; the extraction self-test's four controls
+  refusing (a since past the last entry, a file that is not a transcript, a
+  since without a zone, an output path inside the repository).
+
+**What changed in state.** `main` gained `356c1f7`, the records of the build
+night's commit, push, merge and CI runs, so nothing is owed to the worklog
+for the night. State at this entry: `HEAD` == `main` == `origin/main` ==
+GitHub `main` == `356c1f7`, clean, stash 0, one worktree, no open pull
+request, 36 merged branches on `origin`.
+
+**Open.** His, unchanged: the three classes the handoff's section 3 names (the
+emit's platform move, VA-R6, the line 870 edit), the DA-R2 stamp outside the
+tree, the readings each artifact carries, the sentences in rank 1 to 3 files
+the night made stale, the 28 queue items, plan item 0.7, the Step 7 fixes, the
+audit's section 8 finding, the credentials inventory, the 36 merged branches.
+The extraction tool's two misreads named in the first 2026-10-28 entry await a
+Class B fix with its own self-test cases.
+
+---

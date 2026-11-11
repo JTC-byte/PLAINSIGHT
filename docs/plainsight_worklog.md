@@ -15,69 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-28, the records commit merged, and the closeout checkpoint, under the maintainer's click of 16:00 and his go word of 17:07.
-
-**Class:** A. This entry and the handoff's header and section 0 change no
-governed artifact. The commit it records, `356c1f7`, was Class A as the
-previous entry classed it.
-
-**Agent involvement.** The same personal-account session as the two previous
-entries, on Fable 5.1, ran every act below itself with no sub-agent, one test
-run at a time.
-
-**What was done.**
-
-- 16:10:54 to 16:11:42, on his click "Commit and open PR" (the button: commit
-  the staged records draft as him with no agent trailer, push it on a records
-  branch, open the pull request, read every CI step and report back before any
-  merge): commit `356c1f7` on the branch docs/records-2026-10-28, the hook passing, no
-  trailer; pushed; pull request 36 opened. CI runs 40761076490 (push,
-  20:11:46Z to 20:23:00Z) and 40761082594 (pull_request, to 20:23:03Z):
-  success on every step of each, the 23 named steps read one by one at 16:24.
-- 16:29:45, on his click "Merge it": `main` fast-forwarded from `8583132` and
-  pushed; pull request 36 MERGED at 20:29:46Z; after a fetch `main` ==
-  `origin/main` == `356c1f7`. CI run 40763787164 on `main` (20:29:47Z to
-  20:41:03Z): success on every step, read one by one at 16:41. The branch
-  stays on `origin`, the 36th merged branch.
-- 17:07:57, his words typed in the parent session's chat, relayed by that
-  session at about 17:10 and found verbatim in its transcript (1db10bc3, line
-  6095): "go ahead and give the go word for all sessions to commit,
-  push/deploy, merge, tag etc whatever is ready to do so. Then once all work
-  is committed and pushed properly, have them all run a full closeout
-  checkpoint for this session". The relay binds here under his delegation line
-  of 01:47 ("take any instructions from the parent"). In this lane nothing was
-  unpushed and nothing is ready to tag: PSE has no release, a tag is Class E,
-  and `CONFORMANCE.md` section 6's bar is not met. The act is this closeout
-  checkpoint under `AGENTS.md` section 8: the battery on the clean tree at
-  `356c1f7` (33 commands one at a time: 29 exit 0 and the four designed
-  refusals of the unratified modes, the kernel gate at 32 entries with 24
-  implemented and none failed, the hook passing, both diff checks clean), this
-  entry with the 2026-09-30 overnight entry moved to the archive unedited under
-  the ten-entry cap, the handoff's header and section 0 brought to this commit,
-  the checkpoint record and the since-last-record delta file with its hash in
-  the record folder outside the tree, and this entry's Class A commit by the
-  same route as the two before it. Negative controls seen failing and named:
-  the hygiene self-test's four deliberate breaks refused, among them the two
-  pre-commit words in the handoff; the extraction self-test's four controls
-  refusing (a since past the last entry, a file that is not a transcript, a
-  since without a zone, an output path inside the repository).
-
-**What changed in state.** `main` gained `356c1f7`, the records of the build
-night's commit, push, merge and CI runs, so nothing is owed to the worklog
-for the night. State at this entry: `HEAD` == `main` == `origin/main` ==
-GitHub `main` == `356c1f7`, clean, stash 0, one worktree, no open pull
-request, 36 merged branches on `origin`.
-
-**Open.** His, unchanged: the three classes the handoff's section 3 names (the
-emit's platform move, VA-R6, the line 870 edit), the DA-R2 stamp outside the
-tree, the readings each artifact carries, the sentences in rank 1 to 3 files
-the night made stale, the 28 queue items, plan item 0.7, the Step 7 fixes, the
-audit's section 8 finding, the credentials inventory, the 36 merged branches.
-The extraction tool's two misreads named in the first 2026-10-28 entry await a
-Class B fix with its own self-test cases.
-
----
-
 ## 2026-10-28, three classes decided, under the maintainer's clicks of 17:45 to 19:49.
 
 **Class:** A. This entry records three decisions of his and changes the
@@ -381,3 +318,25 @@ this chat.
 **Battery.** On the tree as committed, before the records were written: `tools/validate_manifest.py --self-test`, "validate_manifest --self-test ok: 77 breaks refused by their own codes, 11 permits held, 286 controls held"; `--all` exit 0 with one NOT READ line; `tools/validate_connector_conformance.py --all` exit 0 and its self-test, 26 plants refused by their own code; the Sherlock tests, 53 passed; the repository scan exit 0. The dispatch scan printed the same lines on item 8's tree as on `main`. The adapter plants under a harness that needs neither PyYAML nor jsonschema: 229 plants, none misbehaving, on Python 3.11, 3.12, 3.13 and 3.14. Mutant batteries of the tool, each mutant a copy with one behaviour removed and run through its own self-test under the estate's heavy-run lock: 70 of 110 run and killed on the tree after the second read, before the run yielded the lock; 137 of 137 killed on the tree after the fourth read (19:24:55 to 19:37:58 EST); 141 of 141 on the tree the fifth read saw (19:43:46 to 19:56:47 EST); 146 of 146 on the final tree (20:06:14 to 20:20:11 EST). No mutant survived in any run, and three kills in each of the last three runs are an exception the self-test catches and reports. The reader's probes of the third, fourth and fifth rounds, rerun on the final tree, show no change but the one MF-R21 states. The extraction tool's self-test: "since_last_record --self-test ok: 22 checks, 15 planted lines classified, 4 controls seen refusing". Hygiene exit 0 on the final text and both diff checks clean. The kernel gate, which had not run on item 8's tree before, and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
 
 **Open.** His: this commit's landing on `main`; its class; the four readings above; SS-14 item 3's sentence and `CONFORMANCE.md`'s DECLARE paragraph; and from the entry above, the request to GitHub Support, the pre-rewrite bundle, the second Emails box and the class of `1ac2e2c`. The kernel gate's runner and the conformance tool's DECLARE rung print no NOT READ line. Slice 4; Step 11's shred; the door's missing held-case check; the reads' open findings on item 7; `tools/since_last_record.py` lists a parent's message as a harness notice; the handoff's row for `tools/validate_retention.py` names no commit; and everything the previous entries list.
+
+---
+
+## 2026-11-11, the maintainer's rulings on items 1 to 6 of the lane's list, SS-14 item 3 and the DECLARE paragraph amended as he accepted them, and the landing of 9cdac31 recorded, under his clicks of 2026-11-11.
+
+**Class:** B by the session's reading, his to confirm. `doctrine/SUBJECT_SELECTION.md` SS-14 item 3 and `CONFORMANCE.md`'s DECLARE paragraph are governed text, and the change to each states a check that already exists. It changes no rule, no criterion, no stamp and no reach, so nothing here is Class F by effect under `AGENTS.md` section 3 rule 2. He accepted the wording with no row added to `doctrine/DOCTRINE_STATUS.md`, and the question that put it to him said the draft adds none. The worklog, its archive, the handoff and `CHANGELOG.md` are Class A. No tool, gate entry, hook command, schema, policy, ontology, spec, synthetic, generated or corpus file changed.
+
+**The words this commit acts on.** The parent of 2026-11-11, local_b4e23975, started this session on his line in its own chat, "Start fresh sessions for each repo from their closeout records and hand-over notes, all on Opus 5.5", and later relayed a go; a relay is recorded as information, and that parent is not delegated for this repository. Each of the following is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. At 11:36:06 EST, "Keep all four", on the question "Keep all four adapter-check readings at today's defaults?". At 11:38:52, "Accept as drafted", on "Accept the item 2 wording as drafted?". At 12:01:44, "Both Class C", on "Confirm Class C for both 9cdac31 and 1ac2e2c?". At 12:16:40, "Later", on "Will you send the GitHub Support request now?". At 12:17:55, "Keep it for now", on "Keep the pre-rewrite bundle until Support has acted?". At 12:51:36, "Ticked it", on "Will you tick the second box on GitHub's Emails page?". At 12:52:20, "Yes, commit it", on "Commit item 2 and today's rulings on a branch for CI?": his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again.
+
+**The landing of 9cdac31, recorded here because the entry above could not know it.** Item 8 was pushed on the branch item8-manifest-must-fail-and-adapter-check, and its run 42940927255 read success on all 27 steps at 20:53:05 EST on 2026-11-10. On his click of 20:52:41 EST `main` was fast-forwarded from `1ac2e2c` to `9cdac31` by a plain push at 20:53:41 EST. The run on `main`, 42942189016, read success on all 27 steps at 21:04:36 EST. The tip's committer is the no-reply address. No pull request was opened.
+
+**His rulings.** Item 1: the four readings of the adapter check stand as `9cdac31` has them. OPTIONS and TRACE are refused (MF-R22); the one false refusal the client rule keeps stays (MF-R21); the name rules read without scope and may refuse an object that is no HTTP client (MF-R19); NOT READ lines show in a direct run and in the pre-commit hook and not in the kernel gate's listing, in CI or in the DECLARE rung (MF-R19). The follow-up that named the last of these is closed by the ruling. Item 2: the wording below, as drafted. Item 3: `9cdac31` and `1ac2e2c` are Class C. Item 4: the request to GitHub Support is not sent; it stays his, with its text in the rewrite plan. Item 5: the pre-rewrite bundle of 2026-11-10 is kept until Support has acted. Item 6: he reports the second box on GitHub's Emails page ticked. The session cannot read that setting back, so it stands on his word. Before it was put to him, the commit identity configured in each of the six member checkouts on this workstation was read with `git var` and was the no-reply form for author and committer in all six; no other machine was read.
+
+**What changed.** SS-14 item 3's paragraph that called itself "a rule that becomes a structure at Step 12, and it is not one yet" now states what `tools/validate_manifest.py --all` reads and refuses for this item, that its self-test fails when the check is removed, and where it runs. It also states what a pass is not: the check reads names and literals in one file, MF-R18 to MF-R22 state its misses, and it cannot see the half of R7 that a read verb reaches, a profile view the platform surfaces to the subject, which is still a rule an author follows. `CONFORMANCE.md`'s DECLARE paragraph adds the adapter check and the must-fail walk to what a manifest must pass. Item 7 of the list, the credential rotation of Saturday 2026-11-14, needs nothing before Saturday.
+
+**What is not claimed.** The amended paragraph claims a shape check and no more. Design amendment 9.20 of 2026-11-10 says the check is not the mechanism SS-14 item 3 then described in full; that amendment is a dated record and is not restyled. The Emails box and the account's private-address setting are his word and unread. The pull request refs of pull requests 41 to 44 and the five old commits are still served by GitHub, read at about 12:03 EST.
+
+**Agent involvement.** Session 0141534e, on Opus 5.5 at high, drafted the paragraph and the records and ran every act in its main loop, with no agent and no workflow. One problem was the extraction tool's: over this session's transcript it reported the parent's go message as a harness record and counted no received message, the known defect of `tools/since_last_record.py` listing a parent's message as a harness notice.
+
+**Battery.** On a scratch export of `9cdac31` with the paragraph applied: `tools/validate_doctrine.py` exit 0, "58 criteria, cross-references and pin reconciled"; `tools/validate_hygiene.py` exit 0; `tools/pin_of_record.py --self-test` quiet. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
+
+**Open.** His: this commit's landing on `main` and its class; the request to GitHub Support; the bundle once Support has acted; Saturday's rotation. Slice 4; Step 11's shred; the door's missing held-case check; the reads' open findings on item 7; `tools/since_last_record.py` lists a parent's message as a harness notice; the handoff's row for `tools/validate_retention.py` names no commit; and everything the previous entries list.

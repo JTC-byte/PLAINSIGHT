@@ -67,7 +67,11 @@ names a manifest that `tools/validate_manifest.py` passes in full: shape against
 `ontology/selectors.yaml`, both canaries with placeholder inputs and a
 `canary_subject_class`, one refusal fixture per required input linted against
 `conformance/connector-harness/fixture.schema.json`, a bystander declaration
-SS-10 accepts, and `interaction_class` while R7 carries its dated row. A manifest
+SS-10 accepts, `interaction_class` while R7 carries its dated row, and no
+write verb in the `command_template` or the `adapter.py` beside the manifest
+(SS-14 item 3). With `--all` the tool also walks
+`conformance/connector-harness/must-fail/`, and every manifest there must refuse
+with the code its `.expect` file names. A manifest
 that passes only `--shape` supports no claim, and the tool says so when it runs
 in that mode.
 

@@ -12,16 +12,17 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-10. This file's commit is item 8 of the 10-28 list: the
-manifest gate's must-fail walk and its adapter check (section 0); class C by
-the session's reading, his to confirm. Before it, `main` == `origin/main` ==
-`1ac2e2c`, the records commit of the rewrite, landed by a fast-forward push on
-his click of 2026-11-10 at 19:54:32 EST, CI green on all 27 steps of its run
+**Date:** 2026-11-11. This file's commit carries his rulings of 2026-11-11
+on the lane's list and the two paragraphs he accepted: SS-14 item 3 and
+`CONFORMANCE.md`'s DECLARE paragraph (section 0). Before it, `main` ==
+`origin/main` == `9cdac31`, item 8, landed by a fast-forward push on his
+click of 2026-11-10 at 20:52:41 EST, CI green on all 27 steps of its run
 on `main`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
-every conclusion stamped, every basis unstamped. No doctrine file has changed
-since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
-this tree; section 3 says whose decision it is.
+every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
+paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
+the four Class F items with EG-7, no longer applies to this tree; section 3
+says whose decision it is.
 **Kernel gate:** 32 entries: 25 implemented and passing, 11 of them self-tests;
 4 unratified and refusing as designed; 1 stubbed; 2 pending. `--kernel-gate`
 exits 0 on this tree and the pre-commit hook passes. `CONFORMANCE.md` section 4
@@ -36,10 +37,11 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-branch `item8-manifest-must-fail-and-adapter-check` on his click of 20:23:32
+branch `records-rulings-2026-11-11` on his click of 2026-11-11 at 12:52:20
 EST, which covers that branch's push; landing it takes his word again. The
-records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite, item
-8's five reads and this commit in `2026-11-09-plainsight-items/`, whose
+records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
+item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
+2026-11-11 and this commit in `2026-11-11-plainsight-lane/`, whose
 `README.md` ends with the Next Session line, the resumptions in
 `2026-11-02-plainsight-resume/` and `2026-11-06-plainsight-resume/`, and his
 28-item queue in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none
@@ -49,38 +51,31 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Item 8 of the 10-28 list named two gaps in the
-manifest gate. `tools/validate_manifest.py --all` now walks
-`conformance/connector-harness/must-fail/`, where each manifest must refuse
-with the code its `.expect` names and the folder is read whole, and it reads
-each manifest's `command_template` and the `adapter.py` beside it for a write
-under SS-14 item 3, with `ast` and never by import. What that check sees and
-cannot read it prints as NOT READ and does not refuse. Six codes join the tool.
+**What changed and why.** SS-14 item 3 said its check did not exist, and item
+8 built it on 2026-11-10. The paragraph now states the shape check that
+exists, where it runs, and that it cannot see a read the subject can observe.
+`CONFORMANCE.md`'s DECLARE paragraph names the adapter check and the
+must-fail walk. He accepted both texts and ruled on five more items of the
+lane's list on 2026-11-11; the worklog records each with its stamp.
 
-**Which surfaces moved.** The tool, the manifest entry's description in
-`tools/validate_conformance.py`, the hook's comment and refusal sentence, the
-must-fail folder (a README, one manifest, one `.expect`), two tests of the
-Sherlock connector, `AGENTS.md` section 5, design amendment 9.20, the
-gameplan's register row, the changelog, the worklog and its archive, and this
-file. No doctrine, spec, schema, policy, ontology, synthetic, generated or
-corpus file, no new gate entry and no new hook command.
+**Which surfaces moved.** One doctrine paragraph, one paragraph of
+`CONFORMANCE.md`, the changelog, the worklog and its archive, and this file.
+No rule, stamp, tool, gate entry, hook command, schema, policy, ontology,
+spec or corpus file.
 
-**What validation ran and what passed.** The tool's self-test (77 breaks, 11
-permits, 286 controls); 146 mutants of the tool, all killed; five reads by a
-second model, the fixes after the fifth read by none; the adapter plants on
-Python 3.11 to 3.14; the Sherlock tests, the conformance runner, hygiene and
-both diff checks; the kernel gate on this tree under the heavy-run lock and
-the hook at the commit.
+**What validation ran and what passed.** `tools/validate_doctrine.py`, hygiene
+and the pin of record's self-test on a scratch export; the kernel gate on this
+tree under the heavy-run lock and the hook at the commit.
 
 **Whether a release baseline changed.** No tag exists. This commit is on a
-branch, and `main` is `1ac2e2c`.
+branch, and `main` is `9cdac31`.
 
-**What remains open or deferred.** His: this commit's landing, its class, four
-readings of the adapter check (section 3), and what the entry of 2026-11-10
-on the rewrite lists. A pass of the adapter check is no finding that a
-connector writes nothing. Sections 3 and 4 carry the rest: DA-R2's stamp, the
-readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the queue, slice 4, Step 11's
-shred, the door's held-case check and the reads' open findings.
+**What remains open or deferred.** His: this commit's landing and its class,
+B by the session's reading; the request to GitHub Support; the pre-rewrite
+bundle once Support has acted; Saturday's rotation. Sections 3 and 4 carry
+the rest: DA-R2's stamp, the readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the
+queue, slice 4, Step 11's shred, the door's held-case check and the reads'
+open findings.
 
 ---
 
@@ -210,7 +205,7 @@ line 105); the five production docstrings cite the design amendments.
 Steps 9, 10 and 12 and the application (DR, MF, now to MF-R22, PIN-R9, SG, VA,
 DA, SH, CC, APP, now to APP-R33, and RS-R1 to RS-R8), and the design
 amendments 9.1 to 9.20. Each is recorded where its artifact is and in the
-record folder. The worklog entry on item 8 puts four of MF's to him by name.
+record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
 clearing act, EG-2's vault-key custody sentence. It no longer applies cleanly;
@@ -329,7 +324,8 @@ were fixed before the commit or are recorded as open.
 | Both doctrine review records and the patches | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | Patch 4b lives here and no longer applies cleanly. |
 | The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Unshared. |
-| The 2026-11-10 rewrite of `main`, and item 8's reads | `Z-ISR/_session-artifacts/2026-11-09-plainsight-items/` | `README.md`, the plan, the push log and the CI reads, the bundle of the five old commits (unshared, his to keep or delete), and the five second-model reports on item 8 with their dispositions, its patches and its mutant runs. |
+| The 2026-11-10 rewrite of `main`, and item 8's reads | `Z-ISR/_session-artifacts/2026-11-09-plainsight-items/` | `README.md`, the plan with the Support request text, the push log and the CI reads, the bundle of the five old commits (unshared, kept until Support acts), and the five second-model reports on item 8 with their dispositions, its patches and its mutant runs. |
+| His rulings of 2026-11-11 | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |

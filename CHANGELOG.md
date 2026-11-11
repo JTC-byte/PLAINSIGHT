@@ -22,6 +22,27 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-11. SS-14 item 3 states the adapter check that exists, and CONFORMANCE.md's DECLARE paragraph names it and the must-fail walk.**
+
+  **What changed.** `doctrine/SUBJECT_SELECTION.md` SS-14 item 3 no longer
+  says its check does not exist. It states what `tools/validate_manifest.py
+  --all` reads and refuses for the item, where it runs, and that a pass is no
+  finding that a connector writes nothing, since the check cannot see a read
+  the subject can observe. `CONFORMANCE.md`'s DECLARE paragraph adds the
+  adapter check and the must-fail walk. The maintainer accepted both texts on
+  2026-11-11 and ruled on five more items, which the worklog records.
+
+  **Surfaces moved.** One doctrine paragraph, one paragraph of
+  `CONFORMANCE.md`, the worklog and its archive, the handoff, this file.
+
+  **Validation.** `tools/validate_doctrine.py`, hygiene and the pin of record's
+  self-test on a scratch export; the kernel gate and the pre-commit hook on the
+  staged tree.
+
+  **What did not change.** No rule, criterion, stamp or row of
+  `doctrine/DOCTRINE_STATUS.md`. No tool, gate entry, hook command, schema,
+  policy, ontology, spec or corpus file.
+
 - **2026-11-10. The manifest gate walks a must-fail folder and reads a connector's command template and adapter for a write.**
 
   **What changed.** `tools/validate_manifest.py` closes the two gaps item 8 of
