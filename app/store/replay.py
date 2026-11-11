@@ -22,6 +22,7 @@ from __future__ import annotations
 import hashlib
 import json
 
+from app.refusals import Refusal
 from app.store import db, envelope, retention, rollup
 from app.store.project import Projector
 
@@ -70,8 +71,10 @@ def stored_envelopes(store, case_id: str) -> tuple[dict, dict]:
 
 
 def replay_case(store, case_id: str) -> None:
-    """Drop and replay the projections of one case, in one transaction."""
-    store.attach_case(case_id)
+    """Drop and replay the projections of one case, in one transaction. The case database is attached without
+    create: a rebuild never makes a case database that is absent."""
+    if not store.attach_case(case_id, create=False):
+        raise Refusal("CASE_NOT_HELD", f"case {case_id[:8]}: the case database is absent, and a rebuild does not create one")
     conn = store.conn
     conn.execute("BEGIN IMMEDIATE")
     try:
@@ -107,16 +110,33 @@ def replay_case(store, case_id: str) -> None:
 
 
 def rebuild(store) -> list[str]:
-    """Rebuild every case's projections from its log. Returns the case ids rebuilt.
+    """Rebuild every held case's projections from its log. Returns the case ids rebuilt.
 
-    A case whose case database is absent is left alone: rebuilding it would
-    create a per-case file the shred already removed.
+    A case that is not held, one the registry does not say is open or whose
+    case database is absent, is left alone: a rebuild writes projection rows
+    into the case database, and the store writes only into a held case
+    (docs/PLAINSIGHT-design.md amendment 9.21). Rebuilding a case whose
+    database is absent would create a per-case file the shred already removed.
     """
+    from app.store import ingest  # here, because app.store.ingest imports this module
+
     rollup.load_vocab(store.conn)
-    cases = [c for c in store.cases() if store.case_file(c).is_file()]
+    cases = [c for c in store.cases() if ingest.case_held(store.registry(c)["state"], store.case_file(c).is_file())]
     for case_id in cases:
         replay_case(store, case_id)
     return cases
+
+
+def not_held(store) -> list[tuple[str, str, bool]]:
+    """(case id, registry state, whether its case database is present) for each case a rebuild leaves alone."""
+    from app.store import ingest  # here, because app.store.ingest imports this module
+
+    out = []
+    for case_id in store.cases():
+        state, present = store.registry(case_id)["state"], store.case_file(case_id).is_file()
+        if not ingest.case_held(state, present):
+            out.append((case_id, state, present))
+    return out
 
 
 #: The rows verify() leaves out: working state no replay of the log can reproduce.
@@ -152,7 +172,8 @@ def digest(store, case_id: str) -> str:
 
 
 def replay_into(src, dst) -> list[str]:
-    """Copy the log of every case in `src` into `dst` and rebuild it there."""
+    """Copy the log of every case in `src` into `dst` and rebuild it there. Returns the cases rebuilt in `dst`: a
+    copied case that is not held is not rebuilt, so its projections there are never derived."""
     cases = src.cases()
     for case_id in cases:
         reg = dict(src.registry(case_id))
@@ -179,17 +200,18 @@ def replay_into(src, dst) -> list[str]:
         except Exception:
             conn.execute("ROLLBACK")
             raise
-    rebuild(dst)
-    return cases
+    return rebuild(dst)
 
 
 def verify(store, scratch_root) -> dict[str, list[str]]:
-    """Replay `store` into a fresh store at `scratch_root` and name each differing table per case."""
+    """Replay `store` into a fresh store at `scratch_root` and name each differing table per case. Only the cases
+    the copy rebuilds are compared: a case that is not held is rebuilt in neither store, and comparing its empty
+    projections in the copy with this store's would report a difference no replay made."""
     fresh = db.Store.init(scratch_root)
     try:
-        replay_into(store, fresh)
+        rebuilt = replay_into(store, fresh)
         out = {}
-        for case_id in store.cases():
+        for case_id in rebuilt:
             live = _by_table(dump(store, case_id, working=False))
             again = _by_table(dump(fresh, case_id, working=False))
             out[case_id] = sorted(t for t in set(live) | set(again) if live.get(t) != again.get(t))

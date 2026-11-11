@@ -196,6 +196,54 @@ def test_local_acts_only_in_a_synthetic_case(ctx):
     check_local_acts_only_in_a_synthetic_case(ctx)
 
 
+# -- an act on a case the registry says is shredded is refused, and writes nothing (amendment 9.21) --
+
+
+def check_act_refused_on_a_case_closed_to_writes(ctx):
+    c = _client(ctx)
+    s = open_case(c.root)
+    try:
+        s.conn.execute("UPDATE case_registry SET state = 'shredded' WHERE case_id = ?", (CASE,))
+        s.conn.commit()
+    finally:
+        s.close()
+    before = files_digest(c.root)
+    r = c.send("POST", ACTS, {"act": "NOTE", "target": HANDLE_CLAIM, "text": "compare against item 2 before citing"})
+    assert r.status == 409 and r.json()["refused"] == "CASE_CLOSED_TO_WRITES", r.body
+    assert files_digest(c.root) == before, "an act landed in a case the registry says is shredded"
+
+
+def break_held_case_rule_removed(ctx):
+    ctx.mp.setattr(ingest, "closed_to_writes", lambda store, case_id: None)
+    ctx.mp.setattr(ingest, "closed_under_lock", lambda conn, case_id: False)
+
+
+def test_act_refused_on_a_case_closed_to_writes(ctx):
+    check_act_refused_on_a_case_closed_to_writes(ctx)
+
+
+def check_workspace_put_refused_on_a_case_closed_to_writes(ctx):
+    c = _client(ctx)
+    s = open_case(c.root)
+    try:
+        s.conn.execute("UPDATE case_registry SET state = 'shred_failed' WHERE case_id = ?", (CASE,))
+        s.conn.commit()
+    finally:
+        s.close()
+    before = files_digest(c.root)
+    r = c.send("PUT", f"/api/kv/{CASE}/web", {"hops": 2})
+    assert r.status == 409 and r.json()["refused"] == "CASE_CLOSED_TO_WRITES", r.body
+    assert files_digest(c.root) == before, "a workspace key was written into a case whose shred failed"
+
+
+def break_write_route_rule_removed(ctx):
+    ctx.mp.setattr(ingest, "closed_to_writes", lambda store, case_id: None)
+
+
+def test_workspace_put_refused_on_a_case_closed_to_writes(ctx):
+    check_workspace_put_refused_on_a_case_closed_to_writes(ctx)
+
+
 # -- IGNORE needs a reason only when the target is load-bearing (design 4.4) -----------------------
 
 
@@ -297,4 +345,6 @@ CONTROLS = [
     ("the ignore reason rule removed", check_ignore_reason_rule, break_ignore_rule_removed),
     ("the already-promoted check removed", check_promote_item_to_entity, break_promoted_check_removed),
     ("the closed-key check removed", check_exclude_notes_and_closed_body, break_closed_keys_removed),
+    ("the door's held-case rule removed", check_act_refused_on_a_case_closed_to_writes, break_held_case_rule_removed),
+    ("the write routes' held-case rule removed", check_workspace_put_refused_on_a_case_closed_to_writes, break_write_route_rule_removed),
 ]

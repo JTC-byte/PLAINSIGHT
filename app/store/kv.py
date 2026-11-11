@@ -45,7 +45,8 @@ def put(store, case_id: str, analyst: str, view: str, key: str, value) -> None:
         raise Refusal("KV_KEY_REFUSED")
     if view not in TOKENS or not legal_value(value):
         raise Refusal("KV_VALUE_REFUSED", f"key={key}")
-    store.attach_case(case_id)
+    if not store.attach_case(case_id, create=False):
+        raise Refusal("CASE_NOT_HELD", "the workspace store creates no case database")
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     store.conn.execute(
         "INSERT INTO workspace_kv (analyst, view, key, value_json, updated_at) VALUES (?, ?, ?, ?, ?) "

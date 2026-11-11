@@ -3,12 +3,13 @@ the correctness of an identity or of collection (CLAUDE.md design gate 3)."""
 
 from __future__ import annotations
 
+import pathlib
 import shutil
 import uuid
 
 from app import config
 from app.refusals import Refusal
-from app.store import db, door, envelope, ingest
+from app.store import db, door, envelope, ingest, replay
 from app.tests.helpers import (
     CASE,
     CORPUS,
@@ -498,6 +499,392 @@ def test_isolated_refused_on_sqlite(ctx):
     check_isolated_refused_on_sqlite(ctx)
 
 
+# -- the door writes only into a held case (amendment 9.21, reading APP-R34) -----------------------
+
+
+def _set_state(store, state: str) -> None:
+    store.conn.execute("UPDATE case_registry SET state = ? WHERE case_id = ?", (state, CASE))
+    store.conn.commit()
+
+
+def _fresh_heartbeat(case_id: str = CASE) -> dict:
+    """The corpus's sweep heartbeat under a new event id: a system event that needs no lineage parent."""
+    beat = named(corpus_events(), "system-sweep-heartbeat")
+    beat["event"]["event_id"] = str(uuid.uuid4())
+    beat["case_id"] = case_id
+    return beat
+
+
+def check_door_writes_only_into_a_held_case(ctx):
+    s = ctx.built()
+    path = s.case_file(CASE)
+    landed = ingest.ingest_batch(s, [_fresh_heartbeat()], None, origin="system")
+    assert landed.landed == 1, "a system event did not land in a held case"
+    for state in ("shredded", "shred_failed"):
+        _set_state(s, state)
+        before = files_digest(s.root)
+        r = refusal_of(ingest.ingest_batch, s, [_fresh_heartbeat()], None, origin="system")
+        assert r.code == "CASE_CLOSED_TO_WRITES", f"a case the registry says is {state} was not refused: {r.code}"
+        assert files_digest(s.root) == before, f"a refused batch changed the store of a case the registry says is {state}"
+    # The rule is read before the stored log: the log of a closed case is not read, and a batch that would also
+    # fail validation is refused for the case and not for its rows.
+    _set_state(s, "shredded")
+    read = []
+    log = replay.stored_envelopes
+
+    def reading(store, case_id):
+        read.append(case_id)
+        return log(store, case_id)
+
+    ctx.mp.setattr(replay, "stored_envelopes", reading)
+    invalid = _fresh_heartbeat()
+    invalid["event"]["event_subtype"] = "NOT_A_SUBTYPE"
+    first = refusal_of(ingest.ingest_batch, s, [invalid], None, origin="system")
+    assert first.code == "CASE_CLOSED_TO_WRITES", f"a batch for a closed case was refused for its rows first: {first.code}"
+    assert read == [], "the stored log was read for a case closed to writes"
+    ctx.mp.setattr(replay, "stored_envelopes", log)
+    # The corpus sent again to a shredded case is refused, and never reported as already held.
+    resent = refusal_of(ctx.ingest, s)
+    assert resent.code == "CASE_CLOSED_TO_WRITES", f"a shredded case was reported as holding the batch: {resent.code}"
+    # Open in the registry with its database gone: refused at the door before the stored log is read, and the
+    # database is not recreated.
+    _set_state(s, "open")
+    s.detach_case()
+    path.unlink()
+    ctx.mp.setattr(replay, "stored_envelopes", reading)
+    gone = refusal_of(ingest.ingest_batch, s, [_fresh_heartbeat()], None, origin="system")
+    assert gone.code == "CASE_CLOSED_TO_WRITES" and "is absent" in gone.detail, gone.render()
+    assert read == [], "the stored log was read for an open case whose database is gone"
+    assert not path.exists(), "the door recreated a case database that was gone"
+
+
+def break_rule_removed_at_the_door(ctx):
+    ctx.mp.setattr(ingest, "refuse_closed_case", lambda store, case_id: None)
+
+
+def break_rule_read_after_the_log(ctx):
+    rule = ingest.refuse_closed_case
+    log = replay.stored_envelopes
+
+    def late(store, case_id):
+        out = log(store, case_id)
+        rule(store, case_id)
+        return out
+
+    ctx.mp.setattr(ingest, "refuse_closed_case", lambda store, case_id: None)
+    ctx.mp.setattr(replay, "stored_envelopes", late)
+
+
+def break_open_case_without_database_read_as_held(ctx):
+    ctx.mp.setattr(ingest, "case_held", lambda state, present: state == "open")
+
+
+def test_door_writes_only_into_a_held_case(ctx):
+    check_door_writes_only_into_a_held_case(ctx)
+
+
+def check_door_reads_every_spelling_of_a_case_id(ctx):
+    # The case database's file name is built from the id in lower case, so the id in upper case names the
+    # same file. A batch under that spelling is a first batch to an exact lookup, and would open a second
+    # registry row onto the shredded case's database.
+    s = ctx.built()
+    _set_state(s, "shredded")
+    before = files_digest(s.root)
+    r = refusal_of(ctx.ingest, s, [_fresh_heartbeat(CASE.upper())])
+    assert r.code == "CASE_CLOSED_TO_WRITES", f"another spelling of a shredded case's id was not refused: {r.code}"
+    assert files_digest(s.root) == before, "a batch under another spelling of a shredded case's id wrote to the store"
+    assert count(s, "SELECT COUNT(*) FROM case_registry") == 1, "a second registry row was opened onto one case database"
+
+
+def break_spelling_not_read(ctx):
+    ctx.mp.setattr(ingest, "rows_for_file", lambda conn, case_id: conn.execute(
+        "SELECT case_id, state FROM case_registry WHERE case_id = ?", (case_id,)).fetchall())
+
+
+def test_door_reads_every_spelling_of_a_case_id(ctx):
+    check_door_reads_every_spelling_of_a_case_id(ctx)
+
+
+def check_door_refuses_another_spelling_of_an_open_case(ctx):
+    # A held case, and a batch under its id in upper case: the same case database to the file name, a new case to
+    # an exact lookup. Landing it would open a second registry row, with a second retention clock, onto one file.
+    s = ctx.built()
+    before = files_digest(s.root)
+    r = refusal_of(ctx.ingest, s, [_fresh_heartbeat(CASE.upper())])
+    assert r.code == "CASE_ID_SPELLING_DIFFERS", f"another spelling of an open case's id was not refused: {r.code}"
+    assert files_digest(s.root) == before, "a batch under another spelling of an open case's id wrote to the store"
+    assert count(s, "SELECT COUNT(*) FROM case_registry") == 1, "a second registry row was opened onto one case database"
+
+
+def break_other_spelling_admitted(ctx):
+    ctx.mp.setattr(ingest, "other_spelling", lambda conn, case_id: None)
+
+
+def test_door_refuses_another_spelling_of_an_open_case(ctx):
+    check_door_refuses_another_spelling_of_an_open_case(ctx)
+
+
+def check_write_attaches_no_case_closed_to_writes(ctx):
+    # _write is reached without ingest_batch's own refusal on the ISOLATED violation path, and its attach creates
+    # an absent case database, so the write holds the rule itself before it attaches.
+    s = ctx.built()
+    _set_state(s, "shredded")
+    path = s.case_file(CASE)
+    s.detach_case()
+    path.unlink()
+    attached = []
+    real = s.attach_case
+
+    def spy(case_id, create=True):
+        attached.append((case_id, create))
+        return real(case_id, create)
+
+    ctx.mp.setattr(s, "attach_case", spy)
+    r = refusal_of(ingest._write, s, CASE, [_fresh_heartbeat()], str(uuid.uuid4()), None, None)
+    assert r.code == "CASE_CLOSED_TO_WRITES", r.code
+    assert attached == [], "the write attached a case the registry says is shredded"
+    assert not path.exists(), "the write recreated a shredded case's database"
+
+
+def break_write_check_before_attach_removed(ctx):
+    ctx.mp.setattr(ingest, "closed_to_writes", lambda store, case_id: None)
+
+
+def test_write_attaches_no_case_closed_to_writes(ctx):
+    check_write_attaches_no_case_closed_to_writes(ctx)
+
+
+def check_write_creates_no_database_for_a_registered_case(ctx):
+    # The case is open and its database present when the write checks, and the database is gone by the attach.
+    # A registered case is attached without create, so the write is refused and nothing is recreated.
+    s = ctx.built()
+    path = s.case_file(CASE)
+    s.detach_case()
+    real = s.attach_case
+
+    def gone_at_the_attach(case_id, create=True):
+        if path.exists():
+            path.unlink()
+        return real(case_id, create)
+
+    ctx.mp.setattr(s, "attach_case", gone_at_the_attach)
+    r = refusal_of(ingest._write, s, CASE, [_fresh_heartbeat()], str(uuid.uuid4()), None, None)
+    assert r.code == "CASE_CLOSED_TO_WRITES" and "absent at the attach" in r.detail, r.render()
+    assert not path.exists(), "the write recreated the database of a registered case that was gone at its attach"
+
+
+def break_write_attach_creates(ctx):
+    real = db.Store.attach_case
+    ctx.mp.setattr(db.Store, "attach_case", lambda self, case_id, create=True: real(self, case_id, True))
+
+
+def test_write_creates_no_database_for_a_registered_case(ctx):
+    check_write_creates_no_database_for_a_registered_case(ctx)
+
+
+def check_write_rereads_the_state_under_its_lock(ctx):
+    # The door's checks read the registry with no lock. A state that changes after them is read again under
+    # the write lock, and the write is refused.
+    s = ctx.built()
+    other = db.Store.open(s.root)
+    real = s.attach_case
+    rule = ingest.closed_to_writes
+    fired = {"done": False, "reads": 0}
+
+    def counted(store, case_id):
+        fired["reads"] += 1
+        return rule(store, case_id)
+
+    def attach_then_close(case_id, create=True):
+        out = real(case_id, create)
+        # The rule's second read is the write's own, made just before this attach; the state changes after it.
+        if fired["reads"] == 2 and not fired["done"]:
+            fired["done"] = True
+            other.conn.execute("UPDATE case_registry SET state = 'shredded' WHERE case_id = ?", (CASE,))
+        return out
+
+    ctx.mp.setattr(ingest, "closed_to_writes", counted)
+    ctx.mp.setattr(s, "attach_case", attach_then_close)
+    events = count(s, "SELECT COUNT(*) FROM event_skeleton WHERE case_id = ?", (CASE,))
+    try:
+        r = refusal_of(ingest.ingest_batch, s, [_fresh_heartbeat()], None, origin="system")
+    finally:
+        other.close()
+    assert fired["done"], "the registry was not changed between the door's checks and the write"
+    assert r.code == "CASE_CLOSED_TO_WRITES" and "stopped saying open" in r.detail, r.render()
+    assert count(s, "SELECT COUNT(*) FROM event_skeleton WHERE case_id = ?", (CASE,)) == events, \
+        "an event landed in a case the registry marked shredded before the write took its lock"
+
+
+def break_state_not_reread_under_the_lock(ctx):
+    ctx.mp.setattr(ingest, "closed_under_lock", lambda conn, case_id: False)
+
+
+def test_write_rereads_the_state_under_its_lock(ctx):
+    check_write_rereads_the_state_under_its_lock(ctx)
+
+
+def check_write_rereads_the_spelling_under_its_lock(ctx):
+    # A first batch for a new case reads no other spelling at the door. Before it takes its lock, another store
+    # lands a batch under the id in upper case, which names the same case database. Read again under the lock,
+    # the other spelling refuses the first batch, so one case database does not get two registry rows.
+    s = ctx.built()
+    other = db.Store.open(s.root)
+    new = str(uuid.uuid4())
+    real = s.attach_case
+    fired = {"done": False}
+
+    def attach_then_register(case_id, create=True):
+        out = real(case_id, create)
+        if case_id == new and not fired["done"]:
+            fired["done"] = True
+            ctx.ingest(other, [_fresh_heartbeat(new.upper())])
+        return out
+
+    ctx.mp.setattr(s, "attach_case", attach_then_register)
+    removed = []
+    remove = ingest._remove_created_case_file
+
+    def removing(store, case_id):
+        removed.append(case_id)
+        return remove(store, case_id)
+
+    ctx.mp.setattr(ingest, "_remove_created_case_file", removing)
+    try:
+        r = refusal_of(ctx.ingest, s, [_fresh_heartbeat(new)])
+    finally:
+        other.close()
+    assert fired["done"], "the other spelling was not registered between the door's checks and the write"
+    assert r.code == "CASE_ID_SPELLING_DIFFERS" and "between the door's checks and the write" in r.detail, r.render()
+    rows = s.conn.execute("SELECT case_id FROM case_registry WHERE lower(case_id) = ?", (new,)).fetchall()
+    assert [row[0] for row in rows] == [new.upper()], "a second registry row was opened onto one case database"
+    # The refused batch created the file and the other store registered it and wrote into it: the file stays, and
+    # the rollback does not try to remove it.
+    assert removed == [], "the rollback tried to remove a case database another ingest had registered"
+    assert s.case_file(new).is_file(), "the other spelling's case database was removed with the refused batch"
+
+
+def break_spelling_not_reread_under_the_lock(ctx):
+    ctx.mp.setattr(ingest, "spelling_registered_under_lock", lambda conn, case_id: False)
+
+
+def break_created_file_removed_although_registered(ctx):
+    ctx.mp.setattr(ingest, "keep_created_file", lambda conn, case_id: False)
+
+
+def test_write_rereads_the_spelling_under_its_lock(ctx):
+    check_write_rereads_the_spelling_under_its_lock(ctx)
+
+
+def check_write_refuses_a_database_gone_while_attached(ctx):
+    # The case is attached when the write reaches its attach, which then returns at once and reads no file. On a
+    # system that lets an open file be deleted the database can be gone by then; the write reads it again.
+    s = ctx.built()
+    rule = ingest.closed_to_writes
+    reads = {"n": 0}
+
+    def counted(store, case_id):
+        reads["n"] += 1
+        return rule(store, case_id)
+
+    real = s.attach_case
+    gone = s.root / "cases" / "deleted-while-attached.sqlite"
+
+    def attach_then_lose(case_id, create=True):
+        out = real(case_id, create)
+        if reads["n"] == 2:
+            ctx.mp.setattr(s, "case_file", lambda cid: gone)
+        return out
+
+    ctx.mp.setattr(ingest, "closed_to_writes", counted)
+    ctx.mp.setattr(s, "attach_case", attach_then_lose)
+    events = count(s, "SELECT COUNT(*) FROM event_skeleton WHERE case_id = ?", (CASE,))
+    r = refusal_of(ingest.ingest_batch, s, [_fresh_heartbeat()], None, origin="system")
+    assert r.code == "CASE_CLOSED_TO_WRITES" and "absent at the attach" in r.detail, r.render()
+    assert count(s, "SELECT COUNT(*) FROM event_skeleton WHERE case_id = ?", (CASE,)) == events, \
+        "an event landed in a case database that was gone while it was attached"
+
+
+def break_presence_not_read_after_the_attach(ctx):
+    ctx.mp.setattr(ingest, "database_present", lambda store, case_id: True)
+
+
+def test_write_refuses_a_database_gone_while_attached(ctx):
+    check_write_refuses_a_database_gone_while_attached(ctx)
+
+
+def check_write_refuses_a_database_gone_before_its_lock(ctx):
+    # The file is there at the attach and gone when the write takes its lock, which a system that lets an open file
+    # be deleted allows. Read again under the lock, its absence refuses the write.
+    s = ctx.built()
+    gone = s.root / "cases" / "deleted-before-the-lock.sqlite"
+    rule = ingest.closed_under_lock
+
+    def lost_then_read(conn, case_id):
+        ctx.mp.setattr(s, "case_file", lambda cid: gone)
+        return rule(conn, case_id)
+
+    ctx.mp.setattr(ingest, "closed_under_lock", lost_then_read)
+    events = count(s, "SELECT COUNT(*) FROM event_skeleton WHERE case_id = ?", (CASE,))
+    r = refusal_of(ingest.ingest_batch, s, [_fresh_heartbeat()], None, origin="system")
+    assert r.code == "CASE_CLOSED_TO_WRITES" and "gone when the write took its lock" in r.detail, r.render()
+    assert count(s, "SELECT COUNT(*) FROM event_skeleton WHERE case_id = ?", (CASE,)) == events, \
+        "an event landed in a case database that was gone when the write took its lock"
+
+
+def break_presence_not_read_under_the_lock(ctx):
+    ctx.mp.setattr(ingest, "database_present_under_lock", lambda store, case_id: True)
+
+
+def test_write_refuses_a_database_gone_before_its_lock(ctx):
+    check_write_refuses_a_database_gone_before_its_lock(ctx)
+
+
+def check_rollback_leaves_a_file_it_cannot_remove_and_raises_the_write_error(ctx):
+    # A first batch fails in the middle of its write, and the case database it created cannot be removed because
+    # another connection holds it open (planted here, as Windows does it). The caller sees the write's own error.
+    s = ctx.store()
+    new = str(uuid.uuid4())
+    target = s.case_file(new)
+    unlink = pathlib.Path.unlink
+
+    def held_open(self, *args, **kwargs):
+        if self == target:
+            raise PermissionError("the file is open in another connection")
+        return unlink(self, *args, **kwargs)
+
+    def failing(conn, env, case_seq, ingested_at, batch_id):
+        raise RuntimeError("a fault in the middle of the write")
+
+    ctx.mp.setattr(pathlib.Path, "unlink", held_open)
+    ctx.mp.setattr(ingest, "write_event", failing)
+    try:
+        ctx.ingest(s, [_fresh_heartbeat(new)])
+    except RuntimeError:
+        pass
+    except PermissionError as exc:
+        raise AssertionError("the rollback's own error took the place of the write's") from exc
+    else:
+        raise AssertionError("the planted fault did not fire")
+    assert target.exists(), "the file the rollback could not remove is not on disk"
+    assert count(s, "SELECT COUNT(*) FROM case_registry") == 0, "a rolled-back first batch left a registry row"
+
+
+def break_unremovable_file_raised(ctx):
+    def plain(path):
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
+        return True
+
+    ctx.mp.setattr(ingest, "_unlink_left_if_open", plain)
+
+
+def test_rollback_leaves_a_file_it_cannot_remove_and_raises_the_write_error(ctx):
+    check_rollback_leaves_a_file_it_cannot_remove_and_raises_the_write_error(ctx)
+
+
 CONTROLS = [
     ("drop one payload row", check_corpus_lands_and_round_trips, break_drop_one_payload),
     ("the door uses a copy of check_event", check_door_calls_the_tool, break_door_uses_a_copy),
@@ -517,4 +904,17 @@ CONTROLS = [
     ("classify ignores the batch", check_batch_duplicate_classified, break_batch_ignored_by_classify),
     ("the overtake check removed", check_overtaken_ingest_refused, break_overtake_unchecked),
     ("the SQLite engine admits ISOLATED", check_isolated_refused_on_sqlite, break_engine_admits_isolated),
+    ("the door's held-case rule removed at ingest_batch", check_door_writes_only_into_a_held_case, break_rule_removed_at_the_door),
+    ("an open case whose database is gone read as held", check_door_writes_only_into_a_held_case, break_open_case_without_database_read_as_held),
+    ("a closed case's row read under one spelling of its id", check_door_reads_every_spelling_of_a_case_id, break_spelling_not_read),
+    ("the write's own check before its attach removed", check_write_attaches_no_case_closed_to_writes, break_write_check_before_attach_removed),
+    ("the state not read again under the write lock", check_write_rereads_the_state_under_its_lock, break_state_not_reread_under_the_lock),
+    ("the held-case rule read after the stored log", check_door_writes_only_into_a_held_case, break_rule_read_after_the_log),
+    ("another spelling of an open case's id admitted", check_door_refuses_another_spelling_of_an_open_case, break_other_spelling_admitted),
+    ("the write's attach allowed to create for a registered case", check_write_creates_no_database_for_a_registered_case, break_write_attach_creates),
+    ("the spelling not read again under the write lock", check_write_rereads_the_spelling_under_its_lock, break_spelling_not_reread_under_the_lock),
+    ("a created file removed although another ingest registered it", check_write_rereads_the_spelling_under_its_lock, break_created_file_removed_although_registered),
+    ("the database's presence not read after the attach", check_write_refuses_a_database_gone_while_attached, break_presence_not_read_after_the_attach),
+    ("the database's presence not read under the write lock", check_write_refuses_a_database_gone_before_its_lock, break_presence_not_read_under_the_lock),
+    ("a file the rollback cannot remove raised in place of the write's error", check_rollback_leaves_a_file_it_cannot_remove_and_raises_the_write_error, break_unremovable_file_raised),
 ]

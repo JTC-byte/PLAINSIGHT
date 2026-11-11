@@ -12,12 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-11. This file's commit carries his rulings of 2026-11-11
-on the lane's list and the two paragraphs he accepted: SS-14 item 3 and
-`CONFORMANCE.md`'s DECLARE paragraph (section 0). Before it, `main` ==
-`origin/main` == `9cdac31`, item 8, landed by a fast-forward push on his
-click of 2026-11-10 at 20:52:41 EST, CI green on all 27 steps of its run
-on `main`.
+**Date:** 2026-11-11. This file's commit is patch A: the store writes only
+into a held case (section 0, amendment 9.21); class C by the session's
+reading, his to confirm. Before it, `main` == `origin/main` == `0a1b267`,
+his rulings of the day, landed by a fast-forward push on his click of
+14:57:16 EST, CI green on all 27 steps of its run on `main`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -37,7 +36,7 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-branch `records-rulings-2026-11-11` on his click of 2026-11-11 at 12:52:20
+branch `store-held-case-2026-11-11` on his click of 2026-11-11 at 15:44:27
 EST, which covers that branch's push; landing it takes his word again. The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
 item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
@@ -51,31 +50,33 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** SS-14 item 3 said its check did not exist, and item
-8 built it on 2026-11-10. The paragraph now states the shape check that
-exists, where it runs, and that it cannot see a read the subject can observe.
-`CONFORMANCE.md`'s DECLARE paragraph names the adapter check and the
-must-fail walk. He accepted both texts and ruled on five more items of the
-lane's list on 2026-11-11; the worklog records each with its stamp.
+**What changed and why.** The door landed an event in a case the registry
+marked shredded and created an absent case database; the workspace route,
+the rebuild and the write's attach did the like. Every entry point that
+writes into a case now refuses a case that is not held, a second spelling
+of an open case's id is refused, and a registered case's database is never
+recreated. Read four times by a second model (amendment 9.21).
 
-**Which surfaces moved.** One doctrine paragraph, one paragraph of
-`CONFORMANCE.md`, the changelog, the worklog and its archive, and this file.
-No rule, stamp, tool, gate entry, hook command, schema, policy, ontology,
-spec or corpus file.
+**Which surfaces moved.** The store's ingest, replay and workspace modules,
+the routes, the refusals, the rebuild command, the sweep's `is_held`, five
+test modules, `app/README.md`, the design record, the app-tests gate
+entry's count, the changelog, the worklog and its archive, and this file.
+No doctrine, spec, schema, policy, ontology or corpus file.
 
-**What validation ran and what passed.** `tools/validate_doctrine.py`, hygiene
-and the pin of record's self-test on a scratch export; the kernel gate on this
-tree under the heavy-run lock and the hook at the commit.
+**What validation ran and what passed.** The application suite, 316 passed
+and 1 skipped, with every new control seen failing at its line; hygiene and
+both diff checks; the kernel gate on this tree under the heavy-run lock and
+the hook at the commit.
 
 **Whether a release baseline changed.** No tag exists. This commit is on a
-branch, and `main` is `9cdac31`.
+branch, and `main` is `0a1b267`.
 
-**What remains open or deferred.** His: this commit's landing and its class,
-B by the session's reading; the request to GitHub Support; the pre-rewrite
-bundle once Support has acted; Saturday's rotation. Sections 3 and 4 carry
-the rest: DA-R2's stamp, the readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the
-queue, slice 4, Step 11's shred, the door's held-case check and the reads'
-open findings.
+**What remains open or deferred.** His: this commit's landing and its
+class; patches B, C and D in turn; `rebuild --verify` on a case whose
+database is gone; slice 4's three decisions; the request to GitHub Support;
+the pre-rewrite bundle; Saturday's rotation. Sections 3 and 4 carry the
+rest: DA-R2's stamp, the readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the
+queue, Step 11's shred and the reads' open findings on item 7.
 
 ---
 
@@ -124,10 +125,11 @@ DOSSIER and the SSE stream. **Slice 3 (2026-11-09)** adds the analyst acts
 through the door (POST `/acts`), the Merge Sheet, the review strip, undo as a
 cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
-(reading APP-R31). 277 tests with 147 paired negative controls since the Step
-11 draft, in the kernel gate, `make test` and CI and not in the hook or
-preflight (APP-R30). Its design departures from `docs/PLAINSIGHT-design.md` are
-amendments 9.1 to 9.19 at the end of that file, each dated, each his to decide.
+(reading APP-R31). 317 tests with 170 paired negative controls since the
+store's held-case check, in the kernel gate, `make test` and CI and not in the
+hook or preflight (APP-R30). Its design departures from
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.21 at the end of that file,
+each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
 consenting subjects who will confirm the findings, who are S1 CONSENTING. The
@@ -203,8 +205,8 @@ line 105); the five production docstrings cite the design amendments.
 
 **The 29 decisions in the register** of Step 8, plus U-17, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, now to MF-R22, PIN-R9, SG, VA,
-DA, SH, CC, APP, now to APP-R33, and RS-R1 to RS-R8), and the design
-amendments 9.1 to 9.20. Each is recorded where its artifact is and in the
+DA, SH, CC, APP, now to APP-R34, and RS-R1 to RS-R8), and the design
+amendments 9.1 to 9.21. Each is recorded where its artifact is and in the
 record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
@@ -286,10 +288,13 @@ dollars non-recurring and 205 a month.
   EG-2 and RT-4 as stamped through whole-artifact rows, so only ISOLATED and an
   Encryptor stand between a caller and a blob write on the Postgres engine
   (APP-R13).
-- **The door has no held-case check.** It lands an event in a case the registry
-  marks shredded and creates an absent case database (probed 2026-11-09). The
-  sweep refuses on its own side; `runner/watchdog.py` has no such check (read,
-  not probed). The shred's design decides where the guard lives.
+- **The store writes only into a held case** since amendment 9.21: every
+  entry point that writes (events, the acts and workspace routes, a rebuild)
+  refuses a case the registry does not hold open (CASE_CLOSED_TO_WRITES), and
+  another spelling of an open case's id is refused (CASE_ID_SPELLING_DIFFERS). A case database with no
+  registry row is still written into by a first batch, and `app rebuild
+  --verify` still stops on a case whose database is gone. The maintainer
+  decides whether the guard stands on every write path.
 - **The voice pass is parked.** Not on the path to a first run.
 - **The cast is unsealed**, so nothing is scoreable and SS-14 item 6 refuses all
   collection.

@@ -4897,3 +4897,55 @@ The extraction tool's two misreads named in the first 2026-10-28 entry await a
 Class B fix with its own self-test cases.
 
 ---
+
+## 2026-10-28, three classes decided, under the maintainer's clicks of 17:45 to 19:49.
+
+**Class:** A. This entry records three decisions of his and changes the
+sentences that said each was his to confirm; no governed value, gate, rule or
+mechanism changes.
+
+**Agent involvement.** The same personal-account session as the three previous
+entries, on Fable 5.1, no sub-agent. Each decision arrived as his click on an
+action the session offered in this chat after the closeout report, as the
+parent's reading of his words of 17:30:21 allowed; each button's message is the
+session's words he accepted, and his record carries the label.
+
+**The decisions.**
+
+- 17:45:23, "Class B, keep it": VA-R6, the dispatch scanner's rule that a
+  patch target, a patched attribute's kept original and an attribute assigned
+  over are no site in a test module, is Class B, a precision rule of the
+  scanner and not an exemption from the bypass check; it stands as applied,
+  and the allowlist draft DA-R2 keeps its four sites. Recorded in the scanner's
+  docstring, READINGS entry and block comment, `AGENTS.md` section 5,
+  `CONFORMANCE.md` section 4, `app/README.md` and the handoff.
+- 18:00:28, "Class B": the one-word edit of `policy/retention.yaml` line 870
+  (`present: true` for the `canary_subject_class` part), made on his
+  instruction of 12:09, is Class B, a statement of enforcement state reaching
+  no subject, retention period or egress path, needing no row in the pin.
+  Recorded in `CONFORMANCE.md` section 4, the Makefile header, the hook's
+  comment, `tools/validate_retention.py`'s comment, `AGENTS.md` section 5 and
+  the handoff.
+- 19:49:50, "Keep it": the emit's platform move stands, Class B with its
+  design amendments 9.14 and 9.15: an emit of a platform-bound key may declare
+  `platform_from_item` on an endpoint-unit connector (MF-R17), and the Sherlock
+  claim's platform token is derived from the site name alone (SH-R18).
+  Recorded in `tools/validate_manifest.py`'s MF-R17 reading, the kernel gate's
+  connector-conformance note, the Makefile, `CONFORMANCE.md` section 4,
+  `AGENTS.md` section 5, `connectors/sherlock/README.md` and the handoff.
+
+**What changed in state.** Nothing in any gate, rule or value; the tree's
+prose now states each class as decided rather than as his to confirm. Ground
+for each: his click, which is his instruction for an act and his decision for
+an item by his own words of 2026-10-24 01:30:58. Revert: his word, with the
+same sentences rewritten.
+
+**Open.** His, unchanged: the DA-R2 stamp outside the tree, the readings each
+artifact carries (DR, MF, PIN-R9, SG, VA-R5, SH, CC, APP), the design
+amendments 9.1 to 9.15 as records of departures, the R8-row pipe, the
+sentences in rank 1 to 3 files the night made stale, the 28 queue items, plan
+item 0.7, the Step 7 fixes, the audit's section 8 finding, the credentials
+inventory, the 37 merged branches. This entry's commit follows his go word of
+17:07:57 by the usual route.
+
+---

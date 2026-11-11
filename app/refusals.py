@@ -343,6 +343,28 @@ REFUSALS: dict[str, Code] = {
             "ingest the case first with python -m app ingest",
         ),
         _c(
+            "CASE_CLOSED_TO_WRITES",
+            "a write for a case this store does not hold open, so nothing was written and no case "
+            "database was created",
+            "doctrine/RETENTION.md RT-3 and RT-10 and docs/PLAINSIGHT-design.md amendment 9.21: a shred "
+            "removes a case's material and leaves the registry row as its record, so the store writes only "
+            "into a case the registry says is open and whose case database is present",
+            "open /api/cases, which gives each case's registry state",
+            "run python -m runner.verify_shred --store <root> --case <id>, which reads what is left of the "
+            "case and changes nothing",
+            "send the write to a store that holds the case open",
+        ),
+        _c(
+            "CASE_ID_SPELLING_DIFFERS",
+            "a batch whose case id names a case database this store holds under another spelling of the "
+            "id, so nothing was written",
+            "docs/PLAINSIGHT-design.md amendment 9.21: a case database is named by its id in lower case, "
+            "and a second spelling would open a second registry row, and a second retention clock under "
+            "doctrine/RETENTION.md RT-5, onto one case database",
+            "send the batch with the case id exactly as /api/cases lists it",
+            "send the batch to a store that does not hold the case",
+        ),
+        _c(
             "FOCUS_REQUIRED",
             "a web, list or dossier request without a focus, so no picture was drawn",
             "docs/PLAINSIGHT-design.md section 8.4 CUT LIST A: there is no unfocused or "

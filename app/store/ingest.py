@@ -11,6 +11,21 @@ pass that file's rows. The CLI does exactly that. Every EXTRACT value is
 shape-checked regardless (SYNTHETIC_VALUE_SHAPE), a defence in depth for RT-15
 behind the source rule docs/PLAINSIGHT-design.md amendment 9.12 states.
 
+The door writes only into a held case. A case is held when the registry says
+open and its case database is present. A batch for a case the registry holds
+any other way is refused with CASE_CLOSED_TO_WRITES before the stored log is
+read, whatever its origin: an event landed in a shredded case would put
+material back, and an attach would recreate a case database that is gone. The
+rule is read from every registry row that names the case's database file, and
+that file's name ignores letter case, so another spelling of a closed case's id
+is refused with it, and a batch under another spelling of an open case's id
+would open a second registry row onto one case database, so such batches
+are refused with CASE_ID_SPELLING_DIFFERS. _write holds the rule again before
+its attach, attaches a registered case without create, and re-reads the
+registry under its write lock. The HTTP routes that write (app/http/routes.py
+case_store) and rebuild (app/store/replay.py) read the same rule
+(docs/PLAINSIGHT-design.md amendment 9.21, reading APP-R34).
+
 The write is one transaction across the plane and case databases: the
 skeleton row, then the payload row when the stratum is 1, then the projection
 rows, then the case_rollup increments. The notice is published after commit and
@@ -94,6 +109,104 @@ def origin_allowed(store, case_id, origin: str) -> None:
             raise Refusal("ACT_LOCAL_SYNTHETIC_CASE_ONLY")
 
 
+def case_held(state: str, present: bool) -> bool:
+    """A case is held when the registry says open and its case database is present. The retention sweep reads
+    the same rule through this function (runner/retention_sweep.py, reading RS-R1)."""
+    return state == "open" and present
+
+
+#: What the registry says of a case the door does not write into, as a clause for the refusal's detail.
+REGISTRY_SAYS = {
+    "open": "the registry says open",
+    "shredded": "the registry says shredded",
+    "shred_failed": "the registry says the shred failed, which halts new runs until verify_shred passes (RT-11)",
+}
+
+#: The clause for a registry state the schema's CHECK does not name.
+STATE_NOT_NAMED = "the registry carries a state that is none of open, shredded and shred_failed"
+
+
+def rows_for_file(conn, case_id: str) -> list:
+    """Every registry row whose case id names this case's database file. db.case_path builds that name from the
+    id in lower case, so a row under another spelling of the id names the same file."""
+    return conn.execute(
+        "SELECT case_id, state FROM case_registry WHERE lower(case_id) = ? ORDER BY case_id", (case_id.lower(),)
+    ).fetchall()
+
+
+def closed_to_writes(store, case_id: str) -> str | None:
+    """Why the door does not write into this case, or None when it may: a registry row that names the case's
+    database file and is not held. A case with no registry row is a first batch and is not closed. A string
+    that is no case id names no file and is left to the validator, which refuses the batch."""
+    if not isinstance(case_id, str) or not db.UUID_RE.match(case_id):
+        return None
+    present = store.case_file(case_id).is_file()
+    for row in rows_for_file(store.conn, case_id):
+        if not case_held(row["state"], present):
+            said = REGISTRY_SAYS.get(row["state"], STATE_NOT_NAMED)
+            where = "is still present" if present else "is absent"
+            return f"case {row['case_id'][:8]}: {said}; the case database {where}"
+    return None
+
+
+def refuse_closed_case(store, case_id: str) -> None:
+    """ingest_batch's own refusal of a case that is closed to writes, before the stored log is read. A batch
+    that would change nothing is refused too, so a closed case is never reported as holding what was sent."""
+    why = closed_to_writes(store, case_id)
+    if why is not None:
+        raise Refusal("CASE_CLOSED_TO_WRITES", why)
+
+
+def closed_under_lock(conn, case_id: str) -> bool:
+    """True when a registry row that names the case's database file is not open, read under the write lock.
+    The door's checks read the registry without a lock, and this is the read the write stands on."""
+    return any(not case_held(row["state"], True) for row in rows_for_file(conn, case_id))
+
+
+def other_spelling(conn, case_id: str) -> str | None:
+    """The registry's spelling of this case's id when registry rows name its case database and none carries the
+    id exactly, else None. A batch under another spelling would open a second registry row, and with it a
+    second retention clock, onto one case database."""
+    if not isinstance(case_id, str) or not db.UUID_RE.match(case_id):
+        return None
+    rows = rows_for_file(conn, case_id)
+    if rows and all(row["case_id"] != case_id for row in rows):
+        return rows[0]["case_id"]
+    return None
+
+
+def spelling_registered_under_lock(conn, case_id: str) -> bool:
+    """True when, read under the write lock, registry rows name this case's database and none carries the id
+    exactly: another spelling was registered after the door's read, which happens only to a first batch."""
+    return other_spelling(conn, case_id) is not None
+
+
+def database_present(store, case_id: str) -> bool:
+    """Whether the case database is on disk after the write's attach. The attach returns at once for a case already
+    attached and reads no file, and on a system that lets an open file be deleted the database can be gone."""
+    return store.case_file(case_id).is_file()
+
+
+def keep_created_file(conn, case_id: str) -> bool:
+    """Whether a case database this write created stays after its rollback: a registry row names it, so another
+    ingest registered it, under this spelling or another, between this write's attach and its lock, and wrote into
+    it. Removing it then would delete that case's database."""
+    return bool(rows_for_file(conn, case_id))
+
+
+def database_present_under_lock(store, case_id: str) -> bool:
+    """Whether the case database is on disk, read after the write takes its lock: a file deleted between the attach
+    and the lock, which a system that lets an open file be deleted allows, is read here."""
+    return database_present(store, case_id)
+
+
+def refuse_other_spelling(conn, case_id: str) -> None:
+    """ingest_batch's refusal of a case id that names a case database the registry holds under another spelling."""
+    held = other_spelling(conn, case_id)
+    if held is not None:
+        raise Refusal("CASE_ID_SPELLING_DIFFERS", f"case {case_id[:8]}: the registry holds this case database as {held[:8]}")
+
+
 def ingest_batch(store, rows, humans=None, *, source: door.SourceRecord | None = None, origin: str = "file") -> IngestResult:
     """Validate a batch with tools/validate.py and the store checks, then write it whole or not at all."""
     humans = set(config.deployment_humans() if humans is None else humans)
@@ -103,6 +216,9 @@ def ingest_batch(store, rows, humans=None, *, source: door.SourceRecord | None =
     envs = door.normalize(rows)
     case_id = door.batch_case(envs)
     origin_allowed(store, case_id, origin)
+    if case_id:
+        refuse_closed_case(store, case_id)
+        refuse_other_spelling(store.conn, case_id)
     registered = store.registry(case_id) if case_id else None
     stored, stored_sha = replay.stored_envelopes(store, case_id) if registered else ({}, {})
     pol = door.load_policy()
@@ -144,13 +260,32 @@ def overtaken(conn, case_id: str, plan, expect_registered: bool) -> bool:
 
 
 def _write(store, case_id, plan, batch_id, source, durations) -> list:
-    created = not store.case_file(case_id).exists()
-    store.attach_case(case_id)
+    # Before the attach, which creates an absent case database: a registered case's database is never recreated.
+    # ingest_batch has refused already; the ISOLATED violation path reaches this function without it.
+    why = closed_to_writes(store, case_id)
+    if why is not None:
+        raise Refusal("CASE_CLOSED_TO_WRITES", why + "; the write did not attach it")
+    # Only a first batch creates a case database. A registered case is attached without create, so a case
+    # database that is gone by the time of the attach is refused and never recreated.
+    first = durations is not None
+    created = first and not store.case_file(case_id).exists()
+    if not store.attach_case(case_id, create=first) or not (first or database_present(store, case_id)):
+        raise Refusal("CASE_CLOSED_TO_WRITES", f"case {case_id[:8]}: the case database is absent at the attach, and "
+                      "the write creates one only for a case the registry does not hold yet")
     conn = store.conn
     conn.execute("BEGIN IMMEDIATE")
     try:
         if overtaken(conn, case_id, plan, expect_registered=durations is None):
             raise Refusal("INGEST_CONCURRENT", "the log moved between the door's checks and the write")
+        if closed_under_lock(conn, case_id):
+            raise Refusal("CASE_CLOSED_TO_WRITES", f"case {case_id[:8]}: the registry stopped saying open between "
+                          "the door's checks and the write")
+        if spelling_registered_under_lock(conn, case_id):
+            raise Refusal("CASE_ID_SPELLING_DIFFERS", f"case {case_id[:8]}: another spelling of the id was registered "
+                          "between the door's checks and the write")
+        if not database_present_under_lock(store, case_id):
+            raise Refusal("CASE_CLOSED_TO_WRITES", f"case {case_id[:8]}: the case database was gone when the write "
+                          "took its lock")
         if durations is not None:
             anchor = min((e["event"]["ts"] for e in plan), key=retention.parse_ts)
             conn.execute(
@@ -180,7 +315,7 @@ def _write(store, case_id, plan, batch_id, source, durations) -> list:
         conn.execute("COMMIT")
     except Exception as exc:
         conn.execute("ROLLBACK")
-        if created:
+        if created and not keep_created_file(conn, case_id):
             _remove_created_case_file(store, case_id)
         if isinstance(exc, Refusal):
             raise
@@ -195,16 +330,26 @@ def _write(store, case_id, plan, batch_id, source, durations) -> list:
     return notices
 
 
+def _unlink_left_if_open(path) -> bool:
+    """Remove one file and say whether it is gone. A file another connection holds open, which Windows refuses to
+    delete, is left, so the rollback's own error never takes the place of the error that rolled the write back."""
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
 def _remove_created_case_file(store, case_id: str) -> None:
     """Remove the case file this write's attach created, so a rolled-back first
-    batch leaves no case database without a registry row behind it."""
+    batch leaves no case database without a registry row behind it. A file that
+    cannot be removed is left, and the write's own error is the one raised."""
     store.detach_case()
     path = store.case_file(case_id)
     for p in (path, path.with_name(path.name + "-journal")):
-        try:
-            p.unlink()
-        except FileNotFoundError:
-            pass
+        _unlink_left_if_open(p)
 
 
 def write_event(conn, env: dict, case_seq: int, ingested_at: str, batch_id: str) -> None:

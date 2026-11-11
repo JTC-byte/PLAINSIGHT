@@ -7,7 +7,7 @@ import datetime as dt
 import uuid
 
 from app.model import reads
-from app.store import ingest
+from app.store import db, ingest
 from app.tests.helpers import CASE, sql_error
 from runner import watchdog
 
@@ -131,9 +131,38 @@ def test_watchdog_leaves_a_row_with_no_verification_state_open(ctx):
     check_watchdog_leaves_a_row_with_no_verification_state_open(ctx)
 
 
+def check_watchdog_closing_into_a_closed_case_is_refused(ctx):
+    """A coverage row stays in the plane after its case is shredded. The door refuses the closing event, the
+    watchdog reports the refusal, and the shredded case's database is not recreated (amendment 9.21)."""
+    s = ctx.built()
+    target = s.conn.execute("SELECT target_ref FROM coverage_interval").fetchone()["target_ref"]
+    open_id = plant_open(s, target)
+    s.conn.execute("UPDATE case_registry SET state = 'shredded' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    path = s.case_file(CASE)
+    s.detach_case()
+    path.unlink()
+    closed, refused = watchdog.sweep(s, now=_at(301))
+    assert closed == [] and len(refused) == 1 and refused[0].endswith("CASE_CLOSED_TO_WRITES"), (closed, refused)
+    assert not path.exists(), "the watchdog's closing event recreated a shredded case's database"
+    assert _row(s, open_id)["state"] == "open", "the row closed although the door refused"
+
+
+def break_held_case_rule_removed(ctx):
+    ctx.mp.setattr(ingest, "closed_to_writes", lambda store, case_id: None)
+    ctx.mp.setattr(ingest, "closed_under_lock", lambda conn, case_id: False)
+    attach = db.Store.attach_case
+    ctx.mp.setattr(db.Store, "attach_case", lambda self, case_id, create=True: attach(self, case_id, True))
+
+
+def test_watchdog_closing_into_a_closed_case_is_refused(ctx):
+    check_watchdog_closing_into_a_closed_case_is_refused(ctx)
+
+
 CONTROLS = [
     ("the multiplier patched to 4", check_watchdog_closes_by_event_after_three_polls, break_multiplier_four),
     ("the closer updates the row in place", check_watchdog_closes_by_event_after_three_polls, break_closes_in_place_without_an_event),
     ("the origin rule removed", check_watchdog_refuses_a_local_case_that_is_not_synthetic, break_origin_rule_removed),
     ("an unknown verification state read as verified", check_watchdog_leaves_a_row_with_no_verification_state_open, break_unknown_state_read_as_verified),
+    ("the store's held-case rule removed, its attach included", check_watchdog_closing_into_a_closed_case_is_refused, break_held_case_rule_removed),
 ]

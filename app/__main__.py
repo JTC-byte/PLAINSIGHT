@@ -42,6 +42,28 @@ def cmd_ingest(args) -> int:
     return 0
 
 
+def verify_lines(diffs: dict) -> tuple[int, list[str]]:
+    """The verify's report as (exit code, lines). A store with no held case compares nothing, and says so rather
+    than reporting a match."""
+    bad = {c: t for c, t in diffs.items() if t}
+    if bad:
+        return 1, [f"C-{case_id[:8]}: a fresh replay differs from this store in {', '.join(tables)}"
+                   for case_id, tables in bad.items()]
+    if not diffs:
+        return 0, ["nothing verified: no case is held, so a fresh replay had nothing to compare"]
+    return 0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row"]
+
+
+def not_held_line(case_id: str, state: str, present: bool) -> str:
+    """A case a rebuild leaves alone, rendered as its consequence: what the registry says of it, never its token."""
+    from app.store import ingest
+
+    said = ingest.REGISTRY_SAYS.get(state, ingest.STATE_NOT_NAMED)
+    where = "present" if present else "absent"
+    return (f"C-{case_id[:8]}: NOT HELD, {said}; the case database is {where}, so it was not rebuilt and a "
+            "verify does not compare it (amendment 9.21)")
+
+
 def cmd_rebuild(args) -> int:
     from app.store import replay
     from app.store.db import Store
@@ -50,15 +72,16 @@ def cmd_rebuild(args) -> int:
         cases = replay.rebuild(store)
         for case_id in cases:
             print(f"rebuilt C-{case_id[:8]}: projection digest {replay.digest(store, case_id)}")
+        for case_id, state, present in replay.not_held(store):
+            print(not_held_line(case_id, state, present))
         if args.verify:
             with tempfile.TemporaryDirectory(prefix="plainsight-verify-", ignore_cleanup_errors=True) as scratch:
                 diffs = replay.verify(store, scratch)
-            bad = {c: t for c, t in diffs.items() if t}
-            for case_id, tables in bad.items():
-                print(f"C-{case_id[:8]}: a fresh replay differs from this store in {', '.join(tables)}")
-            if bad:
-                return 1
-            print(f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row")
+            code, lines = verify_lines(diffs)
+            for line in lines:
+                print(line)
+            if code:
+                return code
     if not cases:
         print("no case held, so nothing was rebuilt")
     return 0

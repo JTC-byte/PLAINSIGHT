@@ -33,7 +33,7 @@ from app.http import acts
 from app.model import dossier as dossier_mod
 from app.model import inspector, lineage, paths, reads, sectors, svg, web
 from app.refusals import Refusal
-from app.store import blobs, db, kv, retention
+from app.store import blobs, db, ingest, kv, retention
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
@@ -202,12 +202,17 @@ def read_only(conn) -> None:
 
 @contextmanager
 def case_store(root, case_id: str, write: bool = False):
-    """A store with the case attached, read-only unless `write`. Refuses a case not held."""
+    """A store with the case attached, read-only unless `write`. Refuses a case not held, and a write into a case
+    the registry does not hold open (CASE_CLOSED_TO_WRITES, amendment 9.21)."""
     store = db.Store.open(root)
     try:
         if case_id not in store.cases() or not store.attach_case(case_id, create=False):
             raise Refusal("CASE_NOT_HELD")
-        if not write:
+        if write:
+            why = ingest.closed_to_writes(store, case_id)
+            if why is not None:
+                raise Refusal("CASE_CLOSED_TO_WRITES", why)
+        else:
             read_only(store.conn)
         yield store
     finally:

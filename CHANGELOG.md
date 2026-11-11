@@ -22,6 +22,33 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-11. The store writes only into a held case.**
+
+  **What changed.** Every entry point that writes into a case refuses a case
+  the registry does not hold open (CASE_CLOSED_TO_WRITES): `ingest_batch` for
+  events of every origin, before the stored log is read; the HTTP routes that
+  write, the acts and the workspace store, with a 409; and `rebuild`, which
+  rebuilds only held cases and names each one it leaves alone. A batch under
+  another spelling of an open case's id is refused (CASE_ID_SPELLING_DIFFERS).
+  A registered case is attached without create, its file is read again after
+  the attach and under the write lock, and a refused first batch keeps a case
+  database another ingest registered. Design amendment 9.21.
+
+  **Surfaces moved.** `app/store/ingest.py`, `app/store/replay.py`,
+  `app/store/kv.py`, `app/http/routes.py`, `app/http/server.py`,
+  `app/refusals.py`, `app/__main__.py`, `runner/retention_sweep.py`'s
+  `is_held`, five test modules, `app/README.md`, the design record, the
+  app-tests gate entry's description, the handoff, the worklog and its
+  archive, this file.
+
+  **Validation.** Four second-model reads; the application suite, 316 passed
+  and 1 skipped; every new control seen failing at its line; hygiene and both
+  diff checks; the kernel gate and the pre-commit hook on the staged tree.
+
+  **What did not change.** No doctrine, spec, schema, policy, ontology,
+  synthetic or corpus file, no gate entry or hook command, and no PSE wire
+  code.
+
 - **2026-11-11. SS-14 item 3 states the adapter check that exists, and CONFORMANCE.md's DECLARE paragraph names it and the must-fail walk.**
 
   **What changed.** `doctrine/SUBJECT_SELECTION.md` SS-14 item 3 no longer

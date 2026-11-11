@@ -8,7 +8,7 @@ import uuid
 from pathlib import Path
 
 from app import config
-from app.store import blobs, db, project, replay
+from app.store import blobs, db, ingest, project, replay
 from app.store.project import Projector
 from app.tests.helpers import CASE, corpus_events, count, eid_of, named, refusal_of, sql_error
 
@@ -242,6 +242,97 @@ def test_rebuild_identical(ctx):
     check_rebuild_identical(ctx)
 
 
+def check_rebuild_writes_only_into_a_held_case(ctx):
+    s = ctx.built()
+    path = s.case_file(CASE)
+    s.conn.execute("UPDATE case_registry SET state = 'shred_failed' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    s.detach_case()
+    before = hashlib.sha256(path.read_bytes()).hexdigest()
+    assert replay.rebuild(s) == [], "a rebuild took in a case the registry does not hold open"
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == before, "a rebuild wrote into a case whose shred failed"
+    # A registered case whose database is gone: the replay attaches without create, refuses, and makes no file.
+    s.conn.execute("UPDATE case_registry SET state = 'open' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    path.unlink()
+    r = refusal_of(replay.replay_case, s, CASE)
+    assert r.code == "CASE_NOT_HELD", r.code
+    assert not path.exists(), "a replay recreated a case database that was gone"
+
+
+def break_rebuild_held_by_the_file_alone(ctx):
+    ctx.mp.setattr(ingest, "case_held", lambda state, present: present)
+
+
+def break_replay_attach_creates(ctx):
+    real = db.Store.attach_case
+    ctx.mp.setattr(db.Store, "attach_case", lambda self, case_id, create=True: real(self, case_id, True))
+
+
+def test_rebuild_writes_only_into_a_held_case(ctx):
+    check_rebuild_writes_only_into_a_held_case(ctx)
+
+
+def check_verify_compares_only_the_cases_a_rebuild_derives(ctx):
+    # A case whose shred failed is held by neither store, so neither rebuilds it; its projections in the copy are
+    # empty because no replay derived them, which is no difference between the two.
+    s = ctx.built()
+    s.conn.execute("UPDATE case_registry SET state = 'shred_failed' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    assert replay.not_held(s) == [(CASE, "shred_failed", True)], replay.not_held(s)
+    assert replay.verify(s, ctx.tmp / "fresh") == {}, "a case neither store rebuilds was compared and read as a difference"
+
+
+def break_verify_compares_every_case(ctx):
+    real = replay.replay_into
+    ctx.mp.setattr(replay, "replay_into", lambda src, dst: (real(src, dst), src.cases())[1])
+
+
+def test_verify_compares_only_the_cases_a_rebuild_derives(ctx):
+    check_verify_compares_only_the_cases_a_rebuild_derives(ctx)
+
+
+def check_rebuild_reports_what_it_leaves_alone(ctx):
+    # python -m app rebuild --verify on a store whose one case is not held: the case is named once, as what the
+    # registry says of it, and the verify says it compared nothing rather than reporting a match.
+    import contextlib
+    import io
+
+    from app import __main__ as cli
+
+    s = ctx.built()
+    s.conn.execute("UPDATE case_registry SET state = 'shred_failed' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        code = cli.main(["rebuild", "--store", str(s.root), "--verify"])
+    text = out.getvalue()
+    named = [line for line in text.splitlines() if "NOT HELD" in line]
+    assert code == 0, text
+    assert len(named) == 1, f"the case a rebuild leaves alone was named {len(named)} times: {text}"
+    assert "shred_failed" not in named[0] and "the shred failed" in named[0], named[0]
+    assert "nothing verified" in text and "verified: a fresh replay" not in text, text
+
+
+def break_not_held_named_twice(ctx):
+    real = replay.not_held
+    ctx.mp.setattr(replay, "not_held", lambda store: real(store) * 2)
+
+
+def break_state_shown_as_its_token(ctx):
+    ctx.mp.setattr(ingest, "REGISTRY_SAYS", {"open": "open", "shredded": "shredded", "shred_failed": "shred_failed"})
+
+
+def break_verified_when_nothing_was_compared(ctx):
+    from app import __main__ as cli
+
+    ctx.mp.setattr(cli, "verify_lines", lambda diffs: (0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row"]))
+
+
+def test_rebuild_reports_what_it_leaves_alone(ctx):
+    check_rebuild_reports_what_it_leaves_alone(ctx)
+
+
 def check_planted_difference_detected(ctx):
     s = ctx.built()
     first = replay.dump(s, CASE)
@@ -430,6 +521,12 @@ def test_selector_types_never_share_a_node(ctx):
 
 
 CONTROLS = [
+    ("a rebuild that reads held as the file alone", check_rebuild_writes_only_into_a_held_case, break_rebuild_held_by_the_file_alone),
+    ("the replay's attach allowed to create", check_rebuild_writes_only_into_a_held_case, break_replay_attach_creates),
+    ("a verify that compares every case", check_verify_compares_only_the_cases_a_rebuild_derives, break_verify_compares_every_case),
+    ("a case left alone named twice by a rebuild", check_rebuild_reports_what_it_leaves_alone, break_not_held_named_twice),
+    ("a registry state shown as its token", check_rebuild_reports_what_it_leaves_alone, break_state_shown_as_its_token),
+    ("verified reported when nothing was compared", check_rebuild_reports_what_it_leaves_alone, break_verified_when_nothing_was_compared),
     ("a claim loses its run", check_claims_resolve, break_claim_loses_its_run),
     ("the run does not copy the gate's relation", check_seed_run, break_relation_not_copied),
     ("a LINK makes a cluster", check_two_clusters_none_from_link, break_link_makes_a_cluster),

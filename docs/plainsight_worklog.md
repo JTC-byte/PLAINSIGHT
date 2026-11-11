@@ -15,56 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-28, three classes decided, under the maintainer's clicks of 17:45 to 19:49.
-
-**Class:** A. This entry records three decisions of his and changes the
-sentences that said each was his to confirm; no governed value, gate, rule or
-mechanism changes.
-
-**Agent involvement.** The same personal-account session as the three previous
-entries, on Fable 5.1, no sub-agent. Each decision arrived as his click on an
-action the session offered in this chat after the closeout report, as the
-parent's reading of his words of 17:30:21 allowed; each button's message is the
-session's words he accepted, and his record carries the label.
-
-**The decisions.**
-
-- 17:45:23, "Class B, keep it": VA-R6, the dispatch scanner's rule that a
-  patch target, a patched attribute's kept original and an attribute assigned
-  over are no site in a test module, is Class B, a precision rule of the
-  scanner and not an exemption from the bypass check; it stands as applied,
-  and the allowlist draft DA-R2 keeps its four sites. Recorded in the scanner's
-  docstring, READINGS entry and block comment, `AGENTS.md` section 5,
-  `CONFORMANCE.md` section 4, `app/README.md` and the handoff.
-- 18:00:28, "Class B": the one-word edit of `policy/retention.yaml` line 870
-  (`present: true` for the `canary_subject_class` part), made on his
-  instruction of 12:09, is Class B, a statement of enforcement state reaching
-  no subject, retention period or egress path, needing no row in the pin.
-  Recorded in `CONFORMANCE.md` section 4, the Makefile header, the hook's
-  comment, `tools/validate_retention.py`'s comment, `AGENTS.md` section 5 and
-  the handoff.
-- 19:49:50, "Keep it": the emit's platform move stands, Class B with its
-  design amendments 9.14 and 9.15: an emit of a platform-bound key may declare
-  `platform_from_item` on an endpoint-unit connector (MF-R17), and the Sherlock
-  claim's platform token is derived from the site name alone (SH-R18).
-  Recorded in `tools/validate_manifest.py`'s MF-R17 reading, the kernel gate's
-  connector-conformance note, the Makefile, `CONFORMANCE.md` section 4,
-  `AGENTS.md` section 5, `connectors/sherlock/README.md` and the handoff.
-
-**What changed in state.** Nothing in any gate, rule or value; the tree's
-prose now states each class as decided rather than as his to confirm. Ground
-for each: his click, which is his instruction for an act and his decision for
-an item by his own words of 2026-10-24 01:30:58. Revert: his word, with the
-same sentences rewritten.
-
-**Open.** His, unchanged: the DA-R2 stamp outside the tree, the readings each
-artifact carries (DR, MF, PIN-R9, SG, VA-R5, SH, CC, APP), the design
-amendments 9.1 to 9.15 as records of departures, the R8-row pipe, the
-sentences in rank 1 to 3 files the night made stale, the 28 queue items, plan
-item 0.7, the Step 7 fixes, the audit's section 8 finding, the credentials
-inventory, the 37 merged branches. This entry's commit follows his go word of
-17:07:57 by the usual route.
-
 ## 2026-11-02, resumed on the personal account: pull request 38 merged on the maintainer's click, the second-model review of 8583132, and the extraction tool's three misreads corrected.
 
 **Class:** B. `tools/since_last_record.py` changes behaviour (three misreads
@@ -340,3 +290,23 @@ this chat.
 **Battery.** On a scratch export of `9cdac31` with the paragraph applied: `tools/validate_doctrine.py` exit 0, "58 criteria, cross-references and pin reconciled"; `tools/validate_hygiene.py` exit 0; `tools/pin_of_record.py --self-test` quiet. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
 
 **Open.** His: this commit's landing on `main` and its class; the request to GitHub Support; the bundle once Support has acted; Saturday's rotation. Slice 4; Step 11's shred; the door's missing held-case check; the reads' open findings on item 7; `tools/since_last_record.py` lists a parent's message as a harness notice; the handoff's row for `tools/validate_retention.py` names no commit; and everything the previous entries list.
+
+---
+
+## 2026-11-11, the store writes only into a held case (patch A, read four times by a second model), and the landing of 0a1b267 recorded, under the maintainer's clicks of 2026-11-11.
+
+**Class:** C by the session's reading, his to confirm. Runtime code under `app/` and `runner/` with its tests and a design amendment, 9.21, which `AGENTS.md` section 3 rule 3 asks of a change in observable behaviour. The change adds refusals: no subject, bystander, selector or retained object can be reached that could not be reached before, so nothing here is Class F by effect. Its two refusal codes are the application's and not PSE wire codes, which `app/tests/test_boundaries.py` keeps apart. No doctrine, spec, schema, policy, ontology, synthetic or corpus file changed, and no gate entry or hook command.
+
+**The words this commit acts on.** Each is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. At 14:57:16 EST, "Yes, land it", on "Fast-forward main to the records commit 0a1b267 now?", offered at 14:54:51: his word for that push. At 15:44:27 EST, "Yes, commit A", on "Commit patch A on a branch for CI?", offered at 15:38:14: his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again. The work was built outside the tree on the parent's go of 13:50:26 EST, a relay recorded as information, which listed the door's missing held-case check among the lane's pieces to build as patches.
+
+**The landing of 0a1b267, recorded here because the entry above could not know it.** Measured at 14:57:32 EST: GitHub's `main` at `9cdac31`, the branch records-rulings-2026-11-11 at `0a1b267` one commit ahead with `9cdac31` its ancestor, its run 43083078958 success on all 27 steps (read at 14:16:35 EST), the protection reading linear history on, administrators included, force pushes and deletions refused, and no open pull request. A plain push of `0a1b267` to `main` ran from 14:57:41 to 14:57:42 EST, "9cdac31..0a1b267". Read back at 14:57:50 EST, GitHub served the tip with Incept.IO and the no-reply address as author and committer, and under `main` the count of author and committer fields that are not a no-reply address was 0 over 69 commits. The local `main` was moved with `git update-ref`, compared against its old value, and the checkout switched to it with no file written. The run on `main`, 43092008321, was read at 15:11:41 EST: success on all 27 steps. The entry above says the session drafted that commit's records on Opus 5.5, which was true when its tree was staged at 12:56 EST; its model was set to claude-fable-5-2 at 13:19:41 EST by a model command, and that commit's message says so.
+
+**What exists now.** Every entry point that writes into a case refuses a case that is not held, one the registry does not say is open or whose case database is absent (CASE_CLOSED_TO_WRITES). `ingest_batch` is the entry point for events of every origin, a corpus file, an analyst act, the watchdog's closing event and the sweep's heartbeat, and it refuses before the stored log is read, so a batch that would change nothing is refused too. The case database's file name is built from the case id in lower case, so the rule reads every registry row that names that file: another spelling of a closed case's id is refused with it, and a batch under another spelling of an open case's id is refused with CASE_ID_SPELLING_DIFFERS. The write holds the rule again before its attach, attaches a registered case without create, reads its file after the attach and again under its lock, and re-reads the registry's state and spellings under the lock. A first batch refused under its lock keeps the case database it created when a registry row names that file by then, and leaves one it cannot remove, so the caller sees the write's own error. The HTTP routes that write, the acts and the workspace store, refuse in `case_store` with a 409. `rebuild` rebuilds only held cases, names each one it leaves alone once as NOT HELD with what the registry says of it, and `rebuild --verify` compares only the cases its copy rebuilds and says so when that is none. `kv.put` and `replay_case` attach without create and rely on their callers for the registry state. The sweep's `is_held` reads the door's `case_held`. Twenty-three controls pair with the checks in `app/tests/test_door.py`, `test_watchdog.py`, `test_acts.py`, `test_kv.py` and `test_spine.py`: 170 controls and 317 tests in the suite. Amendment 9.21 and the `app/README.md` section state it for a reader; reading APP-R34 is the paragraph in the module docstring of `app/store/ingest.py`.
+
+**What is not claimed.** A case database on disk with no registry row naming it is still written into by a first batch; RT-10's reconcile job, not built, is to find one. `python -m app rebuild --verify` still stops on a store holding a case whose database is gone, because the copy it verifies against reads every registry row; that predates this change and waits on what a migration does with a closed case, whose stratum-2 rows must survive it (the first read's finding 14). A store that already holds two spellings of one id from before this change accepts each spelling as registered. The refusal of another spelling of an open case's id is the reviewer's fix and his to strike. The deletion of an open case database, which Windows refuses, was simulated by pointing `case_file` at a missing path and by planting a PermissionError on an unlink, and was not run on a system that allows it; CI runs the suite on Linux. On LOCAL a second concurrent ingest is near-theoretical, and the races are exercised with a second store in one process.
+
+**Agent involvement.** Session 0141534e built patch A in scratch repositories in its scratchpad, on Opus 5.5, then claude-fable-5-2 from 13:19:41 EST, then Opus 5.5 again from 14:10:13 EST by the parent's model command after the weekly Fable allowance ran out mid-turn at 14:10. One claude-opus-5-5 agent, launched with the Agent tool at effort high, read it four times under the estate's agent-slot-2 and was resumed by SendMessage for each later round: 14:29:51 to 14:41:38, 14:54:07 to 15:02:57, 15:09:14 to 15:16:04 and 15:21:38 to 15:27:06 EST. Its transcript holds 141 assistant records, all on that model, and each report says it ran at low effort; the cause is not established. The first read found five defects, the most serious three paths the first round did not cover: a workspace write over HTTP into a case whose shred failed, a rebuild writing into one, and the write's attach recreating a removed case database. The second found one defect the fixes made, a false difference from `rebuild --verify`, and a claim with no control. The third found a NOT HELD line printed twice, a raw state token, a verify reporting a match when it compared nothing, a rollback whose PermissionError hid the write's error, and a window on POSIX. The fourth found nothing. Three problems were the session's own. The doubled line came from its edit script, whose marker spanned a string break so that a rerun applied one step twice; every later script asserts its marker is in its new text, and every patched file was scanned for a repeated block. Two controls stayed green once the attach guard landed, and were strengthened. The lock-race check fired on an attach with create, which the fix removed, and was re-anchored on the write's own read of the rule. While building a check for the second read, the session found that a first batch refused under its lock removed a case database another ingest had registered and written into; the rollback now keeps it. The four reports with a disposition for every finding are VERIFIER_patchA_patchB_opus.md in the record folder, beside the probe outputs and the patch files of each round. No workflow ran.
+
+**Battery.** The application suite on patch A's tree of round 4 in scratch: 316 passed and 1 skipped (15:23:07 to 15:30:42 EST), the skip the Postgres apply, which runs on his word; with patches B, C and D on it, 328 passed and 1 skipped (to 15:37:56 EST). Every control the patch adds was seen failing at the line its label names (probe_patchA_controls.txt and the round-2 to round-4 files in the record folder). Hygiene exit 0 and both diff checks clean. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
+
+**Open.** His: this commit's landing on `main` and its class; patch B (item 7's open findings, which reads two names this patch adds), patch C (the handoff's row for `tools/validate_retention.py`) and patch D (the extraction tool reads a parent's message as received), each put to him in turn; the first read's finding 14; slice 4, scoped in SCOPE_slice4_2026-11-11.md with three decisions of his; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.

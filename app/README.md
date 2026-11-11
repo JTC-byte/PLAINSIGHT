@@ -127,6 +127,39 @@ it is his decision under EG-2), and then only in a case the registry marks
 synthetic (ACT_LOCAL_SYNTHETIC_CASE_ONLY). The INSPECTOR lists every adjudication of
 the selected node's events under ADJUDICATIONS, each as its consequence.
 
+## The store writes only into a held case
+
+Every entry point that writes into a case refuses a case that is not held, one
+the registry does not say is open or whose case database is absent (amendment
+9.21, reading APP-R34). `ingest_batch` is the entry point for events, whatever
+their origin: a corpus file, an analyst act, the watchdog's closing event or
+the sweep's heartbeat. It refuses such a case with CASE_CLOSED_TO_WRITES before
+the stored log is read, so a batch that would change nothing is refused too and
+a closed case is never reported as holding what was sent. An event landed in a
+shredded case would put material back, and the attach that writes it would
+recreate a case database that is gone. The case database's file name is built
+from the case id in lower case, so the rule reads every registry row that names
+that file: another spelling of a closed case's id is refused with it, and a
+batch under another spelling of an open case's id is refused with
+CASE_ID_SPELLING_DIFFERS, because it would open a second registry row and a
+second retention clock onto one case database. The write holds the rule again
+before its attach, attaches a registered case without create and reads its file
+again after the attach, so a case database that is gone by then is refused and
+not recreated, and reads the registry's state, its spellings and the file's
+presence again under its write lock. A first batch refused under the lock keeps
+the case database it created when another ingest registered that file
+meanwhile, and leaves one it cannot remove because another connection holds it
+open; the caller sees the write's own error. The HTTP routes that write, the
+acts and the workspace store, refuse a case closed to writes with a 409 in
+`case_store` before anything is written. `rebuild` rebuilds only held cases and
+names each case it leaves alone once as NOT HELD with what the registry says of
+it, and `rebuild --verify` compares only the cases its copy rebuilds and says
+so when that is none. The library functions behind those entry points, `kv.put`
+and `replay_case`, read no registry state of their own: they attach without
+create and rely on their callers for the rule. The watchdog reports the door's
+refusal for a coverage row left open in a closed case, and the sweep writes no
+heartbeat into a case that is not held.
+
 ## Watchdog
 
 `python -m runner.watchdog --store <root> --once` closes every open coverage
@@ -165,19 +198,19 @@ outside the gate).
 the shape Step 10 took. A run reads every registry row and decides before it
 writes anything. A case is held when the registry says open and its case
 database is present. A case that is not held is listed as not held and gets no
-heartbeat, because the door would recreate a removed case database to write
-one. A row that says shredded or shred_failed is verify_shred's to judge and
-does not change the exit code. A row that says open for a case whose database
-is absent makes the run exit 1, because `retain_until` cannot be enforced on a
-case with no database. A held case whose `retain_until` or `frozen_until`
-cannot be read as a date is refused (SWEEP_REFUSED_DATE_UNREADABLE) and the
-run exits 1. A case is due from the instant `retain_until` names, 00:00:00Z on
-that date, as the store's own `is_past` reads it. A held case past
-`retain_until` whose freeze is still in force is skipped and said so (RT-17).
-Every other held case past `retain_until` is stated as due with the pre-shred
-sequence of RETENTION.md section 9, and refused at its first step: the RT-13
-finding check the kernel gate lists as PENDING
-(SWEEP_REFUSED_FINDING_CHECK_PENDING), then the shred, refused on LOCAL
+heartbeat. The door refuses a write into such a case (CASE_CLOSED_TO_WRITES),
+so the sweep does not attempt one. A row that says shredded or shred_failed is
+verify_shred's to judge and does not change the exit code. A row that says open
+for a case whose database is absent makes the run exit 1, because
+`retain_until` cannot be enforced on a case with no database. A held case whose
+`retain_until` or `frozen_until` cannot be read as a date is refused
+(SWEEP_REFUSED_DATE_UNREADABLE) and the run exits 1. A case is due from the
+instant `retain_until` names, 00:00:00Z on that date, as the store's own
+`is_past` reads it. A held case past `retain_until` whose freeze is still in
+force is skipped and said so (RT-17). Every other held case past `retain_until`
+is stated as due with the pre-shred sequence of RETENTION.md section 9, and
+refused at its first step: the RT-13 finding check the kernel gate lists as
+PENDING (SWEEP_REFUSED_FINDING_CHECK_PENDING), then the shred, refused on LOCAL
 (SWEEP_REFUSED_LOCAL_STORE), refused while `policy/retention.yaml` carries no
 dated row (SWEEP_REFUSED_POLICY_UNRATIFIED), and refused after both because
 this draft holds no shred (SWEEP_REFUSED_SHRED_NOT_BUILT). The run then appends

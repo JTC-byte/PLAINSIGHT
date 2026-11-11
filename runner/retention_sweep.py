@@ -15,13 +15,15 @@ header as its consequence. A run has two halves, in this order.
 
 First it reads every registry row and decides, writing nothing. A case that is
 not open, or whose case database is absent, is not held: it is listed and gets
-no heartbeat, because the door would recreate a removed case database to write
-one (reading RS-R1). A held case whose retain_until or frozen_until cannot be
-read as a date is refused as SWEEP_REFUSED_DATE_UNREADABLE, neither swept nor
-passed over as current. A frozen case is skipped and said so (RT-17). Every
-other held case whose retain_until instant is at or before now is due, and the
-sweep states the sequence of RETENTION.md section 9 (the RT-13 finding check,
-the shred, verify_shred, the receipt) and refuses at its first step:
+no heartbeat. The door refuses a write into such a case
+(CASE_CLOSED_TO_WRITES), and the sweep does not attempt one, so the run reports
+the case as not held and not as a refused heartbeat (reading RS-R1). A held
+case whose retain_until or frozen_until cannot be read as a date is refused as
+SWEEP_REFUSED_DATE_UNREADABLE, neither swept nor passed over as current. A
+frozen case is skipped and said so (RT-17). Every other held case whose
+retain_until instant is at or before now is due, and the sweep states the
+sequence of RETENTION.md section 9 (the RT-13 finding check, the shred,
+verify_shred, the receipt) and refuses at its first step:
 
   1. the RT-13 finding check, which tools/validate_retention.py --finding
      refuses as RETENTION_FINDING_NO_CASE_STORE and the kernel gate lists as
@@ -56,10 +58,12 @@ can confirm or reverse each:
          the door, because the corpus places the event in a case and no
          plane-level event store exists. A case is held when its registry
          state is open and its case database is present. The heartbeat goes
-         nowhere else: the door attaches a case to write an event and creates
-         the case database when it is absent, so a heartbeat into a shredded
-         case would put back the file the shred removed. A store with no held
-         case gets no heartbeat and has no header to render one on. A
+         nowhere else: the door refuses a write into a case that is not held
+         (amendment 9.21), because an event landed there would put material
+         back and an attach would recreate the file the shred removed, and
+         the sweep reads the same rule and does not attempt the write. A
+         store with no held case gets no heartbeat and has no header to
+         render one on. A
          plane-level heartbeat row would be a schema change. A registry row
          that says open with no case database is a case the sweep answers for
          and cannot act on, so that run exits 1. A row that says shredded or
@@ -221,8 +225,9 @@ NOT_HELD_STATE = {
 
 
 def is_held(state: str, present: bool) -> bool:
-    """A case is held when the registry says open and its case database is present."""
-    return state == "open" and present
+    """A case is held when the registry says open and its case database is present: the door's own rule, read
+    through the door's function so that the two cannot drift apart."""
+    return ingest.case_held(state, present)
 
 
 def unaccounted(state: str, present: bool) -> bool:
