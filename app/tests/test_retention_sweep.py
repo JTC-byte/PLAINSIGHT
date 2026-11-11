@@ -15,11 +15,13 @@ import contextlib
 import datetime as dt
 import io
 import sqlite3
+import urllib.parse
 import uuid
 
 from app.http import routes
 from app.model import reads
 from app.model.svg import VOUCH_MARK
+from app.refusals import Refusal
 from app.store import db, retention
 from app.tests.helpers import CASE, corpus_events, corpus_rows, count, files_digest, refusal_of
 from runner import retention_sweep as sweep_mod
@@ -150,6 +152,12 @@ def check_due_case_refused_in_order(ctx):
     for sub, n in shred_rows.items():
         assert len(reads.events(s.conn, CASE, "SYSTEM_EVENT", (sub,))) == n, f"the sweep wrote a {sub}"
     assert files_digest(s.root) != before, "the sweep wrote no heartbeat on a due case"
+    # The report prints the due case's refusal once, with its rule and its legal moves (RS-R2).
+    printed = io.StringIO()
+    with contextlib.redirect_stdout(printed):
+        sweep_mod.print_report(report)
+    render = Refusal("SWEEP_REFUSED_FINDING_CHECK_PENDING").render()
+    assert render in printed.getvalue() and "Legal moves: " in render, "a due case's refusal was not printed with its legal moves"
     # The boundary: a case is due from the instant retain_until names, as the store's own is_past reads it.
     _set_registry(s, retain_until="2026-02-01", frozen_until=None)
     early = sweep_mod.sweep(s, now=_at("2026-01-31T23:59:59Z"), stamps=FixtureStamps())
@@ -169,6 +177,10 @@ def break_finding_check_lifted(ctx):
 
 def break_due_only_after_the_instant(ctx):
     ctx.mp.setattr(sweep_mod, "past_retain_until", lambda retain, now: retain < now)
+
+
+def break_due_refusal_printed_without_its_moves(ctx):
+    ctx.mp.setattr(sweep_mod, "refusal_renders", lambda report: [])
 
 
 def test_due_case_refused_in_order(ctx):
@@ -383,6 +395,108 @@ def break_not_run_counted_as_passed(ctx):
 
 def test_verify_shred_runs_checks_and_refuses_unratified(ctx):
     check_verify_shred_runs_checks_and_refuses_unratified(ctx)
+
+
+# -- the heartbeat is written after every case is decided (RS-R7) -----------------------------------
+
+
+def check_heartbeat_written_after_every_case_is_decided(ctx):
+    s = ctx.built()
+    _set_registry(s, retain_until="2026-01-01", frozen_until=None)
+    beats = len(_heartbeats(s))
+
+    def stops(store, stamps, case_id):
+        raise RuntimeError("a fault while a due case is decided")
+
+    ctx.mp.setattr(sweep_mod, "first_refusal", stops)
+    try:
+        sweep_mod.sweep(s, now=NOW, stamps=FixtureStamps())
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("the planted fault did not fire")
+    assert len(_heartbeats(s)) == beats, "a heartbeat landed before every case was decided"
+
+
+def break_heartbeat_written_before_deciding(ctx):
+    real = sweep_mod.decide
+
+    def early(store, now, stamps):
+        for case_id in sweep_mod.survey(store, now)["held"]:
+            sweep_mod.write_heartbeat(store, case_id, now, now + dt.timedelta(days=1))
+        return real(store, now, stamps)
+
+    ctx.mp.setattr(sweep_mod, "decide", early)
+
+
+def test_heartbeat_written_after_every_case_is_decided(ctx):
+    check_heartbeat_written_after_every_case_is_decided(ctx)
+
+
+# -- a run that reaches no shred reads no pin --------------------------------------------------------
+
+
+def check_sweep_reads_no_pin_until_a_shred_is_reached(ctx):
+    s = ctx.built()
+    _set_registry(s, retain_until="2026-01-01", frozen_until=None)
+
+    def no_reader():
+        raise FileNotFoundError("tools/pin_of_record.py")
+
+    ctx.mp.setattr(sweep_mod, "read_stamps", no_reader)
+    try:
+        report = sweep_mod.sweep(s, now=NOW)
+    except FileNotFoundError as exc:
+        raise AssertionError("a run that reaches no shred read the pin and stopped before its heartbeat") from exc
+    assert len(report["heartbeats"]) == 1 and len(report["due"]) == 1, report
+    assert report["due"][0]["refusal"] == "SWEEP_REFUSED_FINDING_CHECK_PENDING", report["due"]
+    # The pin is still read when a refusal needs it: past the LOCAL step, the policy's stamp is the question.
+    ctx.mp.setattr(s, "environment", "ISOLATED")
+    try:
+        sweep_mod.shred_refusal(s, sweep_mod.LazyStamps(), CASE)
+    except FileNotFoundError:
+        pass
+    else:
+        raise AssertionError("the shred's refusal was decided without reading the pin")
+
+
+def break_pin_read_on_every_run(ctx):
+    ctx.mp.setattr(sweep_mod, "LazyStamps", lambda: sweep_mod.read_stamps())
+
+
+def test_sweep_reads_no_pin_until_a_shred_is_reached(ctx):
+    check_sweep_reads_no_pin_until_a_shred_is_reached(ctx)
+
+
+# -- a registry state the schema does not name is reported, and the run exits 1 -----------------------
+
+
+def check_registry_state_outside_the_schema_is_reported(ctx):
+    s = ctx.built()
+    s.conn.execute("PRAGMA ignore_check_constraints=ON")
+    s.conn.execute("UPDATE case_registry SET state = 'frozen' WHERE case_id = ?", (CASE,))
+    s.conn.execute("PRAGMA ignore_check_constraints=OFF")
+    beats = len(_heartbeats(s))
+    try:
+        report = sweep_mod.sweep(s, now=NOW, stamps=FixtureStamps())
+    except KeyError as exc:
+        raise AssertionError("the sweep crashed on a registry state outside the schema") from exc
+    assert report["heartbeats"] == [] and len(_heartbeats(s)) == beats, "a heartbeat landed in a case in no known state"
+    assert sweep_mod.exit_code(report) == 1, "a run that could not decide a registry state exited 0"
+    text = report["not_held"][0]["text"]
+    assert "none of open, shredded and shred_failed" in text and "this run exits 1" in text, text
+
+
+def break_state_looked_up_strictly(ctx):
+    ctx.mp.setattr(sweep_mod, "state_clause", lambda state: sweep_mod.NOT_HELD_STATE[state])
+
+
+def break_unnamed_state_exits_0(ctx):
+    ctx.mp.setattr(sweep_mod, "unnamed_state", lambda state: False)
+
+
+def test_registry_state_outside_the_schema_is_reported(ctx):
+    check_registry_state_outside_the_schema_is_reported(ctx)
 
 
 # -- check 2: an object that remains fails, and no object on disk is not a pass --------------------
@@ -621,8 +735,26 @@ def check_anti_overreach_reads_the_inventory(ctx):
     s = ctx.built()
     inventory = verify_shred.canary_inventory(s, CASE)
     assert inventory["payloads"] > inventory["claims"] > 0 and inventory["blobs"] == 0, inventory
+    # The canary is opened read-only: a write through the connection check 5 reads it by is refused.
+    probes = []
+    opener = verify_shred._open_readonly
+
+    def probing(path):
+        conn = opener(path)
+        try:
+            conn.execute("CREATE TABLE probe_write (x)")
+        except sqlite3.OperationalError:
+            probes.append("refused")
+        else:
+            conn.execute("DROP TABLE probe_write")
+            probes.append("written")
+        return conn
+
+    ctx.mp.setattr(verify_shred, "_open_readonly", probing)
     same = verify_shred.check_anti_overreach(s, CASE, inventory, NOW)
     assert same["outcome"] == "PASS", same
+    assert probes == ["refused"], f"the canary was opened for writing: {probes}"
+    ctx.mp.setattr(verify_shred, "_open_readonly", opener)
     # An object that appeared under the canary.
     added = s.root / db.BLOBS_DIR / CASE / "added"
     added.parent.mkdir(parents=True)
@@ -675,6 +807,11 @@ def break_canary_tables_not_all_read(ctx):
     ctx.mp.setattr(verify_shred, "case_tables", lambda: ("event_payload", "claim"))
 
 
+def break_canary_opened_for_writing(ctx):
+    ctx.mp.setattr(verify_shred, "_open_readonly", lambda path: sqlite3.connect(
+        "file:" + urllib.parse.quote(path.as_posix(), safe="/:") + "?mode=rwc", uri=True))
+
+
 def test_anti_overreach_reads_the_inventory(ctx):
     check_anti_overreach_reads_the_inventory(ctx)
 
@@ -709,6 +846,29 @@ def test_verify_refuses_what_it_cannot_witness(ctx):
     check_verify_refuses_what_it_cannot_witness(ctx)
 
 
+# -- a case id written in upper case is the case it spells ----------------------------------------------
+
+
+def check_verify_reads_a_case_under_another_spelling(ctx):
+    s = ctx.built()
+    exact = verify_shred.verify(s, CASE, now=NOW, stamps=FixtureStamps())
+    try:
+        upper = verify_shred.verify(s, CASE.upper(), now=NOW, stamps=FixtureStamps())
+    except Refusal as refusal:
+        raise AssertionError(f"a held case named in upper case was refused: {refusal.code}") from None
+    assert upper["case_id"] == CASE, "the checks did not run under the registry's spelling of the id"
+    assert [(c["outcome"], c["why"]) for c in upper["checks"]] == [(c["outcome"], c["why"]) for c in exact["checks"]], \
+        "the same case read under another spelling gave other facts"
+
+
+def break_spelling_read_exactly(ctx):
+    ctx.mp.setattr(verify_shred, "held_spelling", lambda store, case_id: case_id if store.registry(case_id) else None)
+
+
+def test_verify_reads_a_case_under_another_spelling(ctx):
+    check_verify_reads_a_case_under_another_spelling(ctx)
+
+
 # -- the header's sweep line stands only on a run that has happened ---------------------------------
 
 
@@ -723,6 +883,9 @@ def check_header_line_stands_only_on_a_run_that_happened(ctx):
     # At the due time itself the line is degraded: RET-R7 gives no grace.
     at_due = reads.sweep_state(s.conn, CASE, _at("2026-01-15T10:47:00Z"))
     assert at_due["vouch"] is True and "HAS NOT RUN SINCE" in at_due["text"], "the line gave a grace period at the due time"
+    # At the heartbeat's own time it records a run that has happened: a run is one whose time is not after now.
+    on_time = reads.sweep_state(s.conn, CASE, _at("2026-01-15T10:17:00Z"))
+    assert on_time["ran"] == "2026-01-15T10:17:00Z" and on_time["not_read"] == 0, "a heartbeat whose time is now was not read as a run"
     # Before the heartbeat's own time, it records no run that has happened.
     early = reads.sweep_state(s.conn, CASE, _at("2026-01-15T10:00:00Z"))
     assert early["ran"] is None and early["not_read"] == 1 and early["vouch"] is True, "a heartbeat dated after now was read as a run"
@@ -782,6 +945,14 @@ def break_later_heartbeat_read_as_a_run(ctx):
     ctx.mp.setattr(reads, "ran_by", lambda beat, at: reads.instant(beat["ts"]))
 
 
+def break_heartbeat_at_now_not_read_as_a_run(ctx):
+    def strict(beat, at):
+        ts = reads.instant(beat.get("ts"))
+        return ts if ts is not None and ts < at else None
+
+    ctx.mp.setattr(reads, "ran_by", strict)
+
+
 def break_unreadable_due_time_read_as_not_due(ctx):
     real = reads.instant
     ctx.mp.setattr(reads, "instant", lambda value: real(value) or FAR)
@@ -837,6 +1008,11 @@ CONTROLS = [
     ("the heartbeat not written", check_sweep_writes_heartbeat_and_deletes_nothing, break_heartbeat_not_written),
     ("the finding check lifted", check_due_case_refused_in_order, break_finding_check_lifted),
     ("a case due only after the instant retain_until names", check_due_case_refused_in_order, break_due_only_after_the_instant),
+    ("a due case's refusal printed without its legal moves", check_due_case_refused_in_order, break_due_refusal_printed_without_its_moves),
+    ("the heartbeat written before the cases are decided", check_heartbeat_written_after_every_case_is_decided, break_heartbeat_written_before_deciding),
+    ("the pin read on every run", check_sweep_reads_no_pin_until_a_shred_is_reached, break_pin_read_on_every_run),
+    ("a registry state outside the schema looked up as a key", check_registry_state_outside_the_schema_is_reported, break_state_looked_up_strictly),
+    ("a registry state outside the schema exits 0", check_registry_state_outside_the_schema_is_reported, break_unnamed_state_exits_0),
     ("the freeze not read", check_frozen_case_skipped, break_freeze_not_read),
     ("a case not held read as held", check_no_heartbeat_into_a_case_not_held, break_not_held_read_as_held),
     ("a failed shred read as held", check_no_heartbeat_into_a_case_not_held, break_failed_shred_read_as_held),
@@ -866,9 +1042,12 @@ CONTROLS = [
     ("the payload count ignored", check_anti_overreach_reads_the_inventory, break_payload_count_ignored),
     ("the claim count ignored", check_anti_overreach_reads_the_inventory, break_claim_count_ignored),
     ("a canary with a table gone read as unchanged", check_anti_overreach_reads_the_inventory, break_canary_tables_not_all_read),
+    ("the canary opened for writing", check_anti_overreach_reads_the_inventory, break_canary_opened_for_writing),
     ("a case never held verified", check_verify_refuses_what_it_cannot_witness, break_never_held_case_verified),
     ("the case named as its own canary", check_verify_refuses_what_it_cannot_witness, break_case_named_as_its_own_canary),
+    ("a case id read under one spelling only", check_verify_reads_a_case_under_another_spelling, break_spelling_read_exactly),
     ("a heartbeat dated after now read as a run", check_header_line_stands_only_on_a_run_that_happened, break_later_heartbeat_read_as_a_run),
+    ("a heartbeat whose time is now not read as a run", check_header_line_stands_only_on_a_run_that_happened, break_heartbeat_at_now_not_read_as_a_run),
     ("an unreadable next due time read as not due", check_header_line_stands_only_on_a_run_that_happened, break_unreadable_due_time_read_as_not_due),
     ("an overdue sweep read as current", check_header_line_stands_only_on_a_run_that_happened, break_overdue_read_as_current),
     ("a grace period given at the due time", check_header_line_stands_only_on_a_run_that_happened, break_grace_given_at_the_due_time),

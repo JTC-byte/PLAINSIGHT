@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-11. This file's commit is patch A: the store writes only
-into a held case (section 0, amendment 9.21); class C by the session's
-reading, his to confirm. Before it, `main` == `origin/main` == `0a1b267`,
-his rulings of the day, landed by a fast-forward push on his click of
-14:57:16 EST, CI green on all 27 steps of its run on `main`.
+**Date:** 2026-11-11. This file's commit is patch B: item 7's open findings
+in the retention sweep and verify_shred (section 0, amendment 9.22); class C
+by the session's reading, his to confirm. Before it, `main` == `origin/main`
+== `0346eb8`, patch A, landed by a fast-forward push on his click of
+16:59:58 EST, CI green on all 27 steps of its run on `main`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -36,8 +36,9 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-branch `store-held-case-2026-11-11` on his click of 2026-11-11 at 15:44:27
-EST, which covers that branch's push; landing it takes his word again. The
+branch `item7-open-findings-2026-11-11` on his click of 2026-11-11 at
+17:25:13 EST, which covers that branch's push; landing it takes his word
+again. The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
 item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
 2026-11-11 and this commit in `2026-11-11-plainsight-lane/`, whose
@@ -50,33 +51,32 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** The door landed an event in a case the registry
-marked shredded and created an absent case database; the workspace route,
-the rebuild and the write's attach did the like. Every entry point that
-writes into a case now refuses a case that is not held, a second spelling
-of an open case's id is refused, and a registered case's database is never
-recreated. Read four times by a second model (amendment 9.21).
+**What changed and why.** Item 7's reads left findings open, each his to
+order fixed. The sweep now reads the pin only when a refusal needs it and
+reports a registry state the schema does not name; verify_shred reads a
+case id under any letter case; four behaviours with no control have one
+each (amendment 9.22).
 
-**Which surfaces moved.** The store's ingest, replay and workspace modules,
-the routes, the refusals, the rebuild command, the sweep's `is_held`, five
-test modules, `app/README.md`, the design record, the app-tests gate
-entry's count, the changelog, the worklog and its archive, and this file.
-No doctrine, spec, schema, policy, ontology or corpus file.
+**Which surfaces moved.** `runner/retention_sweep.py`,
+`runner/verify_shred.py`, `app/tests/test_retention_sweep.py`,
+`app/README.md`, the design record, the app-tests gate entry's count, the
+changelog, the worklog and its archive, and this file. No doctrine, spec,
+schema, policy, ontology or corpus file.
 
-**What validation ran and what passed.** The application suite, 316 passed
-and 1 skipped, with every new control seen failing at its line; hygiene and
-both diff checks; the kernel gate on this tree under the heavy-run lock and
-the hook at the commit.
+**What validation ran and what passed.** The application suite with A to D,
+328 passed and 1 skipped, with every new control seen failing at its line;
+hygiene and both diff checks; the kernel gate on this tree under the
+heavy-run lock and the hook at the commit.
 
 **Whether a release baseline changed.** No tag exists. This commit is on a
-branch, and `main` is `0a1b267`.
+branch, and `main` is `0346eb8`.
 
 **What remains open or deferred.** His: this commit's landing and its
-class; patches B, C and D in turn; `rebuild --verify` on a case whose
+class; patches C and D in turn; `rebuild --verify` on a case whose
 database is gone; slice 4's three decisions; the request to GitHub Support;
 the pre-rewrite bundle; Saturday's rotation. Sections 3 and 4 carry the
 rest: DA-R2's stamp, the readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the
-queue, Step 11's shred and the reads' open findings on item 7.
+queue and Step 11's shred.
 
 ---
 
@@ -125,10 +125,10 @@ DOSSIER and the SSE stream. **Slice 3 (2026-11-09)** adds the analyst acts
 through the door (POST `/acts`), the Merge Sheet, the review strip, undo as a
 cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
-(reading APP-R31). 317 tests with 170 paired negative controls since the
-store's held-case check, in the kernel gate, `make test` and CI and not in the
-hook or preflight (APP-R30). Its design departures from
-`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.21 at the end of that file,
+(reading APP-R31). 329 tests with 178 paired negative controls since item
+7's open findings, in the kernel gate, `make test` and CI and not in the hook
+or preflight (APP-R30). Its design departures from
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.22 at the end of that file,
 each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
@@ -206,7 +206,7 @@ line 105); the five production docstrings cite the design amendments.
 **The 29 decisions in the register** of Step 8, plus U-17, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, now to MF-R22, PIN-R9, SG, VA,
 DA, SH, CC, APP, now to APP-R34, and RS-R1 to RS-R8), and the design
-amendments 9.1 to 9.21. Each is recorded where its artifact is and in the
+amendments 9.1 to 9.22. Each is recorded where its artifact is and in the
 record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's

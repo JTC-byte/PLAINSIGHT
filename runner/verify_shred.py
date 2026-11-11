@@ -72,7 +72,10 @@ THE FIVE CHECKS, as this store can run them (reading RS-R6):
 
 verify() refuses a case this store has no registry row for
 (VERIFY_SHRED_CASE_NEVER_HELD) and a canary that is the case under verification
-(VERIFY_SHRED_CANARY_IS_THE_CASE), each before any check runs.
+(VERIFY_SHRED_CANARY_IS_THE_CASE), each before any check runs. A case id is
+read under any spelling of its letters, because the case database's file name
+is built from it in lower case, and the registry's spelling of the id is used
+for every check.
 
 Run as python -m runner.verify_shred --store ROOT --case CASE [--canary CASE
 --canary-payloads N --canary-claims N --canary-blobs N]. Exit 0 only when the
@@ -92,7 +95,7 @@ import urllib.parse
 from pathlib import Path
 
 from app.refusals import Refusal
-from app.store import db, retention
+from app.store import db, ingest, retention
 from app.store.db import Store
 from runner.retention_sweep import FIXTURE_REL, read_stamps
 
@@ -314,13 +317,29 @@ def check_anti_overreach(store, canary: str | None, inventory: dict | None, now:
                  f"{current['blobs']} object(s)", now)
 
 
-def refuse_unless_held(store, case_id: str) -> None:
-    """Refuses a case this store has no registry row for: its absent objects and tables would read as passes.
+def held_spelling(store, case_id: str) -> str | None:
+    """The case id as the registry holds it: the id itself when a row carries it exactly, else the one row whose
+    id names the same case database under another spelling, else None. The case database's file name is built
+    from the id in lower case, so an id written in upper case names the case it spells."""
+    if store.registry(case_id) is not None:
+        return case_id
+    rows = ingest.rows_for_file(store.conn, case_id)
+    return rows[0]["case_id"] if len(rows) == 1 else None
+
+
+def refuse_unless_held(store, case_id: str) -> str:
+    """The registry's spelling of a case this store holds. Refuses a case it has no registry row for, whose absent
+    objects and tables would read as passes, and an id two rows name under other spellings.
 
     store.case_file runs first and refuses a string that is not a case id, so no part of a typed value is echoed."""
     store.case_file(case_id)
-    if store.registry(case_id) is None:
-        raise Refusal("VERIFY_SHRED_CASE_NEVER_HELD", f"case {case_id[:8]}")
+    held = held_spelling(store, case_id)
+    if held is None:
+        named = len(ingest.rows_for_file(store.conn, case_id))
+        detail = f"case {case_id[:8]}" if not named else (
+            f"case {case_id[:8]}: {named} registry rows name this case database under other spellings; name one exactly")
+        raise Refusal("VERIFY_SHRED_CASE_NEVER_HELD", detail)
+    return held
 
 
 def refuse_own_canary(store, case_id: str, canary: str | None) -> None:
@@ -342,8 +361,10 @@ def verify(store, case_id: str, canary: str | None = None, inventory: dict | Non
     """The five checks as dated facts, then the stamp read. Refuses a case never held here and a canary that is the case.
 
     Returns {"case_id", "checks", "all_passed", "stamped", "verdict"}."""
-    refuse_unless_held(store, case_id)
+    case_id = refuse_unless_held(store, case_id)
     refuse_own_canary(store, case_id, canary)
+    if canary is not None:
+        canary = held_spelling(store, canary) or canary
     now = now or dt.datetime.now(dt.timezone.utc)
     stamps = stamps or read_stamps()
     checks = [

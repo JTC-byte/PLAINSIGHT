@@ -4949,3 +4949,123 @@ inventory, the 37 merged branches. This entry's commit follows his go word of
 17:07:57 by the usual route.
 
 ---
+
+## 2026-11-02, resumed on the personal account: pull request 38 merged on the maintainer's click, the second-model review of 8583132, and the extraction tool's three misreads corrected.
+
+**Class:** B. `tools/since_last_record.py` changes behaviour (three misreads
+corrected, each with a self-test case and a control) and `AGENTS.md` section
+8's description of it follows; `CHANGELOG.md` takes an entry. No doctrine,
+spec, schema, policy, ontology, runtime, gate or value changes.
+
+**Agent involvement.** Personal-account session c941f6e6, started at about
+17:35 EST by the parent of 11-02 (local_a7b08618) on his words of today, which
+research/inputs/resume_briefs_2026-11-02/README.md section 1 in the parent
+folder records verbatim; the refresh ran on Opus 5.5 from records with no
+agent; Fable 5.1 in the main loop from the parent's go at 17:36. Every agent
+slot of the estate was held by other lanes until 18:17 and the heavy-run lock
+by zisr-producers from 17:41, so the review and the fix below were done in
+the main loop; one Sonnet 5.5 verifier (agent-slot-2, 18:17 to 18:20,
+read-only, then again 18:23 to 18:25 on the deltas) read the staged fix as
+its second model, found every checked claim true with three controls seen
+failing on a copy, named three weaknesses, each answered below, and on its
+re-check found one defect the answer had introduced, closed below with a
+plant and a control. One lapse, recorded as the 2026-10-08 rule asks: the kernel
+gate ran once on the checkout at 17:5x before this session had the estate's
+heavy-run rule in its loop; every later battery-sized run waits on the lock.
+
+**His line of the day in this chat.** At about 17:44 EST, a click on the
+offered action labelled "Merge it" (the button's message, the session's words
+he accepted: fast-forward main from 069d483 to 0aac3b9, push main, read every
+CI step on main and report back before anything else). The go word of
+17:07:57 on 10-28 lived in the predecessor's chat and named that day's parent,
+and under the brief of 11-02 a delegation naming an earlier parent does not
+carry over, so the merge took his word here and not that go word.
+
+**Pull request 38 merged.** Its two branch runs on 0aac3b9 (40790532704 push,
+23:54:35Z to 00:01:14Z; 40790538481 pull_request, to 00:05:43Z), which the
+predecessor never read because it ran out of usage at 20:06 EDT on 10-28, were
+read step by step at about 17:40 today: success on every step of each. On his
+click, main was fast-forwarded 069d483..0aac3b9 and pushed at 17:44:21 EST;
+pull request 38 MERGED at 22:44:20Z; CI run 41539769592 on main (22:44:22Z to
+22:52:27Z) concluded success on every step, the 23 named steps read one by one
+at 17:55. State then: HEAD == main == origin/main == GitHub main == 0aac3b9,
+clean, stash 0, one worktree, no open pull request, 38 merged branches on
+origin. The addendum the predecessor owed is section 8 of
+CLOSEOUT_2026-10-28.md in Z-ISR/_session-artifacts/2026-10-28-plainsight-build/,
+with the delta re-run from 2026-10-28T21:40:40Z beside it
+(SINCE_LAST_RECORD_2026-11-02_addendum.md, 263 entries, sha256
+5de796155c9212cf), its self-test and two live controls seen refusing first.
+
+**The second-model review of 8583132 (item 1 of the 10-28 list).** Record:
+Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/REVIEW_8583132.md.
+Fable 5.1 read the six mechanisms the item names against their doctrine and
+design sentences and ran each: the subject guard suite, 22 passed; the
+Sherlock harness, 6 of 6 fixtures, 30 events graded, 0 refused; the manifest
+validator refusing MANIFEST_SELECTOR_PLATFORM on a mutated copy of the real
+manifest and passing the real one; the authorization, manifest and connector
+conformance self-tests green; the application suite, 195 passed with its 91
+paired controls; the kernel gate, 24 implemented, 0 failed. No defect found in
+the six. Four readings for him, none a defect: the run's egress.environment is
+a schema constant the adapter writes as a literal, so EG-6's enforcement is
+preflight and not the field; no two of the 481 Sherlock sites collapse to one
+platform token, a property no test asserts; the egress guard's six-character
+bare-form floor is a design constant he has not read; one dead monkeypatch
+line in a test. The review claims coverage of the six, not correctness of the
+commit.
+
+**The extraction tool's three misreads corrected (item 3).** Named in the
+first 2026-10-28 entry and the closeout's section 3, and a third in the brief
+of 11-02: (1) a click whose record carries the button's label rather than its
+message read as TYPED, which every click of 10-28 did; (2) a harness record in
+the user role, the context-compaction summary of 05:14:45 (its record carries
+isCompactSummary) and the classifier notice of 09:00:55 (isMeta), read as
+TYPED; (3) every stamp converted with the local offset of the day the tool
+runs, so after the daylight-time change of 11-01 every stamp from before it
+printed one hour early (the delta of today's addendum shows 16:45:23 for his
+click of 17:45:23). The fix: the match against the most recent wrap-up call
+also reads an action's label as the click, marked "by its label"; a user
+record carrying either flag is listed under a new section by stamp and kind
+and its text is never copied; each stamp converts with the operating system's
+offset for that instant, written after the stamp. The verifier's three
+weaknesses: a typed word equal to a label of the latest wrap-up call reads as
+that click, and the record fields do not tell them apart (measured: his typed
+release and his clicks carry the same promptSource and turnOrigin), so the
+mark and the docstring now say so and a plant proves a superseded call's
+label stays typed; the harness branch could have hidden a flagged record's
+tool result, so tool results are now read before the flag is applied; stamps
+carried no zone marker, so each now carries its offset. The re-check's
+defect: the harness branch reused the name of the line kind, so a second text
+block of an unflagged record was misfiled as a harness record and its text
+dropped; the name is now the record's own, a record typed in two blocks is
+planted, and the defect re-planted on a copy fails four checks. The self-test
+has 21 checks over 15 planted lines (a label click, a superseded call's
+label, a two-block record, a compaction summary and a harness notice among
+them), a zone check against the
+operating system's clock for two instants on either side of the change, its
+reference read independently of the conversion, with the fixed-offset
+conversion seen to differ on this machine, and the four controls refusing. Over the predecessor's transcript from
+2026-10-28T05:00:00Z the fixed tool reads 1 typed line (his release of
+01:47:22), 9 clicks by label, 7 harness records and 0 lines a reader would
+take for his that are not. `tools/validate_hygiene.py` exits 0 over the edited
+tree.
+
+**Item 2, the negative-control audit, run (20:06 to 20:31 EST).** By the
+2026-10-18 method in a clone at 0aac3b9 beside a clone of ZMeta/zmeta-spec,
+under the estate's heavy-run lock taken with no waiting file present: the six
+gate entries 8583132 added and the three it moved each exit 0 on the tree as
+it stands (the unratified one refuses by design) and each was seen failing
+under one planted break naming its refusal; the aggregator was seen red twice.
+Two findings, neither a defect of 8583132: the harness's cut had a precedence
+bug on a condition with `or`, fixed and the control re-run; and
+`tools/pin_of_record.py --self-test` breaks when runner/dispatch_allowlist.yaml
+exists, because its absent-file example is that real path, so the commit that
+lands DA-R2 stamped must also move that example (Class B, owed then). The
+kernel gate on this commit's staged tree, under the same lock: 24 implemented,
+0 failed. Record: Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/AUDIT_2026-11-02.md.
+
+**Open.** Items 4 to 8 of the list follow, with briefs for 4 and 8 written. His, unchanged: the DA-R2 stamp outside the tree, the readings
+each artifact carries, the 28 queue items, plan item 0.7, every stamp, the 38
+merged branches. This entry's commit follows the usual route on his word in
+this chat.
+
+---

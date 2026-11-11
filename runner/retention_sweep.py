@@ -3,10 +3,11 @@
 DRAFT, UNRATIFIED, AND IT DELETES NOTHING. Step 11 of docs/THE-GAMEPLAN.md, in
 the shape Step 10 took for the subject gate: every value is read from
 policy/retention.yaml, the stamp state is read from the pin of record through
-tools/pin_of_record.py, and every act that would remove material refuses while
-the pin carries no row, each refusal rendered as its consequence with the legal
-moves. The Class F edges, retain_until itself and the shred, stay the
-operator's; this file may land only refusing (the 10-28 record, item 7).
+tools/pin_of_record.py when a refusal needs it, and every act that would remove
+material refuses while the pin carries no row, each refusal rendered as its
+consequence with the legal moves. The Class F edges, retain_until itself and
+the shred, stay the operator's; this file may land only refusing (the 10-28
+record, item 7).
 
 WHAT RUNS NOW. doctrine/RETENTION.md RT-12: the sweep is scheduled from day one,
 while it still has nothing to delete, and writes a heartbeat on every run,
@@ -96,14 +97,16 @@ can confirm or reverse each:
 
 (RS-R6 is in runner/verify_shred.py.)
 
-Run as python -m runner.retention_sweep --store ROOT [--once] [--every S].
-Exit 0 when the run finished deciding and every heartbeat it attempted was
-written, whether or not a case was due, frozen, shredded or marked
-shred_failed; a store with no held case writes no heartbeat and says so. Exit
-1 when the door refused a heartbeat, when a held case carries a date the sweep
-could not read, when the registry says open for a case whose database is
-absent, or when the store could not be opened. Exit 2 when the command line
-could not be read.
+Run as python -m runner.retention_sweep --store ROOT [--once] [--every S]. Exit
+0 when the run finished deciding and every heartbeat it attempted was written,
+whether or not a case was due, frozen, shredded or marked shred_failed; a store
+with no held case writes no heartbeat and says so. Exit 1 when the door refused
+a heartbeat, when a held case carries a date the sweep could not read, when the
+registry says open for a case whose database is absent or carries a state the
+schema does not name, or when the store could not be opened. Exit 2 when the
+command line could not be read. A run reads the pin of record only when a
+refusal needs it, so a run that reaches no shred, which is every run of this
+draft, does not depend on the pin reader.
 """
 
 from __future__ import annotations
@@ -166,6 +169,29 @@ class Stamps:
 def read_stamps() -> Stamps:
     """The live pin. The test suite replaces this function; a caller never does."""
     return Stamps()
+
+
+class LazyStamps:
+    """The pin of record, read the first time a refusal needs it and not before. RT-12's heartbeat is written
+    on every run, and a run that reaches no shred has no question to put to the pin, so a missing or broken
+    pin reader does not stop it. read_stamps is looked up when the pin is first needed."""
+
+    def __init__(self):
+        self._stamps = None
+
+    def _read(self):
+        if self._stamps is None:
+            self._stamps = read_stamps()
+        return self._stamps
+
+    def policy_stamped(self) -> bool:
+        return self._read().policy_stamped()
+
+    def fixture_stamped(self) -> bool:
+        return self._read().fixture_stamped()
+
+    def reason(self, rel: str) -> str:
+        return self._read().reason(rel)
 
 
 def cadence_days(policy_path: Path | None = None) -> int:
@@ -235,13 +261,26 @@ def unaccounted(state: str, present: bool) -> bool:
     return state == "open" and not present
 
 
+def state_clause(state: str) -> str:
+    """What the registry says of a case, as a clause. A state the schema's CHECK does not name is said to be one,
+    and is never looked up as a key that raises."""
+    return NOT_HELD_STATE.get(state, ingest.STATE_NOT_NAMED)
+
+
+def unnamed_state(state: str) -> bool:
+    """A registry state the schema's CHECK does not name: a registry the sweep cannot decide, so the run exits 1."""
+    return state not in NOT_HELD_STATE
+
+
 def not_held_text(state: str, present: bool) -> str:
     """A case that is not held, rendered as what the sweep did about it."""
     where = "is still present" if present else "is absent"
-    text = (f"NOT HELD · {NOT_HELD_STATE[state]} and the case database {where} · no heartbeat written: "
+    text = (f"NOT HELD · {state_clause(state)} and the case database {where} · no heartbeat written: "
             "the sweep writes only into an open case whose database is present, and never recreates one")
     if unaccounted(state, present):
         text += " · retain_until cannot be enforced on a case with no database, so this run exits 1"
+    elif unnamed_state(state):
+        text += " · the schema allows no such state, so this run exits 1"
     return text
 
 
@@ -312,15 +351,9 @@ def refused_heartbeat(case_id: str, refusal: Refusal) -> dict:
                     "show the run · this run exits 1"}
 
 
-def sweep(store, now: dt.datetime | None = None, humans=None, stamps: Stamps | None = None) -> dict:
-    """One run: every case decided with nothing written, then the heartbeat in every held case.
-
-    Returns {"now", "next_due", "not_held": [...], "unreadable": [...], "skipped_frozen": [...], "due": [...],
-    "heartbeats": [event ids], "refused_heartbeats": [...]}. The heartbeat is the only write: one appended
-    event, and the door's projector raising that case's case_rollup counters. Nothing is deleted. `now` is
-    for the test suite; the command line takes no instant (reading RS-R8)."""
-    now = now or dt.datetime.now(dt.timezone.utc)
-    stamps = stamps or read_stamps()
+def decide(store, now: dt.datetime, stamps) -> tuple[dict, list[str], dt.datetime]:
+    """Every registry row decided, with nothing written: the report without its heartbeats, the held cases,
+    and the next due time."""
     next_due = now + dt.timedelta(days=cadence_days())
     found = survey(store, now)
     report = {"now": retention.format_ts(now.replace(microsecond=0)), "next_due": retention.format_ts(next_due.replace(microsecond=0)),
@@ -346,12 +379,36 @@ def sweep(store, now: dt.datetime | None = None, humans=None, stamps: Stamps | N
             "refusal": refusal.code,
             "text": f"DUE, NOT SWEPT · past retain_until {row['retain_until']} · {REFUSALS[refusal.code].what}",
         })
-    for case_id in found["held"]:
+    return report, found["held"], next_due
+
+
+def write_heartbeats(store, report: dict, held: list[str], now: dt.datetime, next_due: dt.datetime, humans=None) -> None:
+    """The run's one write, made after every case is decided: a heartbeat in each held case, and each heartbeat
+    the door refused reported with its refusal (reading RS-R7)."""
+    for case_id in held:
         try:
             report["heartbeats"].append(write_heartbeat(store, case_id, now, next_due, humans))
         except Refusal as refusal:
             report["refused_heartbeats"].append(refused_heartbeat(case_id, refusal))
+
+
+def sweep(store, now: dt.datetime | None = None, humans=None, stamps: Stamps | None = None) -> dict:
+    """One run: every case decided with nothing written, then the heartbeat in every held case.
+
+    Returns {"now", "next_due", "not_held": [...], "unreadable": [...], "skipped_frozen": [...], "due": [...],
+    "heartbeats": [event ids], "refused_heartbeats": [...]}. The heartbeat is the only write: one appended
+    event, and the door's projector raising that case's case_rollup counters. Nothing is deleted. `now` is
+    for the test suite; the command line takes no instant (reading RS-R8). The pin of record is read only
+    when a refusal needs it."""
+    now = now or dt.datetime.now(dt.timezone.utc)
+    report, held, next_due = decide(store, now, stamps or LazyStamps())
+    write_heartbeats(store, report, held, now, next_due, humans)
     return report
+
+
+def refusal_renders(report: dict) -> list[str]:
+    """Each refusal of a due or unreadable case, once, rendered with its rule and its legal moves (RS-R2)."""
+    return [Refusal(code).render() for code in sorted({row["refusal"] for row in report["due"] + report["unreadable"]})]
 
 
 def print_report(report: dict) -> None:
@@ -370,14 +427,15 @@ def print_report(report: dict) -> None:
             print(f"{row['case_id'][:8]}: {row['text']}")
     if not report["due"] and not report["skipped_frozen"] and not report["unreadable"]:
         print("nothing due: no held case is past retain_until")
-    for code in sorted({row["refusal"] for row in report["due"] + report["unreadable"]}):
-        print(Refusal(code).render())
+    for text in refusal_renders(report):
+        print(text)
 
 
 def exit_code(report: dict) -> int:
     """1 when a heartbeat was refused, when a held case carries a date the sweep could not read, or when
-    the registry says open for a case whose database is absent; else 0."""
-    lost = [row for row in report["not_held"] if unaccounted(row["state"], row["present"])]
+    the registry says open for a case whose database is absent or carries a state the schema does not name;
+    else 0."""
+    lost = [row for row in report["not_held"] if unaccounted(row["state"], row["present"]) or unnamed_state(row["state"])]
     return 1 if report["refused_heartbeats"] or report["unreadable"] or lost else 0
 
 

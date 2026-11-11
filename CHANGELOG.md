@@ -22,6 +22,29 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-11. The retention sweep reads the pin only when a refusal needs it, and item 7's open findings close.**
+
+  **What changed.** `runner/retention_sweep.py` reads the pin of record only
+  when a refusal needs it, so no run depends on the pin reader; a registry
+  state the schema does not name is reported and exits 1 where it raised a
+  KeyError; the run's decision and its write are two functions.
+  `runner/verify_shred.py` reads a case id under any letter case. The four
+  behaviours item 7's third read found without a control now have one each.
+  Design amendment 9.22.
+
+  **Surfaces moved.** The two runner modules, `app/tests/test_retention_sweep.py`,
+  `app/README.md`, the design record, the app-tests gate entry's description,
+  the handoff, the worklog and its archive, this file.
+
+  **Validation.** The second-model reads of patches A and B; the application
+  suite with A to D, 328 passed and 1 skipped; every new control seen failing
+  at its line; hygiene and both diff checks; the kernel gate and the
+  pre-commit hook on the staged tree.
+
+  **What did not change.** The sweep deletes nothing and verify_shred reports
+  no pass. No doctrine, spec, schema, policy, ontology or corpus file, no gate
+  entry or hook command.
+
 - **2026-11-11. The store writes only into a held case.**
 
   **What changed.** Every entry point that writes into a case refuses a case

@@ -202,26 +202,29 @@ heartbeat. The door refuses a write into such a case (CASE_CLOSED_TO_WRITES),
 so the sweep does not attempt one. A row that says shredded or shred_failed is
 verify_shred's to judge and does not change the exit code. A row that says open
 for a case whose database is absent makes the run exit 1, because
-`retain_until` cannot be enforced on a case with no database. A held case whose
-`retain_until` or `frozen_until` cannot be read as a date is refused
-(SWEEP_REFUSED_DATE_UNREADABLE) and the run exits 1. A case is due from the
-instant `retain_until` names, 00:00:00Z on that date, as the store's own
-`is_past` reads it. A held case past `retain_until` whose freeze is still in
-force is skipped and said so (RT-17). Every other held case past `retain_until`
-is stated as due with the pre-shred sequence of RETENTION.md section 9, and
-refused at its first step: the RT-13 finding check the kernel gate lists as
-PENDING (SWEEP_REFUSED_FINDING_CHECK_PENDING), then the shred, refused on LOCAL
-(SWEEP_REFUSED_LOCAL_STORE), refused while `policy/retention.yaml` carries no
-dated row (SWEEP_REFUSED_POLICY_UNRATIFIED), and refused after both because
-this draft holds no shred (SWEEP_REFUSED_SHRED_NOT_BUILT). The run then appends
-one SYSTEM_EVENT SWEEP_HEARTBEAT per held case through the door (producer
-runner-sweep, next_due one day on, read from the policy's daily cadence). A
-heartbeat the door refuses is reported as "HEARTBEAT REFUSED" with the door's
-refusal and its legal moves, and the run exits 1. On LOCAL the door lands a
-system event only in a case the registry marks synthetic
-(ACT_LOCAL_SYNTHETIC_CASE_ONLY). A run that wrote no heartbeat says "no
-heartbeat written" and why. The sweep deletes nothing and writes no
-SHRED_RECEIPT and no SHRED_FAILED.
+`retain_until` cannot be enforced on a case with no database. So does a
+registry state the schema does not name, which the run reports as such and does
+not raise on. A held case whose `retain_until` or `frozen_until` cannot be read
+as a date is refused (SWEEP_REFUSED_DATE_UNREADABLE) and the run exits 1. A
+case is due from the instant `retain_until` names, 00:00:00Z on that date, as
+the store's own `is_past` reads it. A held case past `retain_until` whose
+freeze is still in force is skipped and said so (RT-17). Every other held case
+past `retain_until` is stated as due with the pre-shred sequence of
+RETENTION.md section 9, and refused at its first step: the RT-13 finding check
+the kernel gate lists as PENDING (SWEEP_REFUSED_FINDING_CHECK_PENDING), then
+the shred, refused on LOCAL (SWEEP_REFUSED_LOCAL_STORE), refused while
+`policy/retention.yaml` carries no dated row (SWEEP_REFUSED_POLICY_UNRATIFIED),
+and refused after both because this draft holds no shred
+(SWEEP_REFUSED_SHRED_NOT_BUILT). The run then appends one SYSTEM_EVENT
+SWEEP_HEARTBEAT per held case through the door (producer runner-sweep, next_due
+one day on, read from the policy's daily cadence). A heartbeat the door refuses
+is reported as "HEARTBEAT REFUSED" with the door's refusal and its legal moves,
+and the run exits 1. On LOCAL the door lands a system event only in a case the
+registry marks synthetic (ACT_LOCAL_SYNTHETIC_CASE_ONLY). A run that wrote no
+heartbeat says "no heartbeat written" and why. The sweep deletes nothing and
+writes no SHRED_RECEIPT and no SHRED_FAILED. A run reads the pin of record only
+when a refusal needs it, so a run that reaches no shred, which is every run of
+this draft, does not depend on the pin reader.
 
 The case header renders the heartbeat as RT-12's consequence, and reads only a
 heartbeat whose time is not after now. The latest run is the heartbeat with
@@ -240,12 +243,12 @@ raise.
 
 `python -m runner.verify_shred --store <root> --case <id> [--canary <id>
 --canary-payloads N --canary-claims N --canary-blobs N]` runs RT-9's five
-checks as dated facts, each PASS, FAIL or NOT RUN, and refuses to report a
-pass while the shred fixture carries no dated row (VERIFY_SHRED_UNRATIFIED).
-Check 1 fails as not_found on every run. What designates a witness ciphertext
-is undecided (SR-U1), so the check has nothing to attempt a decrypt on and
-reads no path, and RT-9 names not-found a failure. A file named witness in the
-case's blob folder is an object check 2 counts. Check 2 fails on an object that
+checks as dated facts, each PASS, FAIL or NOT RUN, and refuses to report a pass
+while the shred fixture carries no dated row (VERIFY_SHRED_UNRATIFIED). Check 1
+fails as not_found on every run. What designates a witness ciphertext is
+undecided (SR-U1), so the check has nothing to attempt a decrypt on and reads
+no path, and RT-9 names not-found a failure. A file named witness in the case's
+blob folder is an object check 2 counts. Check 2 fails on an object that
 remains and is not run when none does, because the store records no count to
 compare (SR-U1). Check 3 fails before it opens anything when a file SQLite
 keeps beside the case database is on disk (-journal, -wal or -shm), because a
@@ -264,11 +267,15 @@ caller recorded, and is not run when no canary and inventory are named (U-11).
 Checks 1, 2 and 4 have no passing path here, so no run reports a verified
 shred. The program refuses a case this store never held
 (VERIFY_SHRED_CASE_NEVER_HELD) and a canary that is the case itself
-(VERIFY_SHRED_CANARY_IS_THE_CASE). `app/tests/test_retention_sweep.py` pairs
-every check with a control that removes its mechanism. Four behaviours the two
-modules state have no control of their own, so the suite stays green when one
-is changed: a heartbeat whose time equals now is read as a run, a due case's
-refusal is printed with its legal moves, the heartbeat is written after every
-case is decided, and the canary is opened read-only. Three of check 3's
-controls (zero rows, one table read, any query error) fail on the wording of
-the fact alone, because the schema count stops the same false pass.
+(VERIFY_SHRED_CANARY_IS_THE_CASE). A case id is read under any spelling of its
+letters, because the case database's file name is built from it in lower case,
+and the registry's spelling is used for every check.
+`app/tests/test_retention_sweep.py` pairs every check with a control that
+removes its mechanism. Each behaviour the two modules state has a control of
+its own, among them the four the third read of item 7 found without one: a
+heartbeat whose time equals now is read as a run, a due case's refusal is
+printed with its legal moves, the heartbeat is written after every case is
+decided, and the canary is opened read-only. Three of check 3's controls (zero
+rows, one table read, any query error) fail on the wording of the fact alone,
+because the schema count stops the same false pass; they stay, because the why
+is the part of the fact an operator reads.
