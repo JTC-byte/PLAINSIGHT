@@ -15,188 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-10-28, the build night under the maintainer's typed release of 01:47: Step 9, Step 12's schema and harness, Step 10 drafted, the Sherlock connector on cassettes, and the application's first slice.
-
-**Class:** C, the highest class touched: application and runner code, a
-connector, validators and their wiring, the design record's appended section 9,
-and the Class B artifacts beneath them (the divergence register, the manifest
-schema, the harness fixture schema). No Class F change landed. The dispatch
-allowlist exists only as a draft outside the tree, and no doctrine, policy,
-ontology, synthetic or corpus file changed.
-
-**Agent involvement.** This session was started by the parent folder session on
-the evening of 2026-10-27 on Sonnet 5.5 at medium, measured the state (`main`
-== `origin/main` == `41badf7`, 35 branches each equal to `origin`, one
-worktree, stash 0, nothing staged, no open pull request), ran the extraction
-over its own transcript (nothing substantive), reported to the parent and held.
-At about 01:50 on 2026-10-28 his local `/model` command set it to Fable 5.1
-with Ultracode on. Five Workflow runs followed, every agent Opus 5.5 at high,
-each in the same shape: one or two builders on the working tree, read-only
-lenses, three refuters per finding, one fixer with a negative control per fix,
-one verifier. Phase A, Step 9: 176 agents. Phase B, the manifest schema and
-validator: 205. Phase E, the application: 245, launched before the parent's
-three-agent instruction reached this session and kept at its fan-out. Phase
-C+D, Step 10 and the connector: 286, capped at three agents at once, cut at
-about 06:30 by the account's usage limit with 35 agents unrun, and finished
-after the 07:50 reset by a continuation of 35 agents from the saved findings so
-that neither builder re-ran on the built tree. The session wrote the briefs,
-the records and this entry and ran the battery; it wrote no code. The records
-of every phase, the lens findings, every refuter verdict and the fixer and
-verifier reports are in
-`Z-ISR/_session-artifacts/2026-10-28-plainsight-build/`.
-
-**His line in this chat**, read from the extraction filed beside that record,
-which marks it as typed and marks no click and no selection. At 01:47:22:
-"take any instructions from the parent, but while waiting go ahead and take
-care of as much as you can for plainsight. From doctrine and semantics to
-building what you can for the OSINT gathering tools (minus what you need me to
-provide) and starting work on the social web operating picture all the data
-will be visualized with and interacted with. Just get as much as you can done
-while waiting for stuff from me like VMs, domains, SIM cards etc". Read here as
-a release of the hold on work: parent instructions bind, and every commit,
-push, merge and Class F decision still takes his own word in this chat, per
-act. The parent's instruction of the night, his machine-load rule of
-2026-09-30 (three agents across the estate at most), was followed from the
-next launch on. His `/model` command is a local command the extraction does
-not list. One problem with the extraction, found here and left for a Class B
-fix with its own self-test case: it marks two further lines as typed that are
-not his, the context-compaction summary of 05:14:45 and a classifier notice of
-09:00:55, because both arrive in the user role and the tool reads every
-user-role record it cannot match to an offered action as typed. A reader of
-`SINCE_LAST_RECORD_2026-10-28.md` takes its first line only as his.
-
-**What was done** (Eastern time):
-
-- 02:00 to 03:20, Step 9. `spec/divergence-register.yaml` (30 entries, 8
-  identical pointers, readings DR-R1 to DR-R4), its validator (seven codes, 39
-  self-test breaks), its renderer and the rendering; wired into the Makefile,
-  the hook, CI (which clones the public `zmeta-spec` at tag v1.1.27 beside the
-  checkout) and the kernel gate. Review: 56 findings, 25 confirmed, 9 defects
-  fixed, among them a per-branch required-ness fingerprint and a sound
-  expansion of anyOf and oneOf alternatives.
-- 03:25 to 04:30, Step 12 part one. `schema/connector-manifest.schema.json`,
-  `conformance/connector-harness/fixture.schema.json` with its README,
-  `tools/validate_manifest.py` (96 self-test cases), PIN-R9 in
-  `tools/pin_of_record.py`. Review: 65 findings, 16 fixes, 7 proposed fixes
-  skipped as widening and recorded as readings MF-R13 to MF-R16.
-- 03:44 to 06:14, the application's first slice, `app/`, 59 files: the store
-  (stdlib sqlite3, the Postgres DDL as the record, twelve tables, event log
-  append-only by trigger), the ingest door through `tools/validate.py`, rebuild
-  and replay, a server bound to 127.0.0.1 with an egress guard, the case-scoped
-  social web as SVG with caps of 300 nodes and 600 edges and no weight
-  anywhere, the Lineage Drawer, PATHS, DOSSIER, SSE with opaque ids, and
-  amendments 9.1 to 9.12 appended to `docs/PLAINSIGHT-design.md`. Review: 78
-  findings, 33 confirmed and fixed; 194 tests with 90 paired negative controls.
-- 04:18 to 06:30 and 08:02 to 08:59, Step 10 and Step 12 part two.
-  `runner/subject_guard.py` (22 tests; the live pin refuses every request at
-  step 1), `--dispatch-paths` in `tools/validate_authorization.py` (43 planted
-  cases; refuses while the allowlist is absent), `connectors/sherlock/` on
-  hand-built cassettes with placeholders only (38 tests),
-  `tools/validate_connector_conformance.py` (25 plants). Sherlock, Docker and
-  the network were never run. Review: 91 findings, 57 stand, 38 defects fixed.
-- 09:00 to 09:10, the closeout records. 100 files staged (26,187 insertions,
-  160 deletions); hygiene, the repo scan over 148 tracked files and the kernel
-  gate run on the staged tree; the 2026-09-29 entry moved to the archive
-  unedited; this entry.
-
-**Decisions taken here**, each an agent reading or a session choice he can
-reverse: the fan-out cap at three after the parent's instruction; the
-application's wiring into the gate battery and the SH-R5 schema move held for
-his word, because the weekly usage line stood at 76 percent with four days to
-its reset and PLAINSIGHT is fourth in his order of 2026-10-16; staging before
-the records, per `AGENTS.md` section 8; every DR, MF, APP, SG, VA, DA, SH and
-CC reading is recorded in the artifact that carries it and in the record
-folder.
-
-**What changed in state.** The tree carries the four phases, staged. The
-kernel gate is red on three entries by design: `retention-self-test`, because
-`policy/retention.yaml` line 870 still says `canary_subject_class` is absent
-while the tree now requires and declares it; `connector-manifest` and
-`connector-conformance`, because the Sherlock manifest's handle emit names no
-platform (reading SH-R5: a handle's registry form binds a platform and
-Sherlock's platform differs per site). The pre-commit hook refuses this tree at
-`validate_manifest --all` for the same reason, so the commit waits on his SH-R5
-decision as well as his commit word. `--dispatch-paths` refuses because the
-allowlist is absent; its draft, DA-R1, is in the record folder and must be
-re-measured before any stamp (11 sites outside the gate, all under `app/`).
-
-**Open.** SH-R5 and the retention flag with its self-test mutation; DA-R1; the
-application's wiring (kernel gate, Makefile, hook, CI); the sentences in rank 1
-to 3 files the build made false, listed in the record folder; the 28 queue
-items, none answered; plan item 0.7; the Step 7 fixes and the held agent work;
-the audit's section 8 finding; the credentials inventory; the 34 merged
-branches, deleted only on his words naming that act.
-
-**Addendum, 12:09 to 14:5x: the three held builds, on his click.** At
-12:09:52 he clicked the offered action labelled "Build them now"; the button
-carried the session's message "Go ahead: build the SH-R5 schema move, the
-retention flag with its self-test mutation, and the app wiring pass now, one
-writer, reviewed; re-run the battery and re-stage; still no commit without my
-word.", which he accepted by the click and did not compose, and his record
-carries the label. A click on an offered action in this chat is his
-instruction for that act, by his own words of 2026-10-24 01:30:58. The
-extraction marks that line as typed, because the tool compares a record with
-the offered action's message and this record carries its label: a second case
-for the fix named above. One Workflow run (wf_faceb804-0b2, 12:13 to 14:34,
-159 Opus agents, capped at three): one writer, six lenses, 150 refuter calls,
-one fixer, one verifier.
-
-- SH-R5 cleared by reading MF-R17: an emit of a key whose registry form binds
-  a platform may declare `platform_from_item` in place of `platform`, only on
-  a manifest whose `probe_unit` is endpoint; exactly one of the two where the
-  form binds a platform, neither where it binds none, each case refused by
-  name under MANIFEST_SELECTOR_PLATFORM. The Sherlock emit uses it, and the
-  handle claim value carries a token derived from the site name alone
-  (SH-R18: lower-cased, non-alphanumeric runs to one underscore; nine sites
-  give no token, the four starting with a digit and the five with a
-  parenthesised qualifier, and a Claimed row there is ambiguous with no
-  claim). Amendments 9.14 and 9.15 appended. DECLARE passes; the kernel
-  gate's two connector entries pass.
-- The retention flag: `policy/retention.yaml` line 870 reads `present: true`,
-  the one policy change, and the self-test mutation flips the flag rather
-  than setting it. The retention self-test passes.
-- The application's tests join the kernel gate (`app-tests`, IMPLEMENTED,
-  `--tb=short`), `make test` and a named CI step, and stay out of the hook and
-  preflight (APP-R30: about three minutes, and they guard runtime behaviour
-  rather than what enters git history). CI stays on Python 3.12: `app/`
-  compiles there and every standard-library attribute it names resolves, and
-  the suite on 3.12 is unverified until a push (CI-R1 not taken).
-- The dispatch scanner reads a patch target, a patched attribute's kept
-  original and an attribute assigned over as no site, in test modules only
-  (VA-R6, with eleven plants and seven more from the fixer, 61 dispatch cases).
-  The test client's two loopback connections moved to `app/tests/conftest.py`
-  naming 127.0.0.1 on the call. `--dispatch-paths` now finds four sites
-  outside the gate, all covered by the re-measured draft DA-R2 in the record
-  folder, never in the tree.
-- Review: 51 findings, 150 refuter calls, 32 stand; the fixer applied eight
-  (VA-R6 narrowed to test modules with the patch.object and receiver names
-  exact; a kept original called in place is a site; the entity emit refuses
-  `platform_from_item`; qualified site names give no token; CONFORMANCE.md,
-  AGENTS.md and README.md brought to the present) and skipped the records,
-  which this entry and the handoff carry. 13 controls seen failing in scratch
-  copies. Verifier: every check passes, the kernel gate and the hook exit 0,
-  every fix present by line.
-
-**Two questions this build leaves him**, each recorded where the artifact is:
-the class of VA-R6 (the session applies it as a Class B precision rule of the
-scanner, in test modules only, with plants proving a patch whose replacement
-dispatches is still a site; the widening lens read it as Class F; if he reads
-it so, the rule comes out and the four `test_http.py` patch references join
-DA-R2) and the class of the line 870 edit (the session reads it as Class B, a
-statement of enforcement state reaching no subject, retention period or egress
-path; the C+D fixer's comments had called it Class F; he instructed it either
-way, and a Class F reading would need his dated row in the pin).
-
-**State after the re-stage.** The index holds every file of the night with
-these builds on top, 106 files. The battery of 33 commands ran 14:40:58 to
-14:46:50 on the staged tree: 29 exit 0 and the four designed refusals of the
-unratified modes (`--policy`, `--shred-roundtrip`, `--dispatch-paths`,
-`--fixtures`); the kernel gate at 32 entries with 24 implemented and none
-failed; the pre-commit hook passing; both diff checks clean. The commit waits
-on his typed word.
-
----
-
 ## 2026-10-28, the build night's commit, push, merge and three CI runs, under the maintainer's clicks of 2026-10-28.
 
 **Class:** A. This entry and the handoff's header and section 0 change no
@@ -581,3 +399,25 @@ this chat.
 **Battery.** The application suite on the final code: 276 passed and 1 skipped in 352.02 s (21:37:03 to 21:42:55 EST), the skip the Postgres apply, which runs on his word. The module alone, 14 passed; its controls one by one, 44 of 44 failing their check and none staying green (21:35:43 to 21:36:54 EST), the two new ones on check 3's outcome at the line that plants the journal and on the open the spy saw. `pytest app --collect-only` gives 277 tests, and `test_controls.py` 148, of which 147 are controls. Hygiene exit 0 on the final text and both diff checks clean. The extraction tool's self-test at 21:19:30 EST: "since_last_record --self-test ok: 22 checks, 15 planted lines classified, 4 controls seen refusing". The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
 
 **Open.** Item 8 of the 10-28 list, built on 2026-11-09 and held as a patch in the record folder with its report, read by no second model, his word to land; slice 4; Step 11's shred, ledger and receipt, which wait on the ISOLATED store, U-09, U-11, SR-U1 and his stamps; the door's missing held-case check; the reads' open findings above; `tools/since_last_record.py` lists a parent's message as a harness notice and none as received in this harness build, seen in both sessions' transcripts on 2026-11-09 and not fixed, so the parent's messages are filed by script in the record folder; his: everything the previous entries list, plus RS-R1 to RS-R8 and amendment 9.19, and whether his line of 02:27:22 passes to the new parent.
+
+---
+
+## 2026-11-10, the top five commits of main rewritten to take a personal address out of their committer fields, a CI step that refuses such an identity, and the merge of pull request 44 recorded, under the maintainer's clicks of 2026-11-09 and 2026-11-10.
+
+**Class:** C by the session's reading: `.github/workflows/ci.yml` gains one step, and the workflow is tooling that implements the baseline; the worklog, its archive, the handoff and `CHANGELOG.md` are Class A. No doctrine, spec, schema, policy, ontology, synthetic, generated or corpus file changed, and no tool, gate entry, hook command or runtime file. The rewrite of `main` changed no file, since the old tip and the new tip share one tree, and it reaches no subject, bystander, selector or retained object, so nothing here is Class F by effect. The class is the session's reading and his to confirm.
+
+**The words this commit acts on.** Each of the following is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. On 2026-11-09 at 23:12:25 EST, "Yes, plan it", on the question whether to plan a rewrite of `main` that takes his address off the five commits: his word for a plan and for nothing the plan describes. At 23:26:00, "Tomorrow's sitting", on when. On 2026-11-10 at 14:21:43, "Yes, Saturday", after the parent local_177949be relayed his typed line of 13:18:15 from its own chat, which moved the credential work to Saturday 2026-11-14; the session read that line in the parent's transcript first. At 16:53:40 EST he typed in the parent's chat a line whose operative words are "open it all up and lets get after it all", read at its source at 16:58:16 EST with the parent folder's extraction tool, which lists it as typed; what comes before those words is about his schedule and is not recorded here. The parent reads the line as lifting the freeze of 2026-11-11, and the parent is not delegated for this repository. At 17:10:45, "Yes, next sitting", on the question whether to move the rewrite ahead of Saturday. At 18:15:40, "Yes, start now", on whether he was at the keyboard for it. At 18:23:13, "Both done, push", after his two changes on GitHub: his word for the five pushes. At 18:39:03, "Unticked", after he restored `main`'s protection. At 18:49:48, "Yes, with the check", on the question "Write, commit and push the rewrite's records on a branch, with a CI check on commit identities?": his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again.
+
+**What happened on 2026-11-09, recorded here because the entry above could not know it.** Pull request 44 carried item 7 as `5cbdbdc`. Its two CI runs at that head, 42745740844 (push) and 42745746240 (pull_request), were read step by step at 22:11:12 EST, each success on all 26 steps. It was merged at 22:11:25 EST with `gh pr merge --rebase`, without `--auto`, as `9f39b1a`, the same tree as `5cbdbdc`. The run on `main` at `9f39b1a`, 42747793608, was read at 22:22:02 EST: success on all 26 steps. When the merged commit was read back, its author was Incept.IO with the no-reply address, as committed, and its committer was the merging account's profile name with the operator's personal email address. The same held for the four commits session 30988045 had landed the same way that day: `8507464` (pull request 40, 02:55 EST), `6bb3c16` (41, 03:21), `c54ea6c` (42, 15:02) and `48897c7` (43, 15:28). Counted over every ref at 22:12 EST, 137 author and committer fields carried the no-reply address and 5 did not, all five the committer field of those commits. The address was in no tracked file, and the hook's repository scan passed on that tree. The cause is that GitHub's rebase merge writes new commits and stamps them with the merging account's own name and commit email. Until 2026-11-02 this repository landed work by a fast-forward of `main` to the reviewed head, which changes no commit. Session 30988045 changed the method at 02:55 EST on 2026-11-09 and recorded only that the hash changes. Session c48eb3cc followed it for pull request 44 without reading a merged commit's committer first; that check was its to make, and the handoff's standing rule named the fast-forward route.
+
+**The rewrite.** The plan, REWRITE_PLAN_main_committer_2026-11-09.md in the record folder, was written on his click of 23:12:25 and rehearsed on scratch copies: a rebuild script with 30 checks, and a push script against a bare copy on disk that saw a plain push and a push with a wrong lease refused. Each of the five commits on `main` was the rebase-merged copy of a pull request head that carried the no-reply address in both fields, so the rewrite puts those heads back in order above `04b358f`. Pull request 40's head is used as it is, and each later head is written again with its parent line alone changed, so tree, author, committer, both dates and message stay as the head had them. `8507464` became `66f1431`, `6bb3c16` became `8933b95`, `c54ea6c` became `37f1431`, `48897c7` became `599e9d3` and `9f39b1a` became `69dd29b`; the five trees are a7a5b8a, 70caa16, 42486e8, e2644db and b8f0fd6 before and after. On 2026-11-10 the state was measured at 18:16:07 EST: `main`, `origin/main` and GitHub's `main` all `9f39b1a`, the checkout clean, and the protection reading linear history on, administrators included, force pushes and deletions refused, no required checks. At 18:16:41 a bundle of `main` and the four merged branches was saved in the record folder and verified, and the rebuild script ran in the checkout with exit 0, 30 checks and the hashes above, twice. He then changed two settings on GitHub. The first is the account's "Keep my email addresses private", which this session could not read back, because its sign-in lacks the scope and no credential was changed to get it; it stands on his word. The second is "Allow force pushes" on `main`'s rule, read back as allowed at 18:24:01. Two controls were then seen refused by GitHub: a push of the new tip with a lease on a value `main` did not hold (18:24:21, "stale info") and a plain push (18:24:23, "non-fast-forward"), with `main` unchanged after both. The pushes followed, each with a lease on the value the ref held: `main` at 18:24:35, read back as `69dd29b` at 18:24:38; closeout-2026-11-09 to `8933b95` at 18:24:52; extractor-list-fix-2026-11-09 to `37f1431` at 18:24:55; item5-app-slice3-watchdog to `599e9d3` at 18:24:57; item7-step11-drafted-refusing to `69dd29b` at 18:25:00. The five local refs were moved with `git update-ref`, each compared against its old value, so no file was written, and the checkout read clean at `69dd29b`. All 90 refs on GitHub were read at 18:25:59 and checked against the local objects: under every branch the count of author and committer fields that are not the no-reply address is 0, and four refs still reach the address, the heads of pull requests 41, 42, 43 and 44, with one, two, three and four such fields in their histories. He unticked "Allow force pushes", and the protection read back at 18:39:19 field for field as before. CI on the new refs was read step by step: runs 42923166330, 42923171545, 42923176416 and 42923183916 on the four branches at 18:39, and run 42923130572 on `main` at `69dd29b` at 18:50:36 EST, each success on all 26 steps.
+
+**What exists now.** `.github/workflows/ci.yml` ends with a new step, "Commit identities are no-reply addresses". It reads the hash, the author address and the committer address of every commit in the history of the pushed head, or of a pull request's own head, since the merge commit GitHub builds for a pull request run is no part of the history. It stops if that head is not a commit or the list is empty. It refuses with COMMIT_IDENTITY_NOT_NO_REPLY when any author or committer address is not a GitHub no-reply address for a user, and it prints the commits' hashes and never an address. A commit made through GitHub's web interface carries GitHub's own address as committer and is refused too, since work lands here by push. The handoff's section 7 states the landing route in full, and the hash changes of the two rewrites.
+
+**What is not claimed.** The step runs after a commit exists: it finds a wrong identity at the first push that carries it and does not prevent one. What prevents one is the account setting, which is his word and unread, and the fast-forward route, which is a rule this session failed once. The rewrite does not reach a clone made between 02:55 EST on 2026-11-09 and 18:24 EST on 2026-11-10; GitHub's traffic page counted 135 clones by 59 cloners in the fourteen days to 2026-11-08, automated ones among them. The head refs of pull requests 41 to 44 still reach four of the old commits, and GitHub still served `9f39b1a` by its hash when read at 18:40:39 EST; only GitHub Support removes those, and the request is his to send. No control was run against the restored protection, because the only push that would test it is one that must never succeed. The second box on GitHub's Emails page, which blocks a command-line push that exposes the address, is not ticked: it would refuse the pushes of any repository whose own commit identity is that address, and no other repository was looked at.
+
+**Agent involvement.** Session c48eb3cc on claude-fable-5-2 planned, rehearsed and ran the rewrite in its main loop, with no agent. The same session, on the same day and outside this commit, began the review of item 8 on his line of 16:53:40, which it read as his word for work and not for any commit: three second-model reads by one Opus 5.5 agent at effort high under an estate agent slot (17:04:45 to 17:15:37, 17:43:50 to 17:55:30 and 18:08:39 to 18:16:30 EST), each followed by fixes in a scratch worktree. The reports and the patch are in the record folder, and nothing of item 8 is in this tree. One problem in this commit's work was the session's own: the first run of the new step's controls reported exit 1 for every case, the two that must pass among them, because the harness started the WSL launcher where it meant Git's bash. The harness now names the shell, and the rerun gave the results in the next paragraph.
+
+**Battery.** The new step's own script, taken out of the workflow by a harness and run with `bash -e` as CI runs it, at 18:56:20 EST: on the old tip `9f39b1a` it refused and listed the five old commits by hash, exit 1; on the new tip `69dd29b` it read 66 commits and passed; on a revision that does not exist it stopped with exit 128; in a scratch repository it passed a commit with the no-reply address in both fields, refused one whose committer was GitHub's own web address, and refused one whose author was another address, printing hashes only. The extraction tool's self-test: "since_last_record --self-test ok: 22 checks, 15 planted lines classified, 4 controls seen refusing". Hygiene exit 0 on the final text and both diff checks clean. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
+
+**Open.** His: the request to GitHub Support; the pre-rewrite bundle of 2026-11-10 in the record folder, which carries the old commits, to keep or delete; the second Emails box, once the other repositories' identities are known; whether the class above stands. Item 8 of the 10-28 list: read three times, its fixes in a patch outside the tree, a mutant battery of 110 of which 70 ran and all 70 were killed before it yielded the estate's lock, the kernel gate never run on its tree, his word to land. Slice 4; Step 11's shred; the door's missing held-case check; the reads' open findings on item 7; `tools/since_last_record.py` lists a parent's message as a harness notice; the handoff's row for `tools/validate_retention.py` names no commit; and everything the previous entries list.

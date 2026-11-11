@@ -198,3 +198,36 @@ jobs:
             exit 1
           fi
           echo "attribution ok: no agent trailers in history"
+
+      # GitHub's rebase and squash merges write a new commit whose committer is
+      # the merging account's own name and commit email. On 2026-11-09 that put
+      # the operator's personal email address on five commits of main, after
+      # the rewrite of 2026-09-07 had taken it out of the whole history, and
+      # main was rewritten again on 2026-11-10 (the worklog entry of that date).
+      # An address is checkable, so it is checked: every author and committer
+      # address in the history must be a GitHub no-reply address. The refusal
+      # prints hashes and never an address. This step runs after a commit
+      # exists, so it finds such a commit at its first push and cannot prevent
+      # one; section 7 of docs/plainsight_handoff.md names the route that does.
+      # On a pull request it reads the pull request's own head, because the
+      # merge commit GitHub builds for the run is not part of the history.
+      - name: Commit identities are no-reply addresses
+        if: ${{ !cancelled() }}
+        run: |
+          head="${{ github.event.pull_request.head.sha || github.sha }}"
+          git cat-file -e "$head^{commit}"
+          list=$(mktemp)
+          git log --format='%H %ae %ce' "$head" > "$list"
+          total=$(wc -l < "$list")
+          test "$total" -gt 0
+          bad=$(awk '$2 !~ /@users\.noreply\.github\.com$/ || $3 !~ /@users\.noreply\.github\.com$/ { print $1 }' "$list")
+          rm -f "$list"
+          if [ -n "$bad" ]; then
+            echo "REFUSED COMMIT_IDENTITY_NOT_NO_REPLY"
+            echo "  rule:  docs/plainsight_handoff.md section 7, the landing rule; CHANGELOG.md, the entries of 2026-09-07 and 2026-11-10"
+            echo "  what:  the commits below carry an author or committer address that is not a GitHub no-reply address"
+            echo "$bad" | sed 's/^/           /'
+            echo "  moves: push nothing further onto this history and tell the maintainer, since taking an address out of a pushed commit is a rewrite only he decides; set the commit identity to the account's no-reply address before the next commit; land work by a fast-forward push of the reviewed head and never by GitHub's rebase or squash merge, which writes the merging account's own address"
+            exit 1
+          fi
+          echo "identities ok: $total commit(s) read, every author and committer address a GitHub no-reply address"

@@ -22,6 +22,53 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-10. The top five commits of `main` are rewritten to take a personal address out of their committer fields, and CI refuses such an identity.**
+
+  **What changed.** Pull requests 40 to 44 were landed on 2026-11-09 with
+  GitHub's rebase merge. That merge writes a new commit whose committer is the
+  merging account's own name and commit email, and the email was the
+  operator's personal address, which the rewrite of 2026-09-07 had taken out
+  of every commit before the repository was public. The address was the
+  committer of exactly those five commits, the top five of `main`, and of no
+  other, and it was in no tracked file. On 2026-11-10, on the operator's
+  clicks, `main` and the four merged branches that held those commits were
+  force-pushed, each with a lease on the value it held, to the commits the
+  pull requests themselves had carried, put back in order above `04b358f`:
+  `8507464` became `66f1431` (pull request 40's own head, unchanged),
+  `6bb3c16` became `8933b95`, `c54ea6c` became `37f1431`, `48897c7` became
+  `599e9d3` and `9f39b1a` became `69dd29b`. Each new commit has the tree,
+  author, dates and message of the one it replaces and the no-reply address
+  as committer. `.github/workflows/ci.yml` gains the step "Commit identities
+  are no-reply addresses". It reads every author and committer address in the
+  history of the pushed head, or of a pull request's own head, refuses with
+  COMMIT_IDENTITY_NOT_NO_REPLY when one is not a GitHub no-reply address, and
+  prints commit hashes and never an address. The handoff's landing rule now
+  names the route: a fast-forward push of the reviewed head after its CI is
+  read, never GitHub's rebase or squash merge.
+
+  **What did not change.** No file: the old tip and the new tip of `main`
+  share one tree, and this commit touches no doctrine, spec, schema, policy,
+  ontology, synthetic, generated, corpus, tool, hook or runtime file, no
+  kernel gate entry and no hook command. The worklog entries of 2026-11-09
+  still cite `8507464` and `6bb3c16`, since a process record is not restyled;
+  this entry and the worklog entry of 2026-11-10 translate them. The rewrite
+  does not reach a clone made between the first of the five merges and the
+  force-push, the head refs of pull requests 41 to 44, which still reach four
+  of the old commits, or the old commits themselves, which GitHub serves by
+  hash until it collects them. Removing those is a request to GitHub Support
+  that is the operator's to send. The new CI step runs after a commit exists,
+  so it finds a wrong identity at the first push and does not prevent one.
+  PSE has no tag.
+
+  **Validation.** Before the push: a rebuild script with 30 checks, run twice
+  with the same hashes, and a push with a wrong lease and a plain push, both
+  refused by GitHub. After it: every ref on GitHub read back, with no branch
+  reaching the address, and CI on `main` and the four branches green on all 26
+  steps. The new step's own script, run as CI runs it: refused on the old tip,
+  listing the five commits, and passed on the new tip. The kernel gate on the
+  committed tree under the heavy-run lock; the rest in the worklog entry of
+  2026-11-10.
+
 - **2026-11-09. Step 11 drafted refusing: the retention sweep with its heartbeat, and verify_shred's five checks.**
 
   **What changed.** `runner/retention_sweep.py` reads every registry row and

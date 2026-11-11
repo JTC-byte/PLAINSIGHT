@@ -12,12 +12,12 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-09. This file's commit is item 7 of the 10-28 list, Step 11
-drafted refusing (section 0), class C by effect under `AGENTS.md` section 3
-rule 2 by the sessions' reading, his to confirm. It is also the closeout he
-typed for at 19:12:35 EST, finished by a fresh session on his typed line of
-20:31:36 EST in the parent's chat. Before it, `main` == `origin/main` == item
-5's merge commit (pull request 43), CI green on every step.
+**Date:** 2026-11-10. This file's commit records the rewrite of `main`'s top
+five commits on 2026-11-10, which took the operator's personal email address
+out of their committer fields, and adds a CI step that refuses such an
+identity (section 0); class C by the session's reading, his to confirm.
+Before it, `main` == `origin/main` == `69dd29b`, item 7's commit as rewritten,
+CI green on every step.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. No doctrine file has changed
 since `4e6abda`. Patch 4b, the four Class F items with EG-7, no longer applies to
@@ -30,18 +30,17 @@ applies.
 **Resume here.** Measure the refs and the tree first, then run
 `tools/since_last_record.py` from the last record's stamp over the session's
 own transcript and read his lines first. His release of 2026-10-28 01:47
-stands for building. On 2026-11-09 the sessions were replaced. At 20:31:36 EST
-he typed, in the chat of the parent local_177949be (Parent 08/09NOV2026), that
-each lane finishes what was in flight, runs the commits, merges and pushes
-that did not get done, and holds, with no new work. This commit, its push and
-its merge are those acts here, and that line is spent with them. From the next
-session on, every commit, push, merge, Class F decision, deploy, tag, mint and
-secret takes his word, per act. Whether his line of 02:27:22, carried to 18:00
-EST on 2026-11-11 by his clicks of 14:08:53 and 14:13:10 in the chat of the
-earlier parent local_88a0656e, passes to the new parent is his to say, so the
-next session asks him first. Nothing merges or pushes after that hour. The
-records are under `Z-ISR/_session-artifacts/` (section 6): this closeout and
-items 5 to 8 in `2026-11-09-plainsight-items/`, whose `README.md` ends with the
+stands for building. On 2026-11-10 at 16:53:40 EST he typed, in the chat of
+the parent local_177949be, that the parked work is open again ("open it all
+up and lets get after it all"); that parent reads the freeze of 2026-11-11 as
+lifted and is not delegated for this repository. Every commit, push, merge,
+Class F decision, deploy, tag, mint and secret takes his word in the
+PLAINSIGHT chat, per act. `main` was rewritten on 2026-11-10 on his clicks
+there (section 0), so every hash of 2026-11-09 has a new form (section 7).
+Item 8 of the 10-28 list has been read three times by a second model and is
+held outside the tree as a patch. The records are under
+`Z-ISR/_session-artifacts/` (section 6): the rewrite, item 8's reads and this
+closeout in `2026-11-09-plainsight-items/`, whose `README.md` ends with the
 Next Session line, the resumptions in `2026-11-02-plainsight-resume/` and
 `2026-11-06-plainsight-resume/`, and his 28-item queue in
 `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none answered.
@@ -50,40 +49,39 @@ Next Session line, the resumptions in `2026-11-02-plainsight-resume/` and
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Item 7 of the 10-28 list, Step 11 drafted refusing:
-`runner/retention_sweep.py` decides every case before it writes, refuses every
-due case at the first step of RETENTION.md section 9's order, deletes nothing,
-and writes one SWEEP_HEARTBEAT per held case through the door last;
-`runner/verify_shred.py` runs RT-9's five checks as dated facts and reports no
-pass while the fixture is unstamped; the header renders RT-12's consequence;
-eight refusal codes; amendment 9.19; `app/tests/test_retention_sweep.py` (14
-checks, 44 controls); four second-model reads, disposed in the record folder.
-The worklog gains the entry and archives its oldest; `CHANGELOG.md`, the
-gameplan's two register rows and this file follow.
+**What changed and why.** Five pull requests were landed on 2026-11-09 with
+GitHub's rebase merge, which rewrote each commit with the merging account's
+email as committer. That email was the operator's personal address, which the
+rewrite of 2026-09-07 had taken out of the whole history. On 2026-11-10, on
+his clicks, `main` and four merged branches were force-pushed, each with a
+lease, to the commits the pull requests held: the same trees, authors, dates
+and messages, with the no-reply address in both fields. This commit records
+it and adds the CI step "Commit identities are no-reply addresses", which
+refuses a history holding any other author or committer address and prints
+hashes only.
 
-**Which surfaces moved.** `runner/retention_sweep.py` and `runner/verify_shred.py`
-(new), `app/refusals.py`, `app/model/reads.py`, `app/http/routes.py`,
-`app/static/app.js`, `app/README.md`, the new test module, `test_controls.py`,
-amendment 9.19, the gameplan register, the changelog, this file, the worklog and
-its archive, and the control count in the app-tests gate entry's description
-(103 to 147). No doctrine, spec, schema, policy, ontology, synthetic, generated
-or corpus file, gate command or state, hook command or CI step; nothing deleted.
+**Which surfaces moved.** `.github/workflows/ci.yml` (one step), the
+changelog, the worklog and its archive, and this file. No doctrine, spec,
+schema, policy, ontology, synthetic, generated or corpus file, no tool, gate
+entry, hook command or runtime file. The rewrite changed no file: the old tip
+and the new share one tree.
 
-**What validation ran and what passed.** The application suite, 276 passed and
-1 skipped (the Postgres apply, which runs on his word), all 44 new controls seen
-failing their check; hygiene and both diff checks on the final text; the kernel
-gate on this tree under the heavy-run lock and the hook at the commit.
+**What validation ran and what passed.** The step's own script, run as CI
+runs it: refused on the old tip, naming the five commits, and passed on the
+new tip. Hygiene and both diff checks on the final text; the kernel gate on
+this tree under the heavy-run lock and the hook at the commit. CI on the
+rewritten `main` and its four branches was read green on all 26 steps first.
 
-**Whether a release baseline changed.** No. `main` gained item 5 by pull
-request 43; this commit follows by the same route; PSE has no tag.
+**Whether a release baseline changed.** No tag exists. `main`'s history did:
+section 7 gives the five old hashes and the five that replace them.
 
-**What remains open or deferred.** Section 3: DA-R2's stamp, the readings
-including O-R1 to O-R9, APP-R31 to APP-R33 and RS-R1 to RS-R8, `LOCAL_ACTS`,
-U-09 to U-11 and SR-U1, the queue; item 8 of the 10-28 list, built and held as
-a patch in the 2026-11-09 record folder, his word to land (item 6's synthesis
-is in the harvest folder outside the tree); the application's slice 4; Step
-11's shred itself, which waits on the ISOLATED store and his stamps; the door's
-missing held-case check (section 4) and the reads' open findings (section 2).
+**What remains open or deferred.** His: the request to GitHub Support, since
+the head refs of pull requests 41 to 44 still reach the address and the five
+old commits stay fetchable by hash; the bundle of the old commits beside the
+record, to keep or delete. Item 8 of the 10-28 list, held as a patch in the
+record folder, his word to land. Sections 3 and 4 carry the rest: DA-R2's
+stamp, the readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the queue, slice 4,
+Step 11's shred, the door's held-case check and the reads' open findings.
 
 ---
 
@@ -186,7 +184,7 @@ exists and has never run.
 | `tools/pin_of_record.py` | **Extended in `8583132`** with PIN-R9 (`Pin.decisions`, `decision_stamped`); 35 self-test cases. |
 | `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in `8583132`.** Self-tests of 103 cases, 39 breaks, a drift check, and 26 plants. |
 | `tools/validate_conformance.py` | **Extended in `8583132`.** `KERNEL_GATE` carries thirty-two entries, `app-tests` among them. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `8583132`.** `make preflight` runs twenty-two commands and the hook twenty-one, the eleven self-tests among them. CI runs ten self-tests as named steps before the kernel gate, clones the public `zmeta-spec` at v1.1.27 for the register's diff, installs pytest, runs the guard tests in its Mechanism tests step and the adapter and application tests as named steps. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `8583132`.** `make preflight` runs twenty-two commands and the hook twenty-one, the eleven self-tests among them. CI runs ten self-tests as named steps before the kernel gate, clones the public `zmeta-spec` at v1.1.27 for the register's diff, installs pytest, runs the guard tests in its Mechanism tests step and the adapter and application tests as named steps. Since 2026-11-10 its last step refuses a history that holds an author or committer address other than a GitHub no-reply address. |
 
 ## 3. What blocks
 
@@ -331,6 +329,7 @@ were fixed before the commit or are recorded as open.
 | Both doctrine review records and the patches | `Z-ISR/_session-artifacts/2026-08-26-plainsight-doctrine-review/` and `.../2026-09-03-plainsight-doctrine-review-2/` | Patch 4b lives here and no longer applies cleanly. |
 | The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Unshared. |
+| The 2026-11-10 rewrite of `main`, and item 8's reads | `Z-ISR/_session-artifacts/2026-11-09-plainsight-items/` | `README.md`, the plan, the push log and the CI reads, the bundle of the five old commits (unshared, his to keep or delete), and the three second-model reports on item 8 with its patch. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |
@@ -365,20 +364,24 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
 - His order of work: 2026-09-08, Step 8 onward toward a first run; 2026-10-16,
   PLAINSIGHT fourth after the TMN, the deploy script and the COP redesign;
   2026-10-28, build everything that needs nothing from him while he provides
-  the VMs, domains and SIMs.
+  the VMs, domains and SIMs; 2026-11-10, the work parked on 2026-11-09 open.
 - A check is green only when its negative control has been seen to fail, his
   rule of 2026-10-16; a report names the control, or marks the check unproven.
 - A parent's relay binds only under a delegation line he typed naming that
   parent; his words typed in the PLAINSIGHT chat outrank a relay that differs.
 - His machine-load rule of 2026-09-30: one workstation, one test run at a time,
   three agents across the estate at most.
-- **The public repository is `origin`, and work reaches `main` by a pull request
-  fast-forwarded after its CI passes**; a push is an operator-instructed act that
-  follows a closeout, and every step conclusion of its CI run is read afterwards.
-  Commits carry the no-reply address and no agent trailer.
-- **Hashes in worklog entries above the 2026-09-07 rewrite entry, in the
-  archive, and in every changelog entry below the rewrite entry are
-  pre-rewrite.** That entry translates them.
+- **The public repository is `origin`, and work reaches `main` by one route:**
+  push the branch, open the pull request, read every step of its CI at that
+  head, then fast-forward `main` to that head by a push, each on his word.
+  Never GitHub's rebase or squash merge, which rewrites the commit with the
+  merging account's email as committer (section 0). Read the committer after
+  any landing. Commits carry the no-reply address and no agent trailer.
+- **Two rewrites changed hashes.** Worklog entries older than the 2026-09-07
+  rewrite entry, all in the archive, and changelog entries below that entry
+  cite pre-rewrite hashes, which it translates. Since 2026-11-10, `8507464`,
+  `6bb3c16`, `c54ea6c`, `48897c7` and `9f39b1a`, two of which the worklog of
+  2026-11-09 cites, are `66f1431`, `8933b95`, `37f1431`, `599e9d3`, `69dd29b`.
 - The gates need PyYAML and jsonschema; the guard, adapter and application
   tests need pytest (`AGENTS.md` section 5).
 - **The worklog is capped at ten live entries and the hygiene gate refuses an
@@ -389,9 +392,7 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
 - Only CI on Linux checks a file mode. The Edit tool on Windows writes CRLF into
   an existing file; `.gitattributes` normalizes the index, and tracked files
   are edited as bytes by script so that the working copy stays LF.
-- Harness facts: a subagent cannot write outside the repository or its own
-  scratchpad; a Bash heredoc breaks on an apostrophe, and the command after a
-  failed heredoc still runs; a worktree's `core.hooksPath` names the main
-  checkout's `.githooks`; a tree copied under the scratchpad passes MAX_PATH; a
-  workflow's task output file is often empty, so its `journal.jsonl` is the
-  record; a run cut by the usage limit is finished from its saved findings.
+- Harness facts: a Bash heredoc breaks on an apostrophe, and the command after
+  a failed heredoc still runs; a worktree's `core.hooksPath` names the main
+  checkout's `.githooks`; an agent's task output file is often empty, so its
+  report is taken from the completion notice or the workflow's `journal.jsonl`.
