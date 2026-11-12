@@ -364,7 +364,10 @@ records in the user role, a context-compaction summary or a notice such as a
 classifier stop, by stamp and kind and never as his lines, and prints each
 stamp with the local offset in force at that instant, written after it, rather
 than the offset of the day it runs. It carries every message the session sent and
-received, verbatim, and its last assistant texts. The session reads the file
+received, verbatim, and its last assistant texts. Since 2026-11-11 a message
+from another session counts as received even when the harness flags its record
+isMeta, as this harness build does; before, the tool listed it as a harness
+notice. The session reads the file
 once before writing the records: a maintainer line it shows that the records
 lack is written in, and a line marked as a click or a selection is never
 written as typed, which is the error the records of 2026-10-18 carried and the

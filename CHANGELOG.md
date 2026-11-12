@@ -22,6 +22,23 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-11. The extraction tool reads a message from another session as received.**
+
+  **What changed.** `tools/since_last_record.py` reads a text for a message
+  from another session before it reads the record's flags, because this
+  harness delivers such a message on a record flagged isMeta, which the tool
+  had counted as a harness notice. Its self-test plants that record.
+
+  **Surfaces moved.** The tool, one sentence of `AGENTS.md` section 5, the
+  handoff, the worklog and its archive, this file.
+
+  **Validation.** The tool's self-test, 23 checks; a mutant with the old order
+  failing 4 of them; hygiene and both diff checks; the kernel gate and the
+  pre-commit hook on the staged tree.
+
+  **What did not change.** No doctrine, spec, schema, policy, ontology or
+  corpus file, no gate entry or hook command.
+
 - **2026-11-11. The handoff's row for tools/validate_retention.py names its commit.**
 
   **What changed.** The row read "Touched in :" since the records commit of

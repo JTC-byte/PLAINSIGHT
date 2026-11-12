@@ -18,7 +18,10 @@ everything a resumer needs that a closeout record can miss, from a given moment 
     (the record carries isCompactSummary) and a harness notice such as a classifier stop (the record
     carries isMeta). Neither is a line of his, and before 2026-11-02 each was marked TYPED;
   - every cross-session message the session sent (the SendMessage tool inputs, verbatim);
-  - every cross-session message it received (the `<cross-session-message>` user entries, verbatim);
+  - every cross-session message it received (the `<cross-session-message>` user entries, verbatim).
+    A message from another session is read as received before its flags: this harness build delivers
+    one in the user role with isMeta set, and before 2026-11-11 the tool counted it as a harness notice
+    and listed no message as received (seen in the transcripts of 2026-11-09 and 2026-11-11);
   - its last N assistant texts.
 
 Other tool results, the harness's task notifications (skipped by their tag) and thinking are left out.
@@ -118,6 +121,11 @@ def _harness_kind(o):
         if o.get(flag) is True:
             return kind
     return None
+
+
+def received_message(tx):
+    """Whether a text in the user role is a message from another session, read by its own opening words."""
+    return tx.startswith("Another Claude session sent a message") or "<cross-session-message" in tx[:200]
 
 
 def _clean(t):
@@ -266,6 +274,12 @@ def extract(src, since, out, last_n=3):
                     continue
                 if b.get("type") != "text":
                     continue
+                tx = _clean(b.get("text", ""))
+                if received_message(tx):
+                    # A message from another session, read before the record's flags: this harness build
+                    # sets isMeta on the record that delivers it, and it is not a notice of the harness.
+                    received.append((ts, tx))
+                    continue
                 if harness_kind:
                     # A text the harness wrote in the user role: a compaction summary or a notice. Not
                     # his, so it is counted and listed by stamp and kind, and its text is not copied.
@@ -273,12 +287,9 @@ def extract(src, since, out, last_n=3):
                     # of the same record must not inherit (the self-test plants a two-block record).
                     harness.append((ts, harness_kind))
                     break
-                tx = _clean(b.get("text", ""))
                 if not tx:
                     continue
-                if tx.startswith("Another Claude session sent a message") or "<cross-session-message" in tx[:200]:
-                    received.append((ts, tx))
-                elif not tx.startswith(SKIP):
+                if not tx.startswith(SKIP):
                     hit = offered_before(ts, tx)
                     kind = ("CLICK ON OFFERED ACTION (button %r offered at %s%s)" % (hit[1], _local(hit[0], zone), hit[2])) if hit else "TYPED"
                     lines.append((ts, kind, tx))
@@ -382,6 +393,8 @@ def self_test():
         "selection": 'Your questions have been answered: "Merge it?"="Merge now (Recommended)". You can now continue.',
         "sent": "A line to a peer.",
         "received": "Another Claude session sent a message:\n<cross-session-message from=\"local_peer\">hello</cross-session-message>",
+        "received, on a record the harness flags isMeta": "Another Claude session sent a message:\n"
+                                                           "<cross-session-message from=\"local_parent\">go ahead</cross-session-message>",
         "assistant text": "The last thing said.",
         "typed, equal to a superseded offer": "Old offer text.",
         "typed, equal to a later offer": "Future offer text.",
@@ -415,6 +428,7 @@ def self_test():
         _rec(t(6), "assistant", message={"content": [{"type": "tool_use", "name": "SendMessage",
                                                       "input": {"to": "local_peer", "message": planted["sent"]}}]}),
         _rec(t(7), "user", message={"content": planted["received"]}),
+        _rec(t(7, 10), "user", isMeta=True, message={"content": planted["received, on a record the harness flags isMeta"]}),
         _rec(t(7, 30), "attachment", attachment={"type": "queued_command", "prompt": [{"type": "text", "text": "A queued line written as blocks."}]}),
         _rec(t(8), "assistant", message={"content": [{"type": "text", "text": planted["assistant text"]}]}),
     ]
@@ -462,7 +476,9 @@ def self_test():
                   "and is reported rather than claimed", olds == refs)
         check("an AskUserQuestion answer is a SELECTION ON OFFERED QUESTION", r["selections"] == 1 and planted["selection"] in text)
         check("the sent message is listed", r["sent"] == 1 and planted["sent"] in text)
-        check("the received message is listed", r["received"] == 1 and "hello" in text)
+        check("the received message is listed", r["received"] == 2 and "hello" in text)
+        check("a message on a record the harness flags isMeta is received, not a harness notice, and its text is listed",
+              "go ahead" in text and r["harness"] == 2)
         check("the last assistant text is listed", r["assistant"] == 1 and planted["assistant text"] in text)
         check("a queued prompt written as a list of blocks is read as its text, not a crash", r["queued"] == 1 and "A queued line written as blocks." in text)
         check("no click or selection is written as TYPED", text.count("TYPED:") == 6)

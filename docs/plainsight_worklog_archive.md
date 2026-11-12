@@ -5089,3 +5089,21 @@ this chat.
 **Open.** Items 5 to 8 of the 10-28 list; his DA-R2 stamp and, at that commit, the pin self-test's absent-file example; readings O-R1 to O-R9; the 28 queue items.
 
 ---
+
+## 2026-11-09, item 4 merged as 8507464 with its CI runs read, and the closeout of the resumption, under the maintainer's line of 02:27:22.
+
+**Class:** A (the handoff, this record and its archive). No governed artifact changed, so `CHANGELOG.md` takes no entry.
+
+**The words this commit acts on.** His typed line of 02:27:22 EST on 2026-11-09 in the parent's chat, verified in the parent's transcript: "I am leaving you up to keep working while I head to bed. Just finish whatever efforts anyone is in the middle of, then run a checkpoint to capture what was done and we will pick back up when I am back on. You are good to adjudicate any commits, merges, pushes, deploys etc as needed so long as they pass repo documentation and established tests, conformance and validations". The parent (local_88a0656e, Parent 08NOV2026) gave item 4's commit its go on four conditions, each measured and met, and its go covers this closeout's commit and push once the checks pass. The reading under CLAUDE.md R6 and AGENTS.md section 4, that this line plus the parent's go is his per-act instruction for a Class B commit, is in the record folder; his click "Yes, resume here" of 15:45:31 EST on 2026-11-08 in this chat lifted the hold of 2026-11-03 and named that parent.
+
+**Item 4 landed.** Committed as 66f1431 on branch item4-ontology-corpus-matchers at 02:42:35 EST (author Incept.IO, no agent trailer, 11 files, 1,436 insertions, 272 deletions); pull request 40; CI runs 42581128275 (push) and 42581134827 (pull_request) on 66f1431 read step by step, success on every one of 23 named steps; merged by rebase at 02:55:29 EST as 8507464 (tree identical to 66f1431), no auto-merge; CI run 42582372459 on main at 8507464, success, 26 steps, none other than success. The branch stays on origin as the 40 before it.
+
+**Agent involvement.** None. This session ran on Sonnet 5.5 for the records turn of 2026-11-08 and on Fable 5.1 from his `/model` command at 02:3x on 2026-11-09, with no subagent and no workflow. The heavy-run lock was held 02:36:05 to 02:42:13 for the kernel gate and the hook, taken when zisr-tak released it with no waiting file present.
+
+**Battery for this commit.** All twenty-two preflight commands exit 0 on the tree (02:58:05 to 02:58:59), the hook runs again at the commit, hygiene and both diff checks on the final text. The kernel gate was not re-run for this records-only change: the tree differs from 8507464 in the handoff, this record and its archive alone, which hygiene reads.
+
+**Extraction.** SINCE_LAST_RECORD_2026-11-09_closeout.md beside the record in Z-ISR/_session-artifacts/2026-11-06-plainsight-resume/, over this session's whole transcript (30988045): 598 entries, 0 typed, 1 click (15:45:31 on 11-08, "Yes, resume here", read against the offer at 15:43:54), 2 harness notices (the parent's relays), 5 sent, 0 received. Controls first: the self-test's 22 checks with 4 controls refusing, a 2027 stamp giving 0 entries, a since without a zone refused.
+
+**Open.** Items 5 to 8 of the 10-28 list, not started by the parent's reading of his line; the extractor's list fix, unstaged in the working tree for its own Class B commit; his: the DA-R2 stamp and the pin self-test's absent-file example at that commit, readings O-R1 to O-R9 and the rest, the 28 queue items, the mock-up adjustments, VMs, domains, SIMs and the Track B identity acts.
+
+---

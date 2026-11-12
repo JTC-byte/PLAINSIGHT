@@ -15,24 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-11-09, item 4 merged as 8507464 with its CI runs read, and the closeout of the resumption, under the maintainer's line of 02:27:22.
-
-**Class:** A (the handoff, this record and its archive). No governed artifact changed, so `CHANGELOG.md` takes no entry.
-
-**The words this commit acts on.** His typed line of 02:27:22 EST on 2026-11-09 in the parent's chat, verified in the parent's transcript: "I am leaving you up to keep working while I head to bed. Just finish whatever efforts anyone is in the middle of, then run a checkpoint to capture what was done and we will pick back up when I am back on. You are good to adjudicate any commits, merges, pushes, deploys etc as needed so long as they pass repo documentation and established tests, conformance and validations". The parent (local_88a0656e, Parent 08NOV2026) gave item 4's commit its go on four conditions, each measured and met, and its go covers this closeout's commit and push once the checks pass. The reading under CLAUDE.md R6 and AGENTS.md section 4, that this line plus the parent's go is his per-act instruction for a Class B commit, is in the record folder; his click "Yes, resume here" of 15:45:31 EST on 2026-11-08 in this chat lifted the hold of 2026-11-03 and named that parent.
-
-**Item 4 landed.** Committed as 66f1431 on branch item4-ontology-corpus-matchers at 02:42:35 EST (author Incept.IO, no agent trailer, 11 files, 1,436 insertions, 272 deletions); pull request 40; CI runs 42581128275 (push) and 42581134827 (pull_request) on 66f1431 read step by step, success on every one of 23 named steps; merged by rebase at 02:55:29 EST as 8507464 (tree identical to 66f1431), no auto-merge; CI run 42582372459 on main at 8507464, success, 26 steps, none other than success. The branch stays on origin as the 40 before it.
-
-**Agent involvement.** None. This session ran on Sonnet 5.5 for the records turn of 2026-11-08 and on Fable 5.1 from his `/model` command at 02:3x on 2026-11-09, with no subagent and no workflow. The heavy-run lock was held 02:36:05 to 02:42:13 for the kernel gate and the hook, taken when zisr-tak released it with no waiting file present.
-
-**Battery for this commit.** All twenty-two preflight commands exit 0 on the tree (02:58:05 to 02:58:59), the hook runs again at the commit, hygiene and both diff checks on the final text. The kernel gate was not re-run for this records-only change: the tree differs from 8507464 in the handoff, this record and its archive alone, which hygiene reads.
-
-**Extraction.** SINCE_LAST_RECORD_2026-11-09_closeout.md beside the record in Z-ISR/_session-artifacts/2026-11-06-plainsight-resume/, over this session's whole transcript (30988045): 598 entries, 0 typed, 1 click (15:45:31 on 11-08, "Yes, resume here", read against the offer at 15:43:54), 2 harness notices (the parent's relays), 5 sent, 0 received. Controls first: the self-test's 22 checks with 4 controls refusing, a 2027 stamp giving 0 entries, a since without a zone refused.
-
-**Open.** Items 5 to 8 of the 10-28 list, not started by the parent's reading of his line; the extractor's list fix, unstaged in the working tree for its own Class B commit; his: the DA-R2 stamp and the pin self-test's absent-file example at that commit, readings O-R1 to O-R9 and the rest, the 28 queue items, the mock-up adjustments, VMs, domains, SIMs and the Track B identity acts.
-
----
-
 ## 2026-11-09, the extraction tool's list-of-blocks fix committed, the closeout's CI run read, and the lane carried to the freeze of 2026-11-11, under the maintainer's clicks of 14:08:53 and 14:13:10.
 
 **Class:** B. `tools/since_last_record.py` changes behaviour: a prompt or content the harness wrote as a list of blocks is read as its text blocks joined, where the committed tool stopped with a traceback (`AttributeError: 'list' object has no attribute 'strip'` in `_clean`, seen this afternoon on a planted record run against the committed tool before the fix was staged). The self-test gains a planted `queued_command` attachment whose prompt is a list of blocks and the check that it is read as its text, 21 checks to 22. `CHANGELOG.md` takes an entry. No doctrine, spec, schema, policy, ontology, runtime, gate or value changed, and no classification rule of the tool, so a transcript the committed tool could read gives the same counts.
@@ -208,3 +190,23 @@ from defeating the shred mechanism.
 **Battery.** Hygiene exit 0 and both diff checks clean on the tree. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
 
 **Open.** His: this commit's landing on `main` and its class; patch D (the extraction tool reads a parent's message as received); `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.
+
+---
+
+## 2026-11-11, the extraction tool reads a message from another session before the record's flags (patch D), and the landing of 71b7112 recorded, under the maintainer's clicks of 2026-11-11.
+
+**Class:** B by the session's reading and the parent's audit of 2026-11-11, his to confirm: `tools/since_last_record.py` is the tool behind the closeout rule `AGENTS.md` section 5 states, and one sentence of that section changes with it. No doctrine, spec, schema, policy, ontology, synthetic, generated or corpus file, no gate entry and no hook command.
+
+**The words this commit acts on.** Each is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. At 19:29:20 EST, "Yes, land C", on "Fast-forward main to patch C's commit 71b7112 now?", offered at 19:27:36: his word for that push. At 19:55:28 EST, "Yes, commit D", on "Commit patch D on a branch for CI?", offered at 19:41:53: his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again.
+
+**The landing of 71b7112, recorded here because the entry above could not know it.** Patch C's commit was pushed on its branch at 19:08:06 EST, and its run 43125032569 was read step by step at 19:27:32 EST: success on all 27 steps. Measured at 19:29:32 EST: GitHub's `main` at `bdf8ed4`, the branch one commit ahead with `bdf8ed4` its ancestor, the protection unchanged, no open pull request. A plain push of `71b7112` to `main` ran from 19:29:34 to 19:29:36 EST, "bdf8ed4..71b7112". Read back at 19:29:36 EST, GitHub served the tip with Incept.IO and the no-reply address as author and committer, and under `main` the count of fields that are not a no-reply address was 0 over 72 commits. The local `main` was moved with `git update-ref`, compared against its old value, and the checkout switched to it with no file written. The run on `main`, 43127668000, was read at 19:41:48 EST: success on all 27 steps.
+
+**What changed.** This harness build delivers a message from another session as a user record carrying isMeta, the flag the tool reads as a harness notice. The tool read the flag first, so it counted every message from the parent as a notice and listed none as received, which the record of 2026-11-09 named and the transcripts of 2026-11-09 and 2026-11-11 showed. It now reads a text for a message from another session before it reads the record's flags (`received_message`). Its self-test plants a parent's message on a record flagged isMeta and asserts it is listed as received and the harness count is unchanged: 23 checks and 16 planted lines. Over this session's transcript from 11:00 EST it lists 3 messages received from the parent, at 11:35:02, 13:50:26 and 14:10:30 EST, where the tool in the tree before listed none; the 2 harness notices left are the model command's records of 13:19:41 and 14:10:13 EST. `AGENTS.md` section 5's closeout paragraph says so in one sentence.
+
+**What is not claimed.** A message queued while the session was mid-turn is skipped by the queue's own rule and counted when its user record arrives; that path was not changed. The tool still copies every message verbatim, so the closeout rule about spans in which case material was discussed stands.
+
+**Agent involvement.** Session 0141534e on Opus 5.5 wrote the patch in its scratchpad and ran a mutant with the old order against the self-test: 4 of 23 checks failed, the new one among them. No agent read it. No workflow ran.
+
+**Battery.** The tool's self-test on the tree: "since_last_record --self-test ok: 23 checks, 16 planted lines classified, 4 controls seen refusing". Hygiene exit 0 and both diff checks clean. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
+
+**Open.** His: this commit's landing on `main` and its class; `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.

@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-11. This file's commit is patch C: the row for
-`tools/validate_retention.py` names `8583132` (section 0); class A by the
-session's reading, his to confirm. Before it, `main` == `origin/main` ==
-`bdf8ed4`, patch B, landed by a fast-forward push on his click of
-18:19:51 EST, CI green on all 27 steps of its run on `main`.
+**Date:** 2026-11-11. This file's commit is patch D: the extraction tool
+reads a message from another session as received (section 0); class B by
+the session's reading, his to confirm. Before it, `main` == `origin/main` ==
+`71b7112`, patch C, landed by a fast-forward push on his click of 19:29:20
+EST, CI green on all 27 steps of its run on `main`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -36,8 +36,8 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-branch `handoff-row-retention-2026-11-11` on his click of 2026-11-11 at
-18:57:43 EST, which covers that branch's push; landing it takes his word
+branch `received-message-2026-11-11` on his click of 2026-11-11 at
+19:55:28 EST, which covers that branch's push; landing it takes his word
 again. The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
 item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
@@ -51,24 +51,26 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Section 2's row for `tools/validate_retention.py`
-read "Touched in :" with no commit named since the records commit of
-2026-10-28 emptied "this commit". It now names `8583132`, whose change it
-describes.
+**What changed and why.** This harness delivers a message from another
+session on a record flagged isMeta, and `tools/since_last_record.py` read
+the flag first, so it listed no message as received. It now reads the text
+for a message from another session before the flags.
 
-**Which surfaces moved.** This file, the changelog, and the worklog and its
-archive. No governed artifact, tool or test.
+**Which surfaces moved.** The tool, one sentence of `AGENTS.md` section 5,
+the changelog, the worklog and its archive, and this file. No doctrine,
+spec, schema, policy, ontology or corpus file.
 
-**What validation ran and what passed.** Hygiene and both diff checks; the
+**What validation ran and what passed.** The tool's self-test, 23 checks,
+with a mutant of the old order failing 4; hygiene and both diff checks; the
 kernel gate on this tree under the heavy-run lock and the hook at the
 commit.
 
 **Whether a release baseline changed.** No tag exists. This commit is on a
-branch, and `main` is `bdf8ed4`.
+branch, and `main` is `71b7112`.
 
 **What remains open or deferred.** His: this commit's landing and its
-class; patch D; `rebuild --verify` on a case whose database is gone; slice
-4's three decisions; the request to GitHub Support; the pre-rewrite bundle;
+class; `rebuild --verify` on a case whose database is gone; slice 4's three
+decisions; the request to GitHub Support; the pre-rewrite bundle;
 Saturday's rotation. Sections 3 and 4 carry the rest: DA-R2's stamp, the
 readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the queue and Step 11's shred.
 
