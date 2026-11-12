@@ -22,6 +22,20 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-11. The handoff's row for tools/validate_retention.py names its commit.**
+
+  **What changed.** The row read "Touched in :" since the records commit of
+  2026-10-28 emptied "this commit"; it now names `8583132`, the commit whose
+  change it describes.
+
+  **Surfaces moved.** The handoff, the worklog and its archive, this file.
+
+  **Validation.** Hygiene and both diff checks; the kernel gate and the
+  pre-commit hook on the staged tree.
+
+  **What did not change.** No governed artifact, tool, test, gate entry or
+  hook command.
+
 - **2026-11-11. The retention sweep reads the pin only when a refusal needs it, and item 7's open findings close.**
 
   **What changed.** `runner/retention_sweep.py` reads the pin of record only

@@ -15,26 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-11-08, item 4 recorded: the ontology validator's --corpus and --matchers modes, the merge of 04b358f, and the lane resumed on the maintainer's click of 2026-11-08.
-
-**Class:** B. `tools/validate_ontology.py` gains two modes, `tools/validate_conformance.py` moves the `ontology-corpus` gate entry from STUB to IMPLEMENTED, and thirteen notes in `ontology/selectors.yaml` gain one sentence each (no key, form, field or matcher changed; reading O-R4, which he decided on 2026-11-02 with the click "Keep them"). `CONFORMANCE.md`, the Makefile comment, the gameplan's deferral row, the connector validator's rung 3 line, the handoff and `CHANGELOG.md` follow. No doctrine, spec, schema, policy, runtime, synthetic or corpus file changed, and no value.
-
-**Merge and CI first.** `04b358f` (the extraction tool's three misreads corrected, class B) merged to `main` as pull request 39 at 20:53:40 EST on 2026-11-02 on his click "Merge it" of 20:53:32; the CI run on main, 41562667958, concluded success on its one job (gate). Measured again today: `main` == `origin/main` == `04b358f`.
-
-**The words this commit acts on.** His click on the offered action "Yes, resume here" in this chat on 2026-11-08, which lifts the hold of his click "Leave it" (16:16:45 on 2026-11-03), and the earlier click "Keep them" (21:44:42 on 2026-11-02). Neither is a typed line. A commit takes his word here per act.
-
-**Agent involvement.** Item 4 was built on 2026-11-02 by workflow wf_513195a4-7a0 in session c941f6e6 (Opus 5.5 builder, Sonnet 5.5 verifier, Opus 5.5 fixer, one at a time under an agent slot; the verifier found 11 of 12 claims true and four defects, all closed with plants and controls). The mode report is `Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/PHASE_item4_report.md`. This entry and the other records were written on 2026-11-08 by the fresh session of that day on Sonnet 5.5 with no agent, then Fable 5.1 on the parent's switch.
-
-**What the modes check.** `--corpus` reads the five sites `spec/layer-model.yaml` binds to the registry and refuses an unregistered type, a value off its key's form, a vacuous must-fail row and an unexercised key (ONT_CORPUS_SELECTOR_UNREGISTERED, _VALUE_OFF_FORM, _FIXTURE_VACUOUS, _KEY_UNEXERCISED). `--matchers` is its structural half only: calibration flags false, every matcher id a connector names declared, every library entry complete (ONT_MATCHER_CALIBRATION_FLAG, _NAMED_UNDECLARED, _ENTRY_INCOMPLETE). No matcher is scored and the output says so; scoring needs labelled ground truth, which needs the sealed cast. The aggregator runs a STUB entry's command and does not read its exit code, which `CONFORMANCE.md` section 4 now states.
-
-**Held, not folded.** The extractor's list fix in `tools/since_last_record.py` (eight insertions, a prompt written as a list of blocks crashed the committed tool) stays unstaged for its own class B commit, so this commit carries item 4's eight files and the records only.
-
-**Battery.** On the staged tree with the extractor fix stashed so the working tree equalled the index, under the estate's heavy-run lock taken at 02:36:05 EST on 2026-11-09 (released 02:42:13): the kernel gate, 02:36:46 to 02:41:12, 25 implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0; the pre-commit hook, 02:41:12 to 02:41:59, exit 0; hygiene exit 0 with its self-test refusing 4 of 4 and a planted pre-commit tense word in the handoff refused as HYGIENE_HANDOFF_PRE_COMMIT_TENSE then restored; both forms of `git diff --check` clean. The 2026-11-02 run on the same eight files read the same gate line.
-
-**Open.** Items 5 to 8 of the 10-28 list; his DA-R2 stamp and, at that commit, the pin self-test's absent-file example; readings O-R1 to O-R9; the 28 queue items.
-
----
-
 ## 2026-11-09, item 4 merged as 8507464 with its CI runs read, and the closeout of the resumption, under the maintainer's line of 02:27:22.
 
 **Class:** A (the handoff, this record and its archive). No governed artifact changed, so `CHANGELOG.md` takes no entry.
@@ -210,3 +190,21 @@ from defeating the shred mechanism.
 **Battery.** The application suite on patches A to D together in scratch, after round 4: 328 passed and 1 skipped (15:30:42 to 15:37:56 EST), the skip the Postgres apply. Every control patch B adds was seen failing at the line its label names (probe_patchB_controls.txt in the record folder). Hygiene exit 0 and both diff checks clean. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
 
 **Open.** His: this commit's landing on `main` and its class; patch C (the handoff's row for `tools/validate_retention.py`) and patch D (the extraction tool reads a parent's message as received), each put to him in turn; `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.
+
+---
+
+## 2026-11-11, the handoff's row for tools/validate_retention.py names its commit (patch C), and the landing of bdf8ed4 recorded, under the maintainer's clicks of 2026-11-11.
+
+**Class:** A by the session's reading, his to confirm: the handoff, the worklog and its archive and `CHANGELOG.md` are records. No governed artifact, tool, test, gate entry or hook command changed.
+
+**The words this commit acts on.** Each is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. At 18:19:51 EST, "Yes, land B", on "Fast-forward main to patch B's commit bdf8ed4 now?", offered at 17:55:33: his word for that push. At 18:57:43 EST, "Yes, commit C", on "Commit patch C on a branch for CI?", offered at 18:37:17: his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again.
+
+**The landing of bdf8ed4, recorded here because the entry above could not know it.** Patch B's commit was pushed on its branch at 17:36:08 EST, and its run 43113140477 was read step by step at 17:55:28 EST: success on all 27 steps, the application suite 328 passed and 1 skipped on Linux. Measured at 18:19:59 EST: GitHub's `main` at `0346eb8`, the branch one commit ahead with `0346eb8` its ancestor, the protection unchanged, no open pull request. A plain push of `bdf8ed4` to `main` ran from 18:20:10 to 18:20:11 EST, "0346eb8..bdf8ed4". Read back at 18:20:11 EST, GitHub served the tip with Incept.IO and the no-reply address as author and committer, and under `main` the count of fields that are not a no-reply address was 0 over 71 commits. The local `main` was moved with `git update-ref`, compared against its old value, and the checkout switched to it with no file written. The run on `main`, 43119025097, was read at 18:37:11 EST: success on all 27 steps.
+
+**What changed.** The handoff's row for `tools/validate_retention.py` read "Touched in :" with no commit named, at `48897c7` and before. The row describes the change `8583132` made, which flipped `MANIFEST_VALIDATOR_REQUIRES_CANARY` to true and wrote the row as "Touched in this commit:"; the records commit `356c1f7` of 2026-10-28 emptied the words "this commit" and wrote no hash in their place. The row now reads "Touched in `8583132`:". The commit `0aac3b9` later reworded one comment in the same file, which the row does not describe.
+
+**Agent involvement.** Session 0141534e on Opus 5.5 traced the row through `git log -G` and `git log -S` and wrote the patch in its scratchpad; no agent read it. No workflow ran.
+
+**Battery.** Hygiene exit 0 and both diff checks clean on the tree. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
+
+**Open.** His: this commit's landing on `main` and its class; patch D (the extraction tool reads a parent's message as received); `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.

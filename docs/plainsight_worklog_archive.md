@@ -5069,3 +5069,23 @@ merged branches. This entry's commit follows the usual route on his word in
 this chat.
 
 ---
+
+## 2026-11-08, item 4 recorded: the ontology validator's --corpus and --matchers modes, the merge of 04b358f, and the lane resumed on the maintainer's click of 2026-11-08.
+
+**Class:** B. `tools/validate_ontology.py` gains two modes, `tools/validate_conformance.py` moves the `ontology-corpus` gate entry from STUB to IMPLEMENTED, and thirteen notes in `ontology/selectors.yaml` gain one sentence each (no key, form, field or matcher changed; reading O-R4, which he decided on 2026-11-02 with the click "Keep them"). `CONFORMANCE.md`, the Makefile comment, the gameplan's deferral row, the connector validator's rung 3 line, the handoff and `CHANGELOG.md` follow. No doctrine, spec, schema, policy, runtime, synthetic or corpus file changed, and no value.
+
+**Merge and CI first.** `04b358f` (the extraction tool's three misreads corrected, class B) merged to `main` as pull request 39 at 20:53:40 EST on 2026-11-02 on his click "Merge it" of 20:53:32; the CI run on main, 41562667958, concluded success on its one job (gate). Measured again today: `main` == `origin/main` == `04b358f`.
+
+**The words this commit acts on.** His click on the offered action "Yes, resume here" in this chat on 2026-11-08, which lifts the hold of his click "Leave it" (16:16:45 on 2026-11-03), and the earlier click "Keep them" (21:44:42 on 2026-11-02). Neither is a typed line. A commit takes his word here per act.
+
+**Agent involvement.** Item 4 was built on 2026-11-02 by workflow wf_513195a4-7a0 in session c941f6e6 (Opus 5.5 builder, Sonnet 5.5 verifier, Opus 5.5 fixer, one at a time under an agent slot; the verifier found 11 of 12 claims true and four defects, all closed with plants and controls). The mode report is `Z-ISR/_session-artifacts/2026-11-02-plainsight-resume/PHASE_item4_report.md`. This entry and the other records were written on 2026-11-08 by the fresh session of that day on Sonnet 5.5 with no agent, then Fable 5.1 on the parent's switch.
+
+**What the modes check.** `--corpus` reads the five sites `spec/layer-model.yaml` binds to the registry and refuses an unregistered type, a value off its key's form, a vacuous must-fail row and an unexercised key (ONT_CORPUS_SELECTOR_UNREGISTERED, _VALUE_OFF_FORM, _FIXTURE_VACUOUS, _KEY_UNEXERCISED). `--matchers` is its structural half only: calibration flags false, every matcher id a connector names declared, every library entry complete (ONT_MATCHER_CALIBRATION_FLAG, _NAMED_UNDECLARED, _ENTRY_INCOMPLETE). No matcher is scored and the output says so; scoring needs labelled ground truth, which needs the sealed cast. The aggregator runs a STUB entry's command and does not read its exit code, which `CONFORMANCE.md` section 4 now states.
+
+**Held, not folded.** The extractor's list fix in `tools/since_last_record.py` (eight insertions, a prompt written as a list of blocks crashed the committed tool) stays unstaged for its own class B commit, so this commit carries item 4's eight files and the records only.
+
+**Battery.** On the staged tree with the extractor fix stashed so the working tree equalled the index, under the estate's heavy-run lock taken at 02:36:05 EST on 2026-11-09 (released 02:42:13): the kernel gate, 02:36:46 to 02:41:12, 25 implemented, 0 failed, 4 unratified and refusing, 1 stubbed, 2 pending, exit 0; the pre-commit hook, 02:41:12 to 02:41:59, exit 0; hygiene exit 0 with its self-test refusing 4 of 4 and a planted pre-commit tense word in the handoff refused as HYGIENE_HANDOFF_PRE_COMMIT_TENSE then restored; both forms of `git diff --check` clean. The 2026-11-02 run on the same eight files read the same gate line.
+
+**Open.** Items 5 to 8 of the 10-28 list; his DA-R2 stamp and, at that commit, the pin self-test's absent-file example; readings O-R1 to O-R9; the 28 queue items.
+
+---

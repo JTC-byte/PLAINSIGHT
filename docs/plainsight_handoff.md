@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-11. This file's commit is patch B: item 7's open findings
-in the retention sweep and verify_shred (section 0, amendment 9.22); class C
-by the session's reading, his to confirm. Before it, `main` == `origin/main`
-== `0346eb8`, patch A, landed by a fast-forward push on his click of
-16:59:58 EST, CI green on all 27 steps of its run on `main`.
+**Date:** 2026-11-11. This file's commit is patch C: the row for
+`tools/validate_retention.py` names `8583132` (section 0); class A by the
+session's reading, his to confirm. Before it, `main` == `origin/main` ==
+`bdf8ed4`, patch B, landed by a fast-forward push on his click of
+18:19:51 EST, CI green on all 27 steps of its run on `main`.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -36,8 +36,8 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-branch `item7-open-findings-2026-11-11` on his click of 2026-11-11 at
-17:25:13 EST, which covers that branch's push; landing it takes his word
+branch `handoff-row-retention-2026-11-11` on his click of 2026-11-11 at
+18:57:43 EST, which covers that branch's push; landing it takes his word
 again. The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
 item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
@@ -51,32 +51,26 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Item 7's reads left findings open, each his to
-order fixed. The sweep now reads the pin only when a refusal needs it and
-reports a registry state the schema does not name; verify_shred reads a
-case id under any letter case; four behaviours with no control have one
-each (amendment 9.22).
+**What changed and why.** Section 2's row for `tools/validate_retention.py`
+read "Touched in :" with no commit named since the records commit of
+2026-10-28 emptied "this commit". It now names `8583132`, whose change it
+describes.
 
-**Which surfaces moved.** `runner/retention_sweep.py`,
-`runner/verify_shred.py`, `app/tests/test_retention_sweep.py`,
-`app/README.md`, the design record, the app-tests gate entry's count, the
-changelog, the worklog and its archive, and this file. No doctrine, spec,
-schema, policy, ontology or corpus file.
+**Which surfaces moved.** This file, the changelog, and the worklog and its
+archive. No governed artifact, tool or test.
 
-**What validation ran and what passed.** The application suite with A to D,
-328 passed and 1 skipped, with every new control seen failing at its line;
-hygiene and both diff checks; the kernel gate on this tree under the
-heavy-run lock and the hook at the commit.
+**What validation ran and what passed.** Hygiene and both diff checks; the
+kernel gate on this tree under the heavy-run lock and the hook at the
+commit.
 
 **Whether a release baseline changed.** No tag exists. This commit is on a
-branch, and `main` is `0346eb8`.
+branch, and `main` is `bdf8ed4`.
 
 **What remains open or deferred.** His: this commit's landing and its
-class; patches C and D in turn; `rebuild --verify` on a case whose
-database is gone; slice 4's three decisions; the request to GitHub Support;
-the pre-rewrite bundle; Saturday's rotation. Sections 3 and 4 carry the
-rest: DA-R2's stamp, the readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the
-queue and Step 11's shred.
+class; patch D; `rebuild --verify` on a case whose database is gone; slice
+4's three decisions; the request to GitHub Support; the pre-rewrite bundle;
+Saturday's rotation. Sections 3 and 4 carry the rest: DA-R2's stamp, the
+readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the queue and Step 11's shred.
 
 ---
 
@@ -176,7 +170,7 @@ exists and has never run.
 | `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. |
 | `tools/generate_pse.py`, `tools/build_corpus.py`, `tools/validate.py`, `tools/validate_layer_model.py`, `tools/validate_doctrine.py`, `tools/validate_hygiene.py`, `tools/validate_ontology.py`, `tools/validate_cast.py`, `tools/since_last_record.py`, `gate_log.py` | Committed earlier, unchanged in `8583132`. |
 | `tools/validate_authorization.py` | **Extended in `8583132`** to 5,767 lines: `--dispatch-paths` implemented with 61 planted self-test cases; VA-R5 recorded; VA-R6 applied as the session's reading (section 3); VA-U2 and VA-U3 stay open. |
-| `tools/validate_retention.py` | **Touched in :** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. Its self-test passes. |
+| `tools/validate_retention.py` | **Touched in `8583132`:** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. Its self-test passes. |
 | `tools/pin_of_record.py` | **Extended in `8583132`** with PIN-R9 (`Pin.decisions`, `decision_stamped`); 35 self-test cases. |
 | `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in `8583132`.** Item 8 (2026-11-10) added the manifest tool's must-fail walk and its adapter check, a shape check that prints what it cannot read as NOT READ. Self-tests of 374 cases (77 breaks, 11 permits, 286 controls), 39 breaks, a drift check, and 26 plants. |
 | `tools/validate_conformance.py` | **Extended in `8583132`.** `KERNEL_GATE` carries thirty-two entries, `app-tests` among them. |
