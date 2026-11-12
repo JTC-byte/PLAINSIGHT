@@ -22,6 +22,23 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-11. AGENTS.md adopts the estate's GitHub usage rules.**
+
+  **What changed.** `AGENTS.md` section 5 gains "Amended 2026-11-11: GitHub
+  usage and the Actions budget": local commits only until the maintainer
+  lifts it, local checks first, batched pushes, no cascade re-gating, no
+  re-run without a cause, and the cost stated before every push. Made as a
+  local commit; nothing is pushed.
+
+  **Surfaces moved.** `AGENTS.md`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** Hygiene and both diff checks; the kernel gate and the
+  pre-commit hook on the staged tree.
+
+  **What did not change.** No tool, gate entry, hook command or workflow. CI
+  still runs on every push and pull request.
+
 - **2026-11-11. The extraction tool reads a message from another session as received.**
 
   **What changed.** `tools/since_last_record.py` reads a text for a message

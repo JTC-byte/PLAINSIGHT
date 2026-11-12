@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-11. This file's commit is patch D: the extraction tool
-reads a message from another session as received (section 0); class B by
-the session's reading, his to confirm. Before it, `main` == `origin/main` ==
-`71b7112`, patch C, landed by a fast-forward push on his click of 19:29:20
-EST, CI green on all 27 steps of its run on `main`.
+**Date:** 2026-11-11. This file's commit adopts the GitHub usage rules
+in `AGENTS.md` section 5, as a local commit (section 0); class B by the
+session's reading. Before it, `main` == `origin/main` == `71b7112`, and
+patch D's commit `8fd1c08`, on its branch with CI green, is held off `main`
+under his line relayed at about 20:2x: local commits only, push nothing.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -36,9 +36,9 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-branch `received-message-2026-11-11` on his click of 2026-11-11 at
-19:55:28 EST, which covers that branch's push; landing it takes his word
-again. The
+local branch `github-usage-2026-11-11`, from `8fd1c08`, on his click of
+2026-11-11 at 20:38:42 EST, and is not pushed: no push is made in this
+repository until he lifts the rule (`AGENTS.md` section 5). The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
 item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
 2026-11-11 and this commit in `2026-11-11-plainsight-lane/`, whose
@@ -51,28 +51,27 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** This harness delivers a message from another
-session on a record flagged isMeta, and `tools/since_last_record.py` read
-the flag first, so it listed no message as received. It now reads the text
-for a message from another session before the flags.
+**What changed and why.** He set GitHub usage rules for every lane on
+2026-11-11 to keep Actions within budget. `AGENTS.md` section 5 adopts
+them: local commits only until he lifts it, local checks first, batched
+pushes, no cascade re-gating, no re-run without a cause, the cost stated
+before every push.
 
-**Which surfaces moved.** The tool, one sentence of `AGENTS.md` section 5,
-the changelog, the worklog and its archive, and this file. No doctrine,
-spec, schema, policy, ontology or corpus file.
+**Which surfaces moved.** `AGENTS.md`, the changelog, the worklog and its
+archive, and this file. No tool, gate entry, hook command or workflow.
 
-**What validation ran and what passed.** The tool's self-test, 23 checks,
-with a mutant of the old order failing 4; hygiene and both diff checks; the
+**What validation ran and what passed.** Hygiene and both diff checks; the
 kernel gate on this tree under the heavy-run lock and the hook at the
-commit.
+commit. Nothing is pushed, so no CI runs on it.
 
-**Whether a release baseline changed.** No tag exists. This commit is on a
-branch, and `main` is `71b7112`.
+**Whether a release baseline changed.** No tag exists. This commit is
+local, and `main` is `71b7112`.
 
-**What remains open or deferred.** His: this commit's landing and its
-class; `rebuild --verify` on a case whose database is gone; slice 4's three
-decisions; the request to GitHub Support; the pre-rewrite bundle;
-Saturday's rotation. Sections 3 and 4 carry the rest: DA-R2's stamp, the
-readings, `LOCAL_ACTS`, U-09 to U-11, SR-U1, the queue and Step 11's shred.
+**What remains open or deferred.** His: this commit's class; CI on every
+push against the ten-minute rule; when pushing resumes, one push carrying
+`8fd1c08` and this commit; a pre-push hook for rule 1; `rebuild --verify`
+on a case whose database is gone; slice 4; the request to GitHub Support;
+the bundle; Saturday's rotation. Sections 3 and 4 carry the rest.
 
 ---
 

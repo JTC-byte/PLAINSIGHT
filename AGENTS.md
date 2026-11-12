@@ -272,6 +272,45 @@ exemption was added.
 
 If a required check cannot be run, document the reason in the handoff.
 
+**Amended 2026-11-11: GitHub usage and the Actions budget.** The
+maintainer set these rules for every lane on 2026-11-11 in the parent's chat,
+and the parent folder's `CLOSEOUT_CHECKPOINT.md` section 10 records his words
+and the measured cost. This repository adopts them under its own process. It
+is public, so its Actions minutes are free and it needs no share of an
+account's budget; the habits apply all the same.
+
+1. **Local commits only, until he lifts it.** No push in this repository, a
+   landing on `main` included. A push needs his word in the PLAINSIGHT chat on
+   a written case: a major release or a major bug fix, what it is, why it
+   cannot wait, and what it will cost.
+2. **Local first.** Every check that can run on the workstation runs there
+   under the estate's heavy-run lock before a commit: the kernel gate, the
+   hook, the application suite, any mutation battery. CI confirms a tree the
+   workstation already passed; it is not the test bench.
+3. **Long jobs.** CI here is one job of about twelve minutes (run 43127668000
+   on `main` at `71b7112` took 11 minutes 32 seconds), past the estate's
+   ten-minute line for a job that runs only on demand. It stays on every push
+   and pull request, because it carries the identity and trailer checks that
+   make R6 a mechanism rather than a habit; moving it to workflow_dispatch
+   would take those checks off the push, and that is his decision.
+4. **Few pushes, batched.** When pushing resumes, the commits made while it
+   was held go up together, and later records-only commits go up at most once
+   a day, at the closeout. The landing route of the handoff's section 7 starts
+   two runs per landing, one on the branch and one on `main`; batching keeps
+   that to one landing per push. Work is saved by a local commit, never by a
+   push.
+5. **No cascade re-gating.** Branches are landed in sequence, and a branch is
+   updated only when it conflicts or its checks went stale for a real reason.
+6. **No re-run without a cause.** An infrastructure failure gets one re-run, and
+   a code failure gets a fix first. A run whose commit is no longer its
+   branch's head, because a newer push replaced it, is cancelled at once on his
+   standing word (his click "Yes, standing OK" in the parent's chat at about
+   20:36 on 2026-11-11). Cancelling the head's own run, or any other run, takes
+   his word per run.
+7. **The cost is stated before the push**: the workflow, its last run's
+   wall-clock and billed minutes (billed 0 on this public repository), and how
+   many runs the push will start.
+
 ## 6. Documentation matrix
 
 When a governed artifact changes, the matching surfaces move in the same change.
