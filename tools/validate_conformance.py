@@ -24,10 +24,11 @@ and moved to IMPLEMENTED, and the structural half of `--matchers` was built with
 its entry left STUB for the maintainer's decision; the default mode runs the
 same structural checks, so their refusals reach the IMPLEMENTED ontology entry.
 
-Eleven self-tests are entries of their own, IMPLEMENTED: six as of
+Twelve self-tests are entries of their own, IMPLEMENTED: six as of
 2026-09-28, the doctrine gate's and the pin-of-record reader's as of
-2026-10-01, the divergence register's as of Step 9, and the manifest
-validator's and the connector conformance runner's as of Step 12.
+2026-10-01, the divergence register's as of Step 9, the manifest
+validator's and the connector conformance runner's as of Step 12, and the
+push rule's as of 2026-11-12.
 `tools/validate.py` runs its own inside the schema entry. A
 self-test breaks the governed artifact in memory and asserts each break is
 refused, which is the test design gate 1 asks for. Before that date only the
@@ -85,7 +86,7 @@ UNRATIFIED = "unratified"
 #:
 #: The self-test and stub entries are the exception, because no tool records a
 #: run under their tokens. Each takes its tool's token with the mode appended.
-#: Nine of the eleven self-tests record nothing to telemetry. The cast and
+#: Ten of the twelve self-tests record nothing to telemetry. The cast and
 #: authorization self-tests record under the entry's own token since
 #: 2026-10-01; until then they recorded under the tool's token, so each run
 #: counted in that gate's telemetry as a run of the gate.
@@ -374,7 +375,8 @@ KERNEL_GATE = (
         "--self-test. Breaks the register, the two derived tables, the corpora and "
         "the tree in memory and asserts each of the six checks and the rendering "
         "check refuses by its own code, among them a deleted entry and a dangling "
-        "test_ref",
+        "test_ref, and that its scratch repository leaves the repository a "
+        "worktree hook's GIT_DIR names untouched",
     ),
     (
         "connector-manifest",
@@ -435,6 +437,18 @@ KERNEL_GATE = (
         "cassette, invoke reachable without a permit, a process call and a socket "
         "connect the static scan cannot resolve, a refusal fixture refused for the "
         "wrong reason, and an adapter that refuses everything",
+    ),
+    (
+        "push-rule-self-test",
+        [PY, "tools/push_rule.py", "--self-test", "--quiet"],
+        IMPLEMENTED,
+        "--self-test. Rule 1 of AGENTS.md section 5 as a mechanism: plants each "
+        "refusal in memory, then pushes from a scratch repository through the real "
+        ".githooks/pre-push into a scratch bare repository and asserts that a push "
+        "naming no case, an absent case, a case naming another commit, a two-ref "
+        "push whose case names one tip and a deletion the case names only inside "
+        "a longer ref are refused, and that a case naming every tip admits. It "
+        "contacts no network remote",
     ),
 )
 

@@ -109,7 +109,12 @@ lineage requirement added on the shared pair, an enum changed inside one
 alternative, and a bound added to an alternative at a pointer listed under
 `identical:`. One break builds a scratch git repository and asserts that the
 compatibility-claim scan reads its tracked and untracked files and never a file
-under an ignored directory. The self-test also refuses if any of the seven
+under an ignored directory. Another runs that scan under the GIT_DIR and
+GIT_INDEX_FILE a pre-commit hook inherits in a worktree, naming a decoy
+repository, and asserts the decoy's config and index are unchanged: until
+2026-11-12 the scratch repository's git init re-initialized the repository
+those variables named and set core.bare true in its shared config. The
+self-test also refuses if any of the seven
 codes is the expected code of no break.
 
 The upstream schema is read from the path the register names, relative to the
@@ -927,11 +932,18 @@ def _decode(data: bytes) -> str:
     return data.decode("utf-8", errors="replace").lstrip("\ufeff")
 
 
-def tree_files(root: Path = ROOT) -> list:
-    """Every tracked file, and every untracked file git does not ignore, with its text."""
+def tree_files(root: Path = ROOT, env: dict | None = None) -> list:
+    """Every tracked file, and every untracked file git does not ignore, with its text.
+
+    ``env`` is the environment git runs under. The gate passes none and reads
+    this repository under the caller's environment, which inside a hook names
+    the commit's own index. The self-test's scratch repository passes one with
+    every GIT_ variable removed, so that git reads the scratch repository and
+    not the repository a hook's environment names.
+    """
     names: list = []
     for args in (["ls-files", "-z"], ["ls-files", "-z", "--others", "--exclude-standard"]):
-        proc = subprocess.run(["git"] + args, cwd=root, capture_output=True)
+        proc = subprocess.run(["git"] + args, cwd=root, capture_output=True, env=env)
         if proc.returncode != 0:
             raise Unreadable(
                 "git",
@@ -1566,6 +1578,83 @@ def _rederive(ctx: dict) -> None:
     ctx["pse"] = derive_table(ctx["pse_root"])
 
 
+def _scratch_env(root: Path) -> dict:
+    """The environment for git in a scratch repository: the caller's, with
+    every GIT_ variable removed.
+
+    git commit exports GIT_DIR and GIT_INDEX_FILE to a pre-commit hook when it
+    runs in a worktree. Under them, the git init in _scratch_repository
+    re-initialized this repository and wrote core.bare true into its shared
+    config on 2026-11-12, and the main checkout stopped being a work tree until
+    the key was set back. A scratch repository must not inherit the repository
+    of whoever runs the self-test.
+    """
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+    env["GIT_CEILING_DIRECTORIES"] = str(root.parent)
+    return env
+
+
+def _scratch_repository_under_a_hook_environment() -> list:
+    """Run the scratch enumeration as a pre-commit hook in a worktree runs it,
+    with GIT_DIR and GIT_INDEX_FILE naming a decoy repository's worktree.
+    Returns what _scratch_repository returns, or raises ControlFailed when the
+    decoy's shared config or its index changed. The decoy's exclude file names
+    untracked.md, so a scan that reads the decoy's repository instead of the
+    scratch one drops that file and _scratch_repository refuses it."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory(prefix="dr-selftest-decoy-", ignore_cleanup_errors=True) as tmp:
+        base = Path(tmp)
+        empty = base / "empty.gitconfig"
+        empty.write_text("", encoding="utf-8")
+        env = _scratch_env(base)
+        env.update(GIT_CONFIG_GLOBAL=str(empty), GIT_CONFIG_NOSYSTEM="1")
+        main = base / "decoy"
+        main.mkdir()
+
+        def git(*args):
+            return subprocess.run(["git", *args], cwd=main, capture_output=True, env=env)
+
+        steps = [
+            git("init", "-q"),
+            git("config", "user.name", "dr-self-test"),
+            git("config", "user.email", "dr-self-test"),
+            git("commit", "-q", "--allow-empty", "-m", "decoy"),
+            git("worktree", "add", "-q", str(base / "wt"), "-b", "decoy-wt"),
+        ]
+        if any(p.returncode != 0 for p in steps):
+            raise ControlFailed("the decoy repository and its worktree could not be built, so the isolation cannot be tested")
+        admin = main / ".git" / "worktrees" / "wt"
+        exclude = main / ".git" / "info" / "exclude"
+        exclude.parent.mkdir(parents=True, exist_ok=True)
+        with exclude.open("a", encoding="utf-8") as fh:
+            fh.write("untracked.md\n")
+        config, index = main / ".git" / "config", admin / "index"
+
+        def state():
+            return config.read_bytes(), index.read_bytes() if index.is_file() else None
+
+        before = state()
+        saved = {k: os.environ.get(k) for k in ("GIT_DIR", "GIT_INDEX_FILE")}
+        os.environ["GIT_DIR"] = str(admin)
+        os.environ["GIT_INDEX_FILE"] = str(index)
+        try:
+            found = _scratch_repository()
+        finally:
+            for k, v in saved.items():
+                if v is None:
+                    os.environ.pop(k, None)
+                else:
+                    os.environ[k] = v
+        after = state()
+    if before != after:
+        raise ControlFailed(
+            "the scratch repository's git commands reached the repository the calling environment names: "
+            "its shared config or its index changed, which is how core.bare was set true on 2026-11-12"
+        )
+    return found
+
+
 def _scratch_repository() -> list:
     """Enumerate a throwaway git repository holding the claim three times:
     in a tracked file, in an untracked file, and in a file under an ignored
@@ -1577,7 +1666,7 @@ def _scratch_repository() -> list:
     claim = "Draft: PSE is " + "ZMeta" + "-compatible.\n"
     with tempfile.TemporaryDirectory(prefix="dr-selftest-") as tmp:
         root = Path(tmp)
-        env = dict(os.environ, GIT_CEILING_DIRECTORIES=str(root.parent))
+        env = _scratch_env(root)
         proc = subprocess.run(["git", "init", "-q"], cwd=root, capture_output=True, env=env)
         if proc.returncode != 0:
             raise ControlFailed("git init failed in a scratch directory, so the enumeration cannot be tested")
@@ -1587,7 +1676,7 @@ def _scratch_repository() -> list:
         (root / "untracked.md").write_text(claim, encoding="utf-8")
         (root / "cases").mkdir()
         (root / "cases" / "held.md").write_text(claim, encoding="utf-8")
-        found = tree_files(root)
+        found = tree_files(root, env=env)
     names = {name for name, _ in found}
     if not {"tracked.md", "untracked.md"} <= names or "cases/held.md" in names:
         raise ControlFailed(
@@ -1734,6 +1823,9 @@ def _mutations() -> list:
     def enumerate_scratch_repository(c):
         c["files"].extend(_scratch_repository())
 
+    def enumerate_under_a_hook_environment(c):
+        c["files"].extend(_scratch_repository_under_a_hook_environment())
+
     def edit_exempted_line(c):
         ex = c["register"]["compat_claim"]["exemptions"][0]
         out = []
@@ -1791,6 +1883,7 @@ def _mutations() -> list:
         ("plant the claim in lower case", plant_claim_lower, "DR_COMPAT_CLAIM", True, ""),
         ("plant the claim with a non-breaking hyphen", plant_claim_nbhyphen, "DR_COMPAT_CLAIM", True, ""),
         ("scan a scratch git repo: tracked and untracked read, ignored not", enumerate_scratch_repository, "DR_COMPAT_CLAIM", True, ""),
+        ("scan it under a worktree hook's GIT_DIR: the repository it names untouched", enumerate_under_a_hook_environment, "DR_COMPAT_CLAIM", True, ""),
         ("edit the exempted line by one word", edit_exempted_line, "DR_COMPAT_CLAIM", False,
          "the exemption's hash now matches no line, so check 2 refuses the exemption as stale"),
         ("hand-edit the rendering", hand_edit_rendering, RENDER_CODE, True, ""),

@@ -105,7 +105,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: python -m pytest app -q --tb=short -p no:cacheprovider
 
-      # The ten validator self-tests no other step runs, one named step each.
+      # The eleven self-tests no other step runs, one named step each.
       # Hygiene's runs in the Housekeeping step and tools/validate.py's inside
       # the kernel gate step. A self-test breaks the governed artifact in memory and
       # asserts that each break is refused, so it is the test that fails when a
@@ -114,7 +114,7 @@ jobs:
       # two sessions because nothing ran it. These run as named steps before
       # the kernel gate, so a self-test that breaks turns its own step red
       # rather than joining a kernel gate that is already red for a disclosed
-      # reason. The kernel gate runs all eleven again.
+      # reason. The kernel gate runs all twelve again.
       - name: Layer-model self-test
         if: ${{ !cancelled() }}
         run: python tools/validate_layer_model.py --self-test
@@ -167,6 +167,15 @@ jobs:
       - name: Connector conformance self-test
         if: ${{ !cancelled() }}
         run: python tools/validate_connector_conformance.py --self-test
+
+      # Joined on 2026-11-12. Rule 1 of AGENTS.md section 5 as a mechanism:
+      # pushes from a scratch repository through the real .githooks/pre-push
+      # into a scratch bare repository, contacting no network remote. On Linux
+      # it also fails when the hook loses its executable mode, because git then
+      # ignores the hook and the first push lands.
+      - name: Push-rule self-test
+        if: ${{ !cancelled() }}
+        run: python tools/push_rule.py --self-test
 
       - name: Kernel gate
         if: ${{ !cancelled() }}

@@ -12,17 +12,17 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-11. This file's commit adopts the GitHub usage rules
-in `AGENTS.md` section 5, as a local commit (section 0); class B by the
-session's reading. Before it, `main` == `origin/main` == `71b7112`, and
-patch D's commit `8fd1c08`, on its branch with CI green, is held off `main`
-under his line relayed at about 20:2x: local commits only, push nothing.
+**Date:** 2026-11-12. This file's commit makes rule 1 of `AGENTS.md`
+section 5 a pre-push hook and records his rulings of the day (section 0);
+class B by the session's reading. Before it, `main` == `origin/main` ==
+`71b7112`, and the local branch `github-usage-2026-11-11` holds `8fd1c08`
+and `92cf511` above it, unpushed under his rule of 2026-11-11.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
 the four Class F items with EG-7, no longer applies to this tree; section 3
 says whose decision it is.
-**Kernel gate:** 32 entries: 25 implemented and passing, 11 of them self-tests;
+**Kernel gate:** 33 entries: 26 implemented and passing, 12 of them self-tests;
 4 unratified and refusing as designed; 1 stubbed; 2 pending. `--kernel-gate`
 exits 0 on this tree and the pre-commit hook passes. `CONFORMANCE.md` section 4
 applies.
@@ -36,13 +36,15 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-local branch `github-usage-2026-11-11`, from `8fd1c08`, on his click of
-2026-11-11 at 20:38:42 EST, and is not pushed: no push is made in this
-repository until he lifts the rule (`AGENTS.md` section 5). The
+local branch `pre-push-rule1-2026-11-12`, from `92cf511`, in a worktree, on
+his word in the PLAINSIGHT chat, and is not pushed: no push is made in this
+repository until he lifts the rule, and `.githooks/pre-push` refuses one
+that names no written case (`AGENTS.md` section 5). The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
 item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
-2026-11-11 and this commit in `2026-11-11-plainsight-lane/`, whose
-`README.md` ends with the Next Session line, the resumptions in
+2026-11-11 in `2026-11-11-plainsight-lane/`, those of 2026-11-12 and this
+commit in `2026-11-12-plainsight-lane/`, whose `README.md` is the day's
+record, the resumptions in
 `2026-11-02-plainsight-resume/` and `2026-11-06-plainsight-resume/`, and his
 28-item queue in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none
 answered.
@@ -51,27 +53,34 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** He set GitHub usage rules for every lane on
-2026-11-11 to keep Actions within budget. `AGENTS.md` section 5 adopts
-them: local commits only until he lifts it, local checks first, batched
-pushes, no cascade re-gating, no re-run without a cause, the cost stated
-before every push.
+**What changed and why.** Rule 1 of `AGENTS.md` section 5, local commits
+only until he lifts it, lived in prose alone, which design gate 1 says is not
+yet a rule. On his click "Yes, build it" of 2026-11-12, `.githooks/pre-push`
+runs `tools/push_rule.py`, which refuses a push unless `PLAINSIGHT_PUSH_CASE`
+names a written case that names the new tip of every ref the push updates and
+every ref it deletes. Rule 3 reads the estate's ten-minute line per check, on his click
+"Yes, per check". The worklog records his other rulings of the day.
 
-**Which surfaces moved.** `AGENTS.md`, the changelog, the worklog and its
-archive, and this file. No tool, gate entry, hook command or workflow.
+**Which surfaces moved.** The tool and the hook, new; the gate's list, the
+hook's self-test loop, `make preflight`, a new target, one CI step; the
+divergence register self-test, isolated from a hook's git environment;
+`AGENTS.md` section 5, `CONFORMANCE.md` section 4, the changelog, the worklog,
+its archive and this file. No doctrine, schema, policy, spec or app file.
 
-**What validation ran and what passed.** Hygiene and both diff checks; the
-kernel gate on this tree under the heavy-run lock and the hook at the
-commit. Nothing is pushed, so no CI runs on it.
+**What validation ran and what passed.** The self-test, 25 checks with 8
+through the real hook; sixteen mutants, each seen failing; a second-model read
+whose findings were fixed first; hygiene and both diff checks; the kernel gate
+under the heavy-run lock and the hook at the commit. No CI runs on it.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
 
-**What remains open or deferred.** His: this commit's class; CI on every
-push against the ten-minute rule; when pushing resumes, one push carrying
-`8fd1c08` and this commit; a pre-push hook for rule 1; `rebuild --verify`
-on a case whose database is gone; slice 4; the request to GitHub Support;
-the bundle; Saturday's rotation. Sections 3 and 4 carry the rest.
+**What remains open or deferred.** His: this commit's class; when pushing
+resumes, one push carrying `8fd1c08`, `92cf511` and this commit under a
+written case the hook reads; LOCAL_ACTS; slice 4; CASE_ID_SPELLING_DIFFERS;
+`rebuild --verify` on a case whose database is gone; act 4 of the demo after
+his review; the request to GitHub Support; the bundle; Saturday's rotation.
+Sections 3 and 4 carry the rest.
 
 ---
 
@@ -145,7 +154,7 @@ exists and has never run.
 |---|---|
 | `LICENSE`, `NOTICE`, `.gitattributes` | Committed in `ac60ac4`; `.gitattributes` gains one line in `8583132` so connector cassettes keep their recorded bytes. |
 | `CLAUDE.md` | Committed. Advisory. R6 amended 2026-08-27. |
-| `AGENTS.md` | Committed. Section 5 names the gate commands, the twenty-one hook commands, the twenty-two preflight commands and the paths every validator self-test runs on; section 8 sets the handoff standard and the closeout extraction. |
+| `AGENTS.md` | Committed. Section 5 names the gate commands, the twenty-two hook commands, the twenty-three preflight commands, the paths every validator self-test runs on and rule 1's pre-push hook; section 8 sets the handoff standard and the closeout extraction. |
 | `CHANGELOG.md` | Committed. One entry per governed commit, newest first. Entries below the 2026-09-07 rewrite entry cite pre-rewrite hashes; that entry translates them. |
 | `doctrine/DOCTRINE_STATUS.md` | The pin of record. 58 conclusions stamped, 0 bases. No row for any Step 8 or Step 10 artifact. The R8 row's Item cell carries an escaped pipe that makes the shared reader skip it (section 4). |
 | `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md` | SS-1 to SS-21 and RT-1 to RT-19. Patches 1, 2 and 3c in. Sentences at SS-14 items 3, 5 and 6 describe mechanisms as unwritten that now exist (section 4). |
@@ -173,18 +182,14 @@ exists and has never run.
 | `tools/validate_authorization.py` | **Extended in `8583132`** to 5,767 lines: `--dispatch-paths` implemented with 61 planted self-test cases; VA-R5 recorded; VA-R6 applied as the session's reading (section 3); VA-U2 and VA-U3 stay open. |
 | `tools/validate_retention.py` | **Touched in `8583132`:** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. Its self-test passes. |
 | `tools/pin_of_record.py` | **Extended in `8583132`** with PIN-R9 (`Pin.decisions`, `decision_stamped`); 35 self-test cases. |
-| `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in `8583132`.** Item 8 (2026-11-10) added the manifest tool's must-fail walk and its adapter check, a shape check that prints what it cannot read as NOT READ. Self-tests of 374 cases (77 breaks, 11 permits, 286 controls), 39 breaks, a drift check, and 26 plants. |
-| `tools/validate_conformance.py` | **Extended in `8583132`.** `KERNEL_GATE` carries thirty-two entries, `app-tests` among them. |
-| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `8583132`.** `make preflight` runs twenty-two commands and the hook twenty-one, the eleven self-tests among them. CI runs ten self-tests as named steps before the kernel gate, clones the public `zmeta-spec` at v1.1.27 for the register's diff, installs pytest, runs the guard tests in its Mechanism tests step and the adapter and application tests as named steps. Since 2026-11-10 its last step refuses a history that holds an author or committer address other than a GitHub no-reply address. |
+| `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in `8583132`.** Item 8 (2026-11-10) added the manifest tool's must-fail walk and its adapter check, a shape check that prints what it cannot read as NOT READ. Self-tests of 374 cases (77 breaks, 11 permits, 286 controls), 40 breaks, a drift check, and 26 plants. |
+| `tools/validate_conformance.py` | **Extended in `8583132`.** `KERNEL_GATE` carries thirty-three entries, `app-tests` among them and `push-rule-self-test` since 2026-11-12. |
+| `Makefile`, `ci.yml`, `.githooks/pre-commit` | **All three touched in `8583132`.** `make preflight` runs twenty-three commands and the hook twenty-two, the twelve self-tests among them. CI runs eleven self-tests as named steps before the kernel gate, clones the public `zmeta-spec` at v1.1.27 for the register's diff, installs pytest, runs the guard tests in its Mechanism tests step and the adapter and application tests as named steps. Since 2026-11-10 its last step refuses a history that holds an author or committer address other than a GitHub no-reply address. |
+| `tools/push_rule.py`, `.githooks/pre-push` | **New on 2026-11-12.** Rule 1 of `AGENTS.md` section 5 as a mechanism: the hook refuses a push unless `PLAINSIGHT_PUSH_CASE` names a written case naming the new tip of every ref it updates and every ref it deletes; `git push --no-verify`, a checkout whose `core.hooksPath` is unset and a worktree at an older commit skip it. A self-test of 25 checks, 8 through the real hook into a scratch repository; sixteen mutants seen failing. |
 
 ## 3. What blocks
 
 Everything in this section is the operator's, and none of it is an agent act.
-
-**Three classes he decided on 2026-10-28, each by his click on the offered
-action in this chat**, are in the worklog entry of that date: the emit's
-platform move kept (MF-R17, SH-R18, amendments 9.14 and 9.15), VA-R6 Class B,
-and the one-word edit at `policy/retention.yaml` line 870 Class B.
 
 **DA-R2, the dispatch allowlist.** Class F by `AGENTS.md` section 3. The
 re-measured draft is in the record folder beside DA-R1 and its argument, never
@@ -205,8 +210,9 @@ amendments 9.1 to 9.22. Each is recorded where its artifact is and in the
 record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
-clearing act, EG-2's vault-key custody sentence. It no longer applies cleanly;
-section 4 says what that costs.
+clearing act, EG-2's vault-key custody sentence. It no longer applies cleanly:
+`git apply --3way` applies two files and `DOCTRINE_STATUS.md` with one table
+conflict.
 
 **What blocks the first live run is SS-14 item 6**, a list rather than a step:
 the two doctrine files per criterion; `policy/subject-authorization.yaml` and
@@ -253,8 +259,6 @@ dollars non-recurring and 205 a month.
 - **The guard's step-3 class clause has one half with no discriminating test**
   (the verifier's note), because no class outside the authorizable set exists in
   the policy.
-- **Patch 4b no longer applies to this tree.** `git apply --3way` applies two
-  files cleanly and `DOCTRINE_STATUS.md` with one table conflict.
 - **`tools/validate_hygiene.py` cannot see a broken sibling citation.** Two
   rank-1 citations name `../ZISR COP/`, now `../zisr-cop/`, kept as dated
   measurements; `README.md` translates it.
@@ -325,7 +329,8 @@ were fixed before the commit or are recorded as open.
 | The 2026-09-04 verification records | `Z-ISR/_session-artifacts/2026-09-04-plainsight-record-repair/` | The method every later review copies. |
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Unshared. |
 | The 2026-11-10 rewrite of `main`, and item 8's reads | `Z-ISR/_session-artifacts/2026-11-09-plainsight-items/` | `README.md`, the plan with the Support request text, the push log and the CI reads, the bundle of the five old commits (unshared, kept until Support acts), and the five second-model reports on item 8 with their dispositions, its patches and its mutant runs. |
-| His rulings of 2026-11-11 | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it. |
+| His rulings of 2026-11-11, and the demo | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it; the static demo page of invented data and the plan that put it behind a Cloudflare Access sign-in in the estate account (route A, acts 1 to 3 done on his clicks of 2026-11-12, act 4 held for his review). |
+| His rulings of 2026-11-12, and this commit | `Z-ISR/_session-artifacts/2026-11-12-plainsight-lane/` | `README.md` with each question, his click and its stamp, the push rule's mutant log, and this commit's gate and hook logs. The lane's ranked prompts for his team-account instance are in the parent's notes folder of that day. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |
@@ -389,6 +394,7 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   an existing file; `.gitattributes` normalizes the index, and tracked files
   are edited as bytes by script so that the working copy stays LF.
 - Harness facts: a Bash heredoc breaks on an apostrophe, and the command after
-  a failed heredoc still runs; a worktree's `core.hooksPath` names the main
-  checkout's `.githooks`; an agent's task output file is often empty, so its
-  report is taken from the completion notice or the workflow's `journal.jsonl`.
+  a failed heredoc still runs; a worktree runs its own tree's `.githooks`, not
+  the main checkout's as this note said before 2026-11-12; an agent's task
+  output file is often empty, so its report is taken from the completion
+  notice or the workflow's `journal.jsonl`.

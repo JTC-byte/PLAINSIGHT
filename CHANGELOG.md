@@ -22,6 +22,50 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-12. Rule 1 of AGENTS.md section 5 becomes a pre-push hook, and rule 3 reads the ten-minute line per check.**
+
+  **What changed.** `.githooks/pre-push` runs the new `tools/push_rule.py`,
+  which refuses a push unless the environment variable `PLAINSIGHT_PUSH_CASE`
+  names a written case that names the new tip of every ref the push updates,
+  as a hex prefix of at least seven characters, and every ref it deletes, by
+  its full name standing alone. A tip carries its history, so the case need not
+  list the commits beneath it. It refuses a ref line it cannot read, and it
+  never prints the remote's address. Its `--self-test` plants each refusal in
+  memory, then pushes from a scratch repository through the real hook into a
+  scratch bare repository: 25 checks, 8 of them through the hook, two-ref
+  pushes among them. The self-test joins the kernel gate as
+  `push-rule-self-test`, the pre-commit hook's self-test loop, `make
+  preflight`, a new `make validate-push-rule` and a named CI step. `AGENTS.md`
+  section 5 rule 1 names the mechanism and its limits, and rule 3 records the
+  maintainer's per-check reading of the estate's ten-minute line.
+
+  `tools/validate_divergence_register.py`'s self-test builds its scratch git
+  repository with every GIT_ variable removed. git commit exports GIT_DIR and
+  GIT_INDEX_FILE to a pre-commit hook in a worktree, and under them the
+  scratch `git init` re-initialized this repository and set `core.bare` true
+  in its shared config, on the first attempt to commit this change. A new
+  break, the scan run under a worktree hook's variables naming a decoy
+  repository, asserts the decoy's config and index are unchanged: 40 breaks.
+
+  **Surfaces moved.** `tools/push_rule.py` and `.githooks/pre-push`, both new;
+  `tools/validate_conformance.py`, `tools/validate_divergence_register.py`,
+  `.githooks/pre-commit`, `Makefile`,
+  `.github/workflows/ci.yml`, `AGENTS.md`, `CONFORMANCE.md`, the handoff, the
+  worklog and its archive, this file.
+
+  **Validation.** The self-test; sixteen mutants of the tool and the hook, each
+  seen failing; a second-model read, which found a deletion check that matched
+  a substring and four weakenings the first self-test missed, all fixed before
+  the gate; hygiene and both diff checks; the kernel gate and the pre-commit
+  hook on the staged tree under the estate's heavy-run lock.
+
+  **What did not change.** CI's job, its triggers and every step but the new
+  one; every other gate entry; every doctrine, schema, policy, ontology, spec,
+  corpus, connector and application file. `git push --no-verify`, a checkout
+  whose `core.hooksPath` is unset and a worktree at a commit older than the
+  hook still push, so the hook stops an accidental push and not a deliberate
+  one. Nothing is pushed.
+
 - **2026-11-11. AGENTS.md adopts the estate's GitHub usage rules.**
 
   **What changed.** `AGENTS.md` section 5 gains "Amended 2026-11-11: GitHub

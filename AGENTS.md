@@ -145,14 +145,14 @@ python tools/validate_conformance.py --kernel-gate
 git diff --check
 ```
 
-`make preflight` runs the pre-commit hook's twenty-one commands plus the
+`make preflight` runs the pre-commit hook's twenty-two commands plus the
 telemetry test, which the hook leaves to CI, and `make validate-kernel` runs the
 aggregator. The gate battery is defined once, in
 `KERNEL_GATE` inside `tools/validate_conformance.py`, so a new check joins it
 there rather than in every document that quotes a command.
 
 **Every validator self-test runs on all four automated paths**: the hook,
-`make preflight`, the kernel gate, and CI, where ten have a named step of their
+`make preflight`, the kernel gate, and CI, where eleven have a named step of their
 own and hygiene's runs in the Housekeeping step. A self-test breaks its governed
 artifact in memory and asserts each break is refused, so it is the test that
 fails when a check is removed. Until 2026-09-28 five of the six that then existed
@@ -162,8 +162,9 @@ the layer-model self-test exited 1. `tools/validate.py` runs its own inside
 `tools/pin_of_record.py`, the one reader of the pin of record the doctrine,
 authorization and retention gates share. `tools/validate_divergence_register.py`
 joined with its own at Step 9, and `tools/validate_manifest.py` and
-`tools/validate_connector_conformance.py` with theirs at Step 12. The kernel
-gate's exit code shows a
+`tools/validate_connector_conformance.py` with theirs at Step 12, and
+`tools/push_rule.py` with its own on 2026-11-12. The kernel gate's exit code
+shows a
 self-test failure only while no other entry holds it red, and its entry line
 always shows it, which is why CI also runs each self-test as a step of its own.
 
@@ -282,17 +283,33 @@ account's budget; the habits apply all the same.
 1. **Local commits only, until he lifts it.** No push in this repository, a
    landing on `main` included. A push needs his word in the PLAINSIGHT chat on
    a written case: a major release or a major bug fix, what it is, why it
-   cannot wait, and what it will cost.
+   cannot wait, and what it will cost. Since 2026-11-12 the rule is a
+   mechanism, on his click "Yes, build it" in the PLAINSIGHT chat:
+   `.githooks/pre-push` runs `tools/push_rule.py`, which refuses a push unless
+   `PLAINSIGHT_PUSH_CASE` names the written case and the case names the new
+   tip of every ref the push updates and every ref it deletes. It runs in a
+   checkout whose
+   `core.hooksPath` is `.githooks` (`git config core.hooksPath .githooks`)
+   and in every worktree of one whose tree holds the hook; a worktree at an
+   older commit runs none. `git push --no-verify` skips it, so it stops
+   an accidental push and not a deliberate one. Its self-test pushes through
+   the real hook into a scratch repository on the four automated paths.
+   Lifting the rule removes the hook in the commit that edits this item.
 2. **Local first.** Every check that can run on the workstation runs there
    under the estate's heavy-run lock before a commit: the kernel gate, the
    hook, the application suite, any mutation battery. CI confirms a tree the
    workstation already passed; it is not the test bench.
-3. **Long jobs.** CI here is one job of about twelve minutes (run 43127668000
-   on `main` at `71b7112` took 11 minutes 32 seconds), past the estate's
-   ten-minute line for a job that runs only on demand. It stays on every push
-   and pull request, because it carries the identity and trailer checks that
-   make R6 a mechanism rather than a habit; moving it to workflow_dispatch
-   would take those checks off the push, and that is his decision.
+3. **Long jobs, read per check.** CI here is one job of about twelve minutes
+   (run 43127668000 on `main` at `71b7112` took 11 minutes 32 seconds), and
+   no check in it is near the estate's ten-minute line: in that run the
+   kernel gate took 5.4 minutes, the application tests 4.5, and the other 25
+   steps about 1.6 together. On 2026-11-12 the maintainer read the line per
+   check rather than per job for this repository, by his click "Yes, per
+   check" in the PLAINSIGHT chat, the reading he approved for zisr-tak on
+   2026-11-11. The job stays on every push and pull request, with the
+   identity and trailer checks that make R6 a mechanism rather than a habit.
+   A check that grows past the line moves to workflow_dispatch, and that
+   move is his decision.
 4. **Few pushes, batched.** When pushing resumes, the commits made while it
    was held go up together, and later records-only commits go up at most once
    a day, at the closeout. The landing route of the handoff's section 7 starts

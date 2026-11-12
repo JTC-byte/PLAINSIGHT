@@ -135,7 +135,7 @@ python tools/validate_connector_conformance.py --all --quiet || {
 # caught before the commit rather than read as green after it. The fires_when
 # fix was reported green in two sessions while the layer-model self-test exited
 # 1, because nothing on this path ran it. Unlike the Step 8 artifact modes named
-# above, the eleven grade the checks rather than the stamps. All eleven are
+# above, the twelve grade the checks rather than the stamps. All twelve are
 # green today. The retention self-test refused with
 # RETENTION_POLICY_ENFORCEMENT_MISSTATED from Step 12 until 2026-10-28, while
 # policy/retention.yaml recorded the canary_subject_class part of RT-15 as
@@ -152,9 +152,13 @@ python tools/validate_connector_conformance.py --all --quiet || {
 # the self-test of tools/pin_of_record.py, the pin-of-record reader three gates
 # share, joined on 2026-10-01. The divergence register's joined at Step 9, and
 # the manifest validator's and the connector conformance runner's at Step 12.
+# The push rule's joined on 2026-11-12: it pushes from a scratch repository
+# through .githooks/pre-push into a scratch bare one, so it breaks no governed
+# artifact, and it fails when the hook or one of its refusals is removed.
 for tool in validate_hygiene validate_layer_model validate_ontology validate_cast \
             validate_authorization validate_retention validate_doctrine pin_of_record \
-            validate_divergence_register validate_manifest validate_connector_conformance; do
+            validate_divergence_register validate_manifest validate_connector_conformance \
+            push_rule; do
   out=$(python "tools/$tool.py" --self-test 2>&1) || {
     rc=$?
     printf '%s\n' "$out"

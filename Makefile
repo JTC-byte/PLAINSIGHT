@@ -1,4 +1,4 @@
-.PHONY: help validate-doctrine validate-hygiene validate-layer-model validate-ontology validate-cast validate-authorization validate-retention generate validate-schema validate-divergence-register render-divergence-register validate-manifest validate-connector prove test validate-kernel preflight gate-telemetry since-last-record
+.PHONY: help validate-doctrine validate-hygiene validate-layer-model validate-ontology validate-cast validate-authorization validate-retention generate validate-schema validate-divergence-register render-divergence-register validate-manifest validate-connector prove test validate-kernel preflight gate-telemetry since-last-record validate-push-rule
 
 # The named gates. A gate is a stable token rather than a hand-copied command
 # string, so a new check joins the battery in one place. That place is
@@ -46,6 +46,7 @@ help:
 	@echo "render-divergence-register    rewrite spec/divergence-register.md from the register"
 	@echo "validate-manifest     every connector manifest, the two schemas, bystanders, canaries, refusal fixtures, R7, its self-test"
 	@echo "validate-connector    rung 4: every connector's adapter against its cassettes and fixtures, and its self-test"
+	@echo "validate-push-rule    rule 1 of AGENTS.md section 5: a push through the real pre-push hook into a scratch repository"
 	@echo "prove                 the five rungs for one connector: make prove CONNECTOR=<id>"
 	@echo "test                  the mechanisms that exist, exercised against the criteria that claim them"
 	@echo "validate-kernel       the full battery, including what is not built yet"
@@ -166,6 +167,15 @@ validate-connector:
 	python tools/validate_connector_conformance.py --self-test
 	python tools/validate_connector_conformance.py --all
 
+# Rule 1 of AGENTS.md section 5, local commits only until the maintainer lifts
+# it, as a mechanism since 2026-11-12: .githooks/pre-push runs tools/push_rule.py,
+# which refuses a push unless PLAINSIGHT_PUSH_CASE names a written case that
+# names the new tip of every ref the push updates and every ref it deletes.
+# The self-test pushes from a scratch repository through the real hook into
+# a scratch bare repository and contacts no network remote.
+validate-push-rule:
+	python tools/push_rule.py --self-test
+
 # The five rungs for one connector, narrowest first: make prove CONNECTOR=<id>.
 # Rung 1 needs pytest, which CI installs for its own connector adapter tests
 # step. Rung 3's --corpus mode reads the repository's two corpora against the
@@ -198,7 +208,7 @@ validate-kernel:
 	python tools/validate_conformance.py --kernel-gate
 
 # preflight is the pre-commit battery plus the telemetry test. The hook runs the
-# same twenty-one commands and not the test, which CI runs as a step of its own. A
+# same twenty-two commands and not the test, which CI runs as a step of its own. A
 # gate that is only enforced in CI is enforced only after the thing it guards
 # has already been committed, and git history is the one store a crypto-shred
 # cannot reach.
@@ -227,6 +237,10 @@ validate-kernel:
 # Two more joined at Step 12: the manifest gate over every connector manifest
 # and its self-test. Two more joined with the first connector: the connector
 # conformance runner over every connector and its self-test.
+#
+# One more joined on 2026-11-12: the push rule's self-test, which pushes from a
+# scratch repository through .githooks/pre-push into a scratch bare one and
+# holds rule 1 of AGENTS.md section 5.
 #
 # The Step 8 artifact modes are deliberately absent from this list. Every one of
 # them refuses while the four Class F artifacts carry no dated row, so adding
@@ -264,6 +278,7 @@ preflight:
 	python tools/validate_divergence_register.py --self-test
 	python tools/validate_manifest.py --self-test
 	python tools/validate_connector_conformance.py --self-test
+	python tools/push_rule.py --self-test
 	python tools/tests/test_gate_log.py
 	python tools/validate_retention.py --repo-scan --staged
 

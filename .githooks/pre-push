@@ -1,0 +1,15 @@
+#!/bin/sh
+# Rule 1 of AGENTS.md section 5, as a mechanism: local commits only until the
+# maintainer lifts it, and a push only on his word in the PLAINSIGHT chat on a
+# written case. Every push from a checkout whose core.hooksPath is .githooks,
+# and from every worktree of one whose tree holds this file, runs
+# tools/push_rule.py with git's ref lines on stdin. It refuses unless
+# PLAINSIGHT_PUSH_CASE names a file that names the new tip of every ref the
+# push updates and every ref it deletes.
+#
+# git push --no-verify skips this hook, and so does a checkout whose
+# core.hooksPath is unset, so it stops an accidental push rather than a
+# deliberate one. The tool's --self-test pushes through this file into a scratch
+# repository on the hook's, make preflight's, the kernel gate's and CI's paths.
+# The commit that lifts rule 1 removes this file.
+exec python "$(dirname "$0")/../tools/push_rule.py" "$@"

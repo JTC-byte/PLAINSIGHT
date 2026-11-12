@@ -104,14 +104,14 @@ reported here rather than edited there.
 ## 4. What the kernel gate covers today, and what it does not
 
 `tools/validate_conformance.py --kernel-gate` is rung 5 of section 3.
-Its `KERNEL_GATE` list carries thirty-two entries in four states, and
+Its `KERNEL_GATE` list carries thirty-three entries in four states, and
 `python tools/validate_conformance.py --list` prints the live list with the
 note each entry carries.
 
-Twenty-five entries are implemented: doctrine, hygiene, layer-model, cast,
+Twenty-six entries are implemented: doctrine, hygiene, layer-model, cast,
 telemetry, retention-repo-scan, schema, ontology, ontology-corpus,
 divergence-register, connector-manifest, connector-conformance,
-subject-guard-tests and app-tests, plus eleven self-test entries. app-tests joined on 2026-10-28 and runs the
+subject-guard-tests and app-tests, plus twelve self-test entries. app-tests joined on 2026-10-28 and runs the
 application's pytest suite with its paired negative controls inside it. Six, one each for hygiene,
 layer-model, cast, retention, ontology and authorization, joined the list on
 2026-09-28; the doctrine self-test and the self-test of `tools/pin_of_record.py`,
@@ -122,7 +122,9 @@ self-test replaced the entry that had held the register as pending; and at Step
 subject-guard-tests joined, which runs `runner/tests/test_subject_guard.py` as a
 script on this path and under pytest by hand; and with the first connector,
 `connectors/sherlock/`, the connector conformance runner and its self-test
-joined. The manifest gate and the conformance runner refused while
+joined; and on 2026-11-12 the push rule's self-test joined, which pushes
+through `.githooks/pre-push` into a scratch repository and holds rule 1 of
+`AGENTS.md` section 5. The manifest gate and the conformance runner refused while
 `connectors/sherlock/manifest.yaml` refused under `MANIFEST_SELECTOR_PLATFORM`,
 which is reading SH-R5 in that connector's README, until the
 `platform_from_item` move of 2026-10-28 (MF-R17, amendment 9.14), which the
