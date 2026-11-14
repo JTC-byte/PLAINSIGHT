@@ -22,6 +22,30 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-12. The verify copies held cases only, and a migration refuses a store holding a case that is not held.**
+
+  **What changed.** `replay_into` has two uses, kept apart by `held_only`.
+  `python -m app rebuild --verify` copies and compares held cases only, names
+  the rest as NOT HELD and says how many it did not compare, so a store holding
+  a case whose database is gone no longer stops it with an uncaught error. The
+  migration use refuses such a store with MIGRATION_CASE_NOT_HELD before
+  writing. Option B2 of the amendment 9.21 paper, on the maintainer's click;
+  amendment 9.23 records it.
+
+  **Surfaces moved.** `app/store/replay.py`, `app/__main__.py`,
+  `app/refusals.py`, `app/tests/test_spine.py`, `app/README.md`,
+  `docs/PLAINSIGHT-design.md`, the app-tests entry's note in
+  `tools/validate_conformance.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** Two checks with their controls, each seen failing; the
+  kernel gate and the pre-commit hook on the staged tree under the heavy-run
+  lock.
+
+  **What did not change.** `rebuild`; what a migration carries for a closed
+  case, which waits on the shred's design; the verify's exit code; every
+  stored row. Nothing is pushed.
+
 - **2026-11-12. Rule 1 of AGENTS.md section 5 becomes a pre-push hook, and rule 3 reads the ten-minute line per check.**
 
   **What changed.** `.githooks/pre-push` runs the new `tools/push_rule.py`,

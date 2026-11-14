@@ -343,6 +343,17 @@ REFUSALS: dict[str, Code] = {
             "ingest the case first with python -m app ingest",
         ),
         _c(
+            "MIGRATION_CASE_NOT_HELD",
+            "a copy of this store into another, as a migration, while the store holds a case that is not held, so "
+            "nothing was copied",
+            "doctrine/RETENTION.md RT-1 and RT-10 and docs/PLAINSIGHT-design.md amendment 9.23: a closed case keeps "
+            "its registry row, skeleton rows and receipt, and what a migration does with them waits on the shred's "
+            "design, so a copy never drops them by leaving the case out",
+            "run python -m app rebuild --verify, which compares the held cases and names the rest without copying them",
+            "open /api/cases, which gives each case's registry state",
+            "wait for the shred's design, which states what a migration carries for a closed case",
+        ),
+        _c(
             "CASE_CLOSED_TO_WRITES",
             "a write for a case this store does not hold open, so nothing was written and no case "
             "database was created",

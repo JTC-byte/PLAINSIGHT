@@ -10,8 +10,13 @@ Open coverage intervals are working state the watchdog keeps, not log, so a
 rebuild keeps them and replays only the closed ones.
 
 replay_into() copies the log of one store into another and rebuilds it there.
-That is the migration path amendment 9.1 names for Postgres; verify() uses it to
-compare a live store against a fresh replay and names every table that differs.
+It has two uses, kept apart by its held_only argument (amendment 9.23). As the
+migration path amendment 9.1 names for Postgres it refuses a store that holds a
+case that is not held, because a copy that left that case out would drop the
+registry row, skeleton rows and receipt RT-1 and RT-10 keep, and what a
+migration does with a closed case waits on the shred's design. verify() copies
+the held cases only, compares a live store against that fresh replay, and names
+every table that differs; the cases it leaves out are the ones not_held() names.
 verify() compares what the log derives, so it leaves open coverage rows out of
 both sides: a replay cannot reproduce working state, and a live watchdog
 interval is not a difference.
@@ -171,10 +176,32 @@ def digest(store, case_id: str) -> str:
     return hashlib.sha256(dump(store, case_id)).hexdigest()
 
 
-def replay_into(src, dst) -> list[str]:
-    """Copy the log of every case in `src` into `dst` and rebuild it there. Returns the cases rebuilt in `dst`: a
-    copied case that is not held is not rebuilt, so its projections there are never derived."""
-    cases = src.cases()
+def held_cases(store) -> list[str]:
+    """The cases the store holds: the registry says open and the case database is present (amendment 9.21)."""
+    from app.store import ingest  # here, because app.store.ingest imports this module
+
+    return [c for c in store.cases() if ingest.case_held(store.registry(c)["state"], store.case_file(c).is_file())]
+
+
+def refuse_a_migration_of_cases_not_held(store, held: list[str]) -> None:
+    """MIGRATION_CASE_NOT_HELD when the store holds any case that is not held (amendment 9.23)."""
+    left = [c for c in store.cases() if c not in held]
+    if left:
+        named = ", ".join(f"C-{c[:8]}" for c in left)
+        raise Refusal("MIGRATION_CASE_NOT_HELD", f"{len(left)} case(s) not held: {named}")
+
+
+def replay_into(src, dst, held_only: bool = False) -> list[str]:
+    """Copy the log of the cases `src` holds into `dst` and rebuild them there. Returns the cases rebuilt in `dst`.
+
+    With held_only False, the migration use, a store holding any case that is not held is refused before `dst` is
+    written. With held_only True, the verify's use, only the held cases are copied, and a case whose database is
+    gone is never read: before 2026-11-12 the copy read every registry row and stopped on such a case with an
+    uncaught error (finding 14 of the second-model read of 2026-11-11).
+    """
+    cases = held_cases(src)
+    if not held_only:
+        refuse_a_migration_of_cases_not_held(src, cases)
     for case_id in cases:
         reg = dict(src.registry(case_id))
         skel = [dict(r) for r in skeleton_rows(src, case_id)]
@@ -204,12 +231,12 @@ def replay_into(src, dst) -> list[str]:
 
 
 def verify(store, scratch_root) -> dict[str, list[str]]:
-    """Replay `store` into a fresh store at `scratch_root` and name each differing table per case. Only the cases
-    the copy rebuilds are compared: a case that is not held is rebuilt in neither store, and comparing its empty
-    projections in the copy with this store's would report a difference no replay made."""
+    """Replay the cases `store` holds into a fresh store at `scratch_root` and name each differing table per case.
+    Only held cases are copied and compared: a case that is not held is rebuilt in neither store, comparing its
+    empty projections would report a difference no replay made, and its case database may be gone."""
     fresh = db.Store.init(scratch_root)
     try:
-        rebuilt = replay_into(store, fresh)
+        rebuilt = replay_into(store, fresh, held_only=True)
         out = {}
         for case_id in rebuilt:
             live = _by_table(dump(store, case_id, working=False))

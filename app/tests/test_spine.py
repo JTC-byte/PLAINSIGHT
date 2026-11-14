@@ -284,8 +284,11 @@ def check_verify_compares_only_the_cases_a_rebuild_derives(ctx):
 
 
 def break_verify_compares_every_case(ctx):
+    # Since amendment 9.23 the copy takes held cases only, so the breaker widens the copy as well as the comparison:
+    # a case not copied has no database in the fresh store to compare against.
+    ctx.mp.setattr(replay, "held_cases", lambda store: store.cases())
     real = replay.replay_into
-    ctx.mp.setattr(replay, "replay_into", lambda src, dst: (real(src, dst), src.cases())[1])
+    ctx.mp.setattr(replay, "replay_into", lambda src, dst, held_only=False: (real(src, dst, held_only), src.cases())[1])
 
 
 def test_verify_compares_only_the_cases_a_rebuild_derives(ctx):
@@ -326,11 +329,67 @@ def break_state_shown_as_its_token(ctx):
 def break_verified_when_nothing_was_compared(ctx):
     from app import __main__ as cli
 
-    ctx.mp.setattr(cli, "verify_lines", lambda diffs: (0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row"]))
+    ctx.mp.setattr(cli, "verify_lines", lambda diffs, left_out=0: (0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row"]))
 
 
 def test_rebuild_reports_what_it_leaves_alone(ctx):
     check_rebuild_reports_what_it_leaves_alone(ctx)
+
+
+def check_verify_reads_a_store_whose_case_database_is_gone(ctx):
+    # Finding 14 of 2026-11-11, option B2 of 2026-11-12 (amendment 9.23): a registry row says open and the case
+    # database is gone. python -m app rebuild --verify names the case, compares nothing, says how many it left out,
+    # and exits 0; before, the copy read every registry row and stopped on this case with an uncaught error.
+    import contextlib
+    import io
+
+    from app import __main__ as cli
+
+    s = ctx.built()
+    s.detach_case()
+    s.case_file(CASE).unlink()
+    try:
+        compared = replay.verify(s, ctx.tmp / "fresh")
+    except Exception as exc:  # noqa: BLE001 - the failure this check exists to catch is an uncaught error
+        raise AssertionError(f"the verify stopped on a case whose database is gone: {type(exc).__name__}: {exc}") from None
+    assert compared == {}, "a case whose database is gone was compared"
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        code = cli.main(["rebuild", "--store", str(s.root), "--verify"])
+    text = out.getvalue()
+    assert code == 0, text
+    assert "NOT HELD" in text and "1 case(s) not held were not compared" in text, text
+
+
+def break_verify_copies_every_case(ctx):
+    ctx.mp.setattr(replay, "held_cases", lambda store: store.cases())
+
+
+def test_verify_reads_a_store_whose_case_database_is_gone(ctx):
+    check_verify_reads_a_store_whose_case_database_is_gone(ctx)
+
+
+def check_migration_refuses_a_case_not_held(ctx):
+    # The migration use of the copy refuses a store holding a case that is not held, and writes nothing: a copy that
+    # left the case out would drop the registry row, skeleton rows and receipt RT-1 and RT-10 keep (amendment 9.23).
+    s = ctx.built()
+    s.conn.execute("UPDATE case_registry SET state = 'shred_failed' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    fresh = db.Store.init(ctx.tmp / "migrated")
+    try:
+        r = refusal_of(replay.replay_into, s, fresh)
+        assert r.code == "MIGRATION_CASE_NOT_HELD", r.code
+        assert fresh.cases() == [], "a refused migration wrote a registry row"
+    finally:
+        fresh.close()
+
+
+def break_migration_refusal_removed(ctx):
+    ctx.mp.setattr(replay, "refuse_a_migration_of_cases_not_held", lambda store, held: None)
+
+
+def test_migration_refuses_a_case_not_held(ctx):
+    check_migration_refuses_a_case_not_held(ctx)
 
 
 def check_planted_difference_detected(ctx):
@@ -527,6 +586,8 @@ CONTROLS = [
     ("a case left alone named twice by a rebuild", check_rebuild_reports_what_it_leaves_alone, break_not_held_named_twice),
     ("a registry state shown as its token", check_rebuild_reports_what_it_leaves_alone, break_state_shown_as_its_token),
     ("verified reported when nothing was compared", check_rebuild_reports_what_it_leaves_alone, break_verified_when_nothing_was_compared),
+    ("a verify that copies every case", check_verify_reads_a_store_whose_case_database_is_gone, break_verify_copies_every_case),
+    ("the migration's refusal removed", check_migration_refuses_a_case_not_held, break_migration_refusal_removed),
     ("a claim loses its run", check_claims_resolve, break_claim_loses_its_run),
     ("the run does not copy the gate's relation", check_seed_run, break_relation_not_copied),
     ("a LINK makes a cluster", check_two_clusters_none_from_link, break_link_makes_a_cluster),

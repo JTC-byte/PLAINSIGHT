@@ -42,16 +42,18 @@ def cmd_ingest(args) -> int:
     return 0
 
 
-def verify_lines(diffs: dict) -> tuple[int, list[str]]:
+def verify_lines(diffs: dict, left_out: int = 0) -> tuple[int, list[str]]:
     """The verify's report as (exit code, lines). A store with no held case compares nothing, and says so rather
-    than reporting a match."""
+    than reporting a match. `left_out` counts the cases not held, which the verify neither copied nor compared
+    (amendment 9.23); each is named above the report by its NOT HELD line."""
+    tail = f"; {left_out} case(s) not held were not compared" if left_out else ""
     bad = {c: t for c, t in diffs.items() if t}
     if bad:
         return 1, [f"C-{case_id[:8]}: a fresh replay differs from this store in {', '.join(tables)}"
-                   for case_id, tables in bad.items()]
+                   for case_id, tables in bad.items()] + ([tail.lstrip("; ")] if tail else [])
     if not diffs:
-        return 0, ["nothing verified: no case is held, so a fresh replay had nothing to compare"]
-    return 0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row"]
+        return 0, [f"nothing verified: no case is held, so a fresh replay had nothing to compare{tail}"]
+    return 0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row{tail}"]
 
 
 def not_held_line(case_id: str, state: str, present: bool) -> str:
@@ -72,12 +74,13 @@ def cmd_rebuild(args) -> int:
         cases = replay.rebuild(store)
         for case_id in cases:
             print(f"rebuilt C-{case_id[:8]}: projection digest {replay.digest(store, case_id)}")
-        for case_id, state, present in replay.not_held(store):
+        left = replay.not_held(store)
+        for case_id, state, present in left:
             print(not_held_line(case_id, state, present))
         if args.verify:
             with tempfile.TemporaryDirectory(prefix="plainsight-verify-", ignore_cleanup_errors=True) as scratch:
                 diffs = replay.verify(store, scratch)
-            code, lines = verify_lines(diffs)
+            code, lines = verify_lines(diffs, len(left))
             for line in lines:
                 print(line)
             if code:

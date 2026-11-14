@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-12. This file's commit makes rule 1 of `AGENTS.md`
-section 5 a pre-push hook and records his rulings of the day (section 0);
-class B by the session's reading. Before it, `main` == `origin/main` ==
-`71b7112`, and the local branch `github-usage-2026-11-11` holds `8fd1c08`
-and `92cf511` above it, unpushed under his rule of 2026-11-11.
+**Date:** 2026-11-12. This file's commit makes the verify copy held cases
+only and a migration refuse a closed case (option B2, amendment 9.23); class C
+by the session's reading. Before it, `main` == `origin/main` == `71b7112`,
+and `github-usage-2026-11-11` holds `8fd1c08`, `92cf511` and `7e142d4` above
+it, unpushed under his rule of 2026-11-11.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -36,8 +36,8 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-local branch `pre-push-rule1-2026-11-12`, from `92cf511`, in a worktree, on
-his word in the PLAINSIGHT chat, and is not pushed: no push is made in this
+local branch `verify-held-only-2026-11-12`, from `7e142d4`, in a worktree,
+on his word in the PLAINSIGHT chat, and is not pushed: no push is made in this
 repository until he lifts the rule, and `.githooks/pre-push` refuses one
 that names no written case (`AGENTS.md` section 5). The
 records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
@@ -53,33 +53,30 @@ answered.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Rule 1 of `AGENTS.md` section 5, local commits
-only until he lifts it, lived in prose alone, which design gate 1 says is not
-yet a rule. On his click "Yes, build it" of 2026-11-12, `.githooks/pre-push`
-runs `tools/push_rule.py`, which refuses a push unless `PLAINSIGHT_PUSH_CASE`
-names a written case that names the new tip of every ref the push updates and
-every ref it deletes. Rule 3 reads the estate's ten-minute line per check, on his click
-"Yes, per check". The worklog records his other rulings of the day.
+**What changed and why.** `python -m app rebuild --verify` stopped on a store
+holding a case whose database is gone, because its copy read every registry
+row. On his click "Yes, adopt B2" the copy takes held cases only and the
+verify says how many it did not compare; the migration use refuses such a
+store with MIGRATION_CASE_NOT_HELD (amendment 9.23). The worklog records his
+rulings on the three options papers of the day.
 
-**Which surfaces moved.** The tool and the hook, new; the gate's list, the
-hook's self-test loop, `make preflight`, a new target, one CI step; the
-divergence register self-test, isolated from a hook's git environment;
-`AGENTS.md` section 5, `CONFORMANCE.md` section 4, the changelog, the worklog,
-its archive and this file. No doctrine, schema, policy, spec or app file.
+**Which surfaces moved.** `app/store/replay.py`, `app/__main__.py`,
+`app/refusals.py`, two checks with controls in `app/tests/test_spine.py`,
+`app/README.md`, the design record, one gate note, the changelog, the worklog,
+its archive and this file. No doctrine, schema, policy, spec or tool.
 
-**What validation ran and what passed.** The self-test, 25 checks with 8
-through the real hook; sixteen mutants, each seen failing; a second-model read
-whose findings were fixed first; hygiene and both diff checks; the kernel gate
-under the heavy-run lock and the hook at the commit. No CI runs on it.
+**What validation ran and what passed.** Each new check seen failing under
+its breaker; the kernel gate on this tree under the heavy-run lock and the
+hook at the commit. No CI runs on it.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
 
-**What remains open or deferred.** His: this commit's class; when pushing
-resumes, one push carrying `8fd1c08`, `92cf511` and this commit under a
-written case the hook reads; LOCAL_ACTS; slice 4; CASE_ID_SPELLING_DIFFERS;
-`rebuild --verify` on a case whose database is gone; act 4 of the demo after
-his review; the request to GitHub Support; the bundle; Saturday's rotation.
+**What remains open or deferred.** His: this commit's class; the verify's
+exit code on an open row whose database is gone; slice 4, decided 1C, 2A and
+3B and built next; the LOCAL_ACTS form A draft for his stamp; one push under
+a written case when pushing resumes; act 4 of the demo after his review; the
+request to GitHub Support; the bundle; Saturday's rotation.
 Sections 3 and 4 carry the rest.
 
 ---
@@ -129,10 +126,10 @@ DOSSIER and the SSE stream. **Slice 3 (2026-11-09)** adds the analyst acts
 through the door (POST `/acts`), the Merge Sheet, the review strip, undo as a
 cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
-(reading APP-R31). 329 tests with 178 paired negative controls since item
-7's open findings, in the kernel gate, `make test` and CI and not in the hook
+(reading APP-R31). 333 tests with 180 paired negative controls since
+amendment 9.23, in the kernel gate, `make test` and CI and not in the hook
 or preflight (APP-R30). Its design departures from
-`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.22 at the end of that file,
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.23 at the end of that file,
 each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against

@@ -153,8 +153,9 @@ open; the caller sees the write's own error. The HTTP routes that write, the
 acts and the workspace store, refuse a case closed to writes with a 409 in
 `case_store` before anything is written. `rebuild` rebuilds only held cases and
 names each case it leaves alone once as NOT HELD with what the registry says of
-it, and `rebuild --verify` compares only the cases its copy rebuilds and says
-so when that is none. The library functions behind those entry points, `kv.put`
+it, and `rebuild --verify` copies and compares only held cases, says how many
+it did not compare, and says so when that is none; the same copy used as a
+migration refuses a store holding a case that is not held (amendment 9.23). The library functions behind those entry points, `kv.put`
 and `replay_case`, read no registry state of their own: they attach without
 create and rely on their callers for the rule. The watchdog reports the door's
 refusal for a coverage row left open in a closed case, and the sweep writes no
