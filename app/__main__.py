@@ -95,7 +95,12 @@ def cmd_serve(args) -> int:
     from app.model import reads
     from app.store.db import Store
 
-    srv, app = http_server.make_server(args.store, host=args.host, port=args.port, analyst=args.analyst)
+    try:
+        srv, app = http_server.make_server(args.store, host=args.host, port=args.port, analyst=args.analyst, ui=args.ui,
+                                           overlay=args.overlay)
+    except ValueError as exc:
+        print(f"serve refused: {exc}", file=sys.stderr)
+        return 1
     with Store.open(app.root) as store:
         cases = store.cases()
         seeds = {}
@@ -142,6 +147,11 @@ def main(argv=None) -> int:
     p.add_argument("--analyst", required=True, help="the session's human identity; on LOCAL, analyst-example")
     p.add_argument("--host", default="127.0.0.1", help="the bind address; anything but 127.0.0.1 is refused")
     p.add_argument("--port", type=int, default=0, help="the port; 0, the default, takes a free one")
+    p.add_argument("--ui", choices=("classic", "showcase"), default="classic",
+                   help="the front end: classic (app/static, the default) or showcase (app/showcase, GET only)")
+    p.add_argument("--overlay", default=None,
+                   help="showcase only: a JSON file outside the repository and the store, of fictional display stand-ins "
+                        "for the corpus's placeholders, served as /static/overlay.json; nothing enters the store")
     p.set_defaults(func=cmd_serve)
 
     try:

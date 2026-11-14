@@ -37,6 +37,15 @@ from app.store import blobs, db, ingest, kv, retention
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 
+#: The showcase front end, a second static root over the same routes and API. It
+#: reads through GET only and writes nothing (docs/PLAINSIGHT-design.md
+#: amendment 9.24).
+SHOWCASE = Path(__file__).resolve().parents[1] / "showcase"
+
+#: The front ends `python -m app serve --ui` may name, each a static root. The
+#: classic front end is the default.
+UIS = {"classic": STATIC, "showcase": SHOWCASE}
+
 UUID = r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}"
 
 #: The views a /c/<case>/<view> URL may name.
@@ -177,12 +186,12 @@ CONTENT_TYPES = {
 }
 
 
-def static_files() -> dict[str, tuple[str, bytes]]:
-    """Every file under app/static, read once at launch: {relative path: (type, bytes)}."""
+def static_files(root: Path = STATIC) -> dict[str, tuple[str, bytes]]:
+    """Every file under one front end's static root, read once at launch: {relative path: (type, bytes)}."""
     out = {}
-    for p in sorted(STATIC.rglob("*")):
+    for p in sorted(root.rglob("*")):
         if p.is_file() and p.suffix in CONTENT_TYPES:
-            out[p.relative_to(STATIC).as_posix()] = (CONTENT_TYPES[p.suffix], p.read_bytes())
+            out[p.relative_to(root).as_posix()] = (CONTENT_TYPES[p.suffix], p.read_bytes())
     return out
 
 
@@ -251,7 +260,10 @@ def h_static(app, params, query, body) -> Response:
 
 
 def h_keymap(app, params, query, body) -> Response:
-    content_type, data = app.static["keymap.json"]
+    found = app.static.get("keymap.json")
+    if found is None:
+        raise Refusal("ROUTE_NOT_FOUND")
+    content_type, data = found
     return Response(200, content_type, data, {})
 
 

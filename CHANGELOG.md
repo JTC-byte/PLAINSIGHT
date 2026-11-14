@@ -22,6 +22,42 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-14. A second front end, the showcase, beside the classic one, with a display overlay and a case pack.**
+
+  **What changed.** `python -m app serve --ui showcase` serves `app/showcase/`,
+  a profile page in seven tabs with the Lineage Drawer, over the same routes
+  and API. The classic front end stays the default. `--overlay PATH`, with the
+  showcase only, serves a file of fictional display stand-ins that the page
+  draws over the corpus's placeholders, and a case pack in that file answers
+  every API request for one fictional case in the page, so nothing reaches the
+  store. `app/http/overlay.py` refuses a file that is not fictional by
+  construction, and one that sits inside the store or any git working tree.
+  Amendment 9.24 records the eight departures from the design and the
+  maintainer's ruling of 2026-11-14 that it stands as a second front end
+  beside the classic one.
+
+  **Surfaces moved.** `app/showcase/` (new, 19 files), `app/http/overlay.py`
+  (new), `app/http/routes.py`, `app/http/server.py`, `app/__main__.py`,
+  `app/tests/test_showcase.py` (new), `app/tests/test_controls.py`,
+  `app/README.md`, `docs/PLAINSIGHT-design.md`, the app-tests entry's note in
+  `tools/validate_conformance.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** Seven checks with twenty-nine controls, each seen failing
+  under its breaker; two of the checks run the page's request layer and its
+  statements of source under node. A second model read the front end on
+  2026-11-13, and another read the overlay reader, the server-side changes and
+  the page's case-pack path on 2026-11-14; that read's five findings are fixed
+  in this commit. The kernel gate and the pre-commit hook on the staged tree
+  under the heavy-run lock.
+
+  **What did not change.** The classic front end, which stays the default; the
+  case and act routes of the API and what they answer; the store, which a
+  display file never enters; the corpus. Whether the 11-02 idiom becomes the
+  design's direction is the maintainer's separate decision. The display files
+  live outside the repository and are not part of this commit. Nothing is
+  pushed.
+
 - **2026-11-12. The verify copies held cases only, and a migration refuses a store holding a case that is not held.**
 
   **What changed.** `replay_into` has two uses, kept apart by `held_only`.

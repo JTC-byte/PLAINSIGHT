@@ -39,6 +39,7 @@ from urllib.parse import urlsplit
 from app import config
 from app.http import guard as guard_mod
 from app.http import notices, routes
+from app.http import overlay as overlay_mod
 from app.model import reads
 from app.refusals import REFUSALS, Refusal
 from app.store import db, ingest
@@ -115,14 +116,15 @@ def stderr_sink(record: tuple) -> None:
 class App:
     """What one launch holds: the store root, the identity, the token, the guard and the hub."""
 
-    def __init__(self, root, analyst: str, log_sink=None):
+    def __init__(self, root, analyst: str, log_sink=None, ui: str = "classic"):
         self.root = root
         self.analyst = analyst
         self.environment = config.environment()
         self.token = secrets.token_urlsafe(32)
         self.guard = guard_mod.Guard.from_store(root)
         self.hub = notices.Hub(self.guard)
-        self.static = routes.static_files()
+        self.ui = ui
+        self.static = routes.static_files(routes.UIS[ui])
         self.log_sink = log_sink or stderr_sink
         self.port = None
         self.sse_poll = SSE_POLL
@@ -161,15 +163,25 @@ class Server(ThreadingHTTPServer):
 SERVER_CLASS = Server
 
 
-def make_server(store=None, host: str = "127.0.0.1", port: int = 0, analyst: str | None = None, log_sink=None):
-    """(server, app), bound and not yet serving. Refuses before binding when it must."""
+def make_server(store=None, host: str = "127.0.0.1", port: int = 0, analyst: str | None = None, log_sink=None,
+                ui: str = "classic", overlay=None):
+    """(server, app), bound and not yet serving. Refuses before binding when it must. `ui` names the front end
+    the page and /static/ serve, one of routes.UIS; the API is the same for both. `overlay`, showcase only, is a
+    JSON file of fictional display stand-ins read once and served as /static/overlay.json (app/http/overlay.py)."""
     check_bind(host)
+    if ui not in routes.UIS:
+        raise ValueError(f"ui must be one of {', '.join(sorted(routes.UIS))}")
+    if overlay is not None and ui != "showcase":
+        raise ValueError("an overlay is drawn by the showcase front end only; add --ui showcase or drop --overlay")
     root = db.resolve_root(store)
+    overlay_bytes = overlay_mod.read_overlay(overlay, root) if overlay is not None else None
     probe = db.Store.open(root)
     probe.close()
     if not analyst or analyst not in config.deployment_humans():
         raise Refusal("ANALYST_UNKNOWN")
-    app = App(root, analyst, log_sink)
+    app = App(root, analyst, log_sink, ui)
+    if overlay_bytes is not None:
+        app.static["overlay.json"] = ("application/json; charset=utf-8", overlay_bytes)
     server = SERVER_CLASS((host, port), Handler, app)
     app.port = server.server_address[1]
     app.attach()

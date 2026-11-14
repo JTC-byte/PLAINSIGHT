@@ -12,11 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-12. This file's commit makes the verify copy held cases
-only and a migration refuse a closed case (option B2, amendment 9.23); class C
-by the session's reading. Before it, `main` == `origin/main` == `71b7112`,
-and `github-usage-2026-11-11` holds `8fd1c08`, `92cf511` and `7e142d4` above
-it, unpushed under his rule of 2026-11-11.
+**Date:** 2026-11-14. This file's commit adds the showcase, a second front
+end beside the classic one, with a display overlay and a case pack (amendment
+9.24); class C by his answer of that day. Before it, `main` == `origin/main`
+== `71b7112`, and `github-usage-2026-11-11` holds `8fd1c08`, `92cf511`,
+`7e142d4` and `09caa88` above it, unpushed under his rule of 2026-11-11.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` one doctrine
 paragraph changed, SS-14 item 3's enforcement state, on 2026-11-11. Patch 4b,
@@ -36,47 +36,45 @@ is not delegated for this repository. Every commit, push, merge, Class F
 decision, deploy, tag, mint and secret takes his word in the PLAINSIGHT chat,
 per act. `main` was rewritten on 2026-11-10 on his clicks there, so every
 hash of 2026-11-09 has a new form (section 7). This commit is made on the
-local branch `verify-held-only-2026-11-12`, from `7e142d4`, in a worktree,
-on his word in the PLAINSIGHT chat, and is not pushed: no push is made in this
+local branch `showcase-ui-2026-11-13`, from `09caa88`, in a worktree, on his
+word in the PLAINSIGHT chat, and is not pushed: no push is made in this
 repository until he lifts the rule, and `.githooks/pre-push` refuses one
-that names no written case (`AGENTS.md` section 5). The
-records are under `Z-ISR/_session-artifacts/` (section 6): the rewrite and
-item 8's five reads in `2026-11-09-plainsight-items/`, his rulings of
-2026-11-11 in `2026-11-11-plainsight-lane/`, those of 2026-11-12 and this
-commit in `2026-11-12-plainsight-lane/`, whose `README.md` is the day's
-record, the resumptions in
-`2026-11-02-plainsight-resume/` and `2026-11-06-plainsight-resume/`, and his
-28-item queue in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none
-answered.
+that names no written case (`AGENTS.md` section 5). The records are under
+`Z-ISR/_session-artifacts/` (section 6): this commit's and the landing of
+`09caa88` in `2026-11-14-plainsight-lane/`, whose `README.md` is the day's
+record, and his 28-item queue in
+`2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none answered.
 
 ---
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** `python -m app rebuild --verify` stopped on a store
-holding a case whose database is gone, because its copy read every registry
-row. On his click "Yes, adopt B2" the copy takes held cases only and the
-verify says how many it did not compare; the migration use refuses such a
-store with MIGRATION_CASE_NOT_HELD (amendment 9.23). The worklog records his
-rulings on the three options papers of the day.
+**What changed and why.** In a line relayed on 2026-11-13 he called the 10-28
+front end "a mess and unusable entirely". `python -m app serve --ui showcase`
+now serves `app/showcase/`, a read-only profile page in seven tabs over the
+same routes and API, and the classic front end stays the default. `--overlay`
+draws a display file of fictional stand-ins over it, and a case pack in that
+file answers the page's requests in the page (amendment 9.24).
 
-**Which surfaces moved.** `app/store/replay.py`, `app/__main__.py`,
-`app/refusals.py`, two checks with controls in `app/tests/test_spine.py`,
-`app/README.md`, the design record, one gate note, the changelog, the worklog,
-its archive and this file. No doctrine, schema, policy, spec or tool.
+**Which surfaces moved.** `app/showcase/`, `app/http/overlay.py`, the server
+(`routes.py`, `server.py`, `__main__.py`), `app/tests/test_showcase.py` and
+its line in `test_controls.py`, `app/README.md`, the design record, one gate
+note, the changelog, the worklog, its archive and this file. No doctrine,
+schema, policy, spec or tool logic.
 
-**What validation ran and what passed.** Each new check seen failing under
-its breaker; the kernel gate on this tree under the heavy-run lock and the
-hook at the commit. No CI runs on it.
+**What validation ran and what passed.** Seven checks with twenty-nine
+controls, each seen failing under its breaker; two second-model reads; the
+kernel gate on this tree under the heavy-run lock and the hook at the commit.
+No CI runs on it.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
 
-**What remains open or deferred.** His: this commit's class; the verify's
-exit code on an open row whose database is gone; slice 4, decided 1C, 2A and
-3B and built next; the LOCAL_ACTS form A draft for his stamp; one push under
-a written case when pushing resumes; act 4 of the demo after his review; the
-request to GitHub Support; the bundle; Saturday's rotation.
+**What remains open or deferred.** His: whether the 11-02 idiom becomes the
+design's direction, after he has seen slice 4 in it; slice 4, built and read
+on its own branch; the RT-11 decision, drafted both ways; the LOCAL_ACTS form
+A draft; one push under a written case when pushing resumes; act 4 of the
+demo; the request to GitHub Support; the bundle; the rotation.
 Sections 3 and 4 carry the rest.
 
 ---
@@ -126,10 +124,11 @@ DOSSIER and the SSE stream. **Slice 3 (2026-11-09)** adds the analyst acts
 through the door (POST `/acts`), the Merge Sheet, the review strip, undo as a
 cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
-(reading APP-R31). 333 tests with 180 paired negative controls since
-amendment 9.23, in the kernel gate, `make test` and CI and not in the hook
-or preflight (APP-R30). Its design departures from
-`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.23 at the end of that file,
+(reading APP-R31). **The showcase (2026-11-14)** is a second, read-only
+front end served with `--ui showcase` (section 2). 369 tests with 209 paired
+negative controls since amendment 9.24, in the kernel gate, `make test` and
+CI and not in the hook or preflight (APP-R30). Its design departures from
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.24 at the end of that file,
 each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
@@ -175,6 +174,7 @@ exists and has never run.
 | `runner/subject_guard.py`, `runner/tests/` | **Committed in `8583132`, drafted UNRATIFIED.** `evaluate()` returns a Decision that serializes as a COLLECT_EVENT; the live pin refuses at step 1; 22 tests under pytest and as a script; readings SG-R1 to SG-R18 in the docstring. `runner/dispatch_allowlist.yaml` does not exist. |
 | `connectors/sherlock/` | **Committed in `8583132`.** `manifest.yaml`, `adapter.py` (parse, emit, permit-gated invoke), `site_facts.json` (481 sites from `data.json` at 9100f9d), three hand-built cassettes, `fixtures.jsonl`, 51 tests, `README.md` with SH-R1 to SH-R18. Never run. |
 | `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. |
+| `app/showcase/`, `app/http/overlay.py` | **New on 2026-11-14.** A second static front end (19 files, GET only, no browser storage) served with `--ui showcase`; the classic one stays the default. `--overlay` serves a display file whose reader admits fictional stand-ins only and refuses a file inside the store or any git working tree, and a case pack in it answers the page's requests in the page. 7 checks and 29 controls in `app/tests/test_showcase.py`, two of the checks run under node. Amendment 9.24, which he ruled stands; the idiom's direction is his separate decision. |
 | `tools/generate_pse.py`, `tools/build_corpus.py`, `tools/validate.py`, `tools/validate_layer_model.py`, `tools/validate_doctrine.py`, `tools/validate_hygiene.py`, `tools/validate_ontology.py`, `tools/validate_cast.py`, `tools/since_last_record.py`, `gate_log.py` | Committed earlier, unchanged in `8583132`. |
 | `tools/validate_authorization.py` | **Extended in `8583132`** to 5,767 lines: `--dispatch-paths` implemented with 61 planted self-test cases; VA-R5 recorded; VA-R6 applied as the session's reading (section 3); VA-U2 and VA-U3 stay open. |
 | `tools/validate_retention.py` | **Touched in `8583132`:** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. Its self-test passes. |
@@ -203,7 +203,7 @@ line 105); the five production docstrings cite the design amendments.
 **The 29 decisions in the register** of Step 8, plus U-17, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, now to MF-R22, PIN-R9, SG, VA,
 DA, SH, CC, APP, now to APP-R34, and RS-R1 to RS-R8), and the design
-amendments 9.1 to 9.22. Each is recorded where its artifact is and in the
+amendments 9.1 to 9.24. Each is recorded where its artifact is and in the
 record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
@@ -288,9 +288,10 @@ dollars non-recurring and 205 a month.
   entry point that writes (events, the acts and workspace routes, a rebuild)
   refuses a case the registry does not hold open (CASE_CLOSED_TO_WRITES), and
   another spelling of an open case's id is refused (CASE_ID_SPELLING_DIFFERS). A case database with no
-  registry row is still written into by a first batch, and `app rebuild
-  --verify` still stops on a case whose database is gone. The maintainer
-  decides whether the guard stands on every write path.
+  registry row is still written into by a first batch. Since amendment 9.23
+  `app rebuild --verify` copies held cases only; that it exits 1 on an open
+  row whose database is gone, his ruling of 2026-11-14, is on slice 4's
+  branch. The maintainer decides whether the guard stands on every write path.
 - **The voice pass is parked.** Not on the path to a first run.
 - **The cast is unsealed**, so nothing is scoreable and SS-14 item 6 refuses all
   collection.
@@ -314,7 +315,8 @@ three that changed state have not been through a negative-control audit of the
 2026-10-18 kind; their self-test controls were seen failing in each run. Item
 5's slice 3 was read by one Opus 5.5 second model and item 7's draft by four in
 turn (the 2026-11-09 folder); each read of item 7 found defects or gaps, which
-were fixed before the commit or are recorded as open.
+were fixed before the commit or are recorded as open. A Sonnet second model
+read the showcase on 2026-11-13 and a Fable 5.2 one its overlay work on 11-14.
 
 ## 6. Session context that lives outside this repository
 
@@ -327,7 +329,8 @@ were fixed before the commit or are recorded as open.
 | The 2026-09-07 history rewrite records | `Z-ISR/_session-artifacts/2026-09-07-plainsight-history-rewrite/` | The pre-rewrite bundle, the only copy of the old history. Unshared. |
 | The 2026-11-10 rewrite of `main`, and item 8's reads | `Z-ISR/_session-artifacts/2026-11-09-plainsight-items/` | `README.md`, the plan with the Support request text, the push log and the CI reads, the bundle of the five old commits (unshared, kept until Support acts), and the five second-model reports on item 8 with their dispositions, its patches and its mutant runs. |
 | His rulings of 2026-11-11, and the demo | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it; the static demo page of invented data and the plan that put it behind a Cloudflare Access sign-in in the estate account (route A, acts 1 to 3 done on his clicks of 2026-11-12, act 4 held for his review). |
-| His rulings of 2026-11-12, and this commit | `Z-ISR/_session-artifacts/2026-11-12-plainsight-lane/` | `README.md` with each question, his click and its stamp, the push rule's mutant log, and this commit's gate and hook logs. The lane's ranked prompts for his team-account instance are in the parent's notes folder of that day. |
+| His rulings of 2026-11-12, and the gate of `09caa88` | `Z-ISR/_session-artifacts/2026-11-12-plainsight-lane/` | `README.md` with each question, his click and its stamp, the push rule's mutant log, and that commit's gate and hook logs. The lane's ranked prompts for his team-account instance are in the parent's notes folder of that day. |
+| His answers of 2026-11-14, and this commit | `Z-ISR/_session-artifacts/2026-11-14-plainsight-lane/` | `README.md`, the day's record: the landing of `09caa88`, the showcase's second read with this commit's gate and hook logs, slice 4's review and mutant runs, and the RT-11 reading paper with both drafts. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |
@@ -391,7 +394,6 @@ act. The parked voice pass is in `.../2026-09-05-plainsight-voice-pass/`.
   an existing file; `.gitattributes` normalizes the index, and tracked files
   are edited as bytes by script so that the working copy stays LF.
 - Harness facts: a Bash heredoc breaks on an apostrophe, and the command after
-  a failed heredoc still runs; a worktree runs its own tree's `.githooks`, not
-  the main checkout's as this note said before 2026-11-12; an agent's task
-  output file is often empty, so its report is taken from the completion
-  notice or the workflow's `journal.jsonl`.
+  a failed heredoc still runs; a worktree runs its own tree's `.githooks`; an
+  agent's task output file is often empty, so its report is taken from the
+  completion notice or the workflow's `journal.jsonl`.

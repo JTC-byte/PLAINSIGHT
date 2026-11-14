@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>PLAINSIGHT</title>
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/boot.js" defer></script>
+<script type="module" src="/static/app.js" id="app-module"></script>
+</head>
+<body>
+<a class="skip" href="#tab">Skip to the view</a>
+<header class="topbar" id="topbar"></header>
+<div class="statusbar" id="statusbar" role="region" aria-label="case status"></div>
+<main id="page" aria-busy="true">
+  <section id="profile" class="profile" aria-label="subject profile"></section>
+  <nav id="tabs" class="tabs" aria-label="views"></nav>
+  <section id="tab" class="tab" tabindex="-1"></section>
+</main>
+<section id="drawer" class="drawer" aria-label="lineage" hidden></section>
+<div id="scrim" class="scrim" hidden></div>
+<div id="popover" class="popover" role="dialog" aria-modal="false" hidden></div>
+<div id="announce" class="sr" role="alert"></div>
+<div id="say" class="sr" role="status" aria-live="polite"></div>
+</body>
+</html>

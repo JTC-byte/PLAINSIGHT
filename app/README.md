@@ -35,6 +35,84 @@ free port and prints two URLs per case: the landing view, which is DOSSIER, and
 the web focused on the seed. Open the web URL in a browser on the same machine.
 The server refuses any other bind address with BIND_REFUSED_LOCAL.
 
+## The showcase front end
+
+`python -m app serve --ui showcase` serves a second front end, `app/showcase/`,
+over the same routes and API. The classic front end in `app/static/` stays the
+default, and `--ui classic` names it. Run the showcase beside the classic one
+on another port:
+
+```
+python -m app serve --store %LOCALAPPDATA%\plainsight --analyst analyst-example --port 60542 --ui showcase
+```
+
+The showcase draws the seed as a profile page in the idiom of the 2026-11-02
+social-platform pass: a profile header, seven tabs and one Lineage Drawer. Each
+tab is a view of section 3 of the design, under the key 8.6 and amendment 9.10
+give that view: Overview is DOSSIER (1), Sources is STREAM (2), Timeline is
+CHRONOLOGY (3), Places is MAP (4), Tools is COLLECTION (5), Assessment is DRAFT
+(6) and Connections is WEB (7).
+
+- It reads through GET routes only. It sends no act, no deep dive and no
+  workspace write, and keeps nothing in browser storage.
+  `app/tests/test_showcase.py` scans its files for a request other than GET
+  and for the rules `app/static` keeps, each check with a control.
+- The tab, the selected node and the open drawer live in the URL fragment,
+  which never reaches the server and carries a fixed word and uuids only.
+- The case strip renders the header's states as one line of chips. Each chip
+  opens the server's sentence verbatim with what it means. Red and the hatch
+  appear only where the server's flag says the system does not vouch.
+- Connections is drawn by the client from GET `/api/cases/<case>/web`: ring one
+  in sector order clockwise from the top, each arc sized by the nodes behind
+  it, and an outer node beside its parent. Lines are grouped by pair with one
+  label in words, and the side panel prints each link's own sentence. This
+  departs from the fixed sector angles of `app/model/layout.py`, which
+  amendment 9.24 of the design records.
+- Every request passes one gate in `app/showcase/lib/api.js`: at most four
+  are open at once, and a request that does not arrive is tried twice more
+  after a short pause. A refusal is an answer and is not retried. A part that
+  still does not arrive is drawn as a calm note with a retry, and the rest of
+  the page is drawn around it. `app/tests/test_showcase.py` runs that file
+  under node, when node is on PATH, with a fetch that drops one request, and
+  runs it again with `app/showcase/lib/words.js` and a case pack set; both
+  runs pass through one process site, which the dispatch scan lists in a test
+  module.
+- `app/showcase/boot.js`, a classic script the page loads before the module,
+  guards the first load: if the module graph does not arrive, it reloads the
+  page once and then offers a reload button, reading from the browser's
+  navigation entry whether this load was already that reload.
+- `--overlay PATH`, with `--ui showcase` only, reads a JSON file of fictional
+  display stand-ins for the corpus's placeholders and serves it as
+  `/static/overlay.json`; the page draws them over every body it reads and
+  marks the subject FICTIONAL PERSON, with a switch back to the stored values.
+  A file that sets `presentation` to `live` drops the page's own test,
+  fictional and placeholder labels instead, for a presenter's screen, and
+  quiets what does not help an operator read the case: the case strip, the
+  kicker and anchor lines, the process events in the feed, the Tools tab's
+  System and log-count blocks, and each claim's provenance rows, which fold
+  behind a toggle. A `case` in the file, a case pack, answers every API request
+  for one fictional case from the page itself, so nothing reaches the store;
+  in every string of it the reader refuses an email outside the reserved
+  domains, a phone number outside 555-0100 to 555-0199 that is written in the
+  North American shape, led by a plus sign or as a bare run of ten or eleven
+  digits, a link, and a coordinate key. With a case pack set the label
+  FICTIONAL PERSON is not a switch, because nothing stored stands behind a
+  whole case, and the help panel says the case is answered from a display
+  file. The page's other sentences are the product's own, and they still speak
+  of the store while a case pack answers in the page.
+  `app/http/overlay.py` refuses a file inside the repository, the store or any
+  git working tree, a key that is not a corpus placeholder, an email on a
+  domain other than example.com, example.org or example.net, a number outside
+  555-0100 to 555-0199, and a handle that is the subject's plain first and
+  last name. It cannot tell an invented name or handle from a real person's,
+  so the author of the file answers for every one in it, and in a case pack it
+  does not read a phone number in another shape or one written as a JSON
+  number.
+  Nothing enters the store. Restart without `--overlay` to switch it off.
+- Places draws no map, because the corpus holds no coordinate.
+- Tools counts every event in the case from the rollup and marks the ones no
+  route this build reads reaches as counted only, so nothing is dropped.
+
 ## What the web shows and what it refuses
 
 - Every web has a case and a focus. A request without a focus is refused with
@@ -71,7 +149,9 @@ QUERY_KEY_REFUSED.
 
 - GET `/`, `/c/<case>/<view>`: the page. The views are dossier, web, paths and list.
   GET `/c/<case>` redirects to `/c/<case>/dossier`, the landing view.
-- GET `/static/<file>`, `/keymap.json`.
+- GET `/static/<file>`, `/keymap.json`, each from the front end `--ui` names.
+  A front end that ships no keymap answers `/keymap.json` with
+  ROUTE_NOT_FOUND.
 - GET `/api/cases`, and under `/api/cases/<case>/`: `header`, `web`,
   `web.svg`, `web.list`, `node/<node>`, `lineage/<event>`, `paths`,
   `dossier`, `coverage`, `blobs/<item>`, and `notices`, the Server-Sent Events
