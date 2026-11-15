@@ -274,6 +274,7 @@ class Handler(BaseHTTPRequestHandler):
                 raise Refusal("METHOD_REFUSED")
             route, params = routes.match(method, split.path)
             self._template = route.template
+            params = routes.registered(self.app.root, params)
             query = routes.parse_query(split.query, route.query)
             body = None
             if method in ("POST", "PUT"):

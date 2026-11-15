@@ -134,6 +134,16 @@ def rows_for_file(conn, case_id: str) -> list:
     ).fetchall()
 
 
+def registry_spelling(store, case_id: str) -> str | None:
+    """The case id as the registry holds it: the id itself when a row carries it exactly, else the one row whose
+    id names the same case database under another spelling, else None. runner/verify_shred.py reads a case this
+    way since amendment 9.22, and the HTTP routes read it through this function (amendment 9.26)."""
+    if store.registry(case_id) is not None:
+        return case_id
+    rows = rows_for_file(store.conn, case_id)
+    return rows[0]["case_id"] if len(rows) == 1 else None
+
+
 def closed_to_writes(store, case_id: str) -> str | None:
     """Why the door does not write into this case, or None when it may: a registry row that names the case's
     database file and is not held. A case with no registry row is a first batch and is not closed. A string

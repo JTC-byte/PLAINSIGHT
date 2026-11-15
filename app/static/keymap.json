@@ -12,6 +12,7 @@
     {"key": "? ?", "design": "?? legend", "origin": "8.6", "slice": 1, "built": true, "action": "legend", "label": "legend over the view"},
     {"key": "7", "design": null, "origin": "9.10", "slice": 1, "built": true, "action": "view_web", "label": "WEB"},
     {"key": "1", "design": "1–6 view", "origin": "8.6", "slice": 2, "built": true, "action": "view_dossier", "label": "DOSSIER"},
+    {"key": "5", "design": "1–6 view", "origin": "8.6", "slice": 4, "built": true, "action": "view_collection", "label": "COLLECTION: the connectors this checkout carries and the health records this case holds"},
     {"key": "8", "design": null, "origin": "9.10", "slice": 2, "built": true, "action": "view_paths", "label": "PATHS between the two marked nodes"},
     {"key": "f", "design": "f set focus", "origin": "8.6", "slice": 2, "built": true, "action": "refocus", "label": "recentre the web on the selection; collects nothing"},
     {"key": "v", "design": "v multi-select", "origin": "8.6", "slice": 2, "built": true, "action": "mark", "label": "mark or unmark the selection: PATHS takes the first two marks, the Merge Sheet every marked node"},

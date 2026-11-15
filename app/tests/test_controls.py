@@ -19,6 +19,7 @@ import pytest
 from app.tests import (
     test_acts,
     test_boundaries,
+    test_collection,
     test_corpus,
     test_door,
     test_http,
@@ -46,6 +47,7 @@ MODULES = (
     test_http,
     test_static,
     test_showcase,
+    test_collection,
     test_acts,
     test_watchdog,
     test_retention_sweep,

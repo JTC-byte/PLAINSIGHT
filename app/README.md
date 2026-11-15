@@ -2,10 +2,10 @@
 
 This directory is Class C runtime code. It holds the case store, the ingest
 door, and a stdlib HTTP server that renders one case as a focused web, a
-read-only DOSSIER, PATHS, and the Lineage Drawer. Nothing here decides who may
-be a subject, what may be retained, or what may leave. Those rules are in
-`doctrine/`, and the validation the door applies is `tools/validate.py`, loaded
-by path.
+read-only DOSSIER, PATHS, the COLLECTION board, and the Lineage Drawer. Nothing
+here decides who may be a subject, what may be retained, or what may leave.
+Those rules are in `doctrine/`, and the validation the door applies is
+`tools/validate.py`, loaded by path.
 
 On LOCAL the store holds tracked, unmodified synthetic corpus files only (EG-2),
 and no connector runs (EG-1). The SQLite store refuses to open or create itself
@@ -110,8 +110,9 @@ CHRONOLOGY (3), Places is MAP (4), Tools is COLLECTION (5), Assessment is DRAFT
   number.
   Nothing enters the store. Restart without `--overlay` to switch it off.
 - Places draws no map, because the corpus holds no coordinate.
-- Tools counts every event in the case from the rollup and marks the ones no
-  route this build reads reaches as counted only, so nothing is dropped.
+- Tools counts every event in the case from the rollup and marks the ones its
+  own reads do not reach as counted only, so nothing is dropped. It does not
+  read the COLLECTION route of amendment 9.25 yet.
 
 ## What the web shows and what it refuses
 
@@ -137,7 +138,8 @@ The keymap is `app/static/keymap.json`, one source for the app and the docs.
 This slice builds j and k, Tab and Shift+Tab, l (or Ctrl+click), Shift+L, esc
 esc, ??, 7 WEB, 1 DOSSIER, 8 PATHS, f refocus, v mark, + and - hops, t the list
 twin, and p the Pivot Bar. Slice 3 builds the act keys, Enter, e, i, n, ?, m, x
-and Backspace, which the Acts section below describes. When a button has
+and Backspace, which the Acts section below describes. Slice 4 builds 5
+COLLECTION, which its own section below describes. When a button has
 keyboard focus, Tab and Shift+Tab move focus and Enter presses the button;
 elsewhere they run their keymap bindings.
 
@@ -147,19 +149,26 @@ Every URL carries uuids and fixed words only. The query keys are focus, hops,
 sector, view, lineage, dir, after, from and to; any other key is refused with
 QUERY_KEY_REFUSED.
 
-- GET `/`, `/c/<case>/<view>`: the page. The views are dossier, web, paths and list.
+- GET `/`, `/c/<case>/<view>`: the page. The views are dossier, web, paths, list
+  and collection.
   GET `/c/<case>` redirects to `/c/<case>/dossier`, the landing view.
 - GET `/static/<file>`, `/keymap.json`, each from the front end `--ui` names.
   A front end that ships no keymap answers `/keymap.json` with
   ROUTE_NOT_FOUND.
 - GET `/api/cases`, and under `/api/cases/<case>/`: `header`, `web`,
   `web.svg`, `web.list`, `node/<node>`, `lineage/<event>`, `paths`,
-  `dossier`, `coverage`, `blobs/<item>`, and `notices`, the Server-Sent Events
-  stream.
+  `dossier`, `coverage`, `collection`, `blobs/<item>`, and `notices`, the
+  Server-Sent Events stream. `/api/cases` also carries the RT-11 line.
 - POST `/api/cases/<case>/deep-dives`: refused with its consequence, writes nothing.
 - POST `/api/cases/<case>/acts`: one analyst act from a closed body, minted by
   the server and sent through the door (the Acts section below).
 - GET and PUT `/api/kv/<case>/<view>`: workspace state, closed keys, opaque values.
+
+A route reads the case its URL names under the registry's spelling of its id
+(amendment 9.26). A URL's case id is read in lower case, and a case registered
+under another spelling is served under the registry's. Two registry rows that
+name one case database under other spellings cannot be told apart by a URL, so
+that request is refused as CASE_NOT_HELD with a detail that says so.
 
 ## Acts
 
@@ -207,6 +216,81 @@ it is his decision under EG-2), and then only in a case the registry marks
 synthetic (ACT_LOCAL_SYNTHETIC_CASE_ONLY). The INSPECTOR lists every adjudication of
 the selected node's events under ADJUDICATIONS, each as its consequence.
 
+## COLLECTION and the RT-11 line
+
+Key 5 opens COLLECTION, a read-only board for one case (amendment 9.25, on the
+maintainer's rulings 1C, 2A and 3B of 2026-11-12). Its rows come from two
+sources, and each row says which.
+
+- **The connectors this checkout carries**, one row per manifest folder under
+  `connectors/`, read from the working tree on every request. A row prints what
+  the file declares as text: id, version, capability, kind, probe unit, canary
+  cadence, the canaries' names and the declared class of their target. A value
+  YAML reads as a number, a date or a list prints as "not declared as text", and
+  a manifest's canary inputs are never printed, because a canary declaration
+  carries its target (RT-15). A manifest that cannot be read, or declares no id,
+  is listed under its folder's name, which the manifest gate makes the
+  connector's id, and is never skipped. The board does not grade a manifest;
+  `tools/validate_manifest.py` does.
+- **The health records this case holds**, its SYSTEM_EVENT CONNECTOR_HEALTH
+  events. A record sits on the row of the connector it names. A record that
+  names a connector no manifest folder here carries is listed apart, which is
+  where the corpus's one health event goes.
+
+No row states a present health state other than UNVERIFIED. On LOCAL the line
+reads "UNVERIFIED, no canary runs from this machine, because LOCAL executes no
+connector (EG-1): this connector's state is unknown here". In ISOLATED a
+recorded state would be the present one only inside a freshness window, and no
+manifest declares one, so the board reads none as present there either (reading
+APP-R35).
+
+A recorded state is a dated record: the state its producer recorded, its time,
+its producer and canary, design section 7.1's definition of that state quoted
+as the design's, its recorded reason when it carries one, and why it is not the
+present state. The board vouches for no recorded state, so every record is
+painted with the red mark, as every present state is (APP-R36).
+
+- A record of the connector as a whole is one stream. The latest, by time and
+  then by arrival, supersedes the earlier ones, which are counted and not
+  listed.
+- An endpoint or subscription record names no endpoint, because the payload
+  carries none, so two of them may concern two endpoints. They are grouped by
+  the state they record, and the latest of each state is shown with the count
+  of that state's records. A SUSPECT record is never hidden behind a later
+  record of another state.
+- A record dated after now, or with no readable time, connector, probe unit or
+  state, is set aside and counted, on the board and on the row of the connector
+  it names.
+
+Rows are sorted by the most dangerous record they show, SUSPECT first, and
+"CAPABILITY ... HAS NO HEALTHY MEMBER" prints for every declared capability,
+because no member is healthy here. The l button on a record opens the Lineage
+Drawer on its event; the keys act on the INSPECTOR's node, as in every view.
+
+The board reads one case. Its route sits under the case, its read takes the case
+as its one scope argument, and the board says its scope in words. The filter
+tabs, the sparkline, differential health, the impact review, the buttons and the
+30-second refresh of design section 7.4 are not built.
+
+The RT-11 line above every view states its evidence and its limit. It names the
+first SHRED_FAILED that halts, by arrival, by its case's short id, its time and
+its failed check, and counts the others that halt. It says that this build reads
+no clearing, because verify_shred has no passing path, and on LOCAL that nothing
+dispatches in any case (EG-1). The read takes the shared skeleton alone, so the
+case list carries the line too, and it is the one read that spans cases: RT-11
+makes a failed shred a fact about the mechanism and not about the case. A
+SHRED_FAILED whose payload cannot be read as an object, or does not say whether
+it halts, is read as halting (APP-R38). The line is lit on every store that
+holds the corpus, whose log carries one failed shred, and nothing in this tree
+clears it: the halt's clearing, its source of truth and its enforcement are left
+to the shred's design.
+
+`app/tests/test_collection.py` pairs every check with a control that removes its
+mechanism. No check there knows the health of a connector, because no canary
+runs on LOCAL: each claims coverage of the board's mechanism on the corpus and
+on variants built from it. The view's JavaScript is checked by reading its
+source, as slices 1 to 3 check theirs, and not by running it.
+
 ## The store writes only into a held case
 
 Every entry point that writes into a case refuses a case that is not held, one
@@ -235,11 +319,15 @@ acts and the workspace store, refuse a case closed to writes with a 409 in
 names each case it leaves alone once as NOT HELD with what the registry says of
 it, and `rebuild --verify` copies and compares only held cases, says how many
 it did not compare, and says so when that is none; the same copy used as a
-migration refuses a store holding a case that is not held (amendment 9.23). The library functions behind those entry points, `kv.put`
-and `replay_case`, read no registry state of their own: they attach without
-create and rely on their callers for the rule. The watchdog reports the door's
-refusal for a coverage row left open in a closed case, and the sweep writes no
-heartbeat into a case that is not held.
+migration refuses a store holding a case that is not held (amendment 9.23). A
+verify exits 1, with a STORE FAULT line, when a registry row says open for a
+case database that is gone, because `retain_until` cannot be enforced on a case
+with no database; a row that says shredded or shred_failed is a closed case and
+does not change the exit code (amendment 9.26). The library functions behind
+those entry points, `kv.put` and `replay_case`, read no registry state of their
+own: they attach without create and rely on their callers for the rule. The
+watchdog reports the door's refusal for a coverage row left open in a closed
+case, and the sweep writes no heartbeat into a case that is not held.
 
 ## Watchdog
 

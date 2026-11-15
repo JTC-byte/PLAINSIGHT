@@ -57,8 +57,10 @@ def get_routes() -> list[str]:
         "/",
         f"/c/{CASE}/web?focus={FOCUS}&hops=2",
         f"/c/{CASE}/dossier?focus={FOCUS}",
+        f"/c/{CASE}/collection",
         "/static/app.js",
         "/static/views/web.js",
+        "/static/views/collection.js",
         "/keymap.json",
         "/api/cases",
         f"{API}/header",
@@ -72,6 +74,8 @@ def get_routes() -> list[str]:
         f"{API}/paths?from={FOCUS}&to={REFERENCED}",
         f"{API}/dossier?focus={FOCUS}",
         f"{API}/coverage",
+        f"{API}/collection",
+        f"{API}/collection?focus={FOCUS}",
         f"{API}/blobs/{item}",
         f"/api/kv/{CASE}/web",
         f"{API}/web",
@@ -749,6 +753,74 @@ def check_focus_required_and_case_scoped(ctx):
     assert c.get(f"/api/cases/{CASE},{other}/web?focus={FOCUS}").status == 404
 
 
+def _served_under(ctx, spelling: str, name: str) -> Client:
+    """A server on a store whose one case is the corpus's, registered under `spelling` of its id."""
+    events = corpus_events()
+    for e in events:
+        e["case_id"] = spelling
+    return Client(ctx, ctx.built(name, events).root)
+
+
+def check_a_second_spelling_of_a_held_case_is_served(ctx):
+    """A case registered under another spelling of its id is held, and the routes say so. A URL names a case
+    in lower case, so the registry's spelling is read, as verify_shred reads it (amendment 9.26)."""
+    upper = CASE.upper()
+    assert upper != CASE
+    c = _served_under(ctx, upper, "upper")
+    assert [x["case_id"] for x in c.get("/api/cases").json()["cases"]] == [upper]
+    for spelled in (CASE, upper):
+        r = c.get(f"/api/cases/{spelled}/header")
+        assert r.status == 200, "a held case named under another spelling of its id was answered as not held"
+        h = r.json()
+        assert h["case_id"] == upper, "the routes do not read the case under the registry's spelling"
+        assert h["rollup"].get("event_type"), "the case's events were not read under the registry's spelling"
+    assert h["seed_focus"], "the case under its registry spelling has no node to focus"
+    assert c.get(f"/api/cases/{CASE}/dossier?focus={h['seed_focus']}").status == 200
+    assert len(c.get(f"/api/cases/{CASE}/coverage").json()["intervals"]) == 1
+    assert c.get(f"/c/{CASE}/dossier").status == 200
+    other = uuid.uuid5(uuid.UUID(CASE), "other")
+    r = c.get(f"/api/cases/{other}/header")
+    assert r.status == 404 and r.json()["refused"] == "CASE_NOT_HELD" and "detail" not in r.json()
+    # Two rows that name one case database under other spellings cannot be told apart by a URL: refused, and
+    # the refusal says why.
+    mixed = upper[:9] + CASE[9:]
+    assert mixed not in (upper, CASE)
+    store = open_case(c.root)
+    cols = [x["name"] for x in store.conn.execute("PRAGMA table_info(case_registry)") if x["name"] != "case_id"]
+    store.conn.execute(
+        f"INSERT INTO case_registry (case_id, {', '.join(cols)}) SELECT ?, {', '.join(cols)} FROM case_registry "
+        "WHERE case_id = ?", (mixed, upper))
+    store.conn.commit()
+    store.close()
+    r = c.get(f"/api/cases/{CASE}/header")
+    assert r.status == 404 and r.json()["refused"] == "CASE_NOT_HELD"
+    assert r.json().get("detail") == (
+        f"case {CASE[:8]}: 2 registry rows name this case database under other spellings, and a URL names a case "
+        "in lower case, so this server cannot tell which is meant"), "a case two rows name was refused without saying why"
+
+
+def break_second_spelling_answered_not_held(ctx):
+    ctx.mp.setattr(routes, "registered", lambda root, params: params)
+
+
+def break_two_spellings_refused_without_a_reason(ctx):
+    ctx.mp.setattr(routes, "other_spellings", lambda store, case_id: None)
+
+
+def break_two_spellings_served_as_the_first(ctx):
+    from app.store import ingest
+
+    def first_row(store, case_id):
+        rows = ingest.rows_for_file(store.conn, case_id)
+        return case_id if store.registry(case_id) is not None else (rows[0]["case_id"] if rows else None)
+
+    ctx.mp.setattr(ingest, "registry_spelling", first_row)
+
+
+def test_a_second_spelling_of_a_held_case_is_served(ctx):
+    check_a_second_spelling_of_a_held_case_is_served(ctx)
+
+
 def break_focus_defaults_to_seed(ctx):
     real = web.build
 
@@ -789,7 +861,8 @@ def test_paths_route_through_cluster(ctx):
 def check_states_render_as_consequences(ctx):
     c = Client(ctx)
     h = c.get(f"{API}/header").json()
-    assert h["halt"] == "HALTED, a shred failed: no new run will dispatch system-wide (RT-11)"
+    assert h["halt"].startswith(f"HALTED, a shred failed in case {CASE[:8]} at "), "the halt is not rendered as its consequence"
+    assert "no new run dispatches system-wide (RT-11)" in h["halt"]
     assert h["retention"] == "past retain_until · synthetic stratum-4 material, no sweep acts on LOCAL"
     assert h["state"].startswith("open: ")
     cov = c.get(f"{API}/coverage").json()["intervals"]
@@ -819,7 +892,7 @@ def check_states_render_as_consequences(ctx):
 def break_halt_rendered_as_token(ctx):
     from app.model import reads
 
-    ctx.mp.setattr(reads, "halt_line", lambda conn: "shred_failed")
+    ctx.mp.setattr(reads, "halt_line", lambda conn, environment: "shred_failed")
 
 
 def test_states_render_as_consequences(ctx):
@@ -1468,6 +1541,9 @@ CONTROLS = [
     ("the kv value check removed", check_kv_refuses_free_text, break_kv_value_check_removed),
     ("the kv list branch accepts anything", check_kv_refuses_free_text, break_kv_list_branch_open),
     ("the focus defaults to the seed", check_focus_required_and_case_scoped, break_focus_defaults_to_seed),
+    ("a second spelling of a held case is answered as not held", check_a_second_spelling_of_a_held_case_is_served, break_second_spelling_answered_not_held),
+    ("two spellings on one database are refused without a reason", check_a_second_spelling_of_a_held_case_is_served, break_two_spellings_refused_without_a_reason),
+    ("two spellings on one database are served as the first row", check_a_second_spelling_of_a_held_case_is_served, break_two_spellings_served_as_the_first),
     ("paths limited to one hop", check_paths_route_through_cluster, break_paths_one_hop),
     ("the halt rendered as its token", check_states_render_as_consequences, break_halt_rendered_as_token),
     ("layout in insertion order", check_render_deterministic, break_layout_insertion_order),

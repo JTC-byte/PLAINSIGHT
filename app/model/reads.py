@@ -321,15 +321,71 @@ def sweep_line(beats: list[dict], at: dt.datetime) -> dict:
     return {"ran": last["ts"], "next_due": next_due, "vouch": vouch, "not_read": not_read, "text": text}
 
 
-def halt_line(conn) -> str | None:
-    """RT-11, rendered as its consequence: a SHRED_FAILED with halt_system_wide in any case held."""
-    for e in conn.execute(
-        SKELETON_SELECT + "WHERE s.event_type = 'SYSTEM_EVENT' AND s.event_subtype = 'SHRED_FAILED' ORDER BY s.seq"
+#: What the halt line cannot do in this build: RT-11 clears a halt by a passing verify_shred, and
+#: runner/verify_shred.py has no passing path (amendment 9.19), so no clearing exists to read.
+NO_CLEARING = "This build reads no clearing, because verify_shred has no passing path yet."
+
+#: Outside LOCAL the line may not claim an enforcement nothing performs: no dispatch path reads the halt, and
+#: what keeps a run from dispatching in this build is the deep-dive route, which refuses in every state.
+NOT_ENFORCED_BY_THE_HALT = "No dispatch path reads this halt yet, and the deep-dive route refuses in every state."
+
+
+def halting(payload_inline) -> tuple[bool, object]:
+    """(whether a SHRED_FAILED row halts, the check it names). Only a payload that says halt_system_wide is
+    false says that it does not halt. One that is not an object, or carries no such key, cannot say so, and is
+    read as halting."""
+    try:
+        p = json.loads(payload_inline) if payload_inline else None
+    except ValueError:
+        p = None
+    if not isinstance(p, dict):
+        return True, None
+    return p.get("halt_system_wide") is not False, p.get("failed_check")
+
+
+def more_failed(more: int) -> str:
+    """The clause for the halting failed shreds the line does not name, empty when there is none. A failed
+    shred that says it does not halt is not counted, and the clause says which ones it counts."""
+    if not more:
+        return ""
+    if more == 1:
+        return ", and 1 more failed shred that halts is on record in this store"
+    return f", and {more} more failed shreds that halt are on record in this store"
+
+
+def halt_line(conn, environment: str) -> str | None:
+    """RT-11, rendered as its consequence with its evidence and its limit (the maintainer's ruling 3B of
+    2026-11-12, amendment 9.25): the first SHRED_FAILED carrying halt_system_wide in any case this store's log
+    holds, by arrival, named by its case's short id, its time and its failed check.
+
+    The read takes the shared skeleton alone, where a system event's payload is held inline, so it needs no
+    case attached and the cases page can carry the line. Nothing clears the line: the log is append-only, and
+    this build has no clearing act to read.
+
+    Reading APP-R38: the line names the first halting SHRED_FAILED by arrival and counts the others that
+    halt; one whose payload says it does not halt is not counted, as before; and one whose payload cannot be
+    read as an object, or carries no halt_system_wide, is read as halting (halting, above), because a line
+    whose absence means no halt must not go dark on a row it cannot read. Outside LOCAL the line says that no
+    dispatch path reads the halt, because none does."""
+    failed = []
+    for row in conn.execute(
+        "SELECT case_id, ts, payload_inline FROM event_skeleton "
+        "WHERE event_type = 'SYSTEM_EVENT' AND event_subtype = 'SHRED_FAILED' ORDER BY seq"
     ):
-        p = _shape(e)["payload"] or {}
-        if p.get("halt_system_wide"):
-            return "HALTED, a shred failed: no new run will dispatch system-wide (RT-11)"
-    return None
+        halts, check = halting(row["payload_inline"])
+        if halts:
+            failed.append((row["case_id"], row["ts"], check))
+    if not failed:
+        return None
+    case_id, ts, check = failed[0]
+    named = f"check {check}" if type(check) is int else "no failed check can be read from it"
+    line = (f"HALTED, a shred failed in case {case_id[:8]} at {ts} ({named}){more_failed(len(failed) - 1)}: "
+            f"no new run dispatches system-wide (RT-11). {NO_CLEARING}")
+    if environment == "LOCAL":
+        line += " On LOCAL nothing dispatches in any case (EG-1)."
+    else:
+        line += " " + NOT_ENFORCED_BY_THE_HALT
+    return line
 
 
 def seed_focus(conn, case_id: str) -> str | None:

@@ -338,8 +338,10 @@ def test_rebuild_reports_what_it_leaves_alone(ctx):
 
 def check_verify_reads_a_store_whose_case_database_is_gone(ctx):
     # Finding 14 of 2026-11-11, option B2 of 2026-11-12 (amendment 9.23): a registry row says open and the case
-    # database is gone. python -m app rebuild --verify names the case, compares nothing, says how many it left out,
-    # and exits 0; before, the copy read every registry row and stopped on this case with an uncaught error.
+    # database is gone. python -m app rebuild --verify names the case, compares nothing and says how many it left
+    # out; before, the copy read every registry row and stopped on this case with an uncaught error. It exits 1,
+    # because that row is a store fault (his answer of 2026-11-14, amendment 9.26), and exits 0 once the registry
+    # says the case was shredded, which is a closed case and no fault.
     import contextlib
     import io
 
@@ -357,8 +359,30 @@ def check_verify_reads_a_store_whose_case_database_is_gone(ctx):
     with contextlib.redirect_stdout(out):
         code = cli.main(["rebuild", "--store", str(s.root), "--verify"])
     text = out.getvalue()
-    assert code == 0, text
     assert "NOT HELD" in text and "1 case(s) not held were not compared" in text, text
+    assert code == 1, f"a registry row that says open for a case database that is gone did not make the verify exit 1: {text}"
+    assert (f"STORE FAULT, the registry says open and the case database is gone for C-{CASE[:8]}: retain_until "
+            "cannot be enforced on a case with no database, so this verify exits 1.") in text, text
+    s.conn.execute("UPDATE case_registry SET state = 'shredded' WHERE case_id = ?", (CASE,))
+    s.conn.commit()
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        code = cli.main(["rebuild", "--store", str(s.root), "--verify"])
+    text = out.getvalue()
+    assert code == 0 and "STORE FAULT" not in text, f"a shredded case whose database is gone was read as a store fault: {text}"
+    assert "NOT HELD" in text and "1 case(s) not held were not compared" in text, text
+
+
+def break_an_open_row_with_no_database_exits_0(ctx):
+    from app import __main__ as cli
+
+    ctx.mp.setattr(cli, "open_and_gone", lambda left: [])
+
+
+def break_every_case_not_held_is_a_store_fault(ctx):
+    from app import __main__ as cli
+
+    ctx.mp.setattr(cli, "open_and_gone", lambda left: [case_id for case_id, _, _ in left])
 
 
 def break_verify_copies_every_case(ctx):
@@ -587,6 +611,8 @@ CONTROLS = [
     ("a registry state shown as its token", check_rebuild_reports_what_it_leaves_alone, break_state_shown_as_its_token),
     ("verified reported when nothing was compared", check_rebuild_reports_what_it_leaves_alone, break_verified_when_nothing_was_compared),
     ("a verify that copies every case", check_verify_reads_a_store_whose_case_database_is_gone, break_verify_copies_every_case),
+    ("an open row with no database exits 0", check_verify_reads_a_store_whose_case_database_is_gone, break_an_open_row_with_no_database_exits_0),
+    ("every case not held is a store fault", check_verify_reads_a_store_whose_case_database_is_gone, break_every_case_not_held_is_a_store_fault),
     ("the migration's refusal removed", check_migration_refuses_a_case_not_held, break_migration_refusal_removed),
     ("a claim loses its run", check_claims_resolve, break_claim_loses_its_run),
     ("the run does not copy the gate's relation", check_seed_run, break_relation_not_copied),

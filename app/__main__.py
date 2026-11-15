@@ -56,6 +56,21 @@ def verify_lines(diffs: dict, left_out: int = 0) -> tuple[int, list[str]]:
     return 0, [f"verified: a fresh replay of {len(diffs)} case(s) matches this store row for row{tail}"]
 
 
+def open_and_gone(left: list) -> list[str]:
+    """The cases a registry row says are open and whose case database is gone, among the cases not held. That is
+    a store fault and no closed case: retain_until cannot be enforced on a case with no database, the reading
+    amendment 9.19 gave the sweep, which exits 1 on the same row."""
+    return [case_id for case_id, state, present in left if state == "open" and not present]
+
+
+def open_and_gone_line(cases: list[str]) -> str:
+    """Why a verify exits 1 on a store whose registry says open for a case database that is gone (amendment 9.26)."""
+    named = ", ".join(f"C-{case_id[:8]}" for case_id in cases)
+    return (f"STORE FAULT, the registry says open and the case database is gone for {named}: retain_until "
+            "cannot be enforced on a case with no database, so this verify exits 1. The retention sweep reports "
+            "the same row and exits 1 (amendment 9.19)")
+
+
 def not_held_line(case_id: str, state: str, present: bool) -> str:
     """A case a rebuild leaves alone, rendered as its consequence: what the registry says of it, never its token."""
     from app.store import ingest
@@ -81,6 +96,10 @@ def cmd_rebuild(args) -> int:
             with tempfile.TemporaryDirectory(prefix="plainsight-verify-", ignore_cleanup_errors=True) as scratch:
                 diffs = replay.verify(store, scratch)
             code, lines = verify_lines(diffs, len(left))
+            gone = open_and_gone(left)
+            if gone:
+                code = 1
+                lines.append(open_and_gone_line(gone))
             for line in lines:
                 print(line)
             if code:

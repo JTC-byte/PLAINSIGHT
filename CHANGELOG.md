@@ -22,6 +22,45 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-14. Slice 4: the COLLECTION board on key 5, an RT-11 line that states its evidence, a verify that exits 1 on an open row with no case database, and routes that read a case under the registry's spelling.**
+
+  **What changed.** GET `/api/cases/{case}/collection` serves a board for one
+  case, and key 5 opens it in the classic front end. Its rows are the
+  checkout's connector manifests, each UNVERIFIED with the reason that LOCAL
+  executes no connector (EG-1). The case's CONNECTOR_HEALTH events are shown as
+  dated records and never as the present state, and a record naming a
+  connector the checkout does not carry is listed apart. The RT-11 line in the
+  header and on the case list names the case's short id, the event's time and
+  the failed check, says this build reads no clearing, and on LOCAL that
+  nothing dispatches. `python -m app rebuild --verify` exits 1 with a STORE
+  FAULT line when a registry row says open and the case database is gone. The
+  HTTP routes read a case under the registry's spelling of its id. Amendments
+  9.25 and 9.26 record both, with readings APP-R35 to APP-R38.
+
+  **Surfaces moved.** `app/model/collection.py` (new), `app/model/reads.py`,
+  `app/http/routes.py`, `app/http/server.py`, `app/store/ingest.py`,
+  `app/__main__.py`, `app/static/app.js`, `app/static/views/collection.js`
+  (new), `app/static/keymap.json`, two sentences of
+  `app/showcase/views/tools.js`, `app/tests/test_collection.py` (new),
+  `app/tests/test_controls.py`, `app/tests/test_http.py`,
+  `app/tests/test_spine.py`, `app/README.md`, `docs/PLAINSIGHT-design.md`, the
+  app-tests entry's note in `tools/validate_conformance.py`, the handoff, the
+  worklog and its archive, this file.
+
+  **Validation.** Twenty checks with fifty-five controls in
+  `app/tests/test_collection.py`, one check with three controls for the
+  routes and two controls for the verify, each seen failing on the assertion
+  that names its mechanism. A second model read the first build and found three
+  false outputs and five lesser defects, all fixed before this commit. The
+  hand-mutant battery: 128 mutants under the lock. The first 108 ran before these records were written, on the slice's tree before its merge onto the showcase commit: 107 were killed and one survived, which made the COLLECTION route answer as LOCAL whatever the application says. No check held a route to the application's environment, because every store that opens today is LOCAL. A check with two controls now sets another environment on the running application. That mutant, two more of its kind for the case list and the header, the other thirteen mutants of the three files that differ between that tree and this one, and the last 18 run on this tree in the same lock hold as the kernel gate, with the commit waiting on every one being killed. The kernel gate and the pre-commit hook on
+  the staged tree under the heavy-run lock.
+
+  **What did not change.** No connector runs and no health state is computed:
+  the board reads declarations and recorded events. No dispatch path reads the
+  halt. The showcase front end does not read the new route, and two of its
+  sentences now say so. No doctrine, schema, policy, spec or tool logic.
+  Nothing is pushed.
+
 - **2026-11-14. A second front end, the showcase, beside the classic one, with a display overlay and a case pack.**
 
   **What changed.** `python -m app serve --ui showcase` serves `app/showcase/`,

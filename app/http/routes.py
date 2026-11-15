@@ -16,7 +16,11 @@ neither refusal echoes what it refused. A route takes only the keys it lists.
 Every GET handler opens its own store connection, attaches the case without
 creating anything, and sets PRAGMA query_only before it reads, so a GET performs
 zero writes. No handler opens an outbound socket. No route ingests uploaded
-bytes and no route spans cases.
+bytes and no route spans cases, with one read excepted: the RT-11 line on the
+case header and on the case list is read from every case's failed shreds,
+because RT-11 makes a failed shred a fact about the mechanism and not about the
+case, and it names the failed case by its short id, its time and its failed
+check (amendment 9.25).
 """
 
 from __future__ import annotations
@@ -30,6 +34,7 @@ from urllib.parse import parse_qsl, urlencode
 
 from app import config
 from app.http import acts
+from app.model import collection
 from app.model import dossier as dossier_mod
 from app.model import inspector, lineage, paths, reads, sectors, svg, web
 from app.refusals import Refusal
@@ -49,7 +54,7 @@ UIS = {"classic": STATIC, "showcase": SHOWCASE}
 UUID = r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}"
 
 #: The views a /c/<case>/<view> URL may name.
-VIEWS = ("dossier", "web", "paths", "list")
+VIEWS = ("dossier", "web", "paths", "list", "collection")
 
 #: Every query key any route takes: the seven docs/PLAINSIGHT-design.md
 #: amendment 9.12 names, plus from and to, which 9.12 gives the paths route.
@@ -136,6 +141,7 @@ ROUTES = (
     _route("GET", "/api/cases/{case}/paths", "paths", ("from", "to")),
     _route("GET", "/api/cases/{case}/dossier", "dossier", ("focus",)),
     _route("GET", "/api/cases/{case}/coverage", "coverage"),
+    _route("GET", "/api/cases/{case}/collection", "collection"),
     _route("GET", "/api/cases/{case}/blobs/{item}", "blob"),
     _route("GET", "/api/cases/{case}/notices", "notices", ("after",)),
     _route("POST", "/api/cases/{case}/deep-dives", "deep_dive"),
@@ -158,6 +164,35 @@ def match(method: str, path: str) -> tuple[Route, dict]:
         params = {k: v.lower() if k in ("case", "node", "event", "item") else v for k, v in m.groupdict().items()}
         return r, params
     raise Refusal("METHOD_REFUSED" if found_other else "ROUTE_NOT_FOUND")
+
+
+def registered(root, params: dict) -> dict:
+    """A route's parameters with the case id as the registry holds it (amendment 9.26). match() reads a URL's
+    case id in lower case, and the registry key is the id as it was first sent, so a case registered under
+    another spelling was answered CASE_NOT_HELD, which says something false about a case the store holds.
+    When no row carries the id exactly and one row names the same case database, that row's spelling is the
+    case. Any other count leaves the parameters as they are, and case_store refuses."""
+    case_id = params.get("case")
+    if case_id is None:
+        return params
+    store = db.Store.open(root)
+    try:
+        read_only(store.conn)
+        held = ingest.registry_spelling(store, case_id)
+        store.conn.execute("PRAGMA query_only=OFF")
+    finally:
+        store.close()
+    return params if held is None or held == case_id else dict(params, case=held)
+
+
+def other_spellings(store, case_id: str) -> str | None:
+    """The detail for a case no row carries exactly while more than one row names its database under other
+    spellings: a URL names a case in lower case, so it cannot say which row is meant."""
+    named = len(ingest.rows_for_file(store.conn, case_id))
+    if named < 2:
+        return None
+    return (f"case {case_id[:8]}: {named} registry rows name this case database under other spellings, and a URL "
+            "names a case in lower case, so this server cannot tell which is meant")
 
 
 # ---------------------------------------------------------------------------
@@ -215,7 +250,9 @@ def case_store(root, case_id: str, write: bool = False):
     the registry does not hold open (CASE_CLOSED_TO_WRITES, amendment 9.21)."""
     store = db.Store.open(root)
     try:
-        if case_id not in store.cases() or not store.attach_case(case_id, create=False):
+        if case_id not in store.cases():
+            raise Refusal("CASE_NOT_HELD", other_spellings(store, case_id))
+        if not store.attach_case(case_id, create=False):
             raise Refusal("CASE_NOT_HELD")
         if write:
             why = ingest.closed_to_writes(store, case_id)
@@ -288,10 +325,11 @@ def h_cases(app, params, query, body) -> Response:
                 "state": _case_state(reg["state"]),
                 "held": store.case_file(case_id).is_file(),
             })
+        halt = reads.halt_line(store.conn, app.environment)
         store.conn.execute("PRAGMA query_only=OFF")
     finally:
         store.close()
-    return json_response({"cases": out, "landing_view": config.LANDING_VIEW})
+    return json_response({"cases": out, "landing_view": config.LANDING_VIEW, "halt": halt})
 
 
 ENVIRONMENT_LINE = {
@@ -316,7 +354,7 @@ def h_header(app, params, query, body) -> Response:
             "retention": retention.retention_line(reg),
             "retention_vouch": retention.is_past(reg),
             "anchor": f"anchor_ts {reg['anchor_ts']} ({reg['anchor_reading']})",
-            "halt": reads.halt_line(conn),
+            "halt": reads.halt_line(conn, app.environment),
             "sweep": reads.sweep_state(conn, case_id),
             "seed_focus": reads.seed_focus(conn, case_id),
             "landing_view": config.LANDING_VIEW,
@@ -420,6 +458,13 @@ def h_coverage(app, params, query, body) -> Response:
     return json_response({"case_id": case_id, "intervals": rows})
 
 
+def h_collection(app, params, query, body) -> Response:
+    """COLLECTION for one case: the checkout's connectors and the case's health records (amendment 9.25)."""
+    case_id = params["case"]
+    with case_store(app.root, case_id) as store:
+        return json_response(collection.board(store.conn, case_id, app.environment))
+
+
 def h_blob(app, params, query, body) -> Response:
     case_id = params["case"]
     with case_store(app.root, case_id) as store:
@@ -494,6 +539,7 @@ HANDLERS = {
     "paths": h_paths,
     "dossier": h_dossier,
     "coverage": h_coverage,
+    "collection": h_collection,
     "blob": h_blob,
     "deep_dive": h_deep_dive,
     "acts": h_acts,

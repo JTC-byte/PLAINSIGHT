@@ -3,8 +3,8 @@
 // words with its source. Then every mechanism's state as the server reports
 // it, verbatim. Then the whole log counted, so that what the other tabs do not
 // draw is still accounted for: annotate, never filter. Connector health in its
-// five states is the COLLECTION board of slice 4, and this build's API does not
-// serve it, so no tile here claims a health state.
+// five states is the COLLECTION board of slice 4 (amendment 9.25), which this
+// page does not read yet, so no tile here claims a health state.
 
 import { h, tok, lin } from "../lib/dom.js";
 import { roleOf, eventLabel, stamp, short, plural } from "../lib/words.js";
@@ -38,7 +38,7 @@ export async function renderTools(el, ctx) {
       !end,
       [`argv_template ${p.argv_template}`, `looked as ${p.egress ? p.egress.egress_identity : "?"} from ${p.egress ? p.egress.environment : "?"}`,
         p.credential_id ? `credential ${p.credential_id}` : "no credential was used",
-        `health: ${plural(health, "connector health report")} in the log; this build's API does not serve its state, so this tile claims none`],
+        `health: ${plural(health, "connector health report")} in the log; this page does not read the COLLECTION board yet, so this tile claims none`],
       h("div", { css: { "margin-top": "10px" } }, lin(() => ctx.lineage(run.start.event_id, "the run"), "the run"))));
   }
   const proposals = [...m.edgeText.values()].filter((e) => e.kind === "proposes");

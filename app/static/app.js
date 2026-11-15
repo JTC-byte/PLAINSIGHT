@@ -13,11 +13,12 @@ import { renderWeb, webNodes, markSelected } from "./views/web.js";
 import { renderLineage } from "./views/lineage.js";
 import { renderDossier } from "./views/dossier.js";
 import { renderPaths, renderList } from "./views/paths.js";
+import { renderCollection } from "./views/collection.js";
 import { openStream } from "./views/stream.js";
 import { KEY_ACTS, mergeSheet, cancelPending, reviewStrip } from "./views/acts.js";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const VIEWS = ["dossier", "web", "paths", "list"];
+const VIEWS = ["dossier", "web", "paths", "list", "collection"];
 const SECTORS = ["accounts", "names_aliases", "emails", "phones", "addresses", "organizations", "people", "other_osint"];
 
 export const state = {
@@ -106,6 +107,14 @@ function saveWorkspace() {
   sendJSON("PUT", `/api/kv/${state.caseId}/${view}`, values).catch(() => {});
 }
 
+// The RT-11 line sits above every view. The case header carries it, and so does
+// the case list, which has no header (amendment 9.25).
+function showHalt(text) {
+  const halt = document.getElementById("halt");
+  halt.hidden = !text;
+  halt.textContent = text || "";
+}
+
 async function header() {
   const r = await getJSON(`/api/cases/${state.caseId}/header`);
   if (!r.ok) { say(r.body ? r.body.text : "the case header could not be read"); return null; }
@@ -119,9 +128,7 @@ async function header() {
     el("div", { class: r.body.sweep && r.body.sweep.vouch ? "vouch" : "" }, r.body.sweep ? r.body.sweep.text : ""),
     el("div", {}, r.body.anchor),
   );
-  const halt = document.getElementById("halt");
-  halt.hidden = !r.body.halt;
-  halt.textContent = r.body.halt || "";
+  showHalt(r.body.halt);
   const runs = await getJSON(`/api/cases/${state.caseId}/coverage`);
   const runStarts = ((r.body.rollup || {}).event_subtype || {})["PROBE_EVENT.RUN_START"] || 0;
   const cover = runs.ok && runs.body.intervals.length ? runs.body.intervals.map((i) => i.text).join(" · ") : "no coverage interval recorded";
@@ -135,7 +142,8 @@ function viewButtons() {
     "aria-current": state.view === view ? "page" : null,
     onclick: () => go({ view }),
   }, `${key} ${label}`);
-  nav.replaceChildren(mk("dossier", "1", "DOSSIER"), mk("web", "7", "WEB"), mk("paths", "8", "PATHS"), mk("list", "t", "LIST"));
+  nav.replaceChildren(mk("dossier", "1", "DOSSIER"), mk("collection", "5", "COLLECTION"), mk("web", "7", "WEB"),
+    mk("paths", "8", "PATHS"), mk("list", "t", "LIST"));
   document.getElementById("bar-focus").textContent =
     `FOCUS ${state.focus ? state.focus.slice(0, 8) : "none"} · hops ${state.hops}` +
     (state.marks.length ? ` · marked ${state.marks.map((m) => m.slice(0, 8)).join(", ")}` : "");
@@ -240,6 +248,7 @@ async function render() {
   else if (state.view === "list") await renderList(view, state);
   else if (state.view === "dossier") await renderDossier(view, state);
   else if (state.view === "paths") await renderPaths(view, state);
+  else if (state.view === "collection") await renderCollection(view, state);
   await renderRoster();
   await select(state.selected || state.focus);
   const drawer = document.getElementById("lineage");
@@ -269,6 +278,7 @@ async function landing() {
   const r = await getJSON("/api/cases");
   const view = document.getElementById("view");
   if (!r.ok) { view.replaceChildren(el("p", {}, "the case list could not be read")); return; }
+  showHalt(r.body.halt);
   if (r.body.cases.length === 1 && r.body.cases[0].held) {
     history.replaceState(null, "", `/c/${r.body.cases[0].case_id}/${r.body.landing_view}`);
     readURL();
@@ -343,6 +353,7 @@ const ACTIONS = {
   legend,
   view_web: () => go({ view: "web" }),
   view_dossier: () => go({ view: "dossier" }),
+  view_collection: () => go({ view: "collection" }),
   view_paths: () => {
     if (state.marks.length === 2) go({ view: "paths", from: state.marks[0], to: state.marks[1] });
     else say("PATHS needs two marked nodes: select one and press v, then another and press v");
