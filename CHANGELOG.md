@@ -22,6 +22,51 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-16. RT-11 amended: no override lifts the halt.**
+
+  **What changed.** RT-11's body argued for and described an override entry in
+  the ledger while the pin's RT-11 row read "No override", and
+  `policy/retention.yaml` held the conflict as the open entry U-17 from
+  2026-10-01. On 2026-11-14 the maintainer was asked "Which way on RT-11's
+  override?" with a paper of four options and selected "No override". RT-11's
+  two override paragraphs are replaced by one: nothing but a passing
+  `verify_shred` lifts the halt, a shred that cannot be completed keeps every
+  new run blocked, and changing that is an amendment to the criterion.
+  `doctrine/DOCTRINE_STATUS.md` gains a Ratified row dated 2026-11-14 and the
+  decision in the maintainer's terms. The policy compiles `override: none`,
+  records no override act in the ledger, and U-17 leaves the open entries.
+  `tools/validate_retention.py` pins every key of the halt block by value,
+  the override as the value none and the citation and both reasons as text.
+  It requires the ledger's recorded acts to be a list, closes it to three
+  names, none more than once, with the clearing act required and pinned
+  whole, and reports a drift in each place with its own moves. The check
+  holds the freeze and disclosure export acts by name only and reads no
+  other part of the policy for an override, which RT-11 now says.
+
+  **Surfaces moved.** `doctrine/RETENTION.md` (RT-11 and its marker),
+  `doctrine/DOCTRINE_STATUS.md`, `policy/retention.yaml`,
+  `tools/validate_retention.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** `validate_doctrine` reads 58 criteria, `validate_hygiene`
+  exits 0, and the pin reader's self-test reads 35 cases. The retention
+  self-test holds 205 deliberate breaks, all refused, 181 by the expected code
+  alone, where it held 184 and 161. A second model read the first version and
+  found that the new sentence claimed a refusal the validator did not make and
+  that eight mutants survived; both were fixed before this commit. A second
+  model then read the rework twice. Its first read found the halt block's
+  citation and reasons open to any value, which is closed by pinning them;
+  its second returned go with all ten findings closed and five smaller items,
+  each taken. Its mutants and crafted policies, and this session's 50 hand
+  mutants of the final tree, are in the worklog entry. The kernel gate and the
+  pre-commit hook on the staged tree under the heavy-run lock.
+
+  **What did not change.** `--policy` still exits 1 as UNRATIFIED alone,
+  because the policy carries no dated row as a whole. No dispatcher exists, so
+  no running halt is read. U-03, who may author the clearing, stays open. The
+  per-criterion RT-11 row is unchanged. No schema, spec, ontology, runtime or
+  application code. Nothing is pushed.
+
 - **2026-11-14. Slice 4: the COLLECTION board on key 5, an RT-11 line that states its evidence, a verify that exits 1 on an open row with no case database, and routes that read a case under the registry's spelling.**
 
   **What changed.** GET `/api/cases/{case}/collection` serves a board for one

@@ -67,7 +67,14 @@ Every check here is named by the defect it guards:
         clone, and outside the per-case crypto-shred. This is RT-15 and it is
         the mode the hook calls.
   R-18  RT-11's halt is system-wide, blocks connector dispatch, and clears only
-        on a passing verify_shred, and its override is the open question U-17.
+        on a passing verify_shred, and no override lifts it, which the operator
+        decided on 2026-11-14 (the open entry U-17 until then). The halt block
+        is pinned whole, by value, its citation and its two reasons included.
+        The ledger's recorded acts are written as a list that is closed to
+        three names, none more than once, with the clearing act required and
+        pinned whole. The freeze and disclosure export acts are held by name
+        only, so a key added to either is not read, and neither is an act
+        written anywhere else in the policy.
         Added 2026-10-01; enforced by RETENTION_POLICY_HALT_DRIFT.
   R-11  A repository scan can claim coverage it does not have. The shapes this
         tool matches on are reconciled against the rank-3 forms in
@@ -167,8 +174,13 @@ INVARIANTS = (
 #: RT-11's halt, by value. Until the completeness critic of 2026-10-01 R-18
 #: matched substrings, so a halt that "blocks nothing; connector dispatch
 #: continues", or clears "on a ledger entry, or verify_shred passing all five",
-#: passed. The two unratified mappings stay deferred until the operator decides
-#: U-03 and U-17, and this pin moves in the commit that records the decision.
+#: passed. The clearing author's mapping stays deferred until the operator
+#: decides U-03, and this pin moves in the commit that records the decision.
+#: The override was the open entry U-17 until 2026-11-14, when the operator
+#: decided that none lifts the halt, and the pin moved in that commit. The
+#: citation and the two reasons are pinned as text in the same commit: a
+#: check that let those three keys carry anything passed a mapping, or a
+#: sentence, that wrote a way out of the halt under one of them.
 HALT_PIN = {
     "trigger": "SHRED_FAILED on any case",
     "scope": "system_wide",
@@ -184,17 +196,47 @@ HALT_PIN = {
     "clearing_is_a_logged_act": True,
     "clearing_fields": ["author", "timestamp", "receipt_hash"],
     "clearing_author_authority": {"unratified": "U-03"},
-    "override": {"unratified": "U-17"},
+    "override": "none",
+    "cites": ["doctrine/RETENTION.md RT-11"],
+    "why_system_wide": (
+        "A shred failure is evidence about the mechanism rather than about the case. "
+        "A retention mechanism that can fail without stopping collection will be "
+        "found to have been broken for six months.\n"
+    ),
+    "why_the_exemptions": (
+        "The halt clears only by running verify_shred on the failed case, so "
+        "verify_shred cannot sit inside the blocked set. Blocking the sweep as well "
+        "would stop every other case's TTL being enforced while the halt is up.\n"
+    ),
 }
-#: Where each HALT_PIN key comes from. RT-11 fixes the trigger, the scope and
-#: the clearing; which jobs run during a halt is reading RET-R5, which the
-#: operator has not confirmed, and the two deferrals are open entries. Until
+#: Where each HALT_PIN key comes from. RT-11 fixes the trigger, the scope, the
+#: clearing and, since its amendment of 2026-11-14, that no override lifts the
+#: halt; which jobs run during a halt is reading RET-R5, which the operator has
+#: not confirmed, and the clearing author's deferral is an open entry. Until
 #: 2026-10-01 every mismatch said "where RT-11 fixes".
 HALT_SOURCE = {
     "blocks": "reading RET-R5, unconfirmed,",
     "does_not_block": "reading RET-R5, unconfirmed,",
     "clearing_author_authority": "the open entry U-03",
-    "override": "the open entry U-17",
+}
+#: The pinned keys whose value is prose: the citation and the two reasons. A
+#: mismatch in one is reported without printing both texts. The block is
+#: closed since 2026-11-14. Until then the pin read only the keys it named,
+#: so an added key such as lifted_by passed every check.
+HALT_PROSE_KEYS = ("cites", "why_system_wide", "why_the_exemptions")
+#: The acts the ledger records beyond its rows, by name, closed since the same
+#: day: an act that lifts the halt under any name is the override RT-11 does
+#: not admit, and a check that read one name let every other name through.
+#: No name occurs twice. The clearing act is required and pinned whole. The freeze is
+#: RT-17's and the disclosure export is RT-18's, and this pin holds their
+#: names only: a change to either act belongs to its own criterion, and a
+#: whole pin here would refuse it in RT-11's name.
+LEDGER_ACTS = ("halt_clearing", "freeze", "disclosure_export")
+HALT_CLEARING_ACT = {
+    "name": "halt_clearing",
+    "cites": "doctrine/RETENTION.md RT-11",
+    "fields": ["author", "timestamp", "receipt_hash"],
+    "written_as": "the case's current state",
 }
 
 #: RT-9. Five checks, each once. A receipt of [1, 1, 1, 1, 1] is one check
@@ -1592,33 +1634,107 @@ def check_policy(ctx: dict) -> list[Finding]:
         drift.append("the halt block is absent")
     else:
         for key, want in HALT_PIN.items():
-            if not _same(halt.get(key), want):
-                drift.append(
-                    f"halt.{key} reads {halt.get(key)!r} where "
-                    f"{HALT_SOURCE.get(key, 'RT-11')} fixes {want!r}"
-                )
-    acts = [a for a in as_list(dig(pol, "ledger.additional_recorded_acts")) if isinstance(a, dict)]
-    overrides = [a for a in acts if a.get("name") == "halt_override"]
-    if len(overrides) != 1 or overrides[0].get("unratified") != "U-17":
-        drift.append("the ledger's halt_override act is not the single U-17 deferral")
-    clearings = [a for a in acts if a.get("name") == "halt_clearing"]
-    if len(clearings) != 1 or clearings[0].get("fields") != HALT_PIN["clearing_fields"]:
-        drift.append("the ledger's halt_clearing act does not record author, timestamp and receipt_hash")
+            if key in HALT_PROSE_KEYS:
+                if key not in halt:
+                    drift.append(f"halt.{key} is absent where the pin holds its text")
+                elif not _same(halt[key], want):
+                    drift.append(
+                        f"halt.{key} is not the text the pin holds for it, character for "
+                        "character, a final newline included"
+                    )
+                continue
+            source = HALT_SOURCE.get(key, "RT-11")
+            if key not in halt:
+                drift.append(f"halt.{key} is absent where {source} fixes {want!r}")
+            elif not _same(halt[key], want):
+                drift.append(f"halt.{key} reads {halt[key]!r} where {source} fixes {want!r}")
+        unread = sorted(str(k) for k in halt if k not in HALT_PIN)
+        if unread:
+            drift.append(
+                "the halt block carries "
+                + ", ".join(repr(k) for k in unread)
+                + ", which HALT_PIN does not name, so no check reads what it adds"
+            )
+    why = (
+        ". The per-criterion RT-11 row of doctrine/DOCTRINE_STATUS.md reads "
+        "'Cleared only by a passing verify_shred, logged. No override', and a "
+        "retention mechanism that can fail without stopping collection is the "
+        "failure RT-11 exists to prevent"
+    )
+    amend = (
+        "or, to change what lifts the halt, amend RT-11 by a dated row the "
+        "operator authors in doctrine/DOCTRINE_STATUS.md and move {pin} in the "
+        "same change"
+    )
     if drift:
         out.append(
             Finding(
                 "RETENTION_POLICY_HALT_DRIFT",
                 f"{POLICY_REL} :: retention.halt",
-                "RT-11's halt is compiled wider than the pin of record allows: "
+                "RT-11's halt is not compiled as HALT_PIN in "
+                "tools/validate_retention.py holds it: "
                 + "; ".join(drift)
-                + ". The pin's RT-11 row reads 'Cleared only by a passing "
-                "verify_shred, logged. No override', and a retention mechanism "
-                "that can fail without stopping collection is the failure RT-11 "
-                "exists to prevent",
-                "restore the halt as system-wide, blocking connector dispatch "
-                "and clearing only on a passing verify_shred; or keep the "
-                "override deferred to its unratified entry until the operator "
-                "decides it in doctrine/DOCTRINE_STATUS.md",
+                + why,
+                "restore the halt block as HALT_PIN holds it, system-wide, blocking "
+                "connector dispatch, clearing only on a passing verify_shred and "
+                "admitting no override; or, to reword the citation or a reason, or "
+                "to add a key that is no way out of the halt, change HALT_PIN in "
+                "the change that states it; " + amend.format(pin="HALT_PIN"),
+            )
+        )
+    # The acts the ledger records. An act that lifts the halt under any name is
+    # an override, so the acts are written as a list that is closed to the
+    # names the pin holds, none more than once, and the clearing act is
+    # required and pinned whole. Until 2026-11-14 this read two
+    # names, the override's and the clearing's, and every other name passed.
+    # The freeze and disclosure export acts are held by name only: a key added
+    # to either is not read here, and neither act is required to be present.
+    written = dig(pol, "ledger.additional_recorded_acts")
+    recorded = as_list(written)
+    names = [a.get("name") if isinstance(a, dict) else a for a in recorded]
+    ledger_drift: list[str] = []
+    if not isinstance(written, list):
+        ledger_drift.append("the recorded acts are not written as a list, so no check reads them one by one")
+    if any(not isinstance(a, dict) for a in recorded):
+        ledger_drift.append("an entry of the list is not a mapping, so no check reads what it records")
+    unnamed = [n for n in names if not any(n == known for known in LEDGER_ACTS)]
+    if unnamed:
+        ledger_drift.append(
+            "the list holds "
+            + ", ".join(repr(n) for n in unnamed)
+            + ", which LEDGER_ACTS does not name, and an act that lifts the halt "
+            "under any name is the override RT-11 does not admit"
+        )
+    repeated = [known for known in LEDGER_ACTS if sum(1 for n in names if n == known) > 1]
+    if repeated:
+        ledger_drift.append(
+            "the list holds "
+            + ", ".join(repr(n) for n in repeated)
+            + " more than once, and no check reads a second act under a name "
+            "LEDGER_ACTS holds"
+        )
+    clearings = [a for a in recorded if isinstance(a, dict) and a.get("name") == "halt_clearing"]
+    odd = [a for a in clearings if not _same(a, HALT_CLEARING_ACT)]
+    if not clearings:
+        ledger_drift.append("the list holds no halt_clearing act where RT-11 fixes one")
+    elif odd:
+        ledger_drift.append(
+            f"the halt_clearing act reads {odd[0]!r} where RT-11 fixes {HALT_CLEARING_ACT!r}"
+        )
+    if ledger_drift:
+        out.append(
+            Finding(
+                "RETENTION_POLICY_HALT_DRIFT",
+                f"{POLICY_REL} :: retention.ledger.additional_recorded_acts",
+                "The ledger's recorded acts are not compiled as LEDGER_ACTS and "
+                "HALT_CLEARING_ACT in tools/validate_retention.py hold them: "
+                + "; ".join(ledger_drift)
+                + why,
+                "write the acts as a list, each a mapping under its name and no name "
+                "twice, remove an act LEDGER_ACTS does not name, and restore halt_clearing as "
+                "HALT_CLEARING_ACT holds it; or, to record another act that does not "
+                "lift the halt, add its name to LEDGER_ACTS in the change that "
+                "states what it records; " + amend.format(pin="LEDGER_ACTS"),
             )
         )
 
@@ -3300,8 +3416,98 @@ def _mutations():
     def narrow_the_trigger(ctx):
         ctx["policy"]["retention"]["halt"]["trigger"] = "SHRED_FAILED on a case the operator flags"
 
-    def decide_u17_in_the_policy(ctx):
-        ctx["policy"]["retention"]["halt"]["override"] = {"unratified": "decided, a ledger entry lifts the halt"}
+    def defer_the_override_again(ctx):
+        ctx["policy"]["retention"]["halt"]["override"] = {"unratified": "U-17"}
+
+    def record_an_override_act(ctx):
+        ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"].append(
+            {"name": "halt_override", "cites": "doctrine/RETENTION.md RT-11", "fields": ["author", "date", "reason"]}
+        )
+
+    def record_an_override_act_under_another_name(ctx):
+        ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"].append(
+            {"name": "shred_incomplete_override", "cites": "doctrine/RETENTION.md RT-11", "fields": ["author", "date", "reason"]}
+        )
+
+    def delete_the_override_line(ctx):
+        del ctx["policy"]["retention"]["halt"]["override"]
+
+    def write_the_override_as_null(ctx):
+        ctx["policy"]["retention"]["halt"]["override"] = None
+
+    def write_the_override_in_capitals(ctx):
+        ctx["policy"]["retention"]["halt"]["override"] = "None"
+
+    def add_a_way_out_to_the_halt_block(ctx):
+        ctx["policy"]["retention"]["halt"]["lifted_by"] = "a ledger entry naming the case, its author and the reason"
+
+    def record_a_lifting_act_under_a_plain_name(ctx):
+        ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"].append(
+            {"name": "halt_waiver", "cites": "doctrine/RETENTION.md RT-11", "lifts": "the dispatch block for the failed case"}
+        )
+
+    def write_the_freeze_act_as_a_bare_string(ctx):
+        acts = ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"]
+        acts[next(i for i, a in enumerate(acts) if a.get("name") == "freeze")] = "freeze"
+
+    def write_a_way_out_into_the_citation(ctx):
+        ctx["policy"]["retention"]["halt"]["cites"] = {
+            "override": {"lifts": "connector dispatch", "written_to": "RETENTION_LEDGER.md"}
+        }
+
+    def let_a_reason_say_an_entry_lifts_the_halt(ctx):
+        ctx["policy"]["retention"]["halt"]["why_system_wide"] = (
+            "A ledger entry naming the case, its author and the reason lifts the dispatch block.\n"
+        )
+
+    def write_a_way_out_under_the_exemptions_reason(ctx):
+        ctx["policy"]["retention"]["halt"]["why_the_exemptions"] = {"lifted_by": "a ledger override entry"}
+
+    def delete_the_halts_citation(ctx):
+        del ctx["policy"]["retention"]["halt"]["cites"]
+
+    def write_a_reason_in_capitals(ctx):
+        halt = ctx["policy"]["retention"]["halt"]
+        halt["why_the_exemptions"] = halt["why_the_exemptions"].upper()
+
+    def write_the_halts_per_case_as_a_number(ctx):
+        ctx["policy"]["retention"]["halt"]["per_case"] = 0
+
+    def write_the_ledgers_acts_as_one_mapping(ctx):
+        ledger = ctx["policy"]["retention"]["ledger"]
+        ledger["additional_recorded_acts"] = copy.deepcopy(
+            next(a for a in ledger["additional_recorded_acts"] if a.get("name") == "halt_clearing")
+        )
+
+    def write_a_lifting_act_with_no_name_over_the_freeze(ctx):
+        acts = ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"]
+        acts[next(i for i, a in enumerate(acts) if a.get("name") == "freeze")] = {
+            "cites": "doctrine/RETENTION.md RT-11",
+            "lifts": "the dispatch block for the failed case",
+        }
+
+    def record_a_lifting_act_under_a_pinned_name_in_capitals(ctx):
+        ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"].append(
+            {"name": "Halt_clearing", "lifts": "the dispatch block for the failed case"}
+        )
+
+    def drop_the_clearing_act(ctx):
+        acts = ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"]
+        acts.remove(next(a for a in acts if a.get("name") == "halt_clearing"))
+
+    def record_a_second_freeze_that_lifts(ctx):
+        ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"].append(
+            {"name": "freeze", "cites": "doctrine/RETENTION.md RT-11", "lifts": "the dispatch block for the failed case"}
+        )
+
+    def record_a_second_clearing_act(ctx):
+        acts = ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"]
+        acts.append(copy.deepcopy(next(a for a in acts if a.get("name") == "halt_clearing")))
+
+    def let_the_clearing_act_be_written_another_way(ctx):
+        acts = ctx["policy"]["retention"]["ledger"]["additional_recorded_acts"]
+        clearing = next(a for a in acts if a.get("name") == "halt_clearing")
+        clearing["also_written_when"] = "the operator records that the shred cannot be completed"
 
     def let_the_override_lift_the_halt(ctx):
         ctx["policy"]["retention"]["halt"]["override"] = {
@@ -3610,7 +3816,28 @@ def _mutations():
         ("clear the halt on a ledger entry as well", "policy", clear_the_halt_on_a_ledger_entry_too, "RETENTION_POLICY_HALT_DRIFT", True),
         ("exempt a dispatch runner from the halt", "policy", exempt_a_dispatch_runner, "RETENTION_POLICY_HALT_DRIFT", True),
         ("fire the halt only on a flagged case", "policy", narrow_the_trigger, "RETENTION_POLICY_HALT_DRIFT", True),
-        ("write U-17's answer into the deferral", "policy", decide_u17_in_the_policy, "RETENTION_POLICY_HALT_DRIFT", False),
+        ("defer the override to an open entry again", "policy", defer_the_override_again, "RETENTION_POLICY_HALT_DRIFT", False, "the deferral names U-17, which the open list no longer holds, so the placeholder check refuses it as well"),
+        ("record the halt override act in the ledger again", "policy", record_an_override_act, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("record an override act under another name", "policy", record_an_override_act_under_another_name, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("delete the halt's override line", "policy", delete_the_override_line, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write the halt's override as a null", "policy", write_the_override_as_null, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write the halt's override as None in capitals", "policy", write_the_override_in_capitals, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("add a way out to the halt block under a new key", "policy", add_a_way_out_to_the_halt_block, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("record an act that lifts the halt under a plain name", "policy", record_a_lifting_act_under_a_plain_name, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write the freeze act as a bare string", "policy", write_the_freeze_act_as_a_bare_string, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("record a second halt_clearing act", "policy", record_a_second_clearing_act, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("let the clearing act be written another way", "policy", let_the_clearing_act_be_written_another_way, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write a way out into the halt's citation", "policy", write_a_way_out_into_the_citation, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("let a reason say a ledger entry lifts the halt", "policy", let_a_reason_say_an_entry_lifts_the_halt, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write a way out under the exemptions' reason", "policy", write_a_way_out_under_the_exemptions_reason, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("delete the halt's citation", "policy", delete_the_halts_citation, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write a reason of the halt in capitals", "policy", write_a_reason_in_capitals, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write the halt's per_case as the number 0", "policy", write_the_halts_per_case_as_a_number, "RETENTION_POLICY_HALT_DRIFT", False, "0 is a number where a boolean is compiled, so the boolean check refuses it as well"),
+        ("write the ledger's acts as one mapping", "policy", write_the_ledgers_acts_as_one_mapping, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("write a lifting act with no name over the freeze", "policy", write_a_lifting_act_with_no_name_over_the_freeze, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("record a lifting act as Halt_clearing in capitals", "policy", record_a_lifting_act_under_a_pinned_name_in_capitals, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("drop the halt_clearing act from the ledger", "policy", drop_the_clearing_act, "RETENTION_POLICY_HALT_DRIFT", True),
+        ("record a second freeze act that lifts the halt", "policy", record_a_second_freeze_that_lifts, "RETENTION_POLICY_HALT_DRIFT", True),
         ("rename the fixture wrapper key", "roundtrip", rename_the_fixture_wrapper, "SHRED_ROUNDTRIP_WRAPPER_KEY", True),
         ("count one fixture check twice", "roundtrip", count_one_fixture_check_twice, "SHRED_ROUNDTRIP_CHECK_SET", False, "renumbering check 4 to 1 replaces check 1, whose passing condition is the decrypt failing on the key, so the false-pass guard fires with the set check"),
         ("let fixture check 1 pass on a not-found", "roundtrip", let_fixture_check_one_pass_on_not_found, "SHRED_ROUNDTRIP_FALSE_PASS_UNGUARDED", True),
@@ -3840,6 +4067,50 @@ def self_test(ctx: dict) -> int:
         failures += 0 if ok else 1
         mark = "refused" if ok else "PASSED  "
         print(f"  {mark}  {desc:56} expected {expected}{note}")
+
+    # The two halt refusals are governed prose and no row above reads them. Since
+    # the amendment of 2026-11-14 neither may offer a deferral, and each names
+    # the pin its moves point at, its three moves and the row that refuses.
+    local = copy.deepcopy(ctx)
+    local["policy"]["retention"]["halt"]["override"] = {"unratified": "U-17"}
+    local["policy"]["retention"]["ledger"]["additional_recorded_acts"].append({"name": "halt_override"})
+    told = {
+        f.where.rsplit("retention.", 1)[-1]: (f.detail, f.moves)
+        for f in check_policy(local)
+        if f.code == "RETENTION_POLICY_HALT_DRIFT"
+    }
+    # Per place: what the detail names, then what the moves hold. The detail
+    # prints the policy's own value, deferral included, so the words a move may
+    # not hold are looked for in the moves alone.
+    wanted = {
+        "halt": (
+            "HALT_PIN in tools/validate_retention.py",
+            "restore the halt block as HALT_PIN holds it",
+            "change HALT_PIN in the change that states it",
+            "and move HALT_PIN in the same change",
+        ),
+        "ledger.additional_recorded_acts": (
+            "LEDGER_ACTS and HALT_CLEARING_ACT in tools/validate_retention.py",
+            "each a mapping under its name",
+            "add its name to LEDGER_ACTS",
+            "and move LEDGER_ACTS in the same change",
+        ),
+    }
+    banned = ("defer", "open entry", "unratified")
+    ok = set(told) == set(wanted) and all(
+        wanted[place][0] in told[place][0]
+        and "per-criterion RT-11 row" in told[place][0]
+        and "No override" in told[place][0]
+        and all(phrase in told[place][1] for phrase in wanted[place][1:])
+        and "amend RT-11 by a dated row" in told[place][1]
+        and not any(word in told[place][1] for word in banned)
+        for place in wanted
+    )
+    failures += 0 if ok else 1
+    print(
+        f"  {'refused' if ok else 'PASSED  '}  {'state the halt refusals moves and offer no deferral':56} "
+        "expected each to name its pin, its three moves and the row"
+    )
 
     token = "handle" + ":" + "acmegram" + "/" + "examplename"
     patterns = compile_patterns(ctx["registry"])

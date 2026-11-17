@@ -340,7 +340,8 @@ and the job itself to land in the same change, per the documentation matrix in
 reconcile, which is a limit on a job that does not exist yet.
 
 **RT-11. `SHRED_FAILED` on any case blocks all new runs system-wide.**
-*[Conclusion recorded 2026-08-27 by the operator. Basis: unstamped.]*
+*[Conclusion recorded 2026-08-27 by the operator. Amended 2026-11-14 by the operator:
+no override lifts the halt. Basis: unstamped.]*
 
 A retention mechanism that can fail without stopping collection will be found
 to have been broken for six months. The block is system-wide rather than
@@ -351,19 +352,18 @@ the case.
 failed case.** Clearing is a logged act carrying an author, a timestamp, and the
 receipt hash, written to `RETENTION_LEDGER.md` as that case's current state.
 
-A halt with no documented way out is not a stronger control than one with a
-documented way out. It is a weaker one, because this program's ladder terminates
-in one person and SS-15 states the consequence: a control whose bypass is
-undocumented gets bypassed silently, and a control whose bypass is a dated entry
-gets bypassed visibly. An undismissable stop with no exit produces the first.
-
-If the shred genuinely cannot be completed, the override is an entry in
-`RETENTION_LEDGER.md` naming the case, the author, the date, and the reason, and
-it renders in the case header as its consequence until resolved, in the same
-channel as the RT-12 and RT-17 renders. It does not go in `DOCTRINE_STATUS.md`.
-That file is the ratification pin for doctrine items, and a case-level
-operational override entered there would be the lane escape `CLAUDE.md` §2
-warns about.
+**No override lifts the halt.** A shred that cannot be completed keeps every new
+run blocked. No entry in `RETENTION_LEDGER.md` other than the clearing above,
+and none in `DOCTRINE_STATUS.md`, ends the block. Changing that is an amendment
+to this criterion. The cost is that one case whose shred cannot be completed
+stops collection until a shred of that case verifies, and the alternative is
+collecting on a retention mechanism known to be broken.
+`tools/validate_retention.py` pins every key of the compiled halt block by
+value, and it closes the ledger's list of recorded acts to the names its pin
+holds, none more than once, with the clearing act required and pinned whole
+(`RETENTION_POLICY_HALT_DRIFT`). Its self-test breaks a policy in each of those
+ways to see the refusal. The check reads the freeze and disclosure export acts
+by name only, and it reads no other part of the policy for an override.
 
 Roughly forty lines and one integration test.
 

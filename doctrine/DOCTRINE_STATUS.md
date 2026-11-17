@@ -15,7 +15,9 @@ EG, CR, HY, SS-19 to SS-21 and RT-19 rows)**, authored by the operator. R6 as
 amended that day permits an agent to execute the commit of a decision the
 operator made; the decision and the authorship stayed theirs. These rows are the
 operator's decisions transcribed by an agent, and the transcription is still
-worth reading against what was actually said.
+worth reading against what was actually said. The RT-11 row of 2026-11-14
+landed later, in the commit that amended RT-11's body on the operator's
+selection of that day.
 
 **Basis is unstamped throughout, deliberately.** The conclusions were decided in
 session. The reasoning in `docs/PLAINSIGHT-FOUNDATION.md` §3 and
@@ -54,6 +56,7 @@ read is the half-stamping this table exists to prevent.
 | Baseline gate with logged override | `doctrine/SUBJECT_SELECTION.md` SS-17 | v0.1 | 2026-08-26 | unstamped | operator |
 | Class labels, mixed scorecards refused | `doctrine/SUBJECT_SELECTION.md` SS-18 | v0.1 | 2026-08-26 | unstamped | operator |
 | Freeze crosses the ceiling | `doctrine/RETENTION.md` RT-17 | v0.1 | 2026-08-26 | unstamped | operator |
+| RT-11 amended, no override lifts the halt | `doctrine/RETENTION.md` RT-11 | v0.2 | 2026-11-14 | unstamped | operator |
 
 ### What each decision was, in the operator's terms
 
@@ -83,6 +86,21 @@ all that survives.
   unchanged, so what moved is the mechanics rather than the authority. Recorded
   as v0.2 rather than as an edit, because a stamped item that changes quietly is
   the drift this table exists to prevent.
+- **RT-11, no override lifts the halt.** The question "SHRED_FAILED blast
+  radius. When one case fails to shred, what stops?" was answered on 2026-08-27.
+  The operator selected "System-wide halt, cleared by a passing verify
+  (Recommended)" over "System-wide halt with a logged override", whose override
+  was described as a dated Class F entry, and over "Per-case halt only". The
+  words "No override" in the per-criterion row were written after that answer
+  by the session that asked, as its reading of it. RT-11's body kept two
+  paragraphs arguing for and describing an override written to
+  `RETENTION_LEDGER.md`, a form that was not put to the operator, and
+  `policy/retention.yaml` held the conflict as U-17 from 2026-10-01. On
+  2026-11-14 the question "Which way on RT-11's override?" was put to the
+  operator with a paper setting out four options, and the operator selected "No
+  override": nothing but a passing `verify_shred` lifts the halt, the two
+  paragraphs are removed, and U-17 is closed with that value. The amendment is
+  recorded as v0.2 rather than as an edit.
 
 ## Pending ratification
 
