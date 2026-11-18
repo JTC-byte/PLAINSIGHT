@@ -15,26 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-11-11, the extraction tool reads a message from another session before the record's flags (patch D), and the landing of 71b7112 recorded, under the maintainer's clicks of 2026-11-11.
-
-**Class:** B by the session's reading and the parent's audit of 2026-11-11, his to confirm: `tools/since_last_record.py` is the tool behind the closeout rule `AGENTS.md` section 5 states, and one sentence of that section changes with it. No doctrine, spec, schema, policy, ontology, synthetic, generated or corpus file, no gate entry and no hook command.
-
-**The words this commit acts on.** Each is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. At 19:29:20 EST, "Yes, land C", on "Fast-forward main to patch C's commit 71b7112 now?", offered at 19:27:36: his word for that push. At 19:55:28 EST, "Yes, commit D", on "Commit patch D on a branch for CI?", offered at 19:41:53: his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again.
-
-**The landing of 71b7112, recorded here because the entry above could not know it.** Patch C's commit was pushed on its branch at 19:08:06 EST, and its run 43125032569 was read step by step at 19:27:32 EST: success on all 27 steps. Measured at 19:29:32 EST: GitHub's `main` at `bdf8ed4`, the branch one commit ahead with `bdf8ed4` its ancestor, the protection unchanged, no open pull request. A plain push of `71b7112` to `main` ran from 19:29:34 to 19:29:36 EST, "bdf8ed4..71b7112". Read back at 19:29:36 EST, GitHub served the tip with Incept.IO and the no-reply address as author and committer, and under `main` the count of fields that are not a no-reply address was 0 over 72 commits. The local `main` was moved with `git update-ref`, compared against its old value, and the checkout switched to it with no file written. The run on `main`, 43127668000, was read at 19:41:48 EST: success on all 27 steps.
-
-**What changed.** This harness build delivers a message from another session as a user record carrying isMeta, the flag the tool reads as a harness notice. The tool read the flag first, so it counted every message from the parent as a notice and listed none as received, which the record of 2026-11-09 named and the transcripts of 2026-11-09 and 2026-11-11 showed. It now reads a text for a message from another session before it reads the record's flags (`received_message`). Its self-test plants a parent's message on a record flagged isMeta and asserts it is listed as received and the harness count is unchanged: 23 checks and 16 planted lines. Over this session's transcript from 11:00 EST it lists 3 messages received from the parent, at 11:35:02, 13:50:26 and 14:10:30 EST, where the tool in the tree before listed none; the 2 harness notices left are the model command's records of 13:19:41 and 14:10:13 EST. `AGENTS.md` section 5's closeout paragraph says so in one sentence.
-
-**What is not claimed.** A message queued while the session was mid-turn is skipped by the queue's own rule and counted when its user record arrives; that path was not changed. The tool still copies every message verbatim, so the closeout rule about spans in which case material was discussed stands.
-
-**Agent involvement.** Session 0141534e on Opus 5.5 wrote the patch in its scratchpad and ran a mutant with the old order against the self-test: 4 of 23 checks failed, the new one among them. No agent read it. No workflow ran.
-
-**Battery.** The tool's self-test on the tree: "since_last_record --self-test ok: 23 checks, 16 planted lines classified, 4 controls seen refusing". Hygiene exit 0 and both diff checks clean. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
-
-**Open.** His: this commit's landing on `main` and its class; `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.
-
----
-
 ## 2026-11-11, the estate's GitHub usage rules adopted in AGENTS.md section 5, as a local commit, and patch D held off main, under the maintainer's lines and clicks of 2026-11-11.
 
 **Class:** B by the session's reading, his to confirm: one subsection of `AGENTS.md` section 5, which states this repository's process. No tool, gate entry, hook command, workflow, schema, policy, doctrine or corpus file changed.
@@ -202,3 +182,21 @@ from defeating the shred mechanism.
 **Battery.** Before the read: the new checks, test_static.py and the HTTP and static controls, 165 passed; hygiene, doctrine, layer model, ontology, cast, the repository scan and `git diff --check` pass; the dispatch scan's sites are unchanged. After the read's fixes, 11:53 to 11:58: test_http.py, test_static.py and their controls, 230 passed, outside the lock as one suite run. The kernel gate and the pre-commit hook run on the staged tree under the heavy-run lock after this paragraph is written; their stamps are in the commit message and the lane folder, and a failure of either stops the commit. Nothing is pushed.
 
 **Open.** The maintainer's: the class of the guard's change; A2, a credential on reads or a recorded trust boundary; A9's deadline, which needs a number; DISCARD_SECONDS and the five items 9.27 leaves unbuilt; readings APP-R35 to APP-R38 and the HEALTHY mark; the LOCAL_ACTS form A draft; the removal of five spent worktrees; when pushing resumes, one push carrying `8fd1c08`, `92cf511`, `7e142d4`, `09caa88`, `1aedf36`, `59cb0cf`, `d586f22`, `1393687`, `34c442b` and this commit under a written case; and everything the previous entries list. The lane's: A5, A7, A8, A6's close at the route, S1 and the nits A11 to A14 and A16 to A19 (9.28).
+
+---
+
+## 2026-11-18, three reading aids in the showcase, read by a second model and fixed for a phone's width, under the maintainer's choice of a UI pass and his delegation of local commits.
+
+**Class:** C. The showcase's CSS and two of its views, one test module, amendment 9.29, `app/README.md`, the app-tests note in `tools/validate_conformance.py`, and the records. No route, write, data source, storage or host is added, and no rule the server enforces changes.
+
+**The words this commit acts on.** He answered "Runbook + UI pass" in the PLAINSIGHT chat on 2026-11-18, and the lane started a side session, plainsight-9-showcase-ui, which staged the pass on `34c442b`. At 14:14:34 he wrote in the parent session's chat that merges and commits are delegated so long as they test green, the documentation is good and they hold against current doctrine, and at about 14:22 he answered "Yes, it holds" in the PLAINSIGHT chat. This commit is made under that delegation, on `abb7778`, once the kernel gate and the hook have passed on this tree; the push stays on his word.
+
+**What exists now.** Connections draws its key to the lines above the web. The Guide button shows the ? key that opens it, and the guide lists that key. The top bar keeps the case id on one line and the word SYNTHETIC on screen down to 721 pixels, where the chip drops its trailing words; at 720 pixels and below the Guide button drops its ? mark and the analyst's name drops to its initials, so the bar fits a 375-pixel screen. `app/tests/test_showcase.py` reads each from the files with twelve paired controls. The suite collects 603 tests, 396 of them paired negative controls.
+
+**What is not claimed.** Layout is read from the files, not measured by a test. The lane measured the top bar in the app's browser pane at 375 pixels, where the page is 375 pixels wide and the Guide button ends at 359, and the side session viewed every view at 1440 by 900 and the top bar at 800. Nothing was viewed on the projector's own screen, nor the FICTIONAL chip of the display overlay at a narrow width.
+
+**Agent involvement.** The side session plainsight-9-showcase-ui, on claude-opus-5-5, built the pass with six controls. A claude-fable-5-2 subagent at max read it from about 16:16 to 16:18 EST and returned COMMIT WITH FIXES with four should-fixes and three nits. plainsight-9, on claude-opus-5-5, took the four should-fixes and two nits from 16:18 to 16:21: an assertion and a control for the search box's give-way rule, a control of its own for the SYNTHETIC assertion, the phone-width rules after measuring the overflow, and controls for the key's spacing rule, the guide's own row and the chip's span. It merged the pass onto `abb7778` with 9.29 after 9.28 and wrote these records. The read and the fixed patch are in the lane folder of 2026-11-18.
+
+**Battery.** After the fixes: test_showcase.py and test_static.py, 16 passed; their controls, 89 passed; hygiene exit 0. The kernel gate and the pre-commit hook run on the staged tree under the heavy-run lock after this paragraph is written; their stamps are in the commit message and the lane folder, and a failure of either stops the commit. Nothing is pushed.
+
+**Open.** The maintainer's: everything the previous entry lists, less the P6 commit's word, which his delegation settled. The lane's: the overlay's FICTIONAL chip at a narrow width (the read's nit 7); a view on the projector before the talk.

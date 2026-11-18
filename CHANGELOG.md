@@ -22,6 +22,31 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-18. Three reading aids in the showcase: the key to the lines above the web, the Guide button's ? key, and a top bar that keeps the case id and the word SYNTHETIC whole and fits a phone.**
+
+  **What changed.** Connections draws its key to the lines above the web. The
+  Guide button reads Guide [?] and the guide lists its own key. The case id
+  no longer wraps and the search box gives way instead of covering the
+  SYNTHETIC chip; at 1100 pixels and below the chip drops its trailing words
+  and keeps the word SYNTHETIC; at 720 pixels and below the Guide button
+  drops its ? mark and the analyst's name drops to its initials.
+
+  **Which surfaces moved.** `app/showcase/app.css`, `app/showcase/app.js`,
+  `app/showcase/views/connections.js`, `app/tests/test_showcase.py`,
+  `app/README.md`, `docs/PLAINSIGHT-design.md` (9.29), the app-tests note in
+  `tools/validate_conformance.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** 396 paired controls, twelve more. A Fable 5.2 read returned
+  COMMIT WITH FIXES; its four should-fixes are taken. The top bar was
+  measured at 375 pixels in a browser. The kernel gate and the hook ran on the
+  staged tree under the heavy-run lock.
+
+  **What did not change.** No route, write, data source, storage, host,
+  refusal code or server rule. The 720-pixel rule that hides the chip
+  predates this change, and the case strip still states the synthetic corpus.
+  LOCAL_ACTS stays False. Nothing is pushed.
+
 - **2026-11-18. The P6 read's A1, A3, A4, A10 and A15: the egress guard compares what can carry a case value, the session cookie is read pair by pair, every text field opts out of writing suggestions, and a port outside the range and a uuid followed by a newline are refused.**
 
   **What changed.** The egress guard compares a held value with a request

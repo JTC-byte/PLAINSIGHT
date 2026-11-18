@@ -1,7 +1,7 @@
 """The showcase front end: `python -m app serve --ui showcase` serves app/showcase
 over the same routes and API as the classic front end, which stays the default.
 
-Seven properties, each with a control in CONTROLS:
+Eight properties, each with a control in CONTROLS:
 
 - app/showcase obeys the rules app/static obeys: no browser storage (EG-3), no
   canvas or WebGL (design 8.5), no absolute URL, no @import and no url() but a
@@ -25,7 +25,11 @@ Seven properties, each with a control in CONTROLS:
   set, no request reaches the server, the top bar's label is not a switch to
   stored values, and no statement of the page's source says the page reads the
   store. That app.js prints those statements from lib/words.js is read from
-  the file and not run.
+  the file and not run;
+- the reading aids of amendment 9.29 hold: the key to the lines is drawn above
+  the web, the Guide button shows the ? key that opens it, and the top bar keeps
+  the case id on one line and the word SYNTHETIC on screen at a narrow width.
+  These are read from the files and not run, because layout needs a browser.
 """
 
 from __future__ import annotations
@@ -501,6 +505,142 @@ def test_a_case_pack_never_reaches_or_names_the_store(ctx):
     check_a_case_pack_never_reaches_or_names_the_store(ctx)
 
 
+def reading_files() -> dict[str, str]:
+    """The three files the reading aids of amendment 9.29 live in."""
+    return {name: (SHOWCASE / name).read_text(encoding="utf-8") for name in ("app.js", "app.css", "views/connections.js")}
+
+
+def media_block(css: str, query: str) -> str:
+    """The body of the first @media block whose query is `query`, read to its closing brace."""
+    start = css.find("@media (" + query + ") {")
+    assert start != -1, f"app.css has no @media ({query}) block"
+    depth, i = 0, css.index("{", start)
+    for j in range(i, len(css)):
+        depth += {"{": 1, "}": -1}.get(css[j], 0)
+        if depth == 0:
+            return css[i + 1:j]
+    raise AssertionError(f"the @media ({query}) block never closes")
+
+
+def check_lines_key_sits_above_the_web(ctx):
+    src = reading_files()["views/connections.js"]
+    assert 'class: "legend top"' in src, "the key to the lines is not marked as the one above the web"
+    assert 'h("div", {}, legend, stage, caption)' in src, "the key to the lines is not drawn before the web"
+    assert ".legend.top {" in reading_files()["app.css"], "the key above the web has no spacing rule"
+
+
+def break_key_below_the_web(ctx):
+    real = reading_files()
+    real["views/connections.js"] = real["views/connections.js"].replace(
+        'h("div", {}, legend, stage, caption)', 'h("div", {}, stage, caption, legend)')
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def test_lines_key_sits_above_the_web(ctx):
+    check_lines_key_sits_above_the_web(ctx)
+
+
+def check_guide_shows_its_key(ctx):
+    src = reading_files()["app.js"]
+    assert '"Guide", kbd("?"))' in src, "the Guide button does not show the key that opens it"
+    assert 'kbd("?"), h("div", { class: "grow" }, "Open this guide")' in src, "the guide does not list its own key"
+    assert 'if (e.key === "?") { showKeys(); return; }' in src, "the ? key no longer opens the guide it is shown on"
+
+
+def break_guide_hides_its_key(ctx):
+    real = reading_files()
+    real["app.js"] = real["app.js"].replace('"Guide", kbd("?"))', '"Guide")')
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_question_key_unbound(ctx):
+    real = reading_files()
+    real["app.js"] = real["app.js"].replace('if (e.key === "?") { showKeys(); return; }', "")
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def test_guide_shows_its_key(ctx):
+    check_guide_shows_its_key(ctx)
+
+
+def check_top_bar_keeps_the_case_and_synthetic_whole(ctx):
+    """The case id never breaks across two lines, the crumb is not squeezed under the search box, and a
+    narrow screen drops the SYNTHETIC chip's trailing words while the word SYNTHETIC itself stays."""
+    f = reading_files()
+    css = f["app.css"]
+    crumb = re.search(r"^\.crumb \{([^}]*)\}", css, re.MULTILINE)
+    assert crumb and "flex-shrink: 0" in crumb.group(1), "the crumb shrinks, so the search box covers the SYNTHETIC chip"
+    crumb_b = re.search(r"^\.crumb b \{([^}]*)\}", css, re.MULTILINE)
+    assert crumb_b and "white-space: nowrap" in crumb_b.group(1), "the case id can break across two lines"
+    narrow = media_block(css, "max-width: 1100px")
+    assert ".crumb .pill-more { display: none; }" in narrow, "a narrow screen does not drop the chip's trailing words"
+    hidden = [sel.strip() for sel, body in re.findall(r"([^{}]+)\{([^}]*)\}", narrow) if "display: none" in body]
+    assert all(sel.endswith(".pill-more") for sel in hidden if ".pill" in sel), "a narrow screen hides the word SYNTHETIC"
+    phone = media_block(css, "max-width: 720px")
+    assert ".topbar .iconbtn .kbd { display: none; }" in phone and ".who { font-size: 0; gap: 0; }" in phone, "at a phone's width the top bar is wider than the screen and pushes the Guide button off it"
+    search = re.search(r"^\.search \{([^}]*)\}", css, re.MULTILINE)
+    assert search and "min-width: 0" in search.group(1), "the search box keeps its width, so the top bar overflows instead of giving way"
+    assert 'h("b", {}, "SYNTHETIC"), h("span", { class: "pill-more" }, ' in f["app.js"], "the chip's trailing words are not their own span"
+
+
+def break_case_id_wraps(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace("font-weight: 600; white-space: nowrap; flex-shrink: 0; }", "font-weight: 600; }", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_crumb_shrinks(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace("font-size: 14px; flex-shrink: 0; }", "font-size: 14px; min-width: 0; }", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_narrow_hides_synthetic(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace(".crumb .pill-more { display: none; }", ".crumb .pill-more { display: none; }\n  .topbar .pill { display: none; }", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_narrow_drops_the_trailing_words_no_more(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace(".crumb .pill-more { display: none; }", "", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_phone_top_bar_overflows(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace("  .topbar .iconbtn .kbd { display: none; }" + chr(10), "", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_search_keeps_its_width(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace(".search { min-width: 0; }\n", "", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_trailing_words_not_their_own_span(ctx):
+    real = reading_files()
+    real["app.js"] = real["app.js"].replace('h("span", { class: "pill-more" }, "corpus case', 'h("span", {}, "corpus case', 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_key_above_has_no_rule(ctx):
+    real = reading_files()
+    real["app.css"] = real["app.css"].replace(".legend.top {", ".legend.upper {", 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def break_guide_lists_no_own_key(ctx):
+    real = reading_files()
+    real["app.js"] = real["app.js"].replace('h("div", { class: "grow" }, "Open this guide")', 'h("div", { class: "grow" }, "Open the guide")', 1)
+    ctx.mp.setattr(sys.modules[__name__], "reading_files", lambda: real)
+
+
+def test_top_bar_keeps_the_case_and_synthetic_whole(ctx):
+    check_top_bar_keeps_the_case_and_synthetic_whole(ctx)
+
+
 CONTROLS = [
     ("a planted storage call in the showcase", check_showcase_uses_no_storage_canvas_or_host, break_planted_storage_in_showcase),
     ("a planted POST in the showcase", check_showcase_sends_get_only, break_planted_post),
@@ -532,4 +672,16 @@ CONTROLS = [
     ("the page's statements of its source ignore a case pack", check_a_case_pack_never_reaches_or_names_the_store, break_pack_words_ignore_the_pack),
     ("a request reaches the server while a case pack is set", check_a_case_pack_never_reaches_or_names_the_store, break_pack_requests_reach_the_server),
     ("app.js states the page's source itself", check_a_case_pack_never_reaches_or_names_the_store, break_app_states_its_source_itself),
+    ("the key to the lines is drawn below the web", check_lines_key_sits_above_the_web, break_key_below_the_web),
+    ("the Guide button hides the key that opens it", check_guide_shows_its_key, break_guide_hides_its_key),
+    ("the ? key no longer opens the guide", check_guide_shows_its_key, break_question_key_unbound),
+    ("the case id can break across two lines", check_top_bar_keeps_the_case_and_synthetic_whole, break_case_id_wraps),
+    ("the crumb shrinks under the search box", check_top_bar_keeps_the_case_and_synthetic_whole, break_crumb_shrinks),
+    ("a narrow screen hides the word SYNTHETIC", check_top_bar_keeps_the_case_and_synthetic_whole, break_narrow_hides_synthetic),
+    ("a narrow screen no longer drops the chip's trailing words", check_top_bar_keeps_the_case_and_synthetic_whole, break_narrow_drops_the_trailing_words_no_more),
+    ("the top bar is wider than a phone's screen", check_top_bar_keeps_the_case_and_synthetic_whole, break_phone_top_bar_overflows),
+    ("the search box keeps its width at a narrow screen", check_top_bar_keeps_the_case_and_synthetic_whole, break_search_keeps_its_width),
+    ("the chip's trailing words are not their own span", check_top_bar_keeps_the_case_and_synthetic_whole, break_trailing_words_not_their_own_span),
+    ("the key above the web has no spacing rule", check_lines_key_sits_above_the_web, break_key_above_has_no_rule),
+    ("the guide does not list its own key", check_guide_shows_its_key, break_guide_lists_no_own_key),
 ]

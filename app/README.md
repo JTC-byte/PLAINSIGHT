@@ -111,6 +111,15 @@ CHRONOLOGY (3), Places is MAP (4), Tools is COLLECTION (5), Assessment is DRAFT
   does not read a phone number in another shape or one written as a JSON
   number.
   Nothing enters the store. Restart without `--overlay` to switch it off.
+- Three reading aids serve a first viewing, under amendment 9.29 of the
+  design. Connections draws its key to the lines above the web, so the meaning
+  of a dashed line is on screen with the line. The Guide button shows the ? key
+  that opens it. The top bar keeps the case id on one line and the word
+  SYNTHETIC on screen at a narrow width, where the chip drops its trailing
+  words. At 720 pixels and below the Guide button drops its ? mark and the
+  analyst's name drops to its initials, so the bar fits a phone's screen.
+  `app/tests/test_showcase.py` reads each from the files, with twelve
+  controls.
 - Places draws no map, because the corpus holds no coordinate.
 - Tools counts every event in the case from the rollup and marks the ones its
   own reads do not reach as counted only, so nothing is dropped. It does not

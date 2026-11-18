@@ -109,10 +109,10 @@ function topbar() {
       : fiction
         ? h("span", { class: ["pill", "fictional"], title: state.overlay.note || "display only" }, h("b", {}, fiction.head), fiction.text)
       : liveLook ? null
-      : m && /^LOCAL/.test(m.header.environment || "") ? h("span", { class: "pill", title: m.header.environment }, h("b", {}, "SYNTHETIC"), "corpus case, no live collection") : null),
+      : m && /^LOCAL/.test(m.header.environment || "") ? h("span", { class: "pill", title: m.header.environment }, h("b", {}, "SYNTHETIC"), h("span", { class: "pill-more" }, "corpus case, no live collection")) : null),
     h("label", { class: "search" }, h("span", { "aria-hidden": "true" }, "⌕"), search, kbd("/")),
     h("div", { class: "who" }, h("span", { class: "who-dot", "aria-hidden": "true" }, initials(m ? (liveLook ? "Analyst" : m.header.analyst) : "")), m ? m.header.analyst : ""),
-    h("button", { class: "iconbtn", type: "button", title: "how to read this page, and the keys", "aria-label": "how to read this page", onclick: showKeys }, "Guide"));
+    h("button", { class: "iconbtn", type: "button", title: "how to read this page, and the keys", "aria-label": "how to read this page", onclick: showKeys }, "Guide", kbd("?")));
 }
 
 function tabs() {
@@ -242,6 +242,7 @@ function showKeys() {
       h("div", { class: "row" }, kbd("l"), h("div", { class: "grow" }, "Lineage of the selection: what it rests on")),
       h("div", { class: "row" }, kbd("L"), h("div", { class: "grow" }, "Forward lineage: what rests on the selection")),
       h("div", { class: "row" }, kbd("/"), h("div", { class: "grow" }, "Search this case; the text stays on this page and never reaches a URL")),
+      h("div", { class: "row" }, kbd("?"), h("div", { class: "grow" }, "Open this guide")),
       h("div", { class: "row" }, kbd("esc"), h("div", { class: "grow" }, "Close the drawer or this panel"))),
     source.note ? h("p", {}, h("b", {}, source.note[0]), source.note[1]) : null,
     h("p", { class: "src" }, source.line));

@@ -348,14 +348,15 @@ export async function renderConnections(el, ctx) {
   else if (selEdge) clear(panel, ...edgePanel(ctx, groups.get(selEdge), web));
   else clear(panel, ...overview(ctx, web, common));
 
-  const legend = h("div", { class: "legend" },
+  // The key to the lines sits above the stage, so it is on screen with the web at first sight.
+  const legend = h("div", { class: "legend top", role: "note", "aria-label": "how to read the lines" },
     h("span", {}, h("i", { class: "swatch" }), "observed: a claim recorded about the node"),
     h("span", {}, h("i", { class: "swatch inf" }), "dashed: proposed by a matcher, not accepted"),
     h("span", {}, h("i", { class: "swatch fus" }), "an analyst's assertion: cluster membership or exclusion"),
     h("span", {}, h("i", { class: "swatch gone" }), "revoked: the tombstone stays, struck"),
     h("span", {}, "corner brackets: a cluster, a container of accounts"));
 
-  el.append(title, tools, h("div", { class: "web-layout" }, h("div", {}, stage, caption, legend), panel));
+  el.append(title, tools, h("div", { class: "web-layout" }, h("div", {}, legend, stage, caption), panel));
 
   const draw = () => {
     const w = stage.clientWidth;
