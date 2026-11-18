@@ -187,6 +187,11 @@ SameSite=Strict and Path=/; a missing or wrong token, or a Cookie header sent on
 two lines, is refused with TOKEN_REFUSED before any byte of the body is read.
 The name carries the port because a browser keeps one cookie per name for a
 host whatever its port, so two launches on 127.0.0.1 keep their own tokens.
+The Cookie header is read pair by pair, and the token is carried when one pair
+under this launch's name holds it: a browser sends every cookie it holds for
+127.0.0.1 in one header, so a cookie another app on this host set arrives beside
+the token, and a pair this reading cannot use, such as a bare value or a value
+with a space, does not stop the write (amendment 9.28).
 
 A write is also authorized by the page that sent it (amendment 9.27). A page on
 another port of this host is the same site, so the browser attaches the cookie
@@ -236,7 +241,9 @@ SO_REUSEADDR on, as the standard library binds it, because Linux refuses a
 second bind to a listening port whatever that option says and, without it,
 refuses a restart on the port while the port's last connections wait out
 TIME_WAIT. SO_REUSEPORT is off everywhere. A `--port` the platform refuses to
-bind is refused with BIND_REFUSED_PORT, and the serve command exits 1. On
+bind is refused with BIND_REFUSED_PORT, and the serve command exits 1; so is a
+`--port` outside 0 to 65535, which the standard library refuses with an
+OverflowError rather than an OSError (amendment 9.28). On
 Windows and on Linux the platform refuses a TCP port at 127.0.0.1 that another
 socket listens on or holds bound with no option. It binds a port held, on
 Linux, only by a socket bound with SO_REUSEADDR and not listening, and, on
@@ -253,15 +260,40 @@ microphone=(), geolocation=(). A route's own header never replaces one of them.
 An exception raised outside the dispatcher is logged by its type name and
 prints no traceback.
 
+The egress guard keeps case values out of a URL, a header, a title, a log line,
+an error body and a notice frame, and it compares what can carry a case value,
+and in most places not this server's own words (amendment 9.28). It holds every string of six
+characters or more that a case's payloads carry under a value key, a note's
+text among them, and matches each as a substring, so a held value that is an
+ordinary word, such as static or Cookie, once matched a route's literal
+segments, a static file's name, a Content-Type, a header's name or a refusal's
+governed prose on every request, and stopped that part of the interface for
+every case in the store. The server compares a request target's path
+parameters and query keys and values other than a route's own words, a whole
+target whose path matches no route or whose query the route's shapes refuse, a
+header's name unless it is one of the three the routes send, a header's value
+unless it is a Content-Type the routes name or the session cookie, a Location's
+parts as a request's, a refusal's detail, the page title, a route's own error
+body, and a notice's parts other than its schema's own words. A held value sent
+where a case value can travel, as a focus, is still refused with
+REQUEST_VALUE_REFUSED. Two places still compare a server word whole: a
+refusal's detail, which can name a header, a query key or a workspace key, and
+the deep dive's own refused body, so a held value that is such a word still
+replaces that refusal with EGRESS_GUARD_REPLACED. A uuid followed by a newline
+is refused as a workspace value and as a query value; the notice schema's own
+pattern still admits one, and no notice is built from such an id.
+
 Every input and textarea either front end builds, the act forms, the Merge
 Sheet's notes and the showcase's search box among them, carries
-spellcheck="false", autocomplete="off", autocapitalize="off", autocorrect="off"
-and translate="no", and both pages carry translate="no" on the document and the
-notranslate meta. A browser's spellcheck and translation can send what is typed
-to a remote service, and its autofill keeps typed values in its form history,
-outside the store the shred reaches. Each front end's element helper, `el` in
-`app/static/app.js` and `h` in `app/showcase/lib/dom.js`, sets the five
-attributes after the caller's own. `app/tests/test_static.py` pins the text of
+spellcheck="false", autocomplete="off", autocapitalize="off", autocorrect="off",
+translate="no" and writingsuggestions="false", and both pages carry
+translate="no" on the document and the notranslate meta. A browser's spellcheck
+and translation can send what is typed to a remote service, its autofill keeps
+typed values in its form history, outside the store the shred reaches, and
+Microsoft Edge turns off its text prediction for a field by
+writingsuggestions="false", from version 124 (amendment 9.28). Each front end's
+element helper, `el` in `app/static/app.js` and `h` in
+`app/showcase/lib/dom.js`, sets the six attributes after the caller's own. `app/tests/test_static.py` pins the text of
 `el`, of `h` with the `apply` and `append` it calls, of `s`, the showcase's SVG
 helper, whose tag is a parameter as well, and of `svgNamespace`, whose answer
 `s` passes on, so a change to one of them is refused until its pin is updated.
@@ -269,12 +301,12 @@ It reads both pages as an HTML parser reads them, so a look-alike of
 translate="no", a meta inside a comment, and a tag inside a noscript or
 template element, where a browser does not apply it, do not count. It refuses
 each other way of making a field that it lists: written as markup without the
-five, its attributes read as an HTML parser reads the tag; made by
+six, its attributes read as an HTML parser reads the tag; made by
 createElement outside the helpers, however the call is written; a customized
 built-in element, in a script that names customElements, which must register
 one before it can be made, or that names HTMLInputElement or
 HTMLTextAreaElement other than in an instanceof test; or an editable surface.
-It also refuses a script that names one of the five outside the helpers' list,
+It also refuses a script that names one of the six outside the helpers' list,
 which could turn one back on after the helper returns; a call to translate(),
 the transform function, is not read as the attribute unless a brace follows it
 on its line, as one does where a method named translate is written, since a

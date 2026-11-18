@@ -1087,6 +1087,46 @@ def test_two_launches_keep_their_own_cookie(ctx):
     check_two_launches_keep_their_own_cookie(ctx)
 
 
+def check_a_cookie_another_app_set_stops_no_write(ctx):
+    """A browser sends every cookie it holds for 127.0.0.1 in one Cookie header, whatever the port that set it, so
+    a cookie another app on this host set arrives beside this launch's token. The server reads the header pair by
+    pair, so a pair it cannot use, a bare value, a value with a space, a bare attribute word or a value in JSON,
+    before or after the token, does not stop the write. The standard library's cookie parser, which read the token
+    until amendment 9.28, read no cookie at all from such a header, and every write was refused until the other
+    cookie was cleared (the P6 read's A4). A wrong token beside other cookies and the token under the unqualified
+    name stay refused; a Cookie header on two lines is refused by its own check above."""
+    c = _write_client(ctx)
+    name, token = c.app.cookie_name(), c.app.token
+    own = {"Origin": f"http://127.0.0.1:{c.port}", "Sec-Fetch-Site": "same-origin"}
+    mine = f"{name}={token}"
+    for header in (f"{mine}; x", f"x; {mine}", f"a=hello world; {mine}", f"{mine}; expires", 'j={"k":1}; ' + mine,
+                   f"{name}=wrong; {mine}", f"{mine}; {name}=wrong"):
+        _admitted(c, dict(own, Cookie=header))
+    for header in (f"a=hello world; {name}={token[::-1]}", f"x; {server.COOKIE}={token}"):
+        _refused_unwritten(c, dict(own, Cookie=header), 403, "TOKEN_REFUSED", "",
+                           "a write without this launch's token beside another app's cookie was not refused")
+
+
+def break_cookie_read_as_one_jar(ctx):
+    """The token read through the standard library's cookie parser, as before amendment 9.28."""
+    from http.cookies import SimpleCookie
+
+    def one_jar(header, name):
+        jar = SimpleCookie()
+        try:
+            jar.load(header)
+        except Exception:  # noqa: BLE001 - as the old check read it, an unparseable cookie is a missing one
+            return []
+        got = jar.get(name)
+        return [] if got is None else [got.value]
+
+    ctx.mp.setattr(server, "cookie_values", one_jar)
+
+
+def test_a_cookie_another_app_set_stops_no_write(ctx):
+    check_a_cookie_another_app_set_stops_no_write(ctx)
+
+
 def check_an_exception_outside_dispatch_prints_no_traceback(ctx):
     """An exception raised outside _dispatch reaches the server's handle_error, whose stdlib default prints a
     traceback, the exception's message included, to stderr. The server logs the type name only (review finding
@@ -1984,6 +2024,50 @@ def test_a_held_port_is_refused_with_its_moves(ctx):
     check_a_held_port_is_refused_with_its_moves(ctx)
 
 
+def check_a_port_outside_the_range_is_refused(ctx):
+    """A --port outside 0 to 65535 is refused with BIND_REFUSED_PORT and its moves, and the serve command exits 1
+    with no traceback. The standard library raises OverflowError for such a port, which is not an OSError, so
+    until amendment 9.28 it left make_server and main() as it was, a traceback (the P6 read's A15)."""
+    import contextlib
+    import io
+
+    from app import __main__ as cli
+    from app import refusals
+
+    root = corpus_copy(ctx)
+    refused = refusal_of(server.make_server, root, port=70000, analyst="analyst-example")
+    assert (refused.code, refused.detail) == ("BIND_REFUSED_PORT", "port 70000: outside 0 to 65535"), \
+        f"a port outside 0 to 65535 was refused as {refused.code} {refused.detail!r}"
+    err = io.StringIO()
+    try:
+        with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+            code = cli.main(["serve", "--store", str(root), "--analyst", "analyst-example", "--port", "70000"])
+    except OverflowError:
+        raise AssertionError("a port outside 0 to 65535 left main() as OverflowError, which the operator reads as a "
+                             "traceback") from None
+    text = err.getvalue()
+    assert code == 1 and text.startswith("Refused BIND_REFUSED_PORT: ") and "Traceback" not in text, \
+        f"a port outside 0 to 65535 exited {code}: {text!r}"
+    assert all(move in text for move in refusals.REFUSALS["BIND_REFUSED_PORT"].moves), \
+        f"the refused port's line leaves out a move: {text!r}"
+
+
+def break_port_range_left_to_main(ctx):
+    """bind_server as it was before amendment 9.28: it catches OSError only."""
+    def bind(host, port, app):
+        try:
+            return server.SERVER_CLASS((host, port), server.Handler, app)
+        except OSError as exc:
+            code = errno.errorcode.get(exc.errno) or f"errno {exc.errno}"
+            raise server.Refusal("BIND_REFUSED_PORT", f"port {port}: {code}") from None
+
+    ctx.mp.setattr(server, "bind_server", bind)
+
+
+def test_a_port_outside_the_range_is_refused(ctx):
+    check_a_port_outside_the_range_is_refused(ctx)
+
+
 def test_unknown_analyst_refused(ctx):
     assert refusal_of(server.make_server, corpus_copy(ctx), analyst="someone-else").code == "ANALYST_UNKNOWN"
 
@@ -2089,6 +2173,32 @@ def break_kv_list_branch_open(ctx):
 
 def test_kv_refuses_free_text(ctx):
     check_kv_refuses_free_text(ctx)
+
+
+def check_a_uuid_and_a_newline_is_no_uuid(ctx):
+    """db.UUID_RE ends in \\Z: every caller uses match, and a pattern ending in $ also matches before a final
+    newline, so a uuid followed by one was stored as a workspace focus and passed the query check as a focus
+    (the P6 read's A10, amendment 9.28). It reached no sink. Both are refused now, and the uuid alone passes."""
+    from app.model import reads
+
+    c = Client(ctx)
+    c.login()
+    assert reads.is_uuid(FOCUS) and not reads.is_uuid(FOCUS + "\n"), "a uuid followed by a newline reads as a uuid"
+    r = c.send("PUT", f"/api/kv/{CASE}/web", {"focus": FOCUS + "\n"})
+    assert (r.status, r.json().get("refused")) == (400, "KV_VALUE_REFUSED"), "a uuid and a newline was stored as a focus"
+    r = c.get(f"{API}/web?focus={FOCUS}%0A")
+    assert (r.status, r.json().get("refused")) == (400, "QUERY_VALUE_REFUSED"), "a uuid and a newline passed the query check"
+    assert c.get(f"{API}/web?focus={FOCUS}").status == 200
+
+
+def break_uuid_pattern_ends_in_dollar(ctx):
+    from app.store import db
+
+    ctx.mp.setattr(db, "UUID_RE", re.compile(db.UUID_RE.pattern.replace("\\Z", "$")))
+
+
+def test_a_uuid_and_a_newline_is_no_uuid(ctx):
+    check_a_uuid_and_a_newline_is_no_uuid(ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -2600,6 +2710,101 @@ def test_response_guard_replaces(ctx):
     check_response_guard_replaces(ctx)
 
 
+#: A claim the analyst may note, the target of the notes below, as app/tests/test_acts.py names it.
+UNVERIFIED_CLAIM = "dcedb60a-37bb-592d-811e-c7e540569735"
+
+#: Words this server writes itself, each six characters or more, so the guard holds each one a note carries: a
+#: route segment and a static file's folder, a word of a Content-Type, a word of a header's name and of
+#: TOKEN_REFUSED's prose, and a notice kind.
+SERVER_WORDS = ("static", "javascript", "Cookie", "coverage", "dossier", "people")
+
+#: A made-up locator whose query holds & and =, so a scan that split the query at them would miss it (the second
+#: read's M1). example.test is a reserved name.
+HELD_LOCATOR = "https://example.test/a?b=1&c=2"
+
+
+def check_the_server_words_are_no_held_values(ctx):
+    """The egress guard compares a held value with what can carry a case value, and not with this server's own
+    words (amendment 9.28, the P6 read's A1). Four notes land through the acts route, on LOCAL with LOCAL_ACTS set
+    in memory, whose text is a word the server writes itself, and the guard holds each. Before amendment 9.28 the
+    guard matched each word wherever the server wrote it: the static files were refused, the script lost its
+    Content-Type, the page lost its session cookie, a refusal whose prose names a cookie was replaced, and every
+    coverage notice was dropped, for every case in the store. Each of those now answers as it does with nothing
+    held, and a held word sent where a case value can travel, as a focus, is still refused."""
+    from app import config
+
+    ctx.mp.setattr(config, "LOCAL_ACTS", True)
+    c = Client(ctx)
+    c.login()
+    for word in SERVER_WORDS + (HELD_LOCATOR,):
+        r = c.send("POST", f"{API}/acts", {"act": "NOTE", "target": UNVERIFIED_CLAIM, "text": word})
+        assert r.status == 201, f"the note did not land, so this check proves nothing: {r.status} {r.body!r}"
+    assert c.get("/api/cases").status == 200
+    assert all(c.app.guard.scan(word) for word in SERVER_WORDS), "the guard does not hold the notes' text, so this check proves nothing"
+    r = c.get("/static/app.js")
+    assert r.status == 200, f"a held word refused a static file for every case: {r.status} {r.body[:120]!r}"
+    assert r.header("Content-Type") == "text/javascript; charset=utf-8", \
+        f"a held word stripped the script's Content-Type, which a browser then refuses to run: {r.header('Content-Type')}"
+    r = c.get("/")
+    assert r.status == 200 and r.header("Set-Cookie") is not None, \
+        "a held word stripped the session cookie from the page, so every later write is refused"
+    r = c.send("PUT", f"/api/kv/{CASE}/web", {"hops": 2}, cookie=False)
+    assert (r.status, r.json().get("refused")) == (403, "TOKEN_REFUSED"), \
+        f"a held word in TOKEN_REFUSED's own prose replaced the refusal, so the page is not told why: {r.status} {r.body[:120]!r}"
+    assert c.app.hub.publish({"seq": 1, "kind": "coverage", "case_id": CASE, "ids": [CASE]}), \
+        "a held word that is a notice kind dropped every notice of that kind"
+    r = c.get(f"/c/{CASE}")
+    assert r.status == 302, f"a held word that is the landing view replaced the redirect to it: {r.status}"
+    r = c.get(f"/c/{CASE}/web?sector=people")
+    assert r.status == 200, f"a held word that is a sector refused the sector query of that name: {r.status}"
+    r = c.get("/static/views/dossier.js")
+    assert r.status == 200, f"a held word that names a view's script refused it: {r.status}"
+    r = c.get(f"{API}/web?focus={SERVER_WORDS[0]}")
+    assert (r.status, r.json().get("refused")) == (400, "REQUEST_VALUE_REFUSED"), "a held value sent as a focus was not refused"
+    for target in (f"{API}/web?focus={HELD_LOCATOR}", f"{API}/header?{HELD_LOCATOR}", f"/c/{CASE}/dossier?{HELD_LOCATOR}"):
+        r = c.get(target)
+        assert (r.status, r.json().get("refused")) == (400, "REQUEST_VALUE_REFUSED"), \
+            f"a held value holding & and = was split across the query's pieces and missed: {r.status} {r.body[:80]!r}"
+    assert c.app.guard.counts() == {"request": 4}, c.app.guard.counts()
+
+
+def break_request_scan_reads_the_whole_target(ctx):
+    """The request scan as it was before amendment 9.28: the whole target, the server's own words included."""
+    ctx.mp.setattr(routes, "request_parts", lambda target, files: [target])
+
+
+def break_server_header_names_compared(ctx):
+    ctx.mp.setattr(server, "SERVER_HEADER_NAMES", frozenset())
+
+
+def break_server_header_values_compared(ctx):
+    ctx.mp.setattr(server, "server_header_value", lambda app, name, value: False)
+
+
+def break_refusal_prose_compared(ctx):
+    """A refusal's whole body compared, its registry prose included, as before amendment 9.28."""
+    ctx.mp.setattr(server, "refusal_variable_text", lambda refusal: server.refusal_body(refusal).decode("utf-8"))
+
+
+def break_location_compared_whole(ctx):
+    """The Location compared whole, the landing view's word included, as before the second read's M2."""
+    ctx.mp.setattr(server, "location_parts", lambda location, files: [location])
+
+
+def break_refused_query_split(ctx):
+    """A query the route's shapes refuse split at & and = like any other, as before the second read's M1."""
+    ctx.mp.setattr(routes, "query_refused", lambda query, allowed: False)
+
+
+def break_notice_words_compared(ctx):
+    """A notice's whole frame compared, its schema's own words included, as before amendment 9.28."""
+    ctx.mp.setattr(notices, "notice_parts", lambda notice: [json.dumps(notice)])
+
+
+def test_the_server_words_are_no_held_values(ctx):
+    check_the_server_words_are_no_held_values(ctx)
+
+
 def check_get_store_is_query_only(ctx):
     import sqlite3
 
@@ -2987,4 +3192,15 @@ CONTROLS = [
     # the confirming reader's should-fix 3 of 2026-11-17, and a second reader's must-fix 1 and should-fix 6 that day
     ("the refused bind's text claims every port in use is refused", check_a_held_port_is_refused_with_its_moves,
      break_bind_refusal_claims_every_port_in_use),
+    # the P6 read of 2026-11-18 (amendment 9.28): A1, A4, A15 and A10
+    ("the request scan reads the whole target", check_the_server_words_are_no_held_values, break_request_scan_reads_the_whole_target),
+    ("a server header's name is compared", check_the_server_words_are_no_held_values, break_server_header_names_compared),
+    ("a server header's value is compared", check_the_server_words_are_no_held_values, break_server_header_values_compared),
+    ("a refusal's registry prose is compared", check_the_server_words_are_no_held_values, break_refusal_prose_compared),
+    ("a notice's schema words are compared", check_the_server_words_are_no_held_values, break_notice_words_compared),
+    ("the Location compared whole", check_the_server_words_are_no_held_values, break_location_compared_whole),
+    ("a refused query split at & and =", check_the_server_words_are_no_held_values, break_refused_query_split),
+    ("the cookie read as one jar", check_a_cookie_another_app_set_stops_no_write, break_cookie_read_as_one_jar),
+    ("a port outside the range left to main", check_a_port_outside_the_range_is_refused, break_port_range_left_to_main),
+    ("the uuid pattern ends in a dollar sign", check_a_uuid_and_a_newline_is_no_uuid, break_uuid_pattern_ends_in_dollar),
 ]

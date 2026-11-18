@@ -27,6 +27,19 @@ without a preflight is never application/json. A write that carries neither
 header, as a command-line client sends, is admitted on the cookie and the
 Content-Type.
 
+The egress guard (app/http/guard.py) compares held values with what can carry a
+case value, and in most places not with this server's own words (amendment
+9.28): the path parameters and the query keys and values of a request target,
+other than a route's own words, which routes.request_parts names; every route
+header but a Content-Type the routes name and this launch's session cookie, a
+Location by its parts, and the name of any header but the three the routes
+send; a refusal's detail; the page title; a route's own error body; and every
+part of a notice frame but its schema's own words. A held value that is an
+ordinary word, such as static or Cookie, matched those words on every request
+and stopped a file, a route or the session cookie for every case in the store
+(the P6 read's A1). A refusal's detail, which can name a header, a query key or
+a workspace key, and the deep dive's own refused body are still compared whole.
+
 A response to a request whose body was not read, a refused write among them, is
 written before any byte of that body is read. The server then stops sending,
 reads and discards what the client sends of the body, never parsing it, up to
@@ -81,7 +94,6 @@ import socket
 import sys
 import threading
 import time
-from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
 
@@ -197,6 +209,59 @@ def json_content_type(value) -> bool:
         return True
     name, eq, charset = params.partition("=")
     return bool(eq) and name.strip(OWS).lower() == "charset" and charset.strip(OWS).strip('"').lower() == "utf-8"
+
+
+def cookie_values(header: str, name: str) -> list[str]:
+    """The values one Cookie header carries under `name`, read pair by pair, as RFC 6265 section 4.2.1 writes the
+    header: name=value pairs separated by semicolons. A pair this reading cannot use, such as a bare value, is
+    skipped and spoils no other pair, where the standard library's cookie parser read no cookie at all from a
+    header that held one it rejected, such as a value with a space: a browser sends every cookie it holds for
+    127.0.0.1 in one header whatever the port that set it, so a cookie another app on this host set arrives beside
+    this launch's and stopped every write (the P6 read's A4, amendment 9.28). A value inside one pair of double
+    quotes is read without them, as the cookie grammar allows and the parser read it."""
+    out = []
+    for piece in header.split(";"):
+        key, eq, value = piece.partition("=")
+        if not eq or key.strip(OWS) != name:
+            continue
+        value = value.strip(OWS)
+        if len(value) >= 2 and value[0] == value[-1] == '"':
+            value = value[1:-1]
+        out.append(value)
+    return out
+
+
+#: The names of the headers a route sends. A route builds a header's name in code, so these are this server's own
+#: words, and the egress guard does not compare them with held values (amendment 9.28). A header of another name
+#: is compared by its name and by its value.
+SERVER_HEADER_NAMES = frozenset({"content-type", "set-cookie", "location"})
+
+
+def server_header_value(app, name: str, value) -> bool:
+    """True when a route's header value is this server's own word, which the egress guard does not compare with
+    held values (amendment 9.28): a Content-Type among routes.SERVER_CONTENT_TYPES, or the session cookie this
+    launch sets. Any other value, a Location among them, which is built from a request's parameters, is
+    compared."""
+    lowered = name.lower()
+    if lowered == "content-type":
+        return value in routes.SERVER_CONTENT_TYPES
+    if lowered == "set-cookie":
+        return value == app.cookie()
+    return False
+
+
+def location_parts(location, files) -> list[str]:
+    """The parts of a Location the egress guard compares: those routes.request_parts names for it, as for a
+    request target, so a redirect to the landing view is not replaced when its view's word is held (amendment
+    9.28). A Location that is not a string is compared whole."""
+    return routes.request_parts(location, files) if isinstance(location, str) else [str(location)]
+
+
+def refusal_variable_text(refusal: Refusal) -> str:
+    """The part of a refusal's body the egress guard compares with held values: its detail. The code, the text,
+    the rule and the moves are app/refusals.py's own prose, which no request or case reaches, so a held value
+    that is one of its words no longer replaces every refusal that uses the word (amendment 9.28)."""
+    return refusal.detail or ""
 
 
 def with_security_headers(headers: dict) -> dict:
@@ -318,9 +383,13 @@ SERVER_CLASS = Server
 
 def bind_server(host: str, port: int, app: App) -> Server:
     """The server bound to (host, port), or BIND_REFUSED_PORT when the platform refuses the bind, as it does for a
-    port another socket listens on. The detail names the port and the error's code, never the platform's message."""
+    port another socket listens on. The detail names the port and the error's code, never the platform's message.
+    A port outside 0 to 65535 is refused the same way: the standard library raises OverflowError for it, which is
+    not an OSError, and until amendment 9.28 it reached the operator as a traceback (the P6 read's A15)."""
     try:
         return SERVER_CLASS((host, port), Handler, app)
+    except OverflowError:
+        raise Refusal("BIND_REFUSED_PORT", f"port {port}: outside 0 to 65535") from None
     except OSError as exc:
         code = errno.errorcode.get(exc.errno) or f"errno {exc.errno}"
         raise Refusal("BIND_REFUSED_PORT", f"port {port}: {code}") from None
@@ -428,7 +497,7 @@ class Handler(BaseHTTPRequestHandler):
             self._check_host()
             target = self.path
             self.app.refresh_guard()
-            if self.app.guard.scan_request(target):
+            if any(self.app.guard.scan_request(part) for part in routes.request_parts(target, self.app.static)):
                 self.app.guard.count("request")
                 raise Refusal("REQUEST_VALUE_REFUSED")
             split = urlsplit(target)
@@ -509,19 +578,16 @@ class Handler(BaseHTTPRequestHandler):
     def _check_token(self) -> None:
         """TOKEN_REFUSED unless one Cookie header carries this launch's token under the name that carries the
         bound port. A browser sends one Cookie header (RFC 6265 section 5.4). One sent on two lines carries no
-        token here: read as one value, as Origin is, its lines would parse as one cookie list in which the last
-        value of a repeated name wins, so a line would stand for the request. The value and the token are compared
-        as bytes: hmac.compare_digest raises a TypeError for a string that holds a character outside ASCII, which a
+        token here, so that no one of its lines stands for the request. The header is read pair by pair
+        (cookie_values), so a cookie another app on this host set beside the token does not stop the write, and
+        the token is carried when one pair under this launch's name holds it: a pair under that name that another
+        page set cannot hold a token it does not know. The value and the token are compared as bytes:
+        hmac.compare_digest raises a TypeError for a string that holds a character outside ASCII, which a
         cookie's value may hold, and the server answered such a cookie with SERVER_FAULT, not TOKEN_REFUSED."""
         lines = self.headers.get_all("Cookie") or []
-        jar = SimpleCookie()
-        if len(lines) == 1:
-            try:
-                jar.load(lines[0])
-            except Exception:  # noqa: BLE001 - an unparseable cookie is a missing one
-                jar = SimpleCookie()
-        got = jar.get(self.app.cookie_name())
-        if got is None or not hmac.compare_digest(got.value.encode("utf-8"), self.app.token.encode("utf-8")):
+        values = cookie_values(lines[0], self.app.cookie_name()) if len(lines) == 1 else []
+        token = self.app.token.encode("utf-8")
+        if not any(hmac.compare_digest(v.encode("utf-8"), token) for v in values):
             raise Refusal("TOKEN_REFUSED")
 
     def _check_content_type(self) -> None:
@@ -586,7 +652,14 @@ class Handler(BaseHTTPRequestHandler):
         out = {}
         replace = False
         for k, v in headers.items():
-            if self.app.guard.scan(v) or self.app.guard.scan(k):
+            name_held = k.lower() not in SERVER_HEADER_NAMES and self.app.guard.scan(k)
+            if k.lower() == "location":
+                # A Location is a target this server builds, so its parts are compared as a request's are, and
+                # the landing view's word in it is not (the second read's M2).
+                value_held = any(self.app.guard.scan_request(p) for p in location_parts(v, self.app.static))
+            else:
+                value_held = not server_header_value(self.app, k, v) and self.app.guard.scan(v)
+            if name_held or value_held:
                 self.app.guard.count("Location" if k.lower() == "location" else "header")
                 if k.lower() == "location":
                     replace = True
@@ -612,12 +685,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def _send_refusal(self, refusal: Refusal, status: int | None = None) -> None:
         status = status or STATUS.get(refusal.code, 500)
-        body = refusal_body(refusal)
-        if self.app.guard.scan(body):
+        if self.app.guard.scan(refusal_variable_text(refusal)):
             self.app.guard.count("error body")
-            body = refusal_body(Refusal("EGRESS_GUARD_REPLACED"))
-            status = 500
-        self._write(status, {"Content-Type": "application/json; charset=utf-8"}, body)
+            refusal, status = Refusal("EGRESS_GUARD_REPLACED"), 500
+        self._write(status, {"Content-Type": "application/json; charset=utf-8"}, refusal_body(refusal))
 
     def _write(self, status: int, headers: dict, body: bytes) -> None:
         self._status = status

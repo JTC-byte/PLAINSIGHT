@@ -41,7 +41,10 @@ CASE_ALIAS = "casedb"
 PROJECTION_TABLES_PLANE = ("run", "coverage_interval")
 PROJECTION_TABLES_CASE = ("item", "claim", "node", "edge", "case_rollup")
 
-UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$")
+#: A uuid, anchored at both ends of the string. It ends in \Z and not $, because every caller uses match and $
+#: also matches before a final newline, so a uuid followed by one passed as a uuid (the P6 read's A10,
+#: docs/PLAINSIGHT-design.md amendment 9.28).
+UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\Z")
 
 
 # ---------------------------------------------------------------------------

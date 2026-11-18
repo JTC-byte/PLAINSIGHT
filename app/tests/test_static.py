@@ -157,11 +157,14 @@ def test_refusal_moves_name_built_keys(ctx):
 # text fields keep what is typed into them on this machine (amendment 9.27)
 # ---------------------------------------------------------------------------
 
-#: The five attributes every text field carries. They ask the browser not to send what is typed into the field to
-#: a spelling or translation service and not to keep it in its form history (review finding 2 of 2026-11-14).
-FIELD_OPT_OUT = {"spellcheck": "false", "autocomplete": "off", "autocapitalize": "off", "autocorrect": "off", "translate": "no"}
+#: The six attributes every text field carries. They ask the browser not to send what is typed into the field to
+#: a spelling or translation service and not to keep it in its form history (review finding 2 of 2026-11-14), and
+#: not to offer writing suggestions, which Microsoft Edge turns off for a field by writingsuggestions="false"
+#: from version 124 (the P6 read's A3, amendment 9.28).
+FIELD_OPT_OUT = {"spellcheck": "false", "autocomplete": "off", "autocapitalize": "off", "autocorrect": "off", "translate": "no",
+                 "writingsuggestions": "false"}
 
-#: Each front end's element helper: its file, its first line, and the line that sets the five attributes on an
+#: Each front end's element helper: its file, its first line, and the line that sets the six attributes on an
 #: input or a textarea after the caller's own.
 HELPERS = (
     (STATIC / "app.js", "export function el(tag, attrs = {}, ...kids) {",
@@ -177,7 +180,7 @@ FIELD_LINE = "const field = FIELD_TAGS.includes(String(tag).toLowerCase());"
 #: a change that had it build an HTML element would make s("textarea") a field the scan does not see; and
 #: svgNamespace, whose answer s passes to createElementNS, since a probe that answered the HTML namespace would
 #: make s("textarea") such a field as well. The check reads source and runs none of it, so it pins what each
-#: function does to the five attributes, and a change to one of them is refused until a reader has seen what it
+#: function does to the six attributes, and a change to one of them is refused until a reader has seen what it
 #: does and updated its pin here.
 HELPER_BODIES = (
     (STATIC / "app.js", "export function el(tag, attrs = {}, ...kids) {", (
@@ -249,7 +252,7 @@ PAGES = (STATIC / "index.html", SHOWCASE / "index.html")
 NOTRANSLATE = '<meta name="google" content="notranslate">'
 
 #: Where markup opens an input or a textarea. Its attributes are read by tag_attributes, as an HTML parser reads
-#: them, so a data- look-alike or the five written inside another attribute's value do not count.
+#: them, so a data- look-alike or the six written inside another attribute's value do not count.
 MARKUP_FIELD = re.compile(r"<(input|textarea)\b", re.IGNORECASE)
 #: Every mention of createElement or createElementNS, however it is reached, and the calls whose tag is a quoted
 #: literal, with or without spaces or line breaks before the parenthesis. A mention the second pattern does not
@@ -272,18 +275,18 @@ FIELD_INTERFACE_TEST = re.compile(r"\binstanceof\s+HTML(?:Input|TextArea)Element
 #: document.querySelector("textarea").constructor does. Neither front end registers a custom element, so a script
 #: that names customElements is refused.
 CUSTOM_ELEMENTS = re.compile(r"\bcustomElements\b")
-#: A script that names one of the five attributes as a word, in any letter case: in setAttribute, removeAttribute
+#: A script that names one of the six attributes as a word, in any letter case: in setAttribute, removeAttribute
 #: or toggleAttribute, as a property or as an object key. Outside the FIELD_OPT_OUT list in the two helpers' files,
 #: such a script could turn an attribute back on after the helper returns. A call to translate(), the transform
 #: function of SVG and CSS, names no attribute and is not read as one, unless a brace follows its closing
 #: parenthesis on its line, as one does where a method named translate is written, such as
 #: Object.assign(box, { translate() {} }): a function set as the translate property turns the attribute on. The
 #: CSS property of that name is written as the word alone, so a script that sets it is refused as well.
-OPT_OUT_NAMED = re.compile(r"\b(?:spellcheck|autocomplete|autocapitalize|autocorrect)\b|\btranslate\b(?!\s*\()"
+OPT_OUT_NAMED = re.compile(r"\b(?:spellcheck|autocomplete|autocapitalize|autocorrect|writingsuggestions)\b|\btranslate\b(?!\s*\()"
                            r"|\btranslate\s*\([^{}\n]*\)\s*\{", re.IGNORECASE)
 FIELD_OPT_OUT_LIST = re.compile(r"const FIELD_OPT_OUT = Object\.freeze\(\{.*?\}\);", re.S)
 
-#: Scripts the scan must not report, because they make no field and name none of the five: an SVG transform
+#: Scripts the scan must not report, because they make no field and name none of the six: an SVG transform
 #: written as translate(), and the instanceof tests a key handler uses. Each is planted on its own and scanned.
 NOT_FIELDS = (
     ("move.js", 'const g = s("g", { transform: "translate(4, 8)" });\n',
@@ -381,14 +384,14 @@ def _a(tag: str) -> str:
 
 
 def field_sites(roots) -> list[str]:
-    """Each place under `roots` where a text field is made without the five attributes or outside an element
+    """Each place under `roots` where a text field is made without the six attributes or outside an element
     helper, or where a script could turn them back on: an input or a textarea written as markup without them,
     its attributes read as an HTML parser reads the tag; a createElement or createElementNS that names input or
     textarea; a mention of either name outside the helpers that the scan cannot read as a call with a literal
     tag, which covers a call written through call or bind or by bracket access; a script that names
     HTMLInputElement or HTMLTextAreaElement other than in an instanceof test; a script that names customElements,
     which a customized built-in element needs before it can be made with new, whatever class it extends; an
-    editable surface, which no helper gives the attributes; and a script that names one of the five outside the
+    editable surface, which no helper gives the attributes; and a script that names one of the six outside the
     helpers' FIELD_OPT_OUT, or writes a method named translate. The scan refuses these routes and no other. It
     reads source text, so a tag, a name or markup assembled at run time from pieces is not read, and neither is a
     script that removes a node's attributes by walking them without naming one."""
@@ -401,7 +404,7 @@ def field_sites(roots) -> list[str]:
             for m in MARKUP_FIELD.finditer(text):
                 attrs = tag_attributes(text[m.start():])
                 if any(attrs.get(k, "").lower() != v for k, v in FIELD_OPT_OUT.items()):
-                    found.append(f"{rel}: {_a(m.group(1).lower())} written as markup without the five attributes")
+                    found.append(f"{rel}: {_a(m.group(1).lower())} written as markup without the six attributes")
             literal = [(m.group(1) or m.group(2)).lower() for m in CREATE_LITERAL.finditer(text)]
             for tag in literal:
                 if tag in ("input", "textarea"):
@@ -414,39 +417,40 @@ def field_sites(roots) -> list[str]:
             if path.suffix == ".js" and CUSTOM_ELEMENTS.search(text):
                 found.append(f"{rel}: a script names customElements, so it could register a customized built-in field and make it with new outside the element helpers")
             if EDITABLE.search(text):
-                found.append(f"{rel}: an editable surface, which no element helper gives the five attributes")
+                found.append(f"{rel}: an editable surface, which no element helper gives the six attributes")
             script = FIELD_OPT_OUT_LIST.sub("", text, count=1) if rel in HELPER_SITES else text
             if path.suffix == ".js" and OPT_OUT_NAMED.search(script):
-                found.append(f"{rel}: a script names one of the five attributes outside FIELD_OPT_OUT, so it could turn one back on after the element helper returns")
+                found.append(f"{rel}: a script names one of the six attributes outside FIELD_OPT_OUT, so it could turn one back on after the element helper returns")
     return found
 
 
 def check_text_fields_opt_out_of_spellcheck_autofill_and_translation(ctx):
     """A browser's enhanced spellcheck and its page translation can send text to a remote service, and its
     autofill keeps typed values in its form history, outside the store the shred reaches (review finding 2,
-    EGRESS.md EG-2 and EG-3). Every input and textarea either front end builds goes through its element helper,
-    which sets spellcheck, autocomplete, autocapitalize, autocorrect and translate off after the caller's
-    attributes; the text of each function that builds a field is pinned, svgNamespace among them, and lib/dom.js
+    EGRESS.md EG-2 and EG-3), and Microsoft Edge turns off its writing suggestions for a field by
+    writingsuggestions="false" (the P6 read's A3, amendment 9.28). Every input and textarea either front end
+    builds goes through its element helper, which sets spellcheck, autocomplete, autocapitalize, autocorrect,
+    translate and writingsuggestions off after the caller's attributes; the text of each function that builds a field is pinned, svgNamespace among them, and lib/dom.js
     names svgNS nowhere else; both pages carry translate="no" on the document and the notranslate meta, read as
     an HTML parser reads the page and outside any noscript or template element; the scan refuses each other way
-    of making a field that field_sites lists, and a script that names one of the five outside the helpers' list
+    of making a field that field_sites lists, and a script that names one of the six outside the helpers' list
     or writes a method named translate; and it reports neither a transform written as translate() nor an
     instanceof test. This reads the source and does not run it."""
     for path, first, applied in HELPERS:
         text, rel = front_end_text(path), _rel(path)
         assert _js_object(text, "FIELD_OPT_OUT") == FIELD_OPT_OUT and _js_list(text, "FIELD_TAGS") == ["input", "textarea"], \
-            f"{rel}: FIELD_OPT_OUT is not the five attributes, or FIELD_TAGS is not input and textarea"
+            f"{rel}: FIELD_OPT_OUT is not the six attributes, or FIELD_TAGS is not input and textarea"
         assert first in text, f"{rel}: the element helper is not where this check reads it"
         body = text.split(first, 1)[1].split("\n}\n", 1)[0]
         assert FIELD_LINE in body and applied in body, \
-            f"{rel}: the element helper does not set the five attributes on every input and textarea it builds"
+            f"{rel}: the element helper does not set the six attributes on every input and textarea it builds"
     for path, first, lines in HELPER_BODIES:
         text, rel = front_end_text(path), _rel(path)
         assert first in text, f"{rel}: {first} is not where this check reads it"
         body = text.split(first, 1)[1].split("\n}\n", 1)[0]
         assert body == "\n" + "\n".join(lines), \
             (f"{rel}: the function that opens with {first} is not the text this check pinned, so what it does to "
-             "the five attributes is unread; read the change, then update its pin in HELPER_BODIES")
+             "the six attributes is unread; read the change, then update its pin in HELPER_BODIES")
     dom = front_end_text(DOM_JS)
     assert dom.count(SVG_NS_DECLARATION) == 1 and len(re.findall(r"\bsvgNS\b", dom)) == SVG_NS_MENTIONS, \
         ("app/showcase/lib/dom.js: svgNS is named outside its declaration and the pinned svgNamespace(), so s() "
@@ -466,7 +470,7 @@ def check_text_fields_opt_out_of_spellcheck_autofill_and_translation(ctx):
         assert field_sites([root]) == [], f"{why}, so a script that makes no field is refused: {field_sites([root])}"
     sites = field_sites(list(FRONT_ENDS) + ctx.extra_roots)
     assert sites == [], \
-        f"a text field is made without the five attributes or outside an element helper, or a script could turn them back on: {sites}"
+        f"a text field is made without the six attributes or outside an element helper, or a script could turn them back on: {sites}"
 
 
 def _plant(ctx, folder: str, name: str, text: str) -> None:
@@ -493,7 +497,7 @@ def break_planted_editable_surface(ctx):
 
 
 # The plants below are forms the scan must report: a call to createElement written five more ways, two
-# look-alikes of the five attributes in markup, and two scripts that turn an attribute back on.
+# look-alikes of the attributes in markup, and two scripts that turn an attribute back on.
 
 
 def break_planted_field_by_spaced_create_element(ctx):
@@ -537,6 +541,13 @@ def break_planted_script_writes_the_properties(ctx):
     _plant(ctx, "planted-property", "note.js", 'const t = el("textarea");\nt.spellcheck = true;\nt.autocomplete = "on";\n')
 
 
+def break_planted_script_turns_writing_suggestions_on(ctx):
+    """A script that turns the sixth attribute back on after the helper returns, which the name scan must read as
+    it reads the other five (the P6 read's A3)."""
+    _plant(ctx, "planted-writing-suggestions", "note.js",
+           'const t = el("textarea");\nt.setAttribute("writingsuggestions", "true");\n')
+
+
 def break_planted_field_by_its_interface(ctx):
     """A customized built-in textarea made with new, which names neither the tag nor createElement. It reaches the
     registry through a name assembled at run time, so the interface's name is all the scan can read."""
@@ -573,7 +584,7 @@ SKIP_EMPTY = "if (v === null || v === undefined || v === false) continue;"
 
 
 def break_classic_helper_removes_an_attribute_after_its_loop(ctx):
-    """A mutant of el(): it sets the five attributes and then removes one."""
+    """A mutant of el(): it sets the six attributes and then removes one."""
     _read_with(ctx, (HELPERS[0][0],), "\n  for (const kid of kids.flat()) {",
                '\n  if (field) node.removeAttribute("autocomplete");\n  for (const kid of kids.flat()) {')
 
@@ -601,6 +612,18 @@ def break_classic_opt_out_lacks_spellcheck(ctx):
     _read_with(ctx, (HELPERS[0][0],), 'spellcheck: "false", ', "")
 
 
+#: The sixth attribute's line in each helper's FIELD_OPT_OUT, which the two breakers below remove.
+WRITING_SUGGESTIONS_LINE = '\n  writingsuggestions: "false",'
+
+
+def break_classic_opt_out_lacks_writing_suggestions(ctx):
+    _read_with(ctx, (HELPERS[0][0],), WRITING_SUGGESTIONS_LINE, "")
+
+
+def break_showcase_opt_out_lacks_writing_suggestions(ctx):
+    _read_with(ctx, (HELPERS[1][0],), WRITING_SUGGESTIONS_LINE, "")
+
+
 def break_pages_drop_translate_no(ctx):
     _read_with(ctx, PAGES, '<html lang="en" translate="no">', '<html lang="en">')
 
@@ -610,7 +633,7 @@ def break_pages_drop_the_notranslate_meta(ctx):
 
 
 def break_showcase_svg_helper_builds_html(ctx):
-    """A mutant of s(): it builds an HTML element, so s("textarea") makes a field without the five attributes, while
+    """A mutant of s(): it builds an HTML element, so s("textarea") makes a field without the six attributes, while
     the scan still counts the one unread createElement in s that HELPER_SITES allows."""
     _read_with(ctx, (DOM_JS,), "document.createElementNS(svgNamespace(), tag);", "document.createElement(tag);")
 
@@ -640,7 +663,7 @@ def break_pages_carry_the_meta_in_a_template(ctx):
 
 def break_showcase_svg_namespace_probes_html(ctx):
     """The last reader's mutant of 2026-11-15: svgNamespace() probes markup that answers the HTML namespace, so
-    s("textarea") makes a field without the five attributes."""
+    s("textarea") makes a field without the six attributes."""
     _read_with(ctx, (DOM_JS,), 'probe.innerHTML = "<svg></svg>";', 'probe.innerHTML = "<p></p>";')
 
 
@@ -810,6 +833,9 @@ CONTROLS = [
     ("the classic element helper sets no opt-out", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_classic_helper_sets_no_opt_out),
     ("the showcase element helper sets no opt-out", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_showcase_helper_sets_no_opt_out),
     ("the classic opt-out lacks spellcheck", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_classic_opt_out_lacks_spellcheck),
+    ("the classic opt-out lacks writingsuggestions", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_classic_opt_out_lacks_writing_suggestions),
+    ("the showcase opt-out lacks writingsuggestions", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_showcase_opt_out_lacks_writing_suggestions),
+    ("a planted script that turns writingsuggestions on", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_script_turns_writing_suggestions_on),
     ("the pages drop translate=no", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_pages_drop_translate_no),
     ("the pages drop the notranslate meta", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_pages_drop_the_notranslate_meta),
     ("sendJSON sends in same-origin mode", check_the_page_sends_writes_the_server_admits, break_send_json_in_same_origin_mode),
@@ -820,8 +846,8 @@ CONTROLS = [
     ("a planted createElement reached through call", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_by_create_element_call),
     ("a planted createElement reached by bracket access", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_by_create_element_in_brackets),
     ("a planted createElement reached through bind", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_by_bound_create_element),
-    ("a planted field with data- look-alikes of the five", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_with_look_alike_attributes),
-    ("a planted field with the five inside another attribute's value", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_with_the_attributes_in_a_value),
+    ("a planted field with data- look-alikes of the attributes", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_with_look_alike_attributes),
+    ("a planted field with the attributes inside another attribute's value", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_field_with_the_attributes_in_a_value),
     ("a planted script that sets and removes an attribute", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_script_sets_and_removes_an_attribute),
     ("a planted script that writes the properties", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_planted_script_writes_the_properties),
     ("the classic helper removes an attribute after its loop", check_text_fields_opt_out_of_spellcheck_autofill_and_translation, break_classic_helper_removes_an_attribute_after_its_loop),

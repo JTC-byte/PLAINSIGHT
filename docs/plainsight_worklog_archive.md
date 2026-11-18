@@ -5267,3 +5267,21 @@ this chat.
 **Open.** His: this commit's landing on `main` and its class; patch C (the handoff's row for `tools/validate_retention.py`) and patch D (the extraction tool reads a parent's message as received), each put to him in turn; `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.
 
 ---
+
+## 2026-11-11, the handoff's row for tools/validate_retention.py names its commit (patch C), and the landing of bdf8ed4 recorded, under the maintainer's clicks of 2026-11-11.
+
+**Class:** A by the session's reading, his to confirm: the handoff, the worklog and its archive and `CHANGELOG.md` are records. No governed artifact, tool, test, gate entry or hook command changed.
+
+**The words this commit acts on.** Each is his click on an action the session offered in the PLAINSIGHT chat, read from the session's transcript by the extraction tool, and none was typed. At 18:19:51 EST, "Yes, land B", on "Fast-forward main to patch B's commit bdf8ed4 now?", offered at 17:55:33: his word for that push. At 18:57:43 EST, "Yes, commit C", on "Commit patch C on a branch for CI?", offered at 18:37:17: his word for this commit, its branch and that branch's push. Landing it on `main` takes his word again.
+
+**The landing of bdf8ed4, recorded here because the entry above could not know it.** Patch B's commit was pushed on its branch at 17:36:08 EST, and its run 43113140477 was read step by step at 17:55:28 EST: success on all 27 steps, the application suite 328 passed and 1 skipped on Linux. Measured at 18:19:59 EST: GitHub's `main` at `0346eb8`, the branch one commit ahead with `0346eb8` its ancestor, the protection unchanged, no open pull request. A plain push of `bdf8ed4` to `main` ran from 18:20:10 to 18:20:11 EST, "0346eb8..bdf8ed4". Read back at 18:20:11 EST, GitHub served the tip with Incept.IO and the no-reply address as author and committer, and under `main` the count of fields that are not a no-reply address was 0 over 71 commits. The local `main` was moved with `git update-ref`, compared against its old value, and the checkout switched to it with no file written. The run on `main`, 43119025097, was read at 18:37:11 EST: success on all 27 steps.
+
+**What changed.** The handoff's row for `tools/validate_retention.py` read "Touched in :" with no commit named, at `48897c7` and before. The row describes the change `8583132` made, which flipped `MANIFEST_VALIDATOR_REQUIRES_CANARY` to true and wrote the row as "Touched in this commit:"; the records commit `356c1f7` of 2026-10-28 emptied the words "this commit" and wrote no hash in their place. The row now reads "Touched in `8583132`:". The commit `0aac3b9` later reworded one comment in the same file, which the row does not describe.
+
+**Agent involvement.** Session 0141534e on Opus 5.5 traced the row through `git log -G` and `git log -S` and wrote the patch in its scratchpad; no agent read it. No workflow ran.
+
+**Battery.** Hygiene exit 0 and both diff checks clean on the tree. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit.
+
+**Open.** His: this commit's landing on `main` and its class; patch D (the extraction tool reads a parent's message as received); `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.
+
+---

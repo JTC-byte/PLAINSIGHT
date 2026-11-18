@@ -22,6 +22,40 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-18. The P6 read's A1, A3, A4, A10 and A15: the egress guard compares what can carry a case value, the session cookie is read pair by pair, every text field opts out of writing suggestions, and a port outside the range and a uuid followed by a newline are refused.**
+
+  **What changed.** The egress guard compares a held value with a request
+  target's parts other than a route's own words (`routes.request_parts`), a
+  whole target whose path matches no route or whose query the route's shapes
+  refuse, a header's name unless it is one the routes send, a header's value
+  unless it is a Content-Type the routes name or the session cookie, a
+  Location's parts, a refusal's detail, the title, a route's own error body,
+  and a notice's parts other than its schema's words. It compared the whole of
+  each, so a held ordinary word stopped a file, the session cookie, a refusal
+  or a notice kind for every case. The token is read from the Cookie header
+  pair by pair, so a cookie another app on 127.0.0.1 set no longer stops every
+  write. Both helpers set writingsuggestions="false". bind_server refuses a
+  port outside 0 to 65535 with BIND_REFUSED_PORT; `db.UUID_RE` ends in \Z.
+
+  **Which surfaces moved.** `app/http/guard.py` (docstring),
+  `app/http/routes.py`, `app/http/server.py`, `app/http/notices.py`,
+  `app/store/db.py`, `app/static/app.js`, `app/showcase/lib/dom.js`,
+  `app/tests/test_http.py`, `app/tests/test_static.py`, `app/README.md`,
+  `docs/PLAINSIGHT-design.md` (9.28), the app-tests note in
+  `tools/validate_conformance.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** 384 paired controls, thirteen more. A Fable 5.2 read
+  returned two must-fixes, both taken. The new checks, test_static.py and
+  the HTTP and static controls passed after the fixes; the kernel gate and
+  the hook ran on the staged tree under the heavy-run lock.
+
+  **What did not change.** No doctrine, contract, schema, policy, ontology,
+  corpus or connector. No refusal code, route, query shape or write rule of
+  9.27, and not DISCARD_SECONDS. What the guard holds. A refusal's detail and
+  the deep dive's body still compare a server word whole. LOCAL_ACTS stays
+  False. Nothing is pushed.
+
 - **2026-11-17. The HTTP boundary's follow-up: the held-port check reads the error's code, and four statements are narrowed to what the code and the platforms do.**
 
   **What changed.** The check that a held port is refused reads the

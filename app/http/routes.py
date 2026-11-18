@@ -30,7 +30,7 @@ import re
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode
+from urllib.parse import parse_qsl, unquote_plus, urlencode, urlsplit
 
 from app import config
 from app.http import acts
@@ -166,6 +166,68 @@ def match(method: str, path: str) -> tuple[Route, dict]:
     raise Refusal("METHOD_REFUSED" if found_other else "ROUTE_NOT_FOUND")
 
 
+#: The values of a {view} path parameter that are this server's own words: the views a page URL names and the
+#: workspace's view tokens (app/store/kv.py).
+VIEW_WORDS = frozenset(VIEWS) | kv.TOKENS
+
+#: The query keys whose valid values are this server's own words rather than ids or numbers.
+WORD_KEYS = ("hops", "sector", "view", "dir")
+
+
+def query_refused(query: str, allowed: tuple[str, ...]) -> bool:
+    """True when parse_query refuses `query` for a route that takes `allowed`."""
+    try:
+        parse_query(query, allowed)
+    except Refusal:
+        return True
+    return False
+
+
+def request_parts(target: str, files) -> list[str]:
+    """The parts of a request target the egress guard compares with held values (docs/PLAINSIGHT-design.md
+    amendment 9.28). A target whose path matches no route, or that names a scheme, a host or a fragment, is
+    compared whole. Otherwise each path parameter and each query key and value is compared as it was sent, except
+    this server's own words: a route's literal segments, which are no parameter; a {view} value among VIEW_WORDS;
+    a {file} value that names a file in `files`, the front end's static files; a query key the route takes; and a
+    hops, sector, view or dir value of its closed shape. A held value that is an ordinary word therefore no longer
+    refuses the route, the file or the sector of that name for every case in the store, while a uuid, a digit
+    string, a key the route does not take and any value its shape refuses are compared as before."""
+    try:
+        split = urlsplit(target)
+    except ValueError:
+        return [target]
+    if split.scheme or split.netloc or split.fragment:
+        return [target]
+    route = params = None
+    for r in ROUTES:
+        m = r.pattern.match(split.path)
+        if m is not None:
+            route, params = r, m.groupdict()
+            break
+    if route is None:
+        return [target]
+    if query_refused(split.query, route.query):
+        # A query the route's shapes refuse is compared whole, so a held value whose own text holds & or =, as
+        # an item locator's query does, is not split across pieces and missed (the second read's M1). Such a
+        # request is refused either way; this keeps REQUEST_VALUE_REFUSED and its count for it.
+        return [target]
+    parts = []
+    for name, value in params.items():
+        if (name == "view" and value in VIEW_WORDS) or (name == "file" and value in files):
+            continue
+        parts.append(value)
+    for piece in split.query.split("&"):
+        if not piece:
+            continue
+        raw_key, eq, raw_value = piece.partition("=")
+        key, value = unquote_plus(raw_key), unquote_plus(raw_value)
+        if key not in route.query:
+            parts.append(raw_key)
+        if not (eq and key in route.query and key in WORD_KEYS and validate_value(key, value)):
+            parts.append(raw_value)
+    return parts
+
+
 def registered(root, params: dict) -> dict:
     """A route's parameters with the case id as the registry holds it (amendment 9.26). match() reads a URL's
     case id in lower case, and the registry key is the id as it was first sent, so a case registered under
@@ -218,6 +280,15 @@ CONTENT_TYPES = {
     ".css": "text/css; charset=utf-8",
     ".js": "text/javascript; charset=utf-8",
     ".json": "application/json; charset=utf-8",
+}
+
+#: Every Content-Type a route names: the static files' types, the API's JSON, the redirect's plain text and the
+#: web's SVG. Each is this server's own word, which the egress guard does not compare with held values
+#: (amendment 9.28); a Content-Type outside this set is compared.
+SERVER_CONTENT_TYPES = frozenset(CONTENT_TYPES.values()) | {
+    "application/json; charset=utf-8",
+    "text/plain; charset=utf-8",
+    "image/svg+xml; charset=utf-8",
 }
 
 

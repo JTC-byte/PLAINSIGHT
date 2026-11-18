@@ -35,6 +35,25 @@ def valid(notice) -> bool:
     return VALIDATOR.is_valid(notice)
 
 
+def notice_parts(notice) -> list[str]:
+    """The parts of a notice the egress guard compares with held values (docs/PLAINSIGHT-design.md amendment 9.28):
+    each key the schema does not name, and each value, as JSON, except a kind among the schema's own words. The
+    schema closes a valid notice to a sequence number, a kind, the case id and opaque ids, so a held value that is
+    one of its words, such as coverage, no longer drops every notice of that kind; a value under a key the schema
+    does not name is compared, so a notice that carries one is still dropped."""
+    if not isinstance(notice, dict):
+        return [json.dumps(notice)]
+    props = SCHEMA["properties"]
+    parts = []
+    for key, value in notice.items():
+        if key not in props:
+            parts.append(key)
+        if key == "kind" and value in props["kind"]["enum"]:
+            continue
+        parts.append(json.dumps(value))
+    return parts
+
+
 def frame(notice: dict) -> bytes:
     data = json.dumps(notice, sort_keys=True, separators=(",", ":"))
     return f"id: {notice['seq']}\nevent: notice\ndata: {data}\n\n".encode("utf-8")
@@ -58,7 +77,7 @@ class Hub:
         """The reason a notice may not be sent, or None."""
         if not valid(notice):
             return "schema"
-        if self.guard.scan(json.dumps(notice)):
+        if any(self.guard.scan(part) for part in notice_parts(notice)):
             self.guard.count("notice frame")
             return "guard"
         return None

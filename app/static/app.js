@@ -26,15 +26,16 @@ export const state = {
   from: null, to: null, sector: null, selected: null, marks: [], header: null, keymap: null, pivot: false,
 };
 
-// Every input and textarea the page builds carries these five attributes, which ask the browser not to send what
-// the analyst types to a spelling or translation service and not to keep it in its form history, where case
-// prose would outlive the session on LOCAL (docs/PLAINSIGHT-design.md amendment 9.27). el() sets them after the
-// caller's attributes, so no caller's attributes turn them off. app/tests/test_static.py pins the text of el(),
-// refuses each other way of making a field that it lists, and refuses a script that names one of the five outside
-// this list.
+// Every input and textarea the page builds carries these six attributes, which ask the browser not to send what
+// the analyst types to a spelling, writing-suggestion or translation service and not to keep it in its form
+// history, where case prose would outlive the session on LOCAL (docs/PLAINSIGHT-design.md amendments 9.27 and
+// 9.28). el() sets them after the caller's attributes, so no caller's attributes turn them off.
+// app/tests/test_static.py pins the text of el(), refuses each other way of making a field that it lists, and
+// refuses a script that names one of the six outside this list.
 const FIELD_TAGS = Object.freeze(["input", "textarea"]);
 const FIELD_OPT_OUT = Object.freeze({
   spellcheck: "false", autocomplete: "off", autocapitalize: "off", autocorrect: "off", translate: "no",
+  writingsuggestions: "false",
 });
 
 export function el(tag, attrs = {}, ...kids) {

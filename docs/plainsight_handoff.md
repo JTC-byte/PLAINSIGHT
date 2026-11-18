@@ -12,10 +12,10 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-17. This file's commit follows up the HTTP boundary
-(9.27). Before it, `main` == `origin/main` == `71b7112`, and
+**Date:** 2026-11-18. This file's commit builds five findings of P6 (9.28).
+Before it, `main` == `origin/main` == `71b7112`, and
 `github-usage-2026-11-11` holds `8fd1c08`, `92cf511`, `7e142d4`, `09caa88`,
-`1aedf36`, `59cb0cf`, `d586f22` and `1393687` above it, unpushed.
+`1aedf36`, `59cb0cf`, `d586f22`, `1393687` and `34c442b` above it, unpushed.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` two doctrine
 passages changed: SS-14 item 3's enforcement state on 2026-11-11, and RT-11's
@@ -28,41 +28,42 @@ applies.
 
 **Resume here.** Measure the refs and the tree first, then run
 `tools/since_last_record.py` from the last record's stamp over the session's
-own transcript and read his lines first. No parent session is delegated for
-this repository: every commit, push, merge, Class F decision, deploy, tag,
-mint and secret takes his word in the PLAINSIGHT chat, per act, and section
-7 holds his order of work and the hashes the rewrite of 2026-11-10 changed.
-This commit is made on the local branch `http-should-fixes-2026-11-17`, from
-`1393687`, in a worktree, on his word, and is not pushed: no push is made in
+own transcript and read his lines first. Since about 14:22 on 2026-11-18 a
+local commit or merge that tests green with controls, with good records, and
+holds against doctrine is made under his delegation, confirmed in the PLAINSIGHT
+chat; a push, Class F decision, deploy, tag, mint or secret takes his word there.
+This commit is made on the local branch `p6-fixes-2026-11-18`, from
+`34c442b`, in a worktree, under it, and is not pushed: no push is made in
 this repository until he lifts the rule of 2026-11-11, and
 `.githooks/pre-push` refuses one that names no written case (`AGENTS.md`
 section 5). The records are under `Z-ISR/_session-artifacts/` (section 6):
-this commit's in `2026-11-16-` and `2026-11-17-plainsight-lane/`, the three
-before them in `2026-11-14-plainsight-lane/`, and his 28-item queue, none
+this commit's in `2026-11-18-plainsight-lane/`, the two before it in
+`2026-11-16-` and `2026-11-17-plainsight-lane/`, and his 28-item queue, none
 answered, in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`.
 
 ---
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** `1393687` changed the HTTP boundary (9.27); its
-confirming read left four small should-fixes. This commit takes them: the
-held-port check reads the error's code and the refusal's text, and the notice
-stream's exception, the held port and the suite's time are stated exactly.
+**What changed and why.** P6, a read of the HTTP boundary, found that the
+egress guard matched held values against the server's own words. This commit
+narrows what it compares, reads the cookie pair by pair, adds
+writingsuggestions="false", and refuses a port out of range and a uuid with a
+newline (9.28, its A1, A4, A3, A15, A10).
 
-**Which surfaces moved.** One test module, BIND_REFUSED_PORT's text, the
-server's docstrings, `app/README.md`, 9.27, the Makefile's and the hook's
-comments, the gate note and the records. No code on a request's path.
+**Which surfaces moved.** `app/http/` (guard, routes, server, notices),
+`app/store/db.py`, both front ends' helpers, two test modules,
+`app/README.md`, 9.28, the gate note and the records.
 
-**What validation ran and what passed.** 371 paired controls; test_http.py
-and the bind controls under the lock; two Fable 5.2 reads, all their fixes
-taken; the kernel gate under the heavy-run lock and the hook. No CI.
+**What validation ran and what passed.** 384 paired controls; a Fable 5.2
+read, both must-fixes taken; the kernel gate under the heavy-run lock and the
+hook. No CI and no browser.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
 
-**What remains open or deferred.** The maintainer's: DISCARD_SECONDS and the
-five items 9.27 leaves unbuilt; APP-R35 to APP-R38; the Tools tab; LOCAL_ACTS
+**What remains open or deferred.** The maintainer's: the class of the guard's
+change, A2 and A9 (9.28); DISCARD_SECONDS and the five items 9.27 leaves unbuilt; APP-R35 to APP-R38; the Tools tab; LOCAL_ACTS
 form A; one push under a written case; act 4 of the demo; the GitHub Support
 request; the bundle; the rotation. Sections 3 and 4 hold the rest.
 
@@ -115,10 +116,10 @@ cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
 (reading APP-R31). **The showcase (2026-11-14)** is a second, read-only
 front end served with `--ui showcase`; **slice 4** of that day adds the
-COLLECTION board on key 5 (section 2). 571 tests with 371 paired
-negative controls since amendment 9.27, in the kernel gate, `make test` and
+COLLECTION board on key 5 (section 2). 588 tests with 384 paired
+negative controls since amendment 9.28, in the kernel gate, `make test` and
 CI and not in the hook or preflight (APP-R30). Its design departures from
-`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.27 at the end of that file,
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.28 at the end of that file,
 each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
@@ -163,7 +164,7 @@ exists and has never run.
 | `runner/retention_sweep.py`, `runner/verify_shred.py` | **Committed 2026-11-09, drafted refusing.** The sweep decides every case, refuses every due one, deletes nothing and writes its heartbeat per held case last; verify_shred runs the five checks as PASS, FAIL or NOT RUN, has no passing path for checks 1, 2 and 4, and reports no pass while the fixture is unstamped; check 3 fails on a file SQLite keeps beside the case database; readings RS-R1 to RS-R8 in the docstrings; 14 checks and 44 controls in `app/tests/test_retention_sweep.py`. The four reads' open findings are listed in the worklog entry of 2026-11-09 under What is not claimed, and `app/README.md` names the behaviours with no control. The shred, the ledger and the receipt wait on the ISOLATED store and his stamps. |
 | `runner/subject_guard.py`, `runner/tests/` | **Committed in `8583132`, drafted UNRATIFIED.** `evaluate()` returns a Decision that serializes as a COLLECT_EVENT; the live pin refuses at step 1; 22 tests under pytest and as a script; readings SG-R1 to SG-R18 in the docstring. `runner/dispatch_allowlist.yaml` does not exist. |
 | `connectors/sherlock/` | **Committed in `8583132`.** `manifest.yaml`, `adapter.py` (parse, emit, permit-gated invoke), `site_facts.json` (481 sites from `data.json` at 9100f9d), three hand-built cassettes, `fixtures.jsonl`, 51 tests, `README.md` with SH-R1 to SH-R18. Never run. |
-| `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. **Since 2026-11-16** the server refuses a write before its body is read unless its Origin, Sec-Fetch-Site, token and Content-Type admit it, discards a refused write's body unparsed so that its refusal reaches the page, binds for exclusive use where the platform offers it, reports a bind the platform refuses as BIND_REFUSED_PORT, and every text field of both front ends carries the five attributes (amendment 9.27). |
+| `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. **Since 2026-11-16** the server refuses a write before its body is read unless its Origin, Sec-Fetch-Site, token and Content-Type admit it, discards a refused write's body unparsed so that its refusal reaches the page, binds for exclusive use where the platform offers it, reports a bind the platform refuses as BIND_REFUSED_PORT, and every text field of both front ends carries the five attributes (amendment 9.27). **Since 2026-11-18** the egress guard compares what can carry a case value and not, outside a refusal's detail and the deep dive's body, the server's own words; the cookie is read pair by pair; a sixth attribute, writingsuggestions, is set; a port out of range and a uuid with a newline are refused (amendment 9.28). |
 | `app/showcase/`, `app/http/overlay.py` | **New on 2026-11-14.** A second static front end (19 files, GET only, no browser storage) served with `--ui showcase`; the classic one stays the default. `--overlay` serves a display file whose reader admits fictional stand-ins only and refuses a file inside the store or any git working tree, and a case pack in it answers the page's requests in the page. 7 checks and 29 controls in `app/tests/test_showcase.py`, two of the checks run under node. Amendment 9.24, which he ruled stands; the idiom's direction is his separate decision. |
 | `app/model/collection.py`, `app/static/views/collection.js` | **New on 2026-11-14 (slice 4).** GET `/api/cases/{case}/collection` and key 5 in the classic front end: a board for one case with a row per connector manifest, each UNVERIFIED on the server's flag because LOCAL executes no connector (EG-1), the case's CONNECTOR_HEALTH events as dated records, and a record for a connector the checkout does not carry listed apart. `halt_line` in `app/model/reads.py` names the failed shred's case, time and check and says this build reads no clearing. 20 checks and 55 controls in `app/tests/test_collection.py`. Readings APP-R35 to APP-R38; amendments 9.25 and 9.26. The showcase does not read the route. |
 | `tools/generate_pse.py`, `tools/build_corpus.py`, `tools/validate.py`, `tools/validate_layer_model.py`, `tools/validate_doctrine.py`, `tools/validate_hygiene.py`, `tools/validate_ontology.py`, `tools/validate_cast.py`, `tools/since_last_record.py`, `gate_log.py` | Committed earlier, unchanged in `8583132`. |
@@ -194,7 +195,7 @@ line 105); the five production docstrings cite the design amendments.
 **The 29 decisions in the register** of Step 8, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, now to MF-R22, PIN-R9, SG, VA,
 DA, SH, CC, APP, now to APP-R38, and RS-R1 to RS-R8), and the design
-amendments 9.1 to 9.27. Each is recorded where its artifact is and in the
+amendments 9.1 to 9.28. Each is recorded where its artifact is and in the
 record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
@@ -279,8 +280,8 @@ dollars non-recurring and 205 a month.
   EG-2 and RT-4 as stamped through whole-artifact rows, so only ISOLATED and an
   Encryptor stand between a caller and a blob write on the Postgres engine
   (APP-R13).
-- **No browser and no CI runner has exercised the HTTP boundary** (9.27),
-  and its discard does not reach a client that never finishes its request head.
+- **No browser or CI has run the HTTP boundary** (9.27, 9.28); its discard
+  misses an unfinished request head; P6's A2, A5, A7, A8 and A9 are open.
 - **The store writes only into a held case** since amendment 9.21: every
   entry point that writes refuses a case the registry does not hold open
   (CASE_CLOSED_TO_WRITES) and a second spelling of an open case's id
@@ -315,7 +316,7 @@ were fixed before the commit or are recorded as open. A Sonnet second model
 read the showcase on 2026-11-13, a Fable 5.2 one its overlay work on 11-14,
 and an Opus 5.5 one slice 4's first build that day; what each found is fixed.
 Opus 5.5 models read the RT-11 paper and change on 11-14 and its rework on 11-16;
-Opus models read the HTTP boundary's build, and Fable 5.2 its rework, twice.
+Opus models read the HTTP boundary's build, Fable 5.2 its rework twice and 9.28.
 
 ## 6. Session context that lives outside this repository
 
@@ -330,7 +331,7 @@ Opus models read the HTTP boundary's build, and Fable 5.2 its rework, twice.
 | His rulings of 2026-11-11, and the demo | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it; the static demo page of invented data and the plan that put it behind a Cloudflare Access sign-in in the estate account (route A, acts 1 to 3 done on his clicks of 2026-11-12, act 4 held for his review). |
 | His rulings of 2026-11-12, and the gate of `09caa88` | `Z-ISR/_session-artifacts/2026-11-12-plainsight-lane/` | `README.md` with each question, his click and its stamp, the push rule's mutant log, and that commit's gate and hook logs. The lane's ranked prompts for his team-account instance are in the parent's notes folder of that day. |
 | His answers of 2026-11-14 | `Z-ISR/_session-artifacts/2026-11-14-plainsight-lane/` | `README.md`, the record: the landings of `09caa88`, `1aedf36` and `59cb0cf` with their gate and hook logs, slice 4's review and mutant runs, the RT-11 reading paper with the maintainer's decision of that day and the change built on it, and the reports on the HTTP boundary change. |
-| This commit, `1393687` and `d586f22`, the lanes from 2026-11-16 and 2026-11-17 | `Z-ISR/_session-artifacts/2026-11-16-plainsight-lane/` and `2026-11-17-plainsight-lane/` | The first: the RT-11 change placed on `59cb0cf`, the two reads of its rework and `d586f22`'s gate and hook logs; the HTTP boundary rework's brief, its builder's two reports, patches and logs (`http_rework_by_plainsight-7-http/`), and the second read of it as placed on `d586f22`. The second: the confirming read of the should-fix pass, `1393687`'s records kit, gate and hook logs, and this commit's two reads, patches and logs. |
+| This commit, and `34c442b`, `1393687` and `d586f22` before it | `Z-ISR/_session-artifacts/2026-11-18-plainsight-lane/`, `2026-11-16-plainsight-lane/` and `2026-11-17-plainsight-lane/` | 2026-11-18: this commit's patch, its Fable read, gate and hook logs; P6 is in `2026-11-12-plainsight-team/`. The first: the RT-11 change placed on `59cb0cf`, the two reads of its rework and `d586f22`'s gate and hook logs; the HTTP boundary rework's brief, its builder's two reports, patches and logs (`http_rework_by_plainsight-7-http/`), and the second read of it as placed on `d586f22`. The second: the confirming read of the should-fix pass, `1393687`'s records kit, gate and hook logs, and this commit's two reads, patches and logs. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |

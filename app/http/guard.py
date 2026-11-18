@@ -12,6 +12,23 @@ refusal and counted by location; the count is the only thing recorded about it.
 A request whose path or query carries a held value is refused before routing,
 without echoing the value (REQUEST_VALUE_REFUSED).
 
+What is compared is what can carry a case value, and not the server's own words
+(docs/PLAINSIGHT-design.md amendment 9.28). A held string of six characters or
+more is matched as a substring, so a held value that is an ordinary word, such
+as static, javascript or Cookie, matched a route's literal segments, a static
+file's name, a Content-Type, a header's name or a refusal's governed prose on
+every request, and stopped that part of the interface for every case in the
+store; a REVOKE does not undo it, since every payload stays held. The server
+therefore compares the parts of a request target routes.request_parts names, a
+header's name only when it is not one of the three the routes send, a header's
+value unless it is a Content-Type the routes name or this launch's cookie, a
+refusal's detail and not its registry text, a Location's parts as a request's,
+and a notice frame's parts other than its schema's own words
+(notices.notice_parts). Two places still compare a server word whole: a
+refusal's detail, which can name a header, a query key or a workspace key, and
+the deep dive's own refused body; a held value that is such a word still
+replaces that refusal with EGRESS_GUARD_REPLACED (the second read's M2).
+
 The guard matches values literally. An encoded or truncated value passes it,
 which is a known risk; the closed route shapes and query validators are the
 second layer, because a URL may carry only uuids and fixed words.
