@@ -68,6 +68,15 @@ def open_case(root: Path):
     return store
 
 
+def merge_headers(defaults: dict, given: dict | None) -> dict:
+    """`defaults` with each header that `given` names, in any letter case, replaced by the given one, as HTTP
+    reads a header's name without regard to case, and the rest of `given` added. Without this, a header given
+    in another letter case than the default's would be sent beside it, and the server would read the default."""
+    given = given or {}
+    names = {k.lower() for k in given}
+    return {**{k: v for k, v in defaults.items() if k.lower() not in names}, **given}
+
+
 @dataclass
 class Resp:
     status: int
@@ -106,11 +115,14 @@ class Client:
         return loopback_socket(self.port)
 
     def request(self, method: str, path: str, body: bytes | None = None, headers: dict | None = None) -> Resp:
+        """One request. A body is sent as application/json, and neither Origin nor Sec-Fetch-Site is sent, as
+        from a command-line client; `headers` adds to these or replaces them, in any letter case, and a header
+        given as None is not sent."""
         conn = loopback_http(self.port)
         h = {"Host": f"127.0.0.1:{self.port}"}
         if body is not None:
             h["Content-Type"] = "application/json"
-        h.update(headers or {})
+        h = {k: v for k, v in merge_headers(h, headers).items() if v is not None}
         conn.request(method, path, body=body, headers=h)
         r = conn.getresponse()
         data = r.read()
@@ -125,11 +137,11 @@ class Client:
         self.cookie = r.header("Set-Cookie").split(";", 1)[0]
         return self.cookie
 
-    def send(self, method: str, path: str, payload, cookie: bool = True) -> Resp:
+    def send(self, method: str, path: str, payload, cookie: bool = True, headers: dict | None = None) -> Resp:
         import json
 
-        headers = {"Cookie": self.cookie} if cookie and self.cookie else {}
-        return self.request(method, path, json.dumps(payload).encode("utf-8"), headers)
+        sent = merge_headers({"Cookie": self.cookie} if cookie and self.cookie else {}, headers)
+        return self.request(method, path, json.dumps(payload).encode("utf-8"), sent)
 
     def stream(self, path: str, headers: dict | None = None, seconds: float = 2.0) -> tuple[bytes, list[str]]:
         """(response head, the event-stream frames read within `seconds`)."""

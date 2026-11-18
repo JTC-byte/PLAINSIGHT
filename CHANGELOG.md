@@ -22,6 +22,63 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-17. The HTTP boundary: a write is authorized by the page that sent it, its refusal reaches that page, and every text field keeps what is typed into it on this machine.**
+
+  **What changed.** The server refuses a POST or PUT before any byte of its
+  body is read unless its Origin, when present, is its own, its
+  Sec-Fetch-Site, when present, is same-origin or none, its cookie carries the
+  launch token, compared as bytes, and its Content-Type is application/json
+  (ORIGIN_REFUSED, TOKEN_REFUSED, CONTENT_TYPE_REFUSED). After any answer
+  written while a declared body is unread, except a notice stream the server
+  stops, it half-closes and reads the body away unparsed, at most 8192 bytes
+  and for at most DISCARD_SECONDS, one second, so that the refusal reaches a
+  client whose body trails its head; the one second is a reading that waits
+  on the maintainer. A Host, Origin, Sec-Fetch-Site, Content-Type, Cookie or
+  Content-Length sent on two lines admits nothing. The cookie is named for the
+  bound port, every response carries Cross-Origin-Resource-Policy and a
+  Permissions-Policy, the CSP adds form-action 'none', a route's header cannot
+  replace a security header, and an exception outside the dispatcher prints no
+  traceback. The listening socket is bound for exclusive use where the
+  platform offers it and with SO_REUSEADDR on elsewhere, never with port
+  reuse, and a bind the platform refuses is reported as BIND_REFUSED_PORT
+  with its moves. Every input and textarea of both front ends turns off
+  spellcheck, autocomplete, autocapitalize, autocorrect and translation, and
+  both pages carry the notranslate meta. The deep-dive route's text is held to
+  the application's environment by a check. Amendment 9.27 records all of it
+  and the five items left unbuilt.
+
+  **Surfaces moved.** `app/http/server.py`, `app/refusals.py`,
+  `app/static/app.js`, `app/static/index.html`, `app/showcase/index.html`,
+  `app/showcase/lib/dom.js`, one variable's name in
+  `app/showcase/views/timeline.js`, `app/tests/served.py`,
+  `app/tests/test_http.py`, `app/tests/test_static.py`,
+  `app/tests/test_showcase.py`, `app/README.md`, `docs/PLAINSIGHT-design.md`,
+  the app-tests entry's note in `tools/validate_conformance.py`, the handoff,
+  the worklog and its archive, this file.
+
+  **Validation.** 369 paired controls in the application's suite, 100 more
+  than at `59cb0cf`; every control of the three changed test modules was seen
+  failing under its breaker. The application suite: 568 passed and 1 skipped,
+  the Postgres apply. The four write checks passed twenty times with the test
+  client's body 50 ms late, and failed every time with the plain close
+  restored. 41 hand mutants under the lock on 2026-11-16, 39 killed, and 16
+  hand mutants of the changed lines on 2026-11-17, all killed; the worklog
+  states the two that survive. Reads of the build on 2026-11-14 and
+  2026-11-15, a Fable 5.2 read of the rework on 2026-11-16 whose six
+  should-fixes are all taken, and a Fable 5.2 confirming read of their
+  delta on 2026-11-17, COMMIT AS IS: test_http.py passed on Windows and on
+  Linux with Python 3.12, where 96 of its 98 controls failed under their
+  breakers and 2 skipped with their reasons, and four small should-fixes
+  are left as follow-ups. The kernel gate and
+  the pre-commit hook on the staged tree under the heavy-run lock.
+
+  **What did not change.** No route is added or removed, and the store, the
+  corpus and every stored row are untouched. `LOCAL_ACTS` stays False, so no
+  act lands on LOCAL, and the deep dive dispatches nothing. No doctrine,
+  schema, spec, policy, ontology or validator logic;
+  `tools/validate_conformance.py` changes in the app-tests note only. No
+  browser and no CI ran. Nothing is pushed.
+
 - **2026-11-16. RT-11 amended: no override lifts the halt.**
 
   **What changed.** RT-11's body argued for and described an override entry in

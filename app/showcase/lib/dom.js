@@ -47,10 +47,22 @@ function append(node, kids) {
   }
 }
 
-/** An HTML element. */
+// Every input and textarea the showcase builds carries these five attributes, which ask the browser not to send
+// what is typed into it to a spelling or translation service and not to keep it in its form history
+// (docs/PLAINSIGHT-design.md amendment 9.27). h() sets them after the caller's attributes, so no caller's
+// attributes turn them off. app/tests/test_static.py pins the text of h(), s(), svgNamespace(), apply() and
+// append(), refuses each other way of making a field that it lists, and refuses a script that names one of the
+// five outside this list.
+const FIELD_TAGS = Object.freeze(["input", "textarea"]);
+const FIELD_OPT_OUT = Object.freeze({
+  spellcheck: "false", autocomplete: "off", autocapitalize: "off", autocorrect: "off", translate: "no",
+});
+
+/** An HTML element. An input or a textarea carries the five attributes of FIELD_OPT_OUT. */
 export function h(tag, attrs, ...kids) {
   const node = document.createElement(tag);
-  apply(node, attrs);
+  const field = FIELD_TAGS.includes(String(tag).toLowerCase());
+  apply(node, field ? { ...attrs, ...FIELD_OPT_OUT } : attrs);
   append(node, kids);
   return node;
 }

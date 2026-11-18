@@ -26,9 +26,21 @@ export const state = {
   from: null, to: null, sector: null, selected: null, marks: [], header: null, keymap: null, pivot: false,
 };
 
+// Every input and textarea the page builds carries these five attributes, which ask the browser not to send what
+// the analyst types to a spelling or translation service and not to keep it in its form history, where case
+// prose would outlive the session on LOCAL (docs/PLAINSIGHT-design.md amendment 9.27). el() sets them after the
+// caller's attributes, so no caller's attributes turn them off. app/tests/test_static.py pins the text of el(),
+// refuses each other way of making a field that it lists, and refuses a script that names one of the five outside
+// this list.
+const FIELD_TAGS = Object.freeze(["input", "textarea"]);
+const FIELD_OPT_OUT = Object.freeze({
+  spellcheck: "false", autocomplete: "off", autocapitalize: "off", autocorrect: "off", translate: "no",
+});
+
 export function el(tag, attrs = {}, ...kids) {
   const node = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
+  const field = FIELD_TAGS.includes(String(tag).toLowerCase());
+  for (const [k, v] of Object.entries(field ? { ...attrs, ...FIELD_OPT_OUT } : attrs)) {
     if (v === null || v === undefined || v === false) continue;
     if (k === "class") node.className = v;
     else if (k.startsWith("on")) node.addEventListener(k.slice(2), v);
@@ -48,6 +60,10 @@ export async function getJSON(url) {
   return { ok: r.ok, status: r.status, body };
 }
 
+// sendJSON sends every write the page makes, and app/tests/test_static.py refuses a request that could write
+// anywhere else under app/static. Its fetch keeps the default mode, cors, and sends application/json:
+// in any other mode a page served with Referrer-Policy: no-referrer sends Origin: null on a POST or PUT, and the
+// server refuses a write whose Origin is not its own, or whose type is not application/json (amendment 9.27).
 export async function sendJSON(method, url, payload) {
   const r = await fetch(url, {
     method, credentials: "same-origin", cache: "no-store",

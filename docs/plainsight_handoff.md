@@ -12,15 +12,14 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-16. This file's commit amends RT-11 (Class F): no override
-lifts the halt, with its row in the pin, the compiled policy and the
-validator's check. Before it, `main` == `origin/main` == `71b7112`, and
+**Date:** 2026-11-17. This file's commit changes the HTTP boundary (amendment
+9.27). Before it, `main` == `origin/main` == `71b7112`, and
 `github-usage-2026-11-11` holds `8fd1c08`, `92cf511`, `7e142d4`, `09caa88`,
-`1aedf36` and `59cb0cf` above it, unpushed.
+`1aedf36`, `59cb0cf` and `d586f22` above it, unpushed.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` two doctrine
 passages changed: SS-14 item 3's enforcement state on 2026-11-11, and RT-11's
-body in this commit. Patch 4b, the four Class F items with EG-7, no longer
+body in `d586f22`. Patch 4b, the four Class F items with EG-7, no longer
 applies to this tree; section 3 says whose decision it is.
 **Kernel gate:** 33 entries: 26 implemented and passing, 12 of them self-tests;
 4 unratified and refusing as designed; 1 stubbed; 2 pending. `--kernel-gate`
@@ -32,43 +31,41 @@ applies.
 own transcript and read his lines first. No parent session is delegated for
 this repository: every commit, push, merge, Class F decision, deploy, tag,
 mint and secret takes his word in the PLAINSIGHT chat, per act, and section
-7 holds his order of work. `main` was rewritten on 2026-11-10 on his clicks
-there, so every hash of 2026-11-09 has a new form (section 7). This commit
-is made on the local branch `rt11-no-override-2026-11-16`, from `59cb0cf`, in
-a worktree, on his word in the PLAINSIGHT chat, and is not pushed: no push is
-made in this repository until he lifts the rule of 2026-11-11, and
+7 holds his order of work and the hashes the rewrite of 2026-11-10 changed.
+This commit is made on the local branch `http-boundary-2026-11-16`, from
+`d586f22`, in a worktree, on his word, and is not pushed: no push is made in
+this repository until he lifts the rule of 2026-11-11, and
 `.githooks/pre-push` refuses one that names no written case (`AGENTS.md`
 section 5). The records are under `Z-ISR/_session-artifacts/` (section 6):
-this commit's in `2026-11-16-plainsight-lane/`, the three landings before it
-in `2026-11-14-plainsight-lane/`, and his 28-item queue in
-`2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`, none answered.
+this commit's in `2026-11-16-` and `2026-11-17-plainsight-lane/`, the three
+before them in `2026-11-14-plainsight-lane/`, and his 28-item queue, none
+answered, in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`.
 
 ---
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** RT-11's body described an override in the ledger
-while the pin's row read "No override", and the policy held the conflict as
-the open entry U-17. On 2026-11-14 the maintainer selected "No override".
-RT-11 now says nothing but a passing `verify_shred` lifts the halt, and the
-pin, the compiled policy and the validator's check say the same.
+**What changed and why.** A review of 2026-11-14 found that a page on another
+port could send a write the cookie admitted and that typed prose could leave
+through the browser. A write is now refused before its body is read unless its
+Origin, Sec-Fetch-Site, token and Content-Type admit it; its refusal reaches
+the page; and every text field keeps what is typed into it here (9.27).
 
-**Which surfaces moved.** Doctrine (`doctrine/RETENTION.md` RT-11 and the pin),
-`policy/retention.yaml`, `tools/validate_retention.py` and the records. No
-schema, spec, ontology, runtime or application code.
+**Which surfaces moved.** The server, the refusal texts, both front ends' pages
+and helpers, three test modules, the test client, `app/README.md`, 9.27, the
+gate note and the records. No doctrine, schema, spec, policy or ontology.
 
-**What validation ran and what passed.** The doctrine, hygiene and pin checks;
-the retention self-test, 205 breaks refused; three second-model reads with
-their mutants; the kernel gate under the heavy-run lock and the hook. No CI.
+**What validation ran and what passed.** 369 paired controls, each seen
+failing; 57 hand mutants in two batteries, 55 killed; two Fable 5.2 reads;
+the kernel gate under the heavy-run lock and the hook. No CI, no browser.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
 
-**What remains open or deferred.** The maintainer's: readings APP-R35 to APP-R38; the
-showcase's Tools tab reading the board, then the idiom's direction; the HTTP
-boundary change, built outside the tree and in rework; the LOCAL_ACTS form A
-draft; one push under a written case; act 4 of the demo; the request to
-GitHub Support; the bundle; the rotation. Sections 3 and 4 carry the rest.
+**What remains open or deferred.** The maintainer's: DISCARD_SECONDS and the
+five items 9.27 leaves unbuilt; APP-R35 to APP-R38; the Tools tab; LOCAL_ACTS
+form A; one push under a written case; act 4 of the demo; the GitHub Support
+request; the bundle; the rotation. Sections 3 and 4 hold the rest.
 
 ---
 
@@ -119,10 +116,10 @@ cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
 (reading APP-R31). **The showcase (2026-11-14)** is a second, read-only
 front end served with `--ui showcase`; **slice 4** of that day adds the
-COLLECTION board on key 5 (section 2). 450 tests with 269 paired
-negative controls since amendment 9.26, in the kernel gate, `make test` and
+COLLECTION board on key 5 (section 2). 569 tests with 369 paired
+negative controls since amendment 9.27, in the kernel gate, `make test` and
 CI and not in the hook or preflight (APP-R30). Its design departures from
-`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.26 at the end of that file,
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.27 at the end of that file,
 each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against
@@ -147,7 +144,7 @@ exists and has never run.
 | `AGENTS.md` | Committed. Section 5 names the gate commands, the twenty-two hook commands, the twenty-three preflight commands, the paths every validator self-test runs on and rule 1's pre-push hook; section 8 sets the handoff standard and the closeout extraction. |
 | `CHANGELOG.md` | Committed. One entry per governed commit, newest first. Entries below the 2026-09-07 rewrite entry cite pre-rewrite hashes; that entry translates them. |
 | `doctrine/DOCTRINE_STATUS.md` | The pin of record. 58 conclusions stamped, 0 bases. A row of 2026-11-14 records RT-11's amendment. No row for any Step 8 or Step 10 artifact. The R8 row's Item cell carries an escaped pipe that makes the shared reader skip it (section 4). |
-| `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md` | SS-1 to SS-21 and RT-1 to RT-19. Patches 1, 2 and 3c in. RT-11 amended in this commit: no override lifts the halt. Sentences at SS-14 items 3, 5 and 6 describe mechanisms as unwritten that now exist (section 4). |
+| `doctrine/SUBJECT_SELECTION.md`, `doctrine/RETENTION.md` | SS-1 to SS-21 and RT-1 to RT-19. Patches 1, 2 and 3c in. RT-11 amended in `d586f22`: no override lifts the halt. Sentences at SS-14 items 3, 5 and 6 describe mechanisms as unwritten that now exist (section 4). |
 | `doctrine/EGRESS.md`, `doctrine/CREDENTIAL_LIFECYCLE.md`, `doctrine/HYGIENE.md` | EG-1 to EG-6, CR-1 to CR-8, HY-1 to HY-4. EG-7 is drafted in patch 4b, not applied. |
 | `doctrine/RETENTION_LEDGER.md`, `doctrine/DISCLOSURE.md` | **Both missing.** The ledger is required at v0.1 (RT-10) and Step 11 delivers it. DISCLOSURE.md is owed since RT-18 created a second egress path. |
 | `CONFORMANCE.md` | Committed; sections 1 to 4 rewritten in `8583132` to the tree as it is: the register exists and is unreviewed, one connector passes DECLARE and rungs 1, 2 and 4 with the live canaries unperformed, the gate exits 0. |
@@ -158,7 +155,7 @@ exists and has never run.
 | `schema/subject-authorization.schema.json` | Committed in `0e0c840`. Hand-authored, UNRATIFIED. Its `read_by` sentence says `evaluate()` validates the record against it, which the draft guard does not (SG-R13). |
 | `schema/connector-manifest.schema.json` | **Committed in `8583132`.** Hand-authored, draft 2020-12, every object closed; five kinds, emits at layer observation only, both canaries required with placeholder inputs, `canary_subject_class` from {synthetic, institutional}, a bystanders block with SS-10's three classes and dispositions {count_only, refuse}, lineage with a stratum and no duration, render strings refusing markup, `interaction_class` closed to R7's two values. Readings MF-R1 to MF-R17 in the validator's docstring; `platform_from_item` on an endpoint-unit connector since 2026-10-28. |
 | `policy/semantics.yaml`, `policy/lineage.yaml`, `policy/producer-authority.yaml`, `policy/violation-codes.yaml` | Committed in `4e6abda`. **Generated.** 57 codes. |
-| `policy/subject-authorization.yaml`, `policy/retention.yaml` | Committed in `0e0c840`. Hand-authored, UNRATIFIED. `policy/retention.yaml` line 868 reads `present: true` for `canary_subject_class` since 2026-10-28, on his instruction (section 3); since this commit its halt compiles `override: none` and its open entries are U-01 to U-16. `policy/subject-authorization.yaml` lines 121 to 123 and 469 call `--dispatch-paths` deferred. |
+| `policy/subject-authorization.yaml`, `policy/retention.yaml` | Committed in `0e0c840`. Hand-authored, UNRATIFIED. `policy/retention.yaml` line 868 reads `present: true` for `canary_subject_class` since 2026-10-28, on his instruction (section 3); since `d586f22` its halt compiles `override: none` and its open entries are U-01 to U-16. `policy/subject-authorization.yaml` lines 121 to 123 and 469 call `--dispatch-paths` deferred. |
 | `conformance/must-pass.jsonl`, `conformance/must-fail.jsonl` | Committed in `4e6abda`. **Generated.** 44 events, 98 fixtures. No value appears in either. |
 | `conformance/gate/`, `conformance/retention/` | Committed in `0e0c840`. The gate corpus uses the pre-Step-12 bystander shape while the guard reads the Step 12 block (VA-U1 open). |
 | `conformance/connector-harness/fixture.schema.json`, `README.md` | **Committed in `8583132`.** The fixture shape: `event_count` and `cassette` on an events fixture, `refusal_code` on a refusal, the fixed adapter-state enum, placeholder-only inputs. |
@@ -167,12 +164,12 @@ exists and has never run.
 | `runner/retention_sweep.py`, `runner/verify_shred.py` | **Committed 2026-11-09, drafted refusing.** The sweep decides every case, refuses every due one, deletes nothing and writes its heartbeat per held case last; verify_shred runs the five checks as PASS, FAIL or NOT RUN, has no passing path for checks 1, 2 and 4, and reports no pass while the fixture is unstamped; check 3 fails on a file SQLite keeps beside the case database; readings RS-R1 to RS-R8 in the docstrings; 14 checks and 44 controls in `app/tests/test_retention_sweep.py`. The four reads' open findings are listed in the worklog entry of 2026-11-09 under What is not claimed, and `app/README.md` names the behaviours with no control. The shred, the ledger and the receipt wait on the ISOLATED store and his stamps. |
 | `runner/subject_guard.py`, `runner/tests/` | **Committed in `8583132`, drafted UNRATIFIED.** `evaluate()` returns a Decision that serializes as a COLLECT_EVENT; the live pin refuses at step 1; 22 tests under pytest and as a script; readings SG-R1 to SG-R18 in the docstring. `runner/dispatch_allowlist.yaml` does not exist. |
 | `connectors/sherlock/` | **Committed in `8583132`.** `manifest.yaml`, `adapter.py` (parse, emit, permit-gated invoke), `site_facts.json` (481 sites from `data.json` at 9100f9d), three hand-built cassettes, `fixtures.jsonl`, 51 tests, `README.md` with SH-R1 to SH-R18. Never run. |
-| `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. |
+| `app/` | **Committed in `8583132`.** 59 files: the store, the ingest door, projections, rebuild and replay, the loopback server, the social web view, the Lineage Drawer, PATHS, DOSSIER, INSPECTOR, SSE, the static front end, `README.md`, and 195 tests with 91 paired controls. Readings APP-R1 to APP-R30. In the kernel gate, `make test` and CI. **Since 2026-11-16** the server refuses a write before its body is read unless its Origin, Sec-Fetch-Site, token and Content-Type admit it, discards a refused write's body unparsed so that its refusal reaches the page, binds for exclusive use where the platform offers it, reports a bind the platform refuses as BIND_REFUSED_PORT, and every text field of both front ends carries the five attributes (amendment 9.27). |
 | `app/showcase/`, `app/http/overlay.py` | **New on 2026-11-14.** A second static front end (19 files, GET only, no browser storage) served with `--ui showcase`; the classic one stays the default. `--overlay` serves a display file whose reader admits fictional stand-ins only and refuses a file inside the store or any git working tree, and a case pack in it answers the page's requests in the page. 7 checks and 29 controls in `app/tests/test_showcase.py`, two of the checks run under node. Amendment 9.24, which he ruled stands; the idiom's direction is his separate decision. |
 | `app/model/collection.py`, `app/static/views/collection.js` | **New on 2026-11-14 (slice 4).** GET `/api/cases/{case}/collection` and key 5 in the classic front end: a board for one case with a row per connector manifest, each UNVERIFIED on the server's flag because LOCAL executes no connector (EG-1), the case's CONNECTOR_HEALTH events as dated records, and a record for a connector the checkout does not carry listed apart. `halt_line` in `app/model/reads.py` names the failed shred's case, time and check and says this build reads no clearing. 20 checks and 55 controls in `app/tests/test_collection.py`. Readings APP-R35 to APP-R38; amendments 9.25 and 9.26. The showcase does not read the route. |
 | `tools/generate_pse.py`, `tools/build_corpus.py`, `tools/validate.py`, `tools/validate_layer_model.py`, `tools/validate_doctrine.py`, `tools/validate_hygiene.py`, `tools/validate_ontology.py`, `tools/validate_cast.py`, `tools/since_last_record.py`, `gate_log.py` | Committed earlier, unchanged in `8583132`. |
 | `tools/validate_authorization.py` | **Extended in `8583132`** to 5,767 lines: `--dispatch-paths` implemented with 61 planted self-test cases; VA-R5 recorded; VA-R6 applied as the session's reading (section 3); VA-U2 and VA-U3 stay open. |
-| `tools/validate_retention.py` | **Touched in `8583132`:** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. **In this commit** its halt pin holds no override and closes the halt block and the ledger's recorded acts to what the pin names. Its self-test holds 205 breaks and passes. |
+| `tools/validate_retention.py` | **Touched in `8583132`:** `MANIFEST_VALIDATOR_REQUIRES_CANARY` is now true, the RT-15 comment says the part measures present, and the self-test's mutation flips the flag. **In `d586f22`** its halt pin holds no override and closes the halt block and the ledger's recorded acts to what the pin names. Its self-test holds 205 breaks and passes. |
 | `tools/pin_of_record.py` | **Extended in `8583132`** with PIN-R9 (`Pin.decisions`, `decision_stamped`); 35 self-test cases. |
 | `tools/validate_manifest.py`, `tools/validate_divergence_register.py`, `tools/render_divergence_register.py`, `tools/validate_connector_conformance.py` | **New in `8583132`.** Item 8 (2026-11-10) added the manifest tool's must-fail walk and its adapter check, a shape check that prints what it cannot read as NOT READ. Self-tests of 374 cases (77 breaks, 11 permits, 286 controls), 40 breaks, a drift check, and 26 plants. |
 | `tools/validate_conformance.py` | **Extended in `8583132`.** `KERNEL_GATE` carries thirty-three entries, `app-tests` among them and `push-rule-self-test` since 2026-11-12. |
@@ -192,13 +189,13 @@ stamp is a whole-artifact dated row he authors, and any change to the list
 after it is a new Class F act.
 
 **Three test files still mention the design brief outside the repository**
-(`app/tests/test_corpus.py` line 3, `test_http.py` line 321, `test_store.py`
+(`app/tests/test_corpus.py` line 3, `test_http.py` line 333, `test_store.py`
 line 105); the five production docstrings cite the design amendments.
 
 **The 29 decisions in the register** of Step 8, the readings of
 Steps 9, 10 and 12 and the application (DR, MF, now to MF-R22, PIN-R9, SG, VA,
 DA, SH, CC, APP, now to APP-R38, and RS-R1 to RS-R8), and the design
-amendments 9.1 to 9.26. Each is recorded where its artifact is and in the
+amendments 9.1 to 9.27. Each is recorded where its artifact is and in the
 record folder. Four of MF's, put to him by name, he kept on 2026-11-11.
 
 **Patch 4b.** Four Class F items: EG-7, CR-3's environment-variable item, CR-6's
@@ -283,6 +280,8 @@ dollars non-recurring and 205 a month.
   EG-2 and RT-4 as stamped through whole-artifact rows, so only ISOLATED and an
   Encryptor stand between a caller and a blob write on the Postgres engine
   (APP-R13).
+- **No browser and no CI runner has exercised the HTTP boundary** (9.27),
+  and its discard does not reach a client that never finishes its request head.
 - **The store writes only into a held case** since amendment 9.21: every
   entry point that writes refuses a case the registry does not hold open
   (CASE_CLOSED_TO_WRITES) and a second spelling of an open case's id
@@ -316,7 +315,8 @@ turn (the 2026-11-09 folder); each read of item 7 found defects or gaps, which
 were fixed before the commit or are recorded as open. A Sonnet second model
 read the showcase on 2026-11-13, a Fable 5.2 one its overlay work on 11-14,
 and an Opus 5.5 one slice 4's first build that day; what each found is fixed.
-Opus 5.5 models read the RT-11 paper and change on 11-14 and its rework on 11-16.
+Opus 5.5 models read the RT-11 paper and change on 11-14 and its rework on 11-16;
+Opus models read the HTTP boundary's build, and Fable 5.2 its rework, twice.
 
 ## 6. Session context that lives outside this repository
 
@@ -331,7 +331,7 @@ Opus 5.5 models read the RT-11 paper and change on 11-14 and its rework on 11-16
 | His rulings of 2026-11-11, and the demo | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it; the static demo page of invented data and the plan that put it behind a Cloudflare Access sign-in in the estate account (route A, acts 1 to 3 done on his clicks of 2026-11-12, act 4 held for his review). |
 | His rulings of 2026-11-12, and the gate of `09caa88` | `Z-ISR/_session-artifacts/2026-11-12-plainsight-lane/` | `README.md` with each question, his click and its stamp, the push rule's mutant log, and that commit's gate and hook logs. The lane's ranked prompts for his team-account instance are in the parent's notes folder of that day. |
 | His answers of 2026-11-14 | `Z-ISR/_session-artifacts/2026-11-14-plainsight-lane/` | `README.md`, the record: the landings of `09caa88`, `1aedf36` and `59cb0cf` with their gate and hook logs, slice 4's review and mutant runs, the RT-11 reading paper with the maintainer's decision of that day and the change built on it, and the reports on the HTTP boundary change. |
-| This commit, and the lane from 2026-11-16 | `Z-ISR/_session-artifacts/2026-11-16-plainsight-lane/` | `README.md`: the RT-11 change placed on `59cb0cf`, the two reads of its rework, this commit's gate and hook logs, and the brief for the HTTP boundary rework. |
+| This commit and `d586f22`, the lanes from 2026-11-16 and 2026-11-17 | `Z-ISR/_session-artifacts/2026-11-16-plainsight-lane/` and `2026-11-17-plainsight-lane/` | The first: the RT-11 change placed on `59cb0cf`, the two reads of its rework and `d586f22`'s gate and hook logs; the HTTP boundary rework's brief, its builder's two reports, patches and logs (`http_rework_by_plainsight-7-http/`), and the second read of it as placed on `d586f22`. The second: the confirming read of the should-fix pass, this commit's records kit, and its gate and hook logs. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |

@@ -264,6 +264,16 @@ REFUSALS: dict[str, Code] = {
             "pass --host 127.0.0.1",
         ),
         _c(
+            "BIND_REFUSED_PORT",
+            "a port the server could not bind on 127.0.0.1, because another socket holds it or the system "
+            "reserves it, so nothing was served",
+            "docs/PLAINSIGHT-design.md amendment 9.27: the server shares its port with no other socket, so a "
+            "port in use is refused rather than shared",
+            "omit --port, which takes a free port",
+            "pass --port and a port no other socket holds",
+            "stop the process that holds the port, or wait for it to let the port go, and serve again",
+        ),
+        _c(
             "ANALYST_UNKNOWN",
             "a session identity that is not in the deployment's human identity list",
             "spec/pse-semantics-contract.md section 10: the human identity list is deployment "
@@ -273,11 +283,15 @@ REFUSALS: dict[str, Code] = {
         ),
         _c(
             "HOST_REFUSED",
-            "a request whose Host header does not name this server's loopback address and port",
-            "docs/PLAINSIGHT-design.md amendment 9.12: the server answers its own loopback origin "
-            "only, so a page served from another origin cannot read it",
+            "a request whose Host header is absent, sent on two lines, or does not name this server's "
+            "loopback address and port, so nothing was served",
+            "docs/PLAINSIGHT-design.md amendment 9.12: the server answers a request only when its Host names "
+            "127.0.0.1 or localhost with the bound port, so a host name that a DNS rebinding points at this "
+            "loopback cannot drive it; a page on another origin names this server in Host and passes this "
+            "check, and amendment 9.27's write checks refuse its writes while the browser's same-origin "
+            "policy keeps it from reading the answers",
             "open the URL the serve command printed",
-            "use 127.0.0.1 or localhost with the port the server bound",
+            "send one Host header, 127.0.0.1 or localhost with the port the server bound",
         ),
         _c(
             "QUERY_KEY_REFUSED",
@@ -321,11 +335,35 @@ REFUSALS: dict[str, Code] = {
         ),
         _c(
             "TOKEN_REFUSED",
-            "a write request without this launch's session cookie, so nothing was written",
+            "a write request that does not carry this launch's session cookie in one Cookie header, refused "
+            "before its body was read, so the body was discarded unparsed and nothing was written",
             "docs/PLAINSIGHT-design.md amendment 9.12: every POST and PUT carries the per-launch "
             "token, set as an HttpOnly, SameSite=Strict cookie",
             "load the page from the URL the serve command printed, which sets the cookie",
             "restart the server and reload the page if it was restarted",
+        ),
+        _c(
+            "ORIGIN_REFUSED",
+            "a write whose Origin header is not this server's own origin, or whose Sec-Fetch-Site header is "
+            "neither same-origin nor none, refused before its body was read, so the body was discarded "
+            "unparsed and nothing was written",
+            "docs/PLAINSIGHT-design.md amendment 9.27: a POST or PUT is authorized by the page that sent it as "
+            "well as by the session cookie, because a page on another port of this host is the same site, so "
+            "the browser attaches the cookie to that page's requests under SameSite=Strict",
+            "send the write from the page the serve command printed, whose origin is this server's own",
+            "from a client that is not a browser, send neither header, and send the cookie and an "
+            "application/json body",
+        ),
+        _c(
+            "CONTENT_TYPE_REFUSED",
+            "a write whose Content-Type is not application/json, refused before its body was read, so the "
+            "body was discarded unparsed and nothing was written",
+            "docs/PLAINSIGHT-design.md amendment 9.27: a page on another origin needs no preflight to send a "
+            "POST whose body is text/plain, application/x-www-form-urlencoded or multipart/form-data, or "
+            "carries no Content-Type, and needs one to send a POST of application/json or any PUT, which "
+            "this server refuses, so a write carries application/json",
+            "send one Content-Type header, application/json alone or as application/json; charset=utf-8",
+            "send the write from the page the serve command printed, which sets that type",
         ),
         _c(
             "BODY_REFUSED",

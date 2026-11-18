@@ -7,8 +7,8 @@ Seven properties, each with a control in CONTROLS:
   canvas or WebGL (design 8.5), no absolute URL, no @import and no url() but a
   fragment, and no inline script or style in its page, which the server's CSP
   would refuse;
-- the showcase sends no write: no fetch carries a method, and nothing uses
-  XMLHttpRequest, sendBeacon or a form, so every request it makes is a GET;
+- the showcase sends no write: no script or page names a method, and nothing
+  uses XMLHttpRequest, sendBeacon or a form, so every request it makes is a GET;
 - `--ui showcase` serves the showcase's page and files, the default serves the
   classic ones, the API answers both, and an unknown front end is refused
   before a socket exists;
@@ -46,10 +46,13 @@ from app.tests.served import Client, corpus_copy
 
 SHOWCASE = config.REPO_ROOT / "app" / "showcase"
 
-#: A request that could write: a fetch given a method, the two other request
-#: APIs, and a form, written as markup or built by the showcase's element
-#: helper, which a browser submits without script.
-WRITE_REQUEST = re.compile(r"""\bmethod\s*:|XMLHttpRequest|sendBeacon|<form\b|\bh\(\s*["']form["']""", re.IGNORECASE)
+#: A request that could write: a fetch or a Request given a method, which the
+#: word method alone stands for, so a key, a quoted key, a shorthand property
+#: and an assignment are each read; the two other request APIs; and a form,
+#: written as markup or built by the showcase's element helper, which a browser
+#: submits without script. The classic front end's scan reads the word the same
+#: way (app/tests/test_static.py).
+WRITE_REQUEST = re.compile(r"""\bmethod\b|XMLHttpRequest|sendBeacon|<form\b|\bh\(\s*["']form["']""", re.IGNORECASE)
 
 
 def showcase_files(roots) -> list[Path]:
@@ -87,6 +90,15 @@ def break_planted_post(ctx):
     root = ctx.tmp / "planted-post"
     root.mkdir()
     (root / "act.js").write_text("fetch('/api/cases/x/acts', { method: 'POST', body: '{}' });\n", encoding="utf-8")
+    ctx.extra_roots.append(root)
+
+
+def break_planted_post_by_a_shorthand(ctx):
+    """A POST whose method is a shorthand property, which names method with no colon after it."""
+    root = ctx.tmp / "planted-shorthand"
+    root.mkdir()
+    (root / "act.js").write_text('const method = "POST";\nfetch("/api/cases/x/acts", { method, body: "{}" });\n',
+                                 encoding="utf-8")
     ctx.extra_roots.append(root)
 
 
@@ -493,6 +505,7 @@ CONTROLS = [
     ("a planted storage call in the showcase", check_showcase_uses_no_storage_canvas_or_host, break_planted_storage_in_showcase),
     ("a planted POST in the showcase", check_showcase_sends_get_only, break_planted_post),
     ("a planted form built by the element helper", check_showcase_sends_get_only, break_planted_form),
+    ("a planted POST whose method is a shorthand property", check_showcase_sends_get_only, break_planted_post_by_a_shorthand),
     ("the showcase root points at the classic one", check_serve_ui_selects_the_front_end, break_showcase_root_points_at_classic),
     ("the keymap route faults when a front end has none", check_serve_ui_selects_the_front_end, break_keymap_faults_without_a_keymap),
     ("the default front end is the showcase", check_serve_ui_selects_the_front_end, break_default_is_the_showcase),

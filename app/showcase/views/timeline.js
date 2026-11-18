@@ -138,11 +138,11 @@ export async function renderTimeline(el, ctx) {
         const lo = Math.max(a, m0);
         const hi = Math.min(b, m1);
         if (hi <= lo) continue;
-        const method = (/ by (\S+),/.exec(c.text) || [])[1];
+        const verifiedBy = (/ by (\S+),/.exec(c.text) || [])[1];
         track.append(h("button", {
           class: verified ? "tl-band" : "tl-gap", type: "button", title: c.text, css: { left: pct(lo), width: `${((hi - lo) / span) * 100}%` },
           onclick: () => c.lineage ? ctx.lineage(c.lineage, "coverage interval") : null,
-        }, verified ? `verified coverage · ${short(c.target_ref)}${method ? ` · by ${method}` : ""}` : h("span", {}, c.text.split(":")[0])));
+        }, verified ? `verified coverage · ${short(c.target_ref)}${verifiedBy ? ` · by ${verifiedBy}` : ""}` : h("span", {}, c.text.split(":")[0])));
       }
     }
     for (const [minute, n] of counts) {

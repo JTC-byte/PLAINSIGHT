@@ -33,7 +33,8 @@ python -m app serve --store %LOCALAPPDATA%\plainsight --analyst analyst-example
 The ingest lands 44 events in one case. The serve command binds 127.0.0.1 on a
 free port and prints two URLs per case: the landing view, which is DOSSIER, and
 the web focused on the seed. Open the web URL in a browser on the same machine.
-The server refuses any other bind address with BIND_REFUSED_LOCAL.
+The server refuses any other bind address with BIND_REFUSED_LOCAL, and a
+`--port` that another socket holds with BIND_REFUSED_PORT.
 
 ## The showcase front end
 
@@ -169,6 +170,107 @@ A route reads the case its URL names under the registry's spelling of its id
 under another spelling is served under the registry's. Two registry rows that
 name one case database under other spellings cannot be told apart by a URL, so
 that request is refused as CASE_NOT_HELD with a detail that says so.
+
+## What the server checks
+
+Every request must name the server in its Host header: 127.0.0.1 or localhost
+with the bound port. A request sent under another host name, which is how a DNS
+rebinding reaches this loopback, is refused with HOST_REFUSED, and so is a Host
+sent on two lines, even when each names the server. The check does not stop a
+page on another origin, whose browser names this server in Host; the write
+checks below and the browser's same-origin policy answer that page.
+
+A POST or PUT must carry this launch's token in the session cookie, which the
+server sets on the page's response as `ps_token_<port>` with HttpOnly,
+SameSite=Strict and Path=/; a missing or wrong token, or a Cookie header sent on
+two lines, is refused with TOKEN_REFUSED before any byte of the body is read.
+The name carries the port because a browser keeps one cookie per name for a
+host whatever its port, so two launches on 127.0.0.1 keep their own tokens.
+
+A write is also authorized by the page that sent it (amendment 9.27). A page on
+another port of this host is the same site, so the browser attaches the cookie
+to that page's requests under SameSite=Strict. Before any byte of the body is
+read, a write whose Origin header is present and is not exactly this server's
+own origin, or whose Sec-Fetch-Site header is present and is neither
+same-origin nor none, is refused with ORIGIN_REFUSED, and a write whose
+Content-Type is not application/json, alone or with charset=utf-8, is refused
+with CONTENT_TYPE_REFUSED. A header sent on more than one line is read as one
+value, its lines joined by a comma, which none of these rules admits, even when
+each line is admissible; a Content-Length sent on two lines gives no length, so
+that write is refused with BODY_REFUSED. Only spaces and tabs around the
+Content-Type's parts are ignored. A write that carries neither header, as a
+command-line client sends, is admitted on the cookie and the Content-Type: a
+page on another origin can send a POST without a preflight only as text/plain,
+application/x-www-form-urlencoded or multipart/form-data, or with no
+Content-Type, and a POST of application/json, or any PUT, only after a
+preflight, which the server refuses, because OPTIONS answers METHOD_REFUSED.
+The classic front end sends every write through `sendJSON` in
+`app/static/app.js`, a fetch in the default cors mode, in which a page served
+with no-referrer still sends its own origin. `app/tests/test_static.py` checks
+that `sendJSON` names no mode, names its headers and credentials once each and
+spreads or assigns no other object into its options, and refuses a request that
+could write anywhere else under `app/static`.
+
+A refused write is answered before any byte of its body is read. The server
+then stops sending, reads and discards what the client sends of the body,
+never parsing it, up to the declared Content-Length capped at 8 KiB and for at
+most one second, and closes. The client's body may still be on its way when
+the answer is written, and a server that closed at once would meet it with a
+reset, after which a Windows client's stack drops the answer it had received,
+so the page would see a network error in place of the refusal and its moves.
+Any answer given before a declared body is read, a Host refusal and
+BODY_REFUSED for a length past 8 KiB among them, is followed by the same
+discard, except the notice stream's, which holds its connection until the
+stream ends and is then closed. The one second is a reading that awaits the
+maintainer's confirmation (amendment 9.27). A request the standard library's
+parser refuses before routing is closed at once, as before.
+
+The listening socket shares its port with no other socket. On Windows it is
+bound with SO_EXCLUSIVEADDRUSE and with SO_REUSEADDR off, because there
+SO_REUSEADDR lets another process bind the port. Elsewhere it is bound with
+SO_REUSEADDR on, as the standard library binds it, because Linux refuses a
+second bind to a listening port whatever that option says and, without it,
+refuses a restart on the port while the port's last connections wait out
+TIME_WAIT. SO_REUSEPORT is off everywhere. A `--port` that another socket holds
+is refused with BIND_REFUSED_PORT, and the serve command exits 1.
+
+Every response carries Cache-Control: no-store, the Content-Security-Policy
+default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action
+'none', Referrer-Policy: no-referrer, X-Content-Type-Options: nosniff,
+Cross-Origin-Resource-Policy: same-origin and Permissions-Policy: camera=(),
+microphone=(), geolocation=(). A route's own header never replaces one of them.
+An exception raised outside the dispatcher is logged by its type name and
+prints no traceback.
+
+Every input and textarea either front end builds, the act forms, the Merge
+Sheet's notes and the showcase's search box among them, carries
+spellcheck="false", autocomplete="off", autocapitalize="off", autocorrect="off"
+and translate="no", and both pages carry translate="no" on the document and the
+notranslate meta. A browser's spellcheck and translation can send what is typed
+to a remote service, and its autofill keeps typed values in its form history,
+outside the store the shred reaches. Each front end's element helper, `el` in
+`app/static/app.js` and `h` in `app/showcase/lib/dom.js`, sets the five
+attributes after the caller's own. `app/tests/test_static.py` pins the text of
+`el`, of `h` with the `apply` and `append` it calls, of `s`, the showcase's SVG
+helper, whose tag is a parameter as well, and of `svgNamespace`, whose answer
+`s` passes on, so a change to one of them is refused until its pin is updated.
+It reads both pages as an HTML parser reads them, so a look-alike of
+translate="no", a meta inside a comment, and a tag inside a noscript or
+template element, where a browser does not apply it, do not count. It refuses
+each other way of making a field that it lists: written as markup without the
+five, its attributes read as an HTML parser reads the tag; made by
+createElement outside the helpers, however the call is written; a customized
+built-in element, in a script that names customElements, which must register
+one before it can be made, or that names HTMLInputElement or
+HTMLTextAreaElement other than in an instanceof test; or an editable surface.
+It also refuses a script that names one of the five outside the helpers' list,
+which could turn one back on after the helper returns; a call to translate(),
+the transform function, is not read as the attribute unless a brace follows it
+on its line, as one does where a method named translate is written, since a
+function set as that property turns the attribute on. The scan reads source
+text, so a tag, a name or markup assembled at run time from pieces is not read,
+and neither is a script that removes a node's attributes by walking them
+without naming one.
 
 ## Acts
 
@@ -350,9 +452,10 @@ when a check stays green with its mechanism removed.
 Since 2026-10-28 the suite is the kernel gate's app-tests entry, a line of
 `make test`, and CI's Application tests step, each run as
 `python -m pytest app -q --tb=short -p no:cacheprovider`. Reading APP-R30 keeps
-it out of the pre-commit hook and `make preflight`: it runs about three minutes,
-and it guards runtime behaviour rather than what enters git history, which the
-hook's repository scan guards. The test client's two connections are made in
+it out of the pre-commit hook and `make preflight`: it took 11 minutes 19
+seconds on the Windows 11 workstation with Python 3.14.0 on 2026-11-17, and it
+guards runtime behaviour rather than what enters git history, which the hook's
+repository scan guards. The test client's two connections are made in
 `app/tests/conftest.py` with 127.0.0.1 named on the call, so
 `tools/validate_authorization.py --dispatch-paths` reads them as loopback test
 connections, and the no-socket check keeps each original it patches beside the
