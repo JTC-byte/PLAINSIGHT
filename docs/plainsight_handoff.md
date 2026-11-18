@@ -12,10 +12,10 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-17. This file's commit changes the HTTP boundary (amendment
-9.27). Before it, `main` == `origin/main` == `71b7112`, and
+**Date:** 2026-11-17. This file's commit follows up the HTTP boundary
+(9.27). Before it, `main` == `origin/main` == `71b7112`, and
 `github-usage-2026-11-11` holds `8fd1c08`, `92cf511`, `7e142d4`, `09caa88`,
-`1aedf36`, `59cb0cf` and `d586f22` above it, unpushed.
+`1aedf36`, `59cb0cf`, `d586f22` and `1393687` above it, unpushed.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` two doctrine
 passages changed: SS-14 item 3's enforcement state on 2026-11-11, and RT-11's
@@ -32,8 +32,8 @@ own transcript and read his lines first. No parent session is delegated for
 this repository: every commit, push, merge, Class F decision, deploy, tag,
 mint and secret takes his word in the PLAINSIGHT chat, per act, and section
 7 holds his order of work and the hashes the rewrite of 2026-11-10 changed.
-This commit is made on the local branch `http-boundary-2026-11-16`, from
-`d586f22`, in a worktree, on his word, and is not pushed: no push is made in
+This commit is made on the local branch `http-should-fixes-2026-11-17`, from
+`1393687`, in a worktree, on his word, and is not pushed: no push is made in
 this repository until he lifts the rule of 2026-11-11, and
 `.githooks/pre-push` refuses one that names no written case (`AGENTS.md`
 section 5). The records are under `Z-ISR/_session-artifacts/` (section 6):
@@ -45,19 +45,18 @@ answered, in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** A review of 2026-11-14 found that a page on another
-port could send a write the cookie admitted and that typed prose could leave
-through the browser. A write is now refused before its body is read unless its
-Origin, Sec-Fetch-Site, token and Content-Type admit it; its refusal reaches
-the page; and every text field keeps what is typed into it here (9.27).
+**What changed and why.** `1393687` changed the HTTP boundary (9.27); its
+confirming read left four small should-fixes. This commit takes them: the
+held-port check reads the error's code and the refusal's text, and the notice
+stream's exception, the held port and the suite's time are stated exactly.
 
-**Which surfaces moved.** The server, the refusal texts, both front ends' pages
-and helpers, three test modules, the test client, `app/README.md`, 9.27, the
-gate note and the records. No doctrine, schema, spec, policy or ontology.
+**Which surfaces moved.** One test module, BIND_REFUSED_PORT's text, the
+server's docstrings, `app/README.md`, 9.27, the Makefile's and the hook's
+comments, the gate note and the records. No code on a request's path.
 
-**What validation ran and what passed.** 369 paired controls, each seen
-failing; 57 hand mutants in two batteries, 55 killed; two Fable 5.2 reads;
-the kernel gate under the heavy-run lock and the hook. No CI, no browser.
+**What validation ran and what passed.** 371 paired controls; test_http.py
+and the bind controls under the lock; two Fable 5.2 reads, all their fixes
+taken; the kernel gate under the heavy-run lock and the hook. No CI.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
@@ -116,7 +115,7 @@ cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
 (reading APP-R31). **The showcase (2026-11-14)** is a second, read-only
 front end served with `--ui showcase`; **slice 4** of that day adds the
-COLLECTION board on key 5 (section 2). 569 tests with 369 paired
+COLLECTION board on key 5 (section 2). 571 tests with 371 paired
 negative controls since amendment 9.27, in the kernel gate, `make test` and
 CI and not in the hook or preflight (APP-R30). Its design departures from
 `docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.27 at the end of that file,
@@ -331,7 +330,7 @@ Opus models read the HTTP boundary's build, and Fable 5.2 its rework, twice.
 | His rulings of 2026-11-11, and the demo | `Z-ISR/_session-artifacts/2026-11-11-plainsight-lane/` | `README.md` with each question, his click and its stamp, and the item 2 patch as he accepted it; the static demo page of invented data and the plan that put it behind a Cloudflare Access sign-in in the estate account (route A, acts 1 to 3 done on his clicks of 2026-11-12, act 4 held for his review). |
 | His rulings of 2026-11-12, and the gate of `09caa88` | `Z-ISR/_session-artifacts/2026-11-12-plainsight-lane/` | `README.md` with each question, his click and its stamp, the push rule's mutant log, and that commit's gate and hook logs. The lane's ranked prompts for his team-account instance are in the parent's notes folder of that day. |
 | His answers of 2026-11-14 | `Z-ISR/_session-artifacts/2026-11-14-plainsight-lane/` | `README.md`, the record: the landings of `09caa88`, `1aedf36` and `59cb0cf` with their gate and hook logs, slice 4's review and mutant runs, the RT-11 reading paper with the maintainer's decision of that day and the change built on it, and the reports on the HTTP boundary change. |
-| This commit and `d586f22`, the lanes from 2026-11-16 and 2026-11-17 | `Z-ISR/_session-artifacts/2026-11-16-plainsight-lane/` and `2026-11-17-plainsight-lane/` | The first: the RT-11 change placed on `59cb0cf`, the two reads of its rework and `d586f22`'s gate and hook logs; the HTTP boundary rework's brief, its builder's two reports, patches and logs (`http_rework_by_plainsight-7-http/`), and the second read of it as placed on `d586f22`. The second: the confirming read of the should-fix pass, this commit's records kit, and its gate and hook logs. |
+| This commit, `1393687` and `d586f22`, the lanes from 2026-11-16 and 2026-11-17 | `Z-ISR/_session-artifacts/2026-11-16-plainsight-lane/` and `2026-11-17-plainsight-lane/` | The first: the RT-11 change placed on `59cb0cf`, the two reads of its rework and `d586f22`'s gate and hook logs; the HTTP boundary rework's brief, its builder's two reports, patches and logs (`http_rework_by_plainsight-7-http/`), and the second read of it as placed on `d586f22`. The second: the confirming read of the should-fix pass, `1393687`'s records kit, gate and hook logs, and this commit's two reads, patches and logs. |
 | The provisioning plan | `Z-ISR/_session-artifacts/2026-09-08-plainsight-provisioning-plan/PROVISIONING_PLAN.md` | Track B and the critical path to a first S1 run. |
 | The overnight records | `Z-ISR/_session-artifacts/2026-09-30-plainsight-overnight/` | The Step 8 and Step 7 reviews, `MAINTAINER_QUEUE.md` with the 28 items, `REPORTS.md`. |
 | The cross-session records | The harvest folders of 2026-09-14 through 2026-10-22 and the negative-control audit of 2026-10-18 under `Z-ISR/_session-artifacts/` | The corrected crossings classing, the harvests behind `bf6d5d4` and `37dbcee`, the closeout records of 2026-10-20 and 2026-10-27, and the audit under which all sixteen implemented entries of that time were seen failing. |

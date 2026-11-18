@@ -309,7 +309,7 @@ KERNEL_GATE = (
         "projections, rebuild and replay, the retention sweep's refusals, the loopback "
         "server, its routes, the egress guard and the notice stream, and the static "
         "front end, each over the must-pass corpus and claiming coverage rather than "
-        "correctness. app/tests/test_controls.py runs the paired negative controls (369 since "
+        "correctness. app/tests/test_controls.py runs the paired negative controls (371 since "
         "amendment 9.27 of 2026-11-14, 2026-11-16 and 2026-11-17) "
         "inside the suite and fails it when a check stays green with its mechanism "
         "removed. --tb=short keeps a failure to its assertion line. It took 11 "

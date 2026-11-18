@@ -196,7 +196,7 @@ prove:
 # assumption in the sense doctrine/HYGIENE.md section 2 warns about. Step 10
 # added the subject guard's tests, which also run under pytest. CI's Mechanism
 # tests step runs the same two scripts. The application's tests joined on
-# 2026-10-28 and need pytest; they run about three minutes, with their paired
+# 2026-10-28 and need pytest; they run about eleven minutes, with their paired
 # negative controls inside the suite, and CI runs them as its Application tests
 # step. --tb=short keeps a failure to its assertion line (APP-R30).
 test:
@@ -253,7 +253,7 @@ validate-kernel:
 # this list and that is a change to make deliberately rather than by default.
 #
 # The application's tests are absent from this list and from the hook by
-# reading APP-R30 of 2026-10-28. They run about three minutes, they guard
+# reading APP-R30 of 2026-10-28. They run about eleven minutes, they guard
 # runtime behaviour rather than what enters git history, and the scan below is
 # what stops a selector value at the commit; the kernel gate, make test and CI
 # run them.

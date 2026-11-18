@@ -34,7 +34,8 @@ The ingest lands 44 events in one case. The serve command binds 127.0.0.1 on a
 free port and prints two URLs per case: the landing view, which is DOSSIER, and
 the web focused on the seed. Open the web URL in a browser on the same machine.
 The server refuses any other bind address with BIND_REFUSED_LOCAL, and a
-`--port` that another socket holds with BIND_REFUSED_PORT.
+`--port` the platform refuses to bind, one another server listens on among
+them, with BIND_REFUSED_PORT.
 
 ## The showcase front end
 
@@ -220,10 +221,13 @@ reset, after which a Windows client's stack drops the answer it had received,
 so the page would see a network error in place of the refusal and its moves.
 Any answer given before a declared body is read, a Host refusal and
 BODY_REFUSED for a length past 8 KiB among them, is followed by the same
-discard, except the notice stream's, which holds its connection until the
-stream ends and is then closed. The one second is a reading that awaits the
-maintainer's confirmation (amendment 9.27). A request the standard library's
-parser refuses before routing is closed at once, as before.
+discard. The notice stream holds its connection until it ends: a stream the
+server stops is closed without the discard, and one its client closes, or one
+a fault ends, reaches the discard once it is over, which finds no body to read
+from a page's stream, since that stream declares none. The one second is a
+reading that awaits the maintainer's confirmation (amendment 9.27). A request
+the standard library's parser refuses before routing is closed at once, as
+before.
 
 The listening socket shares its port with no other socket. On Windows it is
 bound with SO_EXCLUSIVEADDRUSE and with SO_REUSEADDR off, because there
@@ -231,8 +235,15 @@ SO_REUSEADDR lets another process bind the port. Elsewhere it is bound with
 SO_REUSEADDR on, as the standard library binds it, because Linux refuses a
 second bind to a listening port whatever that option says and, without it,
 refuses a restart on the port while the port's last connections wait out
-TIME_WAIT. SO_REUSEPORT is off everywhere. A `--port` that another socket holds
-is refused with BIND_REFUSED_PORT, and the serve command exits 1.
+TIME_WAIT. SO_REUSEPORT is off everywhere. A `--port` the platform refuses to
+bind is refused with BIND_REFUSED_PORT, and the serve command exits 1. On
+Windows and on Linux the platform refuses a TCP port at 127.0.0.1 that another
+socket listens on or holds bound with no option. It binds a port held, on
+Linux, only by a socket bound with SO_REUSEADDR and not listening, and, on
+Windows, only as the local end of a client's connection, and a socket on ::1 or
+a UDP socket at the same number does not stop the bind either. In each of those
+cases the server binds and answers the port's requests, and on Linux the
+holder's own listen is then refused.
 
 Every response carries Cache-Control: no-store, the Content-Security-Policy
 default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action

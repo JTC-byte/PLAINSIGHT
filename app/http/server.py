@@ -35,8 +35,10 @@ and closes. A server that closed at once would meet a body still on its way
 with a reset, and a Windows client's stack drops an answer it has received when
 a reset arrives, so the page would see a network error in place of the refusal
 and its moves. RFC 9112 section 9.6 describes this staged close. The notice
-stream is the one answer the discard does not follow: the stream holds its
-connection until it ends, and the server then closes it.
+stream holds its connection until it ends. A stream the server stops returns
+before the discard, and the server closes it. A stream its client closes, or
+one a fault ends, reaches the discard once it is over: a page's stream declares
+no body, so nothing is read, and a client that has closed ends the read at once.
 
 The listening socket shares its port with no other socket, by options chosen
 per platform. Where the platform offers exclusive use, which is Windows, it is
@@ -46,7 +48,7 @@ Elsewhere it is bound with SO_REUSEADDR on, as the standard library binds it:
 Linux refuses a second bind to a listening port whatever that option says, and
 without it refuses a restart on the port while the port's last connections
 wait out TIME_WAIT. SO_REUSEPORT is off everywhere. A port the platform refuses
-to bind, one another socket holds among them, is refused with
+to bind, one another socket listens on among them, is refused with
 BIND_REFUSED_PORT.
 
 Every response carries Cache-Control: no-store, the Content-Security-Policy
@@ -316,7 +318,7 @@ SERVER_CLASS = Server
 
 def bind_server(host: str, port: int, app: App) -> Server:
     """The server bound to (host, port), or BIND_REFUSED_PORT when the platform refuses the bind, as it does for a
-    port another socket holds. The detail names the port and the error's code, never the platform's message."""
+    port another socket listens on. The detail names the port and the error's code, never the platform's message."""
     try:
         return SERVER_CLASS((host, port), Handler, app)
     except OSError as exc:
@@ -547,8 +549,9 @@ class Handler(BaseHTTPRequestHandler):
         DISCARD_SECONDS, and return, after which the server closes the connection. A server that closed with the
         body still on its way would meet it with a reset, and a Windows client's stack drops the answer it had
         received when the reset arrives. A Content-Length that is absent, sent on two lines, not ASCII digits, or
-        longer than the twelve digits routes.ascii_digits reads declares no body, and nothing is read. The notice
-        stream returns from _dispatch before this runs: it holds its connection until it ends."""
+        longer than the twelve digits routes.ascii_digits reads declares no body, and nothing is read. A notice
+        stream the server stops returns from _dispatch before this runs; one its client closes, or one a fault ends,
+        reaches it once the stream is over."""
         if self._body_read:
             return
         length = self._header_value("Content-Length")

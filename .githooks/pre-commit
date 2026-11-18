@@ -19,7 +19,7 @@
 # refusal can be read rather than blocking a commit.
 #
 # The application's tests under app/ are not run here either, by reading
-# APP-R30 of 2026-10-28: they take about three minutes and guard runtime
+# APP-R30 of 2026-10-28: they take about eleven minutes and guard runtime
 # behaviour rather than what enters the history. The kernel gate, make test and
 # CI's Application tests step run them.
 

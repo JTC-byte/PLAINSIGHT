@@ -22,6 +22,37 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-17. The HTTP boundary's follow-up: the held-port check reads the error's code, and four statements are narrowed to what the code and the platforms do.**
+
+  **What changed.** The check that a held port is refused reads the
+  refusal's detail whole, the port and an error name from errno.errorcode
+  or "errno N", and the refusal's text, which must say the platform refused
+  the bind; two new controls put the platform's message in the detail and
+  restore the old text. BIND_REFUSED_PORT's what, rule and second move,
+  `app/README.md`, the server's docstrings and amendment 9.27 say a port the
+  platform refuses to bind is refused, and the README names the ports it
+  binds; the notice stream's exception to the discard is stated as the code
+  takes it; the Makefile and the pre-commit hook's comment say the
+  application's tests take about eleven minutes.
+
+  **Which surfaces moved.** `app/tests/test_http.py`, `app/refusals.py`,
+  `app/http/server.py` (docstrings only), `app/README.md`,
+  `docs/PLAINSIGHT-design.md` (9.27), `Makefile` and `.githooks/pre-commit`
+  (comments only), the app-tests note in `tools/validate_conformance.py`,
+  the handoff, the worklog and its archive, this file.
+
+  **Validation.** 371 paired controls, two more; test_http.py passed and
+  the six bind controls failed under their breakers, under the heavy-run
+  lock. A Fable 5.2 read of the change, COMMIT AFTER NAMED FIXES, one
+  wording must-fix and six should-fixes, all taken; a Fable 5.2 confirming
+  read of that delta, COMMIT AS IS, three should-fixes, all taken. The
+  kernel gate and the pre-commit hook on the staged tree under the lock.
+
+  **What did not change.** No code on a request's path; the server's code is
+  the same once its docstrings are set aside. No route, store row, doctrine,
+  schema, spec, policy or ontology. `LOCAL_ACTS` stays False. Nothing is
+  pushed.
+
 - **2026-11-17. The HTTP boundary: a write is authorized by the page that sent it, its refusal reaches that page, and every text field keeps what is typed into it on this machine.**
 
   **What changed.** The server refuses a POST or PUT before any byte of its

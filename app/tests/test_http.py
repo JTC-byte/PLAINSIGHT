@@ -11,6 +11,7 @@ the suite if the check stays green under it.
 
 from __future__ import annotations
 
+import errno
 import json
 import re
 import socket
@@ -1896,9 +1897,20 @@ def test_bind_refused_off_loopback(ctx):
     check_bind_refused_off_loopback(ctx)
 
 
+#: BIND_REFUSED_PORT's what and rule as they were at 1393687, which said every port in use is refused, and the
+#: words that replaced them on 2026-11-17: the platform refuses some ports in use and binds others.
+BIND_PORT_WHAT_BEFORE = ("a port the server could not bind on 127.0.0.1, because another socket holds it or the system "
+                         "reserves it, so nothing was served")
+BIND_PORT_RULE_BEFORE = ("docs/PLAINSIGHT-design.md amendment 9.27: the server shares its port with no other socket, so a "
+                         "port in use is refused rather than shared")
+BIND_PORT_WHAT_NOW = "because the platform refused the bind"
+BIND_PORT_RULE_NOW = "so a port the platform refuses to bind is refused rather than shared"
+
+
 def check_a_held_port_is_refused_with_its_moves(ctx):
-    """python -m app serve with --port naming a port another socket holds exits 1 and prints BIND_REFUSED_PORT on
-    stderr: what was refused, the rule, the moves, the port and the error's code, and no traceback. The bind
+    """python -m app serve with --port naming a port another socket listens on exits 1 and prints BIND_REFUSED_PORT on
+    stderr: what was refused, the rule, the moves, the port and the error's code, and no traceback; the text says
+    the platform refused the bind, not that every port in use is refused. The bind
     refuses that port on every platform, under exclusive use on Windows and by the kernel's own rule on Linux, and
     its error used to leave main() as a traceback, errno 10048 on Windows and 98 on Linux in the second reader's
     runs of 2026-11-16 (its should-fix 5). The held port is this check's own server's, which goes on serving; a
@@ -1912,7 +1924,7 @@ def check_a_held_port_is_refused_with_its_moves(ctx):
     c = Client(ctx)
 
     def served(self, *args, **kwargs):
-        raise AssertionError("a second server bound a port another socket holds and began to serve")
+        raise AssertionError("a second server bound a port another socket listens on and began to serve")
 
     ctx.mp.setattr(server.Server, "serve_forever", served)
     err = io.StringIO()
@@ -1920,15 +1932,21 @@ def check_a_held_port_is_refused_with_its_moves(ctx):
         with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
             code = cli.main(["serve", "--store", str(c.root), "--analyst", "analyst-example", "--port", str(c.port)])
     except OSError as exc:
-        raise AssertionError(f"a bind to a port another socket holds left main() as {type(exc).__name__}, which the "
+        raise AssertionError(f"a bind to a port another socket listens on left main() as {type(exc).__name__}, which the "
                              "operator reads as a traceback") from None
     text = err.getvalue()
-    assert code == 1, f"a bind to a port another socket holds exited {code}: {text!r}"
-    assert text.startswith("Refused BIND_REFUSED_PORT: "), f"a bind to a port another socket holds printed {text!r}"
+    assert code == 1, f"a bind to a port another socket listens on exited {code}: {text!r}"
+    assert text.startswith("Refused BIND_REFUSED_PORT: "), f"a bind to a port another socket listens on printed {text!r}"
     assert all(move in text for move in refusals.REFUSALS["BIND_REFUSED_PORT"].moves), \
         f"the refused bind's line leaves out a move: {text!r}"
-    assert f"\nport {c.port}: " in text and "Traceback" not in text, \
-        f"the refused bind's line does not name the port, or carries a traceback: {text!r}"
+    assert "Traceback" not in text, f"the refused bind's line carries a traceback: {text!r}"
+    assert BIND_PORT_RULE_NOW in text and BIND_PORT_WHAT_NOW in text and "port in use" not in text, \
+        f"the refused bind's text claims every port in use is refused: {text!r}"
+    _, _, detail = text.rstrip("\n").partition("\n")
+    port, _, error = detail.partition(": ")
+    assert port == f"port {c.port}", f"the refused bind's detail does not name the port: {detail!r}"
+    assert error in errno.errorcode.values() or re.fullmatch(r"errno -?\d+", error), \
+        f"the refused bind's detail carries something other than the error's code: {detail!r}"
     assert c.get("/api/cases").status == 200, "the server that held the port stopped serving"
 
 
@@ -1936,6 +1954,30 @@ def break_bind_error_left_to_main(ctx):
     """The bind as it was before the second reader's should-fix 5 of 2026-11-16: its OSError leaves make_server and
     main() as it is."""
     ctx.mp.setattr(server, "bind_server", lambda host, port, app: server.SERVER_CLASS((host, port), server.Handler, app))
+
+
+def break_bind_detail_carries_the_platform_message(ctx):
+    """bind_server with the platform's message in the detail in place of the error's code: the confirming reader's
+    hand mutant 4 of 2026-11-17, which the check above let through until it read the code."""
+    def bind(host, port, app):
+        try:
+            return server.SERVER_CLASS((host, port), server.Handler, app)
+        except OSError as exc:
+            raise server.Refusal("BIND_REFUSED_PORT", f"port {port}: {exc}") from None
+
+    ctx.mp.setattr(server, "bind_server", bind)
+
+
+def break_bind_refusal_claims_every_port_in_use(ctx):
+    """BIND_REFUSED_PORT's what and rule as they were at 1393687. The confirming reader of 2026-11-17 found the rule
+    wider than the platforms (its should-fix 3), and a second reader that day found it left unchanged (its
+    must-fix 1)."""
+    import dataclasses
+
+    from app import refusals
+
+    ctx.mp.setitem(refusals.REFUSALS, "BIND_REFUSED_PORT", dataclasses.replace(
+        refusals.REFUSALS["BIND_REFUSED_PORT"], what=BIND_PORT_WHAT_BEFORE, rule=BIND_PORT_RULE_BEFORE))
 
 
 def test_a_held_port_is_refused_with_its_moves(ctx):
@@ -2939,4 +2981,10 @@ CONTROLS = [
     ("the discard waits twice its deadline", check_a_refused_writes_body_is_discarded_within_its_bounds, break_discard_waits_twice_its_deadline),
     ("the token compared as text", check_a_write_needs_the_launch_token, break_token_compared_as_text),
     ("a refused bind left to main() as an OSError", check_a_held_port_is_refused_with_its_moves, break_bind_error_left_to_main),
+    # the confirming reader's should-fix 1 of 2026-11-17
+    ("the refused bind's detail carries the platform's message", check_a_held_port_is_refused_with_its_moves,
+     break_bind_detail_carries_the_platform_message),
+    # the confirming reader's should-fix 3 of 2026-11-17, and a second reader's must-fix 1 and should-fix 6 that day
+    ("the refused bind's text claims every port in use is refused", check_a_held_port_is_refused_with_its_moves,
+     break_bind_refusal_claims_every_port_in_use),
 ]

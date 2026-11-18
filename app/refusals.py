@@ -265,12 +265,12 @@ REFUSALS: dict[str, Code] = {
         ),
         _c(
             "BIND_REFUSED_PORT",
-            "a port the server could not bind on 127.0.0.1, because another socket holds it or the system "
-            "reserves it, so nothing was served",
+            "a port the server could not bind on 127.0.0.1, because the platform refused the bind, as it "
+            "does for a port another socket listens on or the system reserves, so nothing was served",
             "docs/PLAINSIGHT-design.md amendment 9.27: the server shares its port with no other socket, so a "
-            "port in use is refused rather than shared",
+            "port the platform refuses to bind is refused rather than shared",
             "omit --port, which takes a free port",
-            "pass --port and a port no other socket holds",
+            "pass --port and a port no other socket listens on or holds",
             "stop the process that holds the port, or wait for it to let the port go, and serve again",
         ),
         _c(
