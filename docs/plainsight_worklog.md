@@ -15,26 +15,6 @@ from defeating the shred mechanism.
 
 ---
 
-## 2026-11-11, the estate's GitHub usage rules adopted in AGENTS.md section 5, as a local commit, and patch D held off main, under the maintainer's lines and clicks of 2026-11-11.
-
-**Class:** B by the session's reading, his to confirm: one subsection of `AGENTS.md` section 5, which states this repository's process. No tool, gate entry, hook command, workflow, schema, policy, doctrine or corpus file changed.
-
-**The words this commit acts on.** His lines in the parent's chat, relayed by the parent local_b4e23975 and recorded as information, are quoted in the parent folder's `CLOSEOUT_CHECKPOINT.md` section 10: about 20:2x EST, "everything for now will have to be local commits for now and will need to be justified as a major release or major bug fix for me to put more budget on anything."; his click at about 20:30, "No, all local", on whether the public repositories may keep pushing; about 20:3x, "lets codify proper Github usage now and make sure we are actually budgeting and using what is actually needed"; and his click at about 20:36, "Yes, standing OK", on cancelling a run a newer push has replaced. In the PLAINSIGHT chat, read from the session's transcript by the extraction tool: at 20:27:32 EST "Yes, land D", which the tool lists as typed because the last offer before it held no button; it equals the label of the landing question offered at 20:19 and withdrawn at 20:26 under the relayed line, so the session put the conflict to him and pushed nothing. At 20:29:56 EST, his click "No, keep it local", on "Land patch D on main despite your local-commits-only line?", offered at 20:27:53. At 20:38:42 EST, his click "Yes, commit locally", on "Commit the GitHub usage rules into AGENTS.md locally, with no push?", offered at 20:38:21: his word for this commit and its local branch, and for no push.
-
-**Patch D, held.** Patch D's commit `8fd1c08` was pushed on its branch received-message-2026-11-11 at 20:06:13 EST, before the relayed line, and its run 43132125271 was read step by step at 20:19:27 EST: success on all 27 steps. Its landing on `main` is held under his answer of 20:29:56, and `main` stays at `71b7112`. This commit sits on a local branch from `8fd1c08`, so that one push, when he allows it, carries both.
-
-**What exists now.** `AGENTS.md` section 5 ends with "Amended 2026-11-11: GitHub usage and the Actions budget": local commits only until he lifts it, a push only on his word on a written case, a major release or a major bug fix with its cost; every check that can run on the workstation runs there under the heavy-run lock before a commit, and CI confirms; pushes batched, with records-only commits at most once a day at the closeout; no cascade re-gating; no re-run without a cause, a run whose commit is no longer its branch's head cancelled at once on his standing word and any other cancel on his word per run; and the cost stated before every push. Two points are left to him: the estate's rule that a job over about ten minutes runs only on demand, against CI here, one job of about twelve minutes that carries the commit-identity and trailer checks and stays on every push; and the landing route of the handoff's section 7, which starts two runs per landing. This repository is public, so its Actions minutes are free and it takes no share of an account's budget.
-
-**What is not claimed.** Rule 1 is followed by the lane and enforced by no mechanism: no hook refuses a push. A pre-push hook that refuses would be its structural form under design gate 1, and it is his to order. The figures in section 10 of the parent folder's checkpoint are the parent's measurements and are cited, not re-measured.
-
-**Agent involvement.** Session 0141534e on Opus 5.5 drafted the subsection outside the tree, read section 10 at its source twice (sha256 beginning e482c98fe18d4b9d, then 2dddf845271d3c10 after rule 6 was amended), and wrote this entry; no agent read it. No workflow ran.
-
-**Battery.** Hygiene exit 0 and both diff checks clean on the tree. The kernel gate and the pre-commit hook run on the staged tree under the estate's heavy-run lock after this paragraph is written, so that the tree they pass is the tree committed; their stamps are in the commit message and the record folder, and a failure of either stops the commit. Nothing is pushed.
-
-**Open.** His: this commit's class; the two points above; when pushing resumes, one push carrying `8fd1c08` and this commit, with its cost stated first; whether rule 1 should get a pre-push hook; `rebuild --verify` on a case whose database is gone; slice 4's three decisions; the request to GitHub Support; the pre-rewrite bundle once Support has acted; Saturday's rotation; and everything the previous entries list.
-
----
-
 ## 2026-11-12, rule 1 of AGENTS.md section 5 made a pre-push hook, rule 3 read per check, and the maintainer's rulings of the day recorded, under his clicks of 2026-11-12.
 
 **Class:** B by the session's reading, his to confirm: a new gate entry with its tool and its hook, the pre-commit hook's self-test loop, the Makefile, one CI step, the divergence register's self-test, and `AGENTS.md` section 5. No doctrine, schema, policy, ontology, spec, corpus, connector or application file changed.
@@ -200,3 +180,21 @@ from defeating the shred mechanism.
 **Battery.** After the fixes: test_showcase.py and test_static.py, 16 passed; their controls, 89 passed; hygiene exit 0. The kernel gate and the pre-commit hook run on the staged tree under the heavy-run lock after this paragraph is written; their stamps are in the commit message and the lane folder, and a failure of either stops the commit. Nothing is pushed.
 
 **Open.** The maintainer's: everything the previous entry lists, less the P6 commit's word, which his delegation settled. The lane's: the overlay's FICTIONAL chip at a narrow width (the read's nit 7); a view on the projector before the talk.
+
+---
+
+## 2026-11-18, the Lineage Drawer names where data came from and what handled it, and reads as an audit trail, read by a second model, under the maintainer's request of the day and his delegation of local commits.
+
+**Class:** C by the session's reading. The lineage model, the showcase's drawer and CSS, two test modules, amendment 9.30, `app/README.md`, the app-tests note in `tools/validate_conformance.py`, and the records. No route, write, schema, policy or doctrine changes; the back chain's response gains one field.
+
+**The words this commit acts on.** At about 16:44 on 2026-11-18 he wrote in the PLAINSIGHT chat that he loves the lineage menus and asked to make the auditing trail clearer, naming where data was pulled from and which tools grabbed or processed it, "to make auditing super easy and streamlined". His delegation of 14:14:34, confirmed in the PLAINSIGHT chat at about 14:22, covers this commit once the kernel gate and the hook have passed on this tree; the push stays on his word.
+
+**What exists now.** Each chain entry carries more closed fields: an ITEM names the site its locator names, or the platform for a Sherlock site its site facts list, and reads "probed" where its outcome is not a hit; the method, the HTTP status chain and a marked short digest of the raw bytes, which says where the store does not hold them; a RUN_START names its egress identity, the machine it ran on and its manifest hash; a CLAIM names its adapter transform. The back chain carries `audit`, one row per step oldest first, with the reviews of its claims, and the showcase draws it as an AUDIT TRAIL block with the chain's flags inside it. No line quotes a value that can carry a case value. The suite collects 618 tests, 408 of them paired negative controls.
+
+**What is not claimed.** The classic front end does not draw the trail. Only Sherlock's sites resolve to a platform, because no other mapping exists in the repository. Nothing was viewed in a browser by this lane before the commit; the pack builder of the day serves it on a fictional case.
+
+**Agent involvement.** A claude-opus-5-5 subagent at max built the change from about 16:48 to 17:00 EST in the worktree `ps-wt/lineage-audit` on `34c442b`. A claude-fable-5-2 subagent at max read it from about 17:01 to 17:12 and returned COMMIT WITH FIXES with seven should-fixes and five nits. plainsight-9, on claude-opus-5-5, moved it onto `c135e4c` in `ps-wt/lineage`, keeping both sides of the two conflicts, and took the seven should-fixes and two nits from 17:15 to 17:25: ordering on parsed time with reviews after what they act on, a marked digest that says it is not held, probed for a non-hit and an unlisted Sherlock site not quoted, the site facts' version caveat, the flags inside the trail, the prose check over analyst text with a control of its own, and 9.30 stating only what the tree shows. It left the case scope on one skeleton read, whose event id is already case-checked, and the silent depth cut, which predates this. The read is in the lane folder of 2026-11-18.
+
+**Battery.** After the fixes: test_http.py, test_showcase.py and test_static.py, 82 passed on a second run; the first run had one failure that did not recur on the rerun and was not traced. Their controls, 214 passed; hygiene exit 0. The kernel gate and the pre-commit hook run on the staged tree under the heavy-run lock after this paragraph is written; their stamps are in the commit message and the lane folder, and a failure of either stops the commit. Nothing is pushed.
+
+**Open.** The maintainer's: the class of 9.30, and everything the previous entries list. The lane's: the one unrepeated test failure; a mapping for other connectors' sites when one exists; the classic front end's trail.

@@ -641,7 +641,73 @@ def test_top_bar_keeps_the_case_and_synthetic_whole(ctx):
     check_top_bar_keeps_the_case_and_synthetic_whole(ctx)
 
 
+#: The left column's first child in the back lineage, and the call an audit row's heading makes.
+AUDIT_BLOCK = 'dir === "back" && (d.audit || []).length ? auditTrail(ctx, d.audit, d.event_id, (d.breaks || []).length > 0, d.flags || []) : null,'
+AUDIT_REFOCUS = 'onclick: () => openLineage(ctx, a.event_id, a.label, "back")'
+
+
+def lineage_view_source() -> str:
+    return (SHOWCASE / "views" / "lineage.js").read_text(encoding="utf-8")
+
+
+def showcase_css() -> str:
+    return (SHOWCASE / "app.css").read_text(encoding="utf-8")
+
+
+def check_drawer_renders_the_audit_trail(ctx):
+    """The drawer draws the server's audit field as an AUDIT TRAIL block at the top of the back lineage's
+    left column, above the chain list, each row's heading a button that re-centres the drawer on its event
+    (amendment 9.30). Read from the files and not run, because it needs a browser."""
+    js = lineage_view_source()
+    assert '"AUDIT TRAIL"' in js, "the drawer names no AUDIT TRAIL block"
+    left = js[js.index('const left = h("div", {},'):js.index("const right =")]
+    assert AUDIT_BLOCK in left, "the back lineage's left column does not draw the audit trail"
+    assert left.index(AUDIT_BLOCK) < left.index('h("div", { class: "tier" }, dir === "forward"') < left.index("chain);"), \
+        "the audit trail is not at the top of the left column, above the chain list"
+    trail = js[js.index("export function auditTrail("):js.index("/** The chain as a list")]
+    assert 'h("button", { class: "audit-step", type: "button"' in trail and AUDIT_REFOCUS in trail, \
+        "an audit row's heading is not a button that re-centres the drawer on its event"
+    assert "(a.lines || []).map(" in trail, "an audit row does not print its lines"
+    assert 'flags.length ? h("div", { class: "rows" }, flags.map(' in trail, "a flag on the chain is not shown in the audit trail"
+    css = showcase_css()
+    for rule in (".audit-trail li {", ".audit-step {"):
+        assert rule in css, f"app.css has no rule {rule!r} for the audit trail"
+
+
+def break_audit_block_not_drawn(ctx):
+    real = lineage_view_source()
+    assert real.count(AUDIT_BLOCK) == 1
+    ctx.mp.setattr(sys.modules[__name__], "lineage_view_source", lambda: real.replace(AUDIT_BLOCK, ""))
+
+
+def break_audit_heading_not_a_button(ctx):
+    real = lineage_view_source()
+    assert real.count(AUDIT_REFOCUS) == 1
+    ctx.mp.setattr(sys.modules[__name__], "lineage_view_source", lambda: real.replace(AUDIT_REFOCUS, "onclick: () => null"))
+
+
+def break_audit_hides_flags(ctx):
+    real = lineage_view_source()
+    old = 'flags.length ? h("div", { class: "rows" }, flags.map((f) => h("div", { class: "flag" }, f))) : null,'
+    assert real.count(old) == 1
+    ctx.mp.setattr(sys.modules[__name__], "lineage_view_source", lambda: real.replace(old, "null,"))
+
+
+def break_audit_style_missing(ctx):
+    real = showcase_css()
+    assert real.count(".audit-step {") == 1
+    ctx.mp.setattr(sys.modules[__name__], "showcase_css", lambda: real.replace(".audit-step {", ".audit-step-gone {"))
+
+
+def test_drawer_renders_the_audit_trail(ctx):
+    check_drawer_renders_the_audit_trail(ctx)
+
+
 CONTROLS = [
+    ("the drawer does not draw the audit trail", check_drawer_renders_the_audit_trail, break_audit_block_not_drawn),
+    ("the audit trail hides the chain's flags", check_drawer_renders_the_audit_trail, break_audit_hides_flags),
+    ("an audit heading does not re-centre the drawer", check_drawer_renders_the_audit_trail, break_audit_heading_not_a_button),
+    ("app.css has no rule for an audit heading", check_drawer_renders_the_audit_trail, break_audit_style_missing),
     ("a planted storage call in the showcase", check_showcase_uses_no_storage_canvas_or_host, break_planted_storage_in_showcase),
     ("a planted POST in the showcase", check_showcase_sends_get_only, break_planted_post),
     ("a planted form built by the element helper", check_showcase_sends_get_only, break_planted_form),

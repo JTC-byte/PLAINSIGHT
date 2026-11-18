@@ -290,6 +290,130 @@ def test_chain_broken_renders(ctx):
     assert eid_of("probe-run-start") not in {x["event_id"] for x in chain["chain"]}, "a break was skipped"
 
 
+def check_audit_trail_reads_oldest_first(ctx):
+    """The back chain's audit field reads the chain oldest first, one row per step, from the authorization
+    to the sentence, with the reviews of the chain's claim; forward lineage carries none (amendment 9.30)."""
+    c = Client(ctx)
+    d = c.get(f"{API}/lineage/{eid_of('assess-sentence')}").json()
+    audit = d.get("audit") or []
+    steps = [r["step"] for r in audit]
+    assert steps, "the back chain carries no audit trail"
+    for r in audit:
+        assert set(r) == {"step", "label", "event_id", "ts", "lines"}, sorted(r)
+        assert r["lines"] and r["lines"][0].startswith(f"recorded {r['ts']} by "), r["lines"]
+    times = [r["ts"] for r in audit]
+    assert times == sorted(times), "the audit trail does not read oldest first"
+    assert steps[0] == "authorized" and audit[0]["event_id"] == eid_of("authorize-grant"), steps
+    assert steps.index("gate") < steps.index("collected") < steps.index("fetched") < steps.index("processed"), steps
+    for want in ("proposed", "asserted", "reviewed", "assessed"):
+        assert want in steps, f"the audit trail has no {want} step: {steps}"
+    walked = {x["event_id"] for x in d["chain"]}
+    reviews = [r for r in audit if r["step"] == "reviewed" and r["event_id"] not in walked]
+    assert [r["label"] for r in reviews] == ["Verified", "Disputed"], "the claim's reviews are missing or out of the log's order"
+    assert reviews[-1]["lines"][-1] == "this is the claim's review state now"
+    forward = c.get(f"{API}/lineage/{eid_of('probe-item-1')}?dir=forward").json()
+    assert "audit" not in forward, "forward lineage carries an audit trail"
+
+
+def break_audit_in_chain_order(ctx):
+    from app.model import lineage
+
+    ctx.mp.setattr(lineage, "_audit_key", lambda row: 0)
+
+
+def break_audit_left_empty(ctx):
+    from app.model import lineage
+
+    ctx.mp.setattr(lineage, "audit", lambda conn, case_id, entries: [])
+
+
+def break_audit_without_reviews(ctx):
+    from app.model import lineage
+
+    ctx.mp.setattr(lineage, "_reviews", lambda conn, case_id, entries: [])
+
+
+def test_audit_trail_reads_oldest_first(ctx):
+    check_audit_trail_reads_oldest_first(ctx)
+
+
+def check_item_line_names_the_site_and_never_the_path(ctx):
+    """An ITEM's lines name the site its locator names and never the part after the slash, and no summary or
+    audit line quotes a claim's value; Sherlock's site facts resolve a site to its platform (amendment 9.30)."""
+    from app.model import lineage
+
+    c = Client(ctx)
+    events = corpus_events()
+    locator = named(events, "probe-item-1")["payload"]["locator"]
+    path = locator.split(":", 1)[1]
+    site = path.split("/", 1)[0]
+    values = {e["payload"]["value"] for e in events if e["event"]["event_type"] == "EXTRACT_EVENT"
+              and isinstance((e.get("payload") or {}).get("value"), str)}
+    assert values, "the corpus carries no claim value to look for"
+    d = c.get(f"{API}/lineage/{HANDLE_CLAIM}").json()
+    item = next(x for x in d["chain"] if x["event_id"] == eid_of("probe-item-1"))
+    assert f"fetched from site {site}" in item["summary"], item["summary"]
+    fetched = next(r for r in d["audit"] if r["step"] == "fetched")
+    assert f"fetched from site {site}" in fetched["lines"], fetched["lines"]
+    lines = [s for x in d["chain"] for s in x["summary"]] + [s for r in d["audit"] for s in r["lines"]]
+    for line in lines:
+        assert locator not in line and path not in line, f"a line quotes the locator's part after the slash: {line!r}"
+        for v in values | {s for s in corpus_strings() if len(s) >= 6}:
+            assert v not in line, "a summary or audit line quotes a claim's value or an analyst's prose"
+    assert lineage.fetched_from(f"site:{site}/<synthetic-path>") == f"fetched from site {site}"
+    assert lineage.fetched_from("sherlock-site:Instagram") == (
+        "fetched from platform Instagram, by a HEAD probe as this repository's site facts for sherlock record it, "
+        "which may differ from the version the run pinned, sent to imginn.com rather than the displayed site"
+    ), "Sherlock's site facts do not resolve a site to its platform"
+    assert lineage.fetched_from("sherlock-site:Instagram", "miss").startswith("probed platform Instagram"), \
+        "a miss reads as a fetch"
+    assert "<synthetic-site>" not in lineage.fetched_from("sherlock-site:<synthetic-site>/x"), \
+        "a Sherlock site its facts do not list had its id quoted"
+    assert "<synthetic-channel>" not in lineage.fetched_from("channel:<synthetic-channel>/2"), \
+        "a locator of a kind the drawer does not read had its first part quoted"
+
+
+def break_locator_quoted_whole(ctx):
+    from app.model import lineage
+
+    ctx.mp.setattr(lineage, "fetched_from", lambda locator, outcome="hit": f"fetched from {locator}")
+
+
+def break_locator_path_quoted(ctx):
+    from app.model import lineage
+
+    ctx.mp.setattr(lineage, "fetched_from", lambda locator, outcome="hit": "fetched from site " + str(locator).split(":", 1)[-1])
+
+
+def break_claim_line_quotes_its_value(ctx):
+    from app.model import lineage
+
+    real = lineage._fields
+
+    def quoting(conn, e):
+        out = real(conn, e)
+        value = (e.get("payload") or {}).get("value")
+        return out + [f"value {value}"] if isinstance(value, str) else out
+
+    ctx.mp.setattr(lineage, "_fields", quoting)
+
+
+def break_site_facts_unread(ctx):
+    from app.model import lineage
+
+    ctx.mp.setattr(lineage, "site_facts", lambda connector: {})
+
+
+def break_any_locator_kind_read(ctx):
+    from app.model import lineage
+
+    ctx.mp.setitem(lineage.SITE_SCHEMES, "channel", None)
+
+
+def test_item_line_names_the_site_and_never_the_path(ctx):
+    check_item_line_names_the_site_and_never_the_path(ctx)
+
+
 # ---------------------------------------------------------------------------
 # the deep dive
 # ---------------------------------------------------------------------------
@@ -3087,6 +3211,14 @@ CONTROLS = [
     ("the SVG prints a confidence", check_no_number_weight_or_confidence, break_svg_prints_a_confidence),
     ("inference drawn solid", check_dashed_inference_edges, break_inference_drawn_solid),
     ("the item projection row deleted", check_citation_chain_reaches_run_and_item, break_item_projection_row_deleted),
+    ("the audit trail kept in the chain's order", check_audit_trail_reads_oldest_first, break_audit_in_chain_order),
+    ("the audit trail left empty", check_audit_trail_reads_oldest_first, break_audit_left_empty),
+    ("the audit trail without the claim's reviews", check_audit_trail_reads_oldest_first, break_audit_without_reviews),
+    ("an ITEM line quotes the whole locator", check_item_line_names_the_site_and_never_the_path, break_locator_quoted_whole),
+    ("an ITEM line quotes the locator's part after the slash", check_item_line_names_the_site_and_never_the_path, break_locator_path_quoted),
+    ("Sherlock's site facts not read", check_item_line_names_the_site_and_never_the_path, break_site_facts_unread),
+    ("a claim line quotes its value", check_item_line_names_the_site_and_never_the_path, break_claim_line_quotes_its_value),
+    ("a locator of any kind read for its site", check_item_line_names_the_site_and_never_the_path, break_any_locator_kind_read),
     ("the deep dive records something", check_deep_dive_refuses_and_writes_nothing, break_deep_dive_records_something),
     ("a planted COLLECT_EVENT constructor", check_deep_dive_refuses_and_writes_nothing, break_planted_collect_constructor),
     ("the notice schema removed", check_sse_frames_carry_opaque_ids_only, break_notice_schema_removed),

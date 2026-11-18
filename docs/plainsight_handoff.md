@@ -12,10 +12,11 @@ which is the failure mode this cap prevents.
 `8583132`: Step 9, Step 12's manifest schema and harness, Step 10 drafted, the
 first connector on cassettes, and the application's first slice. Section 1
 states which done-whens hold and which are unmet by design.
-**Date:** 2026-11-18. This file's commit adds three showcase reading aids
-(9.29). Before it, `main` == `origin/main` == `71b7112`, and
+**Date:** 2026-11-18. This file's commit makes lineage an audit trail (9.30).
+Before it, `main` == `origin/main` == `71b7112`, and
 `github-usage-2026-11-11` holds `8fd1c08`, `92cf511`, `7e142d4`, `09caa88`,
-`1aedf36`, `59cb0cf`, `d586f22`, `1393687`, `34c442b` and `abb7778`, unpushed.
+`1aedf36`, `59cb0cf`, `d586f22`, `1393687`, `34c442b`, `abb7778`, `c135e4c`,
+unpushed.
 **Doctrine:** 58 criteria across four rank-1 files plus advisory HYGIENE.md,
 every conclusion stamped, every basis unstamped. Since `4e6abda` two doctrine
 passages changed: SS-14 item 3's enforcement state on 2026-11-11, and RT-11's
@@ -32,8 +33,8 @@ own transcript and read his lines first. Since about 14:22 on 2026-11-18 a
 local commit or merge that tests green with controls, with good records, and
 holds against doctrine is made under his delegation, confirmed in the PLAINSIGHT
 chat; a push, Class F decision, deploy, tag, mint or secret takes his word there.
-This commit is made on the local branch `showcase-ui-2026-11-18`, from
-`abb7778`, in a worktree, under it, and is not pushed: no push is made in
+This commit is made on the local branch `lineage-audit-on-c135e4c`, from
+`c135e4c`, in a worktree, under it, and is not pushed: no push is made in
 this repository until he lifts the rule of 2026-11-11, and
 `.githooks/pre-push` refuses one that names no written case (`AGENTS.md`
 section 5). The records are under `Z-ISR/_session-artifacts/` (section 6):
@@ -45,18 +46,17 @@ answered, in `2026-09-30-plainsight-overnight/MAINTAINER_QUEUE.md`.
 
 ## 0. The five questions, for the commit that carries this file
 
-**What changed and why.** Before the talk of 2026-11-19 the showcase gets
-three reading aids: the key to the lines above the web, the Guide button's ?
-key, and a top bar that keeps the case id and SYNTHETIC whole and fits a
-phone (9.29). `abb7778` before it built five findings of P6 (9.28).
+**What changed and why.** He asked for the lineage menus to name where data
+came from and what grabbed or processed it. The chain's lines now do, and
+the back chain carries an audit trail drawn at the top of the drawer (9.30).
+`c135e4c` before it added three showcase reading aids (9.29).
 
-**Which surfaces moved.** `app/showcase/` (CSS, the shell, Connections),
-`app/tests/test_showcase.py`, `app/README.md`, 9.29, the gate note and the
-records.
+**Which surfaces moved.** `app/model/lineage.py`, the showcase's drawer and
+CSS, two test modules, `app/README.md`, 9.30, the gate note and the records.
 
-**What validation ran and what passed.** 396 paired controls; a Fable 5.2
-read, its four should-fixes taken; the top bar measured at 375 pixels; the
-kernel gate under the heavy-run lock and the hook. No CI.
+**What validation ran and what passed.** 408 paired controls; a Fable 5.2
+read, its seven should-fixes taken; the kernel gate under the heavy-run lock
+and the hook. No CI.
 
 **Whether a release baseline changed.** No tag exists. This commit is
 local, and `main` is `71b7112`.
@@ -115,10 +115,10 @@ cancel window, the INSPECTOR's adjudications, and `runner/watchdog.py`; on
 LOCAL an act lands nowhere until he sets `LOCAL_ACTS` in `app/config.py`
 (reading APP-R31). **The showcase (2026-11-14)** is a second, read-only
 front end served with `--ui showcase`; **slice 4** of that day adds the
-COLLECTION board on key 5 (section 2). 603 tests with 396 paired
-negative controls since amendment 9.29, in the kernel gate, `make test` and
+COLLECTION board on key 5 (section 2). 618 tests with 408 paired
+negative controls since amendment 9.30, in the kernel gate, `make test` and
 CI and not in the hook or preflight (APP-R30). Its design departures from
-`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.29 at the end of that file,
+`docs/PLAINSIGHT-design.md` are amendments 9.1 to 9.30 at the end of that file,
 each dated, each his to decide.
 
 The operator's goal, stated 2026-09-08, is a first full investigation against

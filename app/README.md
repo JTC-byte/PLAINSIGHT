@@ -142,6 +142,16 @@ CHRONOLOGY (3), Places is MAP (4), Tools is COLLECTION (5), Assessment is DRAFT
   prints. Only a selector's value is cut to the box; the INSPECTOR prints it in
   full.
 - Every node is inert. Selecting one fills the INSPECTOR and collects nothing.
+- The Lineage Drawer's back chain carries `audit`, one row per step read oldest
+  first: authorized, gate, collected, fetched, processed, proposed, asserted,
+  reviewed and assessed, each absent where the chain holds no such event. An
+  ITEM names the site its locator names and never the part after the slash, an
+  item that is not a hit reads as probed, and
+  a Sherlock site is named as its platform from `connectors/sherlock/site_facts.json`;
+  a RUN_START names its egress identity, the machine it ran on and its manifest
+  hash; a CLAIM names its extractor and its lineage transform. The showcase
+  draws it as the AUDIT TRAIL block; the classic front end ignores the field
+  (amendment 9.30).
 
 ## Keys
 

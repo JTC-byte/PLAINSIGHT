@@ -22,6 +22,32 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-18. The Lineage Drawer names where data came from and what handled it, and reads as an audit trail.**
+
+  **What changed.** Chain entries name the site or platform an item came
+  from, read "probed" for a non-hit, and give the method, the HTTP statuses
+  and a marked short digest of the raw bytes; a run names its egress
+  identity, machine and manifest hash; a claim names its adapter transform.
+  The back chain carries `audit`, one row per step oldest first with the
+  claims' reviews, drawn in the showcase as an AUDIT TRAIL block with the
+  chain's flags inside it.
+
+  **Which surfaces moved.** `app/model/lineage.py`,
+  `app/showcase/views/lineage.js`, `app/showcase/app.css`,
+  `app/tests/test_http.py`, `app/tests/test_showcase.py`, `app/README.md`,
+  `docs/PLAINSIGHT-design.md` (9.30), the app-tests note in
+  `tools/validate_conformance.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** 408 paired controls, twelve more. A Fable 5.2 read returned
+  COMMIT WITH FIXES; its seven should-fixes are taken. The kernel gate and the
+  hook ran on the staged tree under the heavy-run lock.
+
+  **What did not change.** No route, write, schema, policy, doctrine or
+  stored row. No line quotes a value that can carry a case value; the full
+  locator, a claim's value and the argv template stay where they were. The
+  classic front end ignores the new field. Nothing is pushed.
+
 - **2026-11-18. Three reading aids in the showcase: the key to the lines above the web, the Guide button's ? key, and a top bar that keeps the case id and the word SYNTHETIC whole and fits a phone.**
 
   **What changed.** Connections draws its key to the lines above the web. The

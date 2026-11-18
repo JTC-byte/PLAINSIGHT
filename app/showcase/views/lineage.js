@@ -46,6 +46,26 @@ export function entry(ctx, c, headId, label) {
       : h("button", { class: "lin go", type: "button", title: "re-centre the drawer on this event", "aria-label": `re-centre on ${eventLabel(c.type, c.subtype)}`, onclick: () => openLineage(ctx, c.event_id, eventLabel(c.type, c.subtype), "back") }, "⧉"));
 }
 
+/**
+ * The audit trail (amendment 9.30): the server's steps, oldest first, one row
+ * each, heading in the gutter and its closed-field lines beside it. A heading
+ * re-centres the drawer on its event, as an entry's button does; the head's
+ * own row says so instead. A break below leaves the trail incomplete, and the
+ * block says so rather than reading as whole.
+ */
+export function auditTrail(ctx, audit, headId, broken, flags = []) {
+  return h("div", { class: "audit" },
+    h("div", { class: "tier" }, "AUDIT TRAIL"),
+    h("p", { class: "faint" }, "Read down, oldest first: who authorized it, what the gate decided, which tool collected it and from where, what processed it, and who acted on it since."),
+    broken ? h("div", { class: "flag" }, "This trail is incomplete: the chain is broken below, and each break is listed under CHAIN.") : null,
+    flags.length ? h("div", { class: "rows" }, flags.map((f) => h("div", { class: "flag" }, f))) : null,
+    h("ol", { class: "audit-trail" }, audit.map((a) => h("li", {},
+      a.event_id === headId
+        ? h("span", { class: "audit-step here", title: "the drawer is on this event" }, a.label)
+        : h("button", { class: "audit-step", type: "button", title: "re-centre the drawer on this event", "aria-label": `re-centre on ${a.label}`, onclick: () => openLineage(ctx, a.event_id, a.label, "back") }, a.label),
+      h("div", { class: "lines" }, (a.lines || []).map((s) => h("div", {}, s)))))));
+}
+
 /** The chain as a list, the head first, each entry indented by its depth. */
 export function chainList(ctx, chain, headId, label) {
   return h("ol", { class: "chain" }, h("span", { class: "chain-rail", "aria-hidden": "true" }), chain.map((c) => entry(ctx, c, headId, label)));
@@ -71,6 +91,7 @@ export async function openLineage(ctx, eventId, label, dir = "back") {
     const d = r.body;
     const chain = chainList(ctx, d.chain, d.event_id, label);
     const left = h("div", {},
+      dir === "back" && (d.audit || []).length ? auditTrail(ctx, d.audit, d.event_id, (d.breaks || []).length > 0, d.flags || []) : null,
       h("div", { class: "tier" }, dir === "forward" ? "EVERYTHING THAT RESTS ON IT" : "CHAIN · WHAT IT RESTS ON"),
       h("p", { class: "faint" }, dir === "forward"
         ? (d.chain.length ? `${d.chain.length} ${d.chain.length === 1 ? "event rests" : "events rest"} on this one, and would need review if it were wrong.` : "Nothing in this case rests on this event.")
