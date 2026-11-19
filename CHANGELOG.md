@@ -22,6 +22,32 @@ needs an entry, which needs a commit.
 Nothing is released. PSE has no version, no tag, and no published artifact, and
 `CONFORMANCE.md` states the bar that would have to be met first.
 
+- **2026-11-18. An evidence snapshot in the Lineage Drawer, and a less crowded Connections web.**
+
+  **What changed.** The drawer draws an optional `evidence` object as a
+  screenshot-like capture frame of the source, eight kinds, with the span or
+  field a claim was read from marked, a closed shape the page validates, and
+  a provenance note always shown; the server sends none. The web opens at 2
+  hops past 40 nodes, draws link labels only for the selected, hovered or
+  focused node, and scrolls its seed into view. CI fails when node is absent.
+
+  **Which surfaces moved.** `app/showcase/lib/evidence.js`,
+  `app/showcase/views/evidence.js`, `app/showcase/lib/webrules.js` (new),
+  `app/showcase/lib/api.js`, `app/showcase/views/lineage.js`,
+  `app/showcase/views/connections.js`, `app/showcase/app.css`,
+  `app/tests/test_showcase.py`, `.github/workflows/ci.yml`, `app/README.md`,
+  `docs/PLAINSIGHT-design.md` (9.31), the app-tests note in
+  `tools/validate_conformance.py`, the handoff, the worklog and its archive,
+  this file.
+
+  **Validation.** 448 paired controls, forty more. A Fable 5.2 read returned
+  COMMIT WITH FIXES; its two must-fixes and seven should-fixes are taken. The
+  kernel gate and the hook ran on the staged tree under the heavy-run lock.
+
+  **What did not change.** No server route, response, write, schema, policy,
+  doctrine or stored row. No raw capture crosses to LOCAL and none is drawn.
+  Nothing is pushed by this commit.
+
 - **2026-11-18. The Lineage Drawer names where data came from and what handled it, and reads as an audit trail.**
 
   **What changed.** Chain entries name the site or platform an item came

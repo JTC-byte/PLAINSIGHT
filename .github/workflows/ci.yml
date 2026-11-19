@@ -101,8 +101,18 @@ jobs:
       # synthetic and holds placeholders only. Every store lives under a temporary
       # directory, and the only listener and the only connections are on
       # 127.0.0.1. The kernel gate below runs the same command again.
+      # Twelve showcase checks and their controls run JavaScript under node, and
+      # without node they skip while pytest exits 0. The step before the tests
+      # fails the job when node is absent, and PLAINSIGHT_REQUIRE_NODE turns
+      # each of those skips into a failure in this step (amendment 9.31).
+      - name: Node for the showcase checks
+        if: ${{ !cancelled() }}
+        run: node --version
+
       - name: Application tests
         if: ${{ !cancelled() }}
+        env:
+          PLAINSIGHT_REQUIRE_NODE: "1"
         run: python -m pytest app -q --tb=short -p no:cacheprovider
 
       # The eleven self-tests no other step runs, one named step each.

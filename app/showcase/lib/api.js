@@ -66,19 +66,37 @@ function fromPack(url) {
   return { ok: true, status: 200, body: swaps ? swap(body) : body };
 }
 
+function swapText(v) {
+  let s = v;
+  for (const [from, to] of swaps) if (s.includes(from)) s = s.split(from).join(to);
+  return s;
+}
+
 function swap(v) {
-  if (typeof v === "string") {
-    let s = v;
-    for (const [from, to] of swaps) if (s.includes(from)) s = s.split(from).join(to);
-    return s;
-  }
+  if (typeof v === "string") return swapText(v);
   if (Array.isArray(v)) return v.map(swap);
   if (v && typeof v === "object") {
     const o = {};
     for (const [k, x] of Object.entries(v)) o[k] = swap(x);
+    if (typeof v.text === "string" && Array.isArray(v.spans)) o.spans = v.spans.map((sp) => rebase(v.text, sp));
     return o;
   }
   return v;
+}
+
+// An evidence snapshot's span counts UTF-16 code units of its text as the pack holds it (amendment 9.31), and
+// the page reads that text with the stand-ins drawn in, so each boundary moves to where the same characters
+// now sit. A boundary inside a placeholder has no such place: it becomes -1, and the page refuses the snapshot
+// in words rather than mark the wrong characters.
+function rebase(text, sp) {
+  const moved = swap(sp);
+  if (!sp || typeof sp !== "object" || !Number.isInteger(sp.start) || !Number.isInteger(sp.end)) return moved;
+  const whole = swapText(text);
+  const at = (i) => {
+    const head = swapText(text.slice(0, i));
+    return head + swapText(text.slice(i)) === whole ? head.length : -1;
+  };
+  return { ...moved, start: at(sp.start), end: at(sp.end) };
 }
 
 function enter() {

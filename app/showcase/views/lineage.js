@@ -4,10 +4,14 @@
 // envelope, the raw bytes. Flags and breaks render as consequences in the one
 // hue, because the server says the system does not vouch for them; a raw pane
 // is red only on the server's raw_vouch. Every entry re-centres the drawer.
+// Above the envelope, and only when the response carries one, an evidence
+// snapshot shows what the source showed at capture (amendment 9.31); the
+// server sends none, and a display-only case pack can supply one.
 
 import { h, clear, tok, notLoaded } from "../lib/dom.js";
 import { getJSON } from "../lib/api.js";
 import { eventLabel, layerOf, stamp, short } from "../lib/words.js";
+import { evidenceTier } from "./evidence.js";
 
 let returnFocus = null;
 let hook = null;
@@ -104,6 +108,7 @@ export async function openLineage(ctx, eventId, label, dir = "back") {
         h("p", { class: "muted" }, "Forward lineage reads the same table the other way. It answers what would break if this event were wrong."),
         h("p", { class: "muted" }, "Selecting an event here re-centres the drawer on it and collects nothing."))
       : h("div", {},
+        d.evidence ? evidenceTier(d.evidence, d.event_id) : null,
         h("div", { class: "tier" }, "DECODED ENVELOPE"),
         h("pre", { class: "env" }, d.envelope ? JSON.stringify(d.envelope, null, 2) : "no decoded envelope: the payload is not held"),
         h("div", { class: "tier" }, "RAW"),

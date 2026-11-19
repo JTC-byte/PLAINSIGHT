@@ -120,6 +120,21 @@ CHRONOLOGY (3), Places is MAP (4), Tools is COLLECTION (5), Assessment is DRAFT
   analyst's name drops to its initials, so the bar fits a phone's screen.
   `app/tests/test_showcase.py` reads each from the files, with twelve
   controls.
+- The Lineage Drawer draws an evidence snapshot above the decoded envelope
+  when a lineage response carries `evidence`: a frame that reads as a
+  screenshot of the source, with the characters or the field a claim was read
+  from highlighted, a route as a sketch that is not geo-referenced, an image as
+  a neutral box, and the provenance note always shown. The shape is closed and
+  the page refuses anything else in words. The server sends none, because raw
+  capture does not cross to LOCAL and no blob is served; a case pack can supply
+  one, and under a case pack the snapshot is said to be written for display,
+  with a sha256 that names no bytes (amendment 9.31).
+- Connections draws a link's label only for the selected link and the links of
+  the selected or pointed-at node, puts each card on one line with its full
+  text in its title, sizes the stage to the node count, and opens a three-hop
+  web of more than forty nodes at two hops, saying why, scrolling the seed into
+  view when the web first draws. Dashed, struck and display-depth marks stay
+  (amendment 9.31).
 - Places draws no map, because the corpus holds no coordinate.
 - Tools counts every event in the case from the rollup and marks the ones its
   own reads do not reach as counted only, so nothing is dropped. It does not

@@ -6,15 +6,22 @@
 // simulation, no weight, no size by importance: every card is the same width.
 // Lines are grouped by pair, and each pair carries one label in words; the
 // side panel prints every link's own sentence. Selecting collects nothing.
+// Amendment 9.31 makes a large web legible without hiding what an analyst needs:
+// a pair's label is drawn only for the selected link and the links of the
+// selected or pointed-at node, and at rest the line's style alone shows, read
+// against the key above the web; a card is one line, its full text in its
+// title; the stage grows with the node count; and a three-hop web of more than
+// forty nodes opens at two hops, with three one click away and the reason said.
 
 import { h, s, clear, tok, lin, silhouette } from "../lib/dom.js";
 import { need, liveLook } from "../lib/api.js";
 import { selectorChip, selectorLabel, SECTOR_LABEL, SEAMS, SEAM_SHORT, stamp, short, plural } from "../lib/words.js";
 import { commonTokens } from "../lib/model.js";
+import { defaultHops, labelShown, stageHeight, LEGIBLE_NODES } from "../lib/webrules.js";
 
 const SLOTS = ["accounts", "names_aliases", "emails", "phones", "addresses", "organizations", "people", "other_osint", null];
-const CARD_W = 220;
-const CARD_H = 58;
+const CARD_W = 184;
+const CARD_H = 40;
 
 function slotOf(n) {
   const i = SLOTS.indexOf(n.sector === undefined ? null : n.sector);
@@ -34,7 +41,7 @@ function cardText(n, common) {
   const own = liveLook ? [] : (n.vouch_tokens || []).filter((t) => !common.includes(t));
   if (n.kind === "selector") {
     return { glyph: selectorChip(n.selector_type), title: (n.lines || [])[1] || n.selector_type, mono: true, generated: n.generated,
-      sub: selectorLabel(n.selector_type) + (own.length ? ` · ${own.join(" · ")}` : ""), subVouch: own.length > 0 };
+      sub: selectorLabel(n.selector_type) + (own.length ? ` · ${own.join(" · ")}` : ""), subVouch: own.length > 0, flag: own.join(" · ") };
   }
   if (n.kind === "cluster") {
     const band = ((n.lines || [])[0] || "").split(" · ")[1] || "";
@@ -46,7 +53,7 @@ function cardText(n, common) {
     return { glyph: "person", title: "Candidate person", struck: excl, sub: excl ? "excluded: not the subject" : "candidate", subVouch: false };
   }
   if (n.kind === "referenced") return { glyph: "person", title: "Referenced person", sub: "named by a cluster or proposal · no observation held", subVouch: false };
-  if (n.kind === "entity") return { glyph: selectorChip(n.entity_type || "en"), title: (n.lines || [])[0] || n.entity_type, sub: (n.lines || [])[1] || "", subVouch: own.length > 0 };
+  if (n.kind === "entity") return { glyph: selectorChip(n.entity_type || "en"), title: (n.lines || [])[0] || n.entity_type, sub: (n.lines || [])[1] || "", subVouch: own.length > 0, flag: own.join(" · ") };
   return { glyph: "··", title: (n.lines || [])[0] || n.kind, sub: n.kind, subVouch: false };
 }
 
@@ -118,7 +125,7 @@ function layout(nodes, edges, focus, w, hgt) {
   const weight = (id) => 1 + (kids.get(id) || []).reduce((acc, k) => acc + weight(k), 0);
   const total = ring1.reduce((acc, n) => acc + weight(n.node_id), 0) || 1;
   const pos = new Map([[focus, { x: cx, y: cy, a: 0 }]]);
-  const frac = maxRing === 1 ? 0.84 : 0.74;
+  const frac = maxRing === 1 ? 0.84 : maxRing === 2 ? 0.6 : 0.5;
   const rx1 = (w / 2 - CARD_W / 2 - 14) * frac;
   const ry1 = (hgt / 2 - CARD_H / 2 - TOP) * frac;
   const first = ring1.length ? weight(ring1[0].node_id) : 1;
@@ -130,18 +137,38 @@ function layout(nodes, edges, focus, w, hgt) {
     a0 += sw;
   }
   const placed = [];
-  const centreHit = (p) => Math.abs(p.x - cx) < 70 + CARD_W / 2 && Math.abs(p.y - cy) < 70 + CARD_H / 2;
-  const hits = (p) => placed.some((q) => Math.abs(q.x - p.x) < CARD_W + 10 && Math.abs(q.y - p.y) < CARD_H + 10) || centreHit(p);
+  const centreHit = (p) => Math.abs(p.x - cx) < 80 + CARD_W / 2 && Math.abs(p.y - cy) < 80 + CARD_H / 2;
+  const hits = (p) => placed.some((q) => Math.abs(q.x - p.x) < CARD_W + 18 && Math.abs(q.y - p.y) < CARD_H + 18) || centreHit(p);
   const inside = (p) => p.x >= CARD_W / 2 + 8 && p.x <= w - CARD_W / 2 - 8 && p.y >= CARD_H / 2 + TOP && p.y <= hgt - CARD_H / 2 - BOTTOM;
   const clamp = (p) => {
     p.x = Math.max(CARD_W / 2 + 8, Math.min(w - CARD_W / 2 - 8, p.x));
     p.y = Math.max(CARD_H / 2 + TOP, Math.min(hgt - CARD_H / 2 - BOTTOM, p.y));
     return p;
   };
+  // The free spot nearest a wanted one: rings of growing radius around it, each read from the wanted
+  // direction outward to either side, so a card that cannot sit where it wants sits next to it and never on another.
+  // On a stage too full for that, the card takes the spot it overlaps least.
+  const crowd = (p) => placed.filter((q) => Math.abs(q.x - p.x) < CARD_W + 18 && Math.abs(q.y - p.y) < CARD_H + 18).length + (centreHit(p) ? 1 : 0);
+  const nearest = (from, prefer, start = 0) => {
+    let best = null;
+    for (let rad = start; rad < w + hgt; rad += 22) {
+      const steps = rad === 0 ? 1 : 24;
+      for (let i = 0; i < steps; i += 1) {
+        const off = (i % 2 ? 1 : -1) * Math.ceil(i / 2) * (Math.PI / 12);
+        const c = { x: from.x + rad * Math.cos(prefer + off), y: from.y + rad * Math.sin(prefer + off), a: prefer };
+        if (!inside(c)) continue;
+        const k = crowd(c);
+        if (k === 0) return c;
+        if (!best || k < best.k) best = { c, k };
+      }
+    }
+    return best ? best.c : clamp({ ...from });
+  };
   for (const n of ring1) {
     const p = pos.get(n.node_id);
-    for (let step = 0; step < 30 && hits(p); step += 1) { p.x += Math.cos(p.a) * 8; p.y += Math.sin(p.a) * 6; }
-    placed.push(clamp(p));
+    const c = inside(p) && !hits(p) ? p : nearest(p, p.a);
+    pos.set(n.node_id, c);
+    placed.push(c);
   }
   for (let r = 2; r <= maxRing; r += 1) {
     for (const n of rings.get(r) || []) {
@@ -151,14 +178,12 @@ function layout(nodes, edges, focus, w, hgt) {
       let chosen = null;
       for (let lap = 0; lap < 3 && !chosen; lap += 1) {
         for (const a of dirs) {
-          const d = Math.min((CARD_W + 44) / Math.max(1e-6, Math.abs(Math.cos(a))), (CARD_H + 26) / Math.max(1e-6, Math.abs(Math.sin(a)))) + lap * 40;
+          const d = Math.min((CARD_W + 60) / Math.max(1e-6, Math.abs(Math.cos(a))), (CARD_H + 40) / Math.max(1e-6, Math.abs(Math.sin(a)))) + lap * 48;
           const c = { x: p.x + d * Math.cos(a), y: p.y + d * Math.sin(a), a };
           if (inside(c) && !hits(c)) { chosen = c; break; }
         }
       }
-      if (!chosen) {
-        chosen = clamp({ x: p.x + (CARD_H + 30) * Math.cos(base), y: p.y + (CARD_H + 30) * Math.sin(base), a: base });
-      }
+      if (!chosen) chosen = nearest(p, base, CARD_H + 40);
       pos.set(n.node_id, chosen);
       placed.push(chosen);
     }
@@ -268,7 +293,10 @@ function listTwin(ctx, web) {
 export async function renderConnections(el, ctx) {
   const m = ctx.model;
   const st = ctx.state;
-  st.hops = st.hops || 3;
+  if (!st.hops) {
+    st.hops = defaultHops(m.web && m.web.mode === "web" ? m.web.nodes.length : null);
+    st.hopsAuto = st.hops !== 3;
+  }
   st.webView = st.webView || "web";
   if (!m.focus) { el.append(h("div", { class: "loading" }, "This case has no seed, so there is no web to draw.")); return; }
   if (ctx.missing("web") && st.hops === 3) { el.append(h("div", { class: "section-title" }, h("h2", {}, "Who and what is this account connected to?")), ctx.notLoaded("web")); return; }
@@ -277,12 +305,14 @@ export async function renderConnections(el, ctx) {
     h("h2", {}, "Who and what is this account connected to?"),
     h("span", { class: "sub" }, web.mode === "web" ? `${plural(web.nodes.length, "node")} · ${plural(web.edges.length, "link")} within ${plural(st.hops, "hop")}` : ""));
   const hopsSeg = h("div", { class: "seg", role: "group", "aria-label": "display depth" }, [1, 2, 3].map((n) =>
-    h("button", { type: "button", "aria-pressed": String(st.hops === n), onclick: () => { st.hops = n; ctx.select(st.selected); } }, `${n} ${n === 1 ? "hop" : "hops"}`)));
+    h("button", { type: "button", "aria-pressed": String(st.hops === n), onclick: () => { st.hops = n; st.hopsAuto = false; ctx.select(st.selected); } }, `${n} ${n === 1 ? "hop" : "hops"}`)));
   const viewSeg = h("div", { class: "seg", role: "group", "aria-label": "web or list" }, ["web", "list"].map((v) =>
     h("button", { type: "button", "aria-pressed": String(st.webView === v), onclick: () => { st.webView = v; ctx.select(st.selected); } }, v === "web" ? "Web" : "List")));
   const all = m.web ? m.web.nodes.length : null;
   const hidden = all !== null && web.mode === "web" ? all - web.nodes.length : 0;
-  const depthLine = st.hops === 3 ? "display depth 3, the most this route draws" : hidden > 0 ? `display depth ${st.hops} · ${plural(hidden, "more node")} within 3 hops hidden, not removed` : `display depth ${st.hops} · nothing more within 3 hops`;
+  const depthLine = st.hops === 3 ? "display depth 3, the most this route draws"
+    : st.hopsAuto && all > LEGIBLE_NODES ? `display depth ${st.hops} by default: the 3-hop web holds ${all} nodes, more than the ${LEGIBLE_NODES} drawn legibly at once · ${plural(hidden, "more node")} hidden, not removed; 3 hops is one click away`
+      : hidden > 0 ? `display depth ${st.hops} · ${plural(hidden, "more node")} within 3 hops hidden, not removed` : `display depth ${st.hops} · nothing more within 3 hops`;
   const tools = h("div", { class: "web-tools" }, hopsSeg, h("span", { class: "faint" }, `${depthLine} · display depth, not authorization depth`), h("span", { css: { flex: "1 1 auto" } }), viewSeg);
   if (web.mode !== "web") {
     el.append(title, tools, h("div", { class: "flag" }, web.cap || "Over the canvas cap: the server draws no web and serves the list."));
@@ -304,12 +334,26 @@ export async function renderConnections(el, ctx) {
   const touching = (k) => selNode && k.split("|").includes(selNode);
 
   const svgEl = s("svg", { class: "edges", "aria-hidden": "true" });
-  const stage = h("div", { class: "stage", role: "group", "aria-label": `the web around the seed, ${web.nodes.length} nodes; the list view carries the same content as text` });
+  const stage = h("div", { class: "stage", role: "group", css: { height: `${stageHeight(web.nodes.length)}px` }, "aria-label": `the web around the seed, ${web.nodes.length} nodes; the list view carries the same content as text` });
+  // The node pointed at, by mouse or keyboard focus. Its links' labels stay drawn until another node is
+  // pointed at, or the pointer or the focus leaves the web, so a label can be reached and pressed. A focused
+  // card shows its labels as hover does, and they follow it in the tab order, so Tab reaches them next.
+  let hoverId = null;
+  const point = (id) => {
+    if (hoverId === id) return;
+    hoverId = id;
+    draw();
+    const card = id ? cards.get(id) : null;
+    if (card) card.after(...[...labels].filter(([k]) => k.split("|").includes(id)).map(([, lab]) => lab));
+  };
+  stage.addEventListener("mouseleave", () => { if (!stage.contains(document.activeElement)) point(null); });
+  stage.addEventListener("focusout", (e) => { if (!stage.contains(e.relatedTarget)) point(null); });
   stage.append(svgEl);
   const cards = new Map();
   for (const n of nodes) {
     if (n.node_id === m.focus) {
-      const b = h("button", { class: "focusnode", type: "button", "aria-pressed": String(selNode === n.node_id), onclick: () => { st.selectedEdge = null; ctx.select(n.node_id); } },
+      const b = h("button", { class: "focusnode", type: "button", "aria-pressed": String(selNode === n.node_id), onclick: () => { st.selectedEdge = null; ctx.select(n.node_id); },
+        onmouseenter: () => point(n.node_id), onfocus: () => point(n.node_id) },
         h("span", { class: "ph" }, silhouette(116)),
         h("span", { class: "sr" }, "the seed account"));
       cards.set(n.node_id, b);
@@ -317,15 +361,19 @@ export async function renderConnections(el, ctx) {
       continue;
     }
     const t = cardText(n, common);
+    // One line on the card. The full text, its sub-line and the server's lines, is the card's title, and the
+    // sub-line stays in its accessible name.
+    const full = [...new Set([t.title, t.sub, ...(n.lines || [])].filter(Boolean))].join(" · ");
     const b = h("button", {
       class: ["wnode", n.kind === "cluster" ? "layer-fus" : "layer-obs", selNode && selNode !== n.node_id && !groupsTouch(groups, selNode, n.node_id) ? "dim" : null],
-      type: "button", "aria-pressed": String(selNode === n.node_id), title: (n.lines || []).join(" · "),
+      type: "button", "aria-pressed": String(selNode === n.node_id), title: full,
       onclick: () => { st.selectedEdge = null; ctx.select(n.node_id); },
+      onmouseenter: () => point(n.node_id), onfocus: () => point(n.node_id),
     },
-    t.glyph === "person" ? h("span", { class: "glyph" }, silhouette(30, "a person; no image is held")) : h("span", { class: "type", "aria-hidden": "true" }, t.glyph),
-    h("span", { class: "nb" },
-      h("span", { class: ["nv", !t.mono && "sans", t.struck && "struck", t.generated && "generated"] }, t.title),
-      h("span", { class: ["nt", t.subVouch && "novouch"] }, t.sub)));
+    t.glyph === "person" ? h("span", { class: "glyph" }, silhouette(22, "a person; no image is held")) : h("span", { class: "type", "aria-hidden": "true" }, t.glyph),
+    h("span", { class: ["nv", !t.mono && "sans", t.struck && "struck", t.generated && "generated"] }, t.title),
+    t.subVouch ? h("span", { class: "nt novouch" }, t.flag) : null,
+    h("span", { class: "sr" }, ` · ${t.sub}`));
     cards.set(n.node_id, b);
     stage.append(b);
   }
@@ -333,7 +381,7 @@ export async function renderConnections(el, ctx) {
   for (const [k, list] of groups) {
     const cls = edgeClass(list[0]);
     const b = h("button", {
-      class: ["elabel", cls === "inf" && "inf", list.every(gone) && "gone"], type: "button", "aria-pressed": String(selEdge === k),
+      class: ["elabel", cls === "inf" && "inf", list.every(gone) && "gone"], type: "button", "aria-pressed": String(selEdge === k), hidden: !labelShown(k, selNode, selEdge, null),
       onclick: () => { st.selectedEdge = k; ctx.select(null); },
     }, groupLabel(list));
     labels.set(k, b);
@@ -354,7 +402,8 @@ export async function renderConnections(el, ctx) {
     h("span", {}, h("i", { class: "swatch inf" }), "dashed: proposed by a matcher, not accepted"),
     h("span", {}, h("i", { class: "swatch fus" }), "an analyst's assertion: cluster membership or exclusion"),
     h("span", {}, h("i", { class: "swatch gone" }), "revoked: the tombstone stays, struck"),
-    h("span", {}, "corner brackets: a cluster, a container of accounts"));
+    h("span", {}, "corner brackets: a cluster, a container of accounts"),
+    h("span", {}, "labels: select or point at a node to read its links in words; the List view prints every link"));
 
   el.append(title, tools, h("div", { class: "web-layout" }, h("div", {}, legend, stage, caption), panel));
 
@@ -390,10 +439,13 @@ export async function renderConnections(el, ctx) {
       if (!pa || !pb) { labels.get(k).hidden = true; continue; }
       const cls = edgeClass(list[0]);
       const dead = list.every(gone);
-      const on = selEdge === k || touching(k);
+      const shown = labelShown(k, selNode, selEdge, hoverId);
+      const on = selEdge === k || touching(k) || shown;
       const dim = (selNode || selEdge) && !on;
       svgEl.append(s("line", { class: ["e", cls, dead && "gone", on && "sel", dim && "dim"].filter(Boolean).join(" "), x1: pa.x, y1: pa.y, x2: pb.x, y2: pb.y }));
       const lab = labels.get(k);
+      lab.hidden = !shown;
+      if (!shown) continue;
       const lw = lab.offsetWidth || 120;
       const lh = lab.offsetHeight || 20;
       const fromCentre = (pa.x === w / 2 && pa.y === hh / 2) || (pb.x === w / 2 && pb.y === hh / 2);
@@ -420,7 +472,16 @@ export async function renderConnections(el, ctx) {
   };
   const ro = new ResizeObserver(() => draw());
   ro.observe(stage);
-  requestAnimationFrame(draw);
+  requestAnimationFrame(() => {
+    draw();
+    // The stage is tall enough that no two cards overlap, so on a 900-pixel screen the seed sits below the
+    // fold. When the web first draws, the page scrolls the least that brings the seed into view.
+    if (!st.seedShown) {
+      st.seedShown = true;
+      const seed = cards.get(m.focus);
+      if (seed) seed.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
+  });
 }
 
 function groupsTouch(groups, a, b) {
